@@ -4,8 +4,9 @@
     "outDir": "lib",
     "target": "es2020",
     "moduleResolution": "node",
-    "module": "es2022",
+    "module": "commonjs",
     "declaration": true,
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
   },

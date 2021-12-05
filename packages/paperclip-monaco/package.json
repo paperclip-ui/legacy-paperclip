@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch --incremental"
+    "build:watch": "tsc --watch --preserveWatchOutput --incremental"
   },
   "author": "",
   "license": "ISC",

@@ -18,6 +18,8 @@ export class Workspace {
   ) {}
 
   async start(pathOrUrl: string, branch?: string) {
+    console.log("PORf!", pathOrUrl);
+
     const repoUrl = getProjectUrl(pathOrUrl);
 
     this._logger.info(`Starting repo ${repoUrl}#${branch}`);

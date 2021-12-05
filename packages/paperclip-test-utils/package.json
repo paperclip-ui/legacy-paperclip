@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "yarn tsc",
-    "build:watch": "yarn tsc --watch"
+    "build:watch": "yarn tsc --watch --preserveWatchOutput"
   },
   "author": "",
   "license": "ISC",

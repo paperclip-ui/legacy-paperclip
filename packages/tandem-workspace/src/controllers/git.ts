@@ -7,9 +7,7 @@ export class Repository {
   /**
    */
 
-  constructor(readonly localDirectory: string, private _logger: Logger) {
-    this.getBranches();
-  }
+  constructor(readonly localDirectory: string, private _logger: Logger) {}
 
   /**
    */

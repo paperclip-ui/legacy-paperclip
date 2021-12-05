@@ -153,7 +153,7 @@ export class Project {
    */
 
   getAllPaperclipScreens() {
-    return this._pc.getAllScreens();
+    return this._pc.engine.getAllLoadedData();
   }
 }
 

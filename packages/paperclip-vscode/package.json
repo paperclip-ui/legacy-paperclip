@@ -131,7 +131,7 @@
     "build:syntaxes:watch": "nodemon --exec \"node lib/scripts/build\" --watch ./syntaxes/paperclip-html.yaml",
     "xtest": "node lib/test/run",
     "lint": "eslint src",
-    "build:watch": "concurrently \"tsc --watch\" \"npm run build:syntaxes:watch\"",
+    "build:watch": "concurrently \"tsc --watch --preserveWatchOutput\" \"npm run build:syntaxes:watch\"",
     "prepublishOnly": "npm run build",
     "rm-ngrok": "rm -rf node_modules/ngrok/bin",
     "publish:local": "rm -rf node_modules && npm install && npm run rm-ngrok && vsce package && vsce publish",

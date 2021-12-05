@@ -6,12 +6,10 @@ import { Project } from "./controllers/project";
 import { Kernel } from "./core/kernel";
 import { Options } from "./core/options";
 import { addRoutes } from "./routes";
-import * as url from "url";
-import * as path from "path";
 import { RPC } from "./controllers/rpc";
 import { SocketIo } from "./controllers/socket";
 import { VFS } from "./controllers/vfs";
-import getPort from "get-port";
+const getPort = require("get-port");
 
 export { Workspace, Project };
 

@@ -36,7 +36,7 @@
   },
   "scripts": {
     "test": "lerna run test",
-    "build": "yarn workspaces foreach -t run build",
+    "build": "yarn workspaces foreach -viA run build",
     "lint": "lerna run lint",
     "link:tandem": "yarn link $TANDEM_HOME/packages/designer && yarn link $TANDEM_HOME/packages/design-system",
     "postinstall2": "yarn workspaces foreach -t run build",
@@ -44,10 +44,10 @@
     "publish:local": "for PKG in `ls packages`; do cd packages/$PKG; yalc publish; cd ../..; done;",
     "push:local": "for PKG in `ls packages`; do cd packages/$PKG; yalc push; cd ../..; done;",
     "clean:hard": "rm -rf yarn.lock && yarn clean",
-    "build:watch": "lerna run build:watch --parallel",
+    "build:watch": "yarn workspaces foreach -vipA --jobs=unlimited run build:watch",
     "publish:packages": "lerna publish from-package --yes",
-    "publish:marketplace": "lerna run publish:marketplace",
-    "publish:documentation": "lerna run publish:documentation",
+    "publish:marketplace": "yarn workspaces foreach -vipA run publish:marketplace",
+    "publish:documentation": "yarn workspaces foreach -vipA run publish:documentation",
     "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit",
     "prepare": "husky install"
   },

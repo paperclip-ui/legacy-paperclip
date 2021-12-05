@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
-    "build:watch": "tsc --watch",
+    "build:watch": "tsc --watch --preserveWatchOutput",
     "test": "mocha -R spec lib/test/**/*-test.js --timeout=10000"
   },
   "author": "",

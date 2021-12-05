@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "./bin/figma-paperclip",
   "scripts": {
-    "build:watch": "tsc --watch",
+    "build:watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc"
   },
   "author": "",

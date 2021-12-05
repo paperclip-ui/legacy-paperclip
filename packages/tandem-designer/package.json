@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "npm run build:definitions && tsc && webpack",
-    "build:watch": "concurrently \"webpack --watch\" \"tsc --watch\" \"paperclip-minimal build --write --definition --watch\"",
+    "build:watch": "concurrently \"webpack --watch\" \"tsc --watch --preserveWatchOutput\" \"paperclip-minimal build --write --definition --watch\"",
     "build:definitions": "paperclip-minimal build --write --verbose --targets=d.ts"
   },
   "author": "",

@@ -1,6 +1,7 @@
 import { eventHandlers, Observable, Observer } from "paperclip-common";
-import getPort from "get-port";
+const getPort = require("get-port");
 import {
+  DesignServerStarted,
   DesignServerUpdated,
   DesignServerUpdating,
   Initialized,
@@ -39,7 +40,7 @@ export class PaperclipDesignServer implements Observer {
         installDependencies: false
       }
     });
-    this.events.dispatch(new ProjectStarted(this._project));
+    this.events.dispatch(new DesignServerStarted(this._port));
 
     const cwd = workspaceFolders[0].uri;
     this._project = await this._workspace.start(cwd);
@@ -47,6 +48,10 @@ export class PaperclipDesignServer implements Observer {
   };
 
   private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {
+    // this will happen if text document is open on vscode open
+    if (!this._project) {
+      return;
+    }
     this._project.updatePCContent(uri, content);
   };
   private _onTextDocumentChanged = ({ uri, content }: TextDocumentChanged) => {

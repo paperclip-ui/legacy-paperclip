@@ -20,7 +20,7 @@
     "test:node": "mocha ./lib/test/**/*-test.js",
     "test:watch": "mocha ./lib/test --watch & (cd native && cargo watch -x test)",
     "build": "npm run build:wasm:node && npm run build:node && npm run build:browser",
-    "build:watch": "tsc --watch & (cd native && cargo watch -i .gitignore -i \"node/*\" -s 'wasm-pack build --release --target nodejs --out-dir node')",
+    "build:watch": "tsc --watch --preserveWatchOutput & (cd native && cargo watch -i .gitignore -i \"node/*\" -s 'wasm-pack build --release --target nodejs --out-dir node')",
     "build:node": "tsc",
     "build:native": "cd native && cargo build --release",
     "build:browser": "npm run build:esm && npm run build:wasm:browser",
