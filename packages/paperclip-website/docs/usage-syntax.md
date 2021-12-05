@@ -66,11 +66,11 @@ Nested rules eliminates some redundancy around defining style selectors.
   }
 </style>
 
-<div className="container">
-  <div className="header">
+<div class="container">
+  <div class="header">
     Header
   </div>
-  <div className="content">
+  <div class="content">
     content
   </div>
 </div>
@@ -98,10 +98,10 @@ Nested rules eliminates some redundancy around defining style selectors.
   }
 </style>
 
-<div className="button preview">
+<div class="button preview">
   Button primary
 </div>
-<div className="button button--secondary preview">
+<div class="button button--secondary preview">
   Button secondary
 </div>
 ```
@@ -149,7 +149,7 @@ Scoped styles are recommended since they keep your styles & elements together in
 `:within([ancestor-selector])` allows you to apply styles with an ancestor that has `ancestor-selector`.
 
 ```html live height=150px
-<div className="bolder">
+<div class="bolder">
   <div>
     <style>
       &:within(.bolder) {
@@ -228,7 +228,7 @@ Style mixins are useful for defining a bundle of style declarations (like `color
   }
 </style>
 
-<div className="message">
+<div class="message">
   What has to be broken before you can use it?
 </div>
 ```
@@ -285,7 +285,7 @@ The `@export` rule allows you to export styles to other documents, as well as ap
 
 
 <!-- $ is a class reference - docs below -->
-<div className="$styles.default-text">
+<div class="$styles.default-text">
   <style>
     @include styles.big-text;
     animation: styles.pulse 1s infinite;
@@ -361,9 +361,9 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 
 ```html
 
-<div className="$class-name" />
+<div class="$class-name" />
 
-<div className="$imported-doc.class-name" />
+<div class="$imported-doc.class-name" />
 ```
 
 **Example**:
@@ -372,7 +372,7 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 // file: main.pc
 <import src="./atoms.pc" as="atoms" />
 
-<span className="$atoms.font-default">
+<span class="$atoms.font-default">
   Hello
 </span>
 // file: atoms.pc
@@ -438,7 +438,7 @@ Here's an example that stylizes parts of [react-select](https://github.com/JedWa
   }
 </style>
 
-<div export component as="Wrapper" className="wrapper">
+<div export component as="Wrapper" class="wrapper">
   {children}
 </div>
 ```
@@ -468,7 +468,7 @@ import * as ui from './Select.pc';
 // file: demo.pc
 <import src="./styles.pc" />
 
-<div className="message">
+<div class="message">
   <style>
     color: var(--color-red-default);
   </style>
@@ -525,7 +525,7 @@ You can import [styles](#styling) & [components](#components) from other files.
 
 <pane.Container>
   <pane.Header>
-    <span className="$atoms.font-big">
+    <span class="$atoms.font-big">
       Header content
     </span>
   </pane.Header>
@@ -543,14 +543,14 @@ You can import [styles](#styling) & [components](#components) from other files.
   }
 </style>
 
-<div export component as="Container" className="Container">
+<div export component as="Container" class="Container">
   <style>
     @include atoms.font-default;
   </style>
   {children}
 </div>
 
-<div export component as="Header" className="Header">
+<div export component as="Header" class="Header">
   <style>
     @include padded;
     font-size: 18px;
@@ -559,7 +559,7 @@ You can import [styles](#styling) & [components](#components) from other files.
   {children}
 </div>
 
-<div export component as="Content" className="Content">
+<div export component as="Content" class="Content">
   <style>
     @include padded;
   </style>
@@ -669,11 +669,11 @@ Components are your UI building blocks.
 
 ```html live height=150px
 
-<!-- className and class can be used interchangeably -->
+<!-- class and class can be used interchangeably -->
 <!--
   @frame { visible: false }
 -->
-<div component as="Message" className="Message">
+<div component as="Message" class="Message">
   <style>
     font-family: Comic Sans MS;
     font-size: 32px;
@@ -719,9 +719,9 @@ Anything that doesn't have a `component` attribute is rendered to the screen, so
   @frame { visible: false }
 -->
 <div component as="Button" 
-  className="$styles.Button"
-  className:secondary="$styles.Button--secondary"
-  className:negate="$styles.Button--negate">
+  class="$styles.Button"
+  class:secondary="$styles.Button--secondary"
+  class:negate="$styles.Button--negate">
   {children}
 </div>
 
@@ -800,7 +800,7 @@ Components can be exported to be used in application code, as well as other docu
 <!--
   @frame { visible: false }
 -->
-<div export component as="App" className="$styles.App">
+<div export component as="App" class="$styles.App">
   {children}
 </div>
 
@@ -812,7 +812,7 @@ Components can be exported to be used in application code, as well as other docu
 <!--
   @frame { visible: false }
 -->
-<div export component as="Header" className="$styles.Header">
+<div export component as="Header" class="$styles.Header">
   <h4>Todos</h4>
   {children}
 </div>
@@ -820,16 +820,16 @@ Components can be exported to be used in application code, as well as other docu
 <!--
   @frame { visible: false }
 -->
-<ul export component as="List" className="$styles.List">
+<ul export component as="List" class="$styles.List">
   {children}
 </ul>
 
 <!--
   @frame { visible: false }
 -->
-<li export component as="Item" className="$styles.Item" {onClick}>
+<li export component as="Item" class="$styles.Item" {onClick}>
   <input type="checkbox" checked={completed} /> 
-  <span className="$styles.label">{children}</span>
+  <span class="$styles.label">{children}</span>
 </li>
 
 <!-- Preview -->
@@ -928,9 +928,9 @@ We can also use our exported component in other Paperclip documents. Here's an e
   }
 </style>
 
-<div className="preview">
-  <todos.Preview className="$preview-item" />
-  <todos.EmptyPreview className="$preview-item" />
+<div class="preview">
+  <todos.Preview class="$preview-item" />
+  <todos.EmptyPreview class="$preview-item" />
 </div>
 
 // file: todos.pc
@@ -941,7 +941,7 @@ We can also use our exported component in other Paperclip documents. Here's an e
 <!--
   @frame { visible: false }
 -->
-<div export component as="App" className="$styles.App {className?}">
+<div export component as="App" class="$styles.App {class?}">
   {children}
 </div>
 
@@ -953,7 +953,7 @@ We can also use our exported component in other Paperclip documents. Here's an e
 <!--
   @frame { visible: false }
 -->
-<div export component as="Header" className="$styles.Header">
+<div export component as="Header" class="$styles.Header">
   <h4>Todos</h4>
   {children}
 </div>
@@ -961,16 +961,16 @@ We can also use our exported component in other Paperclip documents. Here's an e
 <!--
   @frame { visible: false }
 -->
-<ul export component as="List" className="$styles.List">
+<ul export component as="List" class="$styles.List">
   {children}
 </ul>
 
 <!--
   @frame { visible: false }
 -->
-<li export component as="Item" className="$styles.Item" {onClick}>
+<li export component as="Item" class="$styles.Item" {onClick}>
   <input type="checkbox" checked={completed} /> 
-  <span className="$styles.label">{children}</span>
+  <span class="$styles.label">{children}</span>
 </li>
 
 <!-- Export re-usable previews that can be used
@@ -979,7 +979,7 @@ in other previews -->
 <!--
   @frame { visible: false }
 -->
-<App export component as="Preview" {className?}>
+<App export component as="Preview" {class?}>
   <Header>
     <NewItemInput />
   </Header>
@@ -994,7 +994,7 @@ in other previews -->
 <!--
   @frame { visible: false }
 -->
-<App export component as="EmptyPreview" {className?}>
+<App export component as="EmptyPreview" {class?}>
   <Header>
     <NewItemInput />
   </Header>
@@ -1061,7 +1061,7 @@ attributeBoundToClassName="$class-name"
     text-decoration: underline;
   }
 </style>
-<Message className="$my-style-override">
+<Message class="$my-style-override">
   Hello World
 </Message>
 
@@ -1070,7 +1070,7 @@ attributeBoundToClassName="$class-name"
 <!--
   @frame { visible: false }
 -->
-<div export component as="default" className="{className?}">
+<div export component as="default" class="{class?}">
   <style>
       font-size: 24px;
       font-family: Helvetica;
@@ -1087,11 +1087,11 @@ Alternatively, you can overriding your components appearance by using scoped sty
 
 ```html live height=200px
 
-<!-- Note that className is still necessary here! -->
+<!-- Note that class is still necessary here! -->
 <!--
   @frame { visible: false }
 -->
-<div export component as="Message" {className?}>
+<div export component as="Message" {class?}>
   <style>
     font-family: sans-serif;
     color: red;
@@ -1108,7 +1108,7 @@ Alternatively, you can overriding your components appearance by using scoped sty
 </Message>
 ```
 
-Note that you need to provide a `className` in your component for inline style overrides to work. To see what I'm talking about, try removing the `{className?}` binding above and see what happens!
+Note that you need to provide a `class` in your component for inline style overrides to work. To see what I'm talking about, try removing the `{class?}` binding above and see what happens!
 
 ☝🏻 this approach keeps your overrides together, which I find a bit easier to read. The other benefit to this approach is that your code remains portable since everything's in one spot -- super nice for refactoring. 
 
@@ -1185,12 +1185,12 @@ There will probably be the case where you want to define multiple areas of a com
 <!--
   @frame { visible: false }
 -->
-<div component as="Pane" className="$styles.Pane">
-  <div className="$styles.header">
-    <div className="$styles.title">{title}</div>
+<div component as="Pane" class="$styles.Pane">
+  <div class="$styles.header">
+    <div class="$styles.title">{title}</div>
     <div>{controls}</div>
   </div>
-  <div className="$styles.content">
+  <div class="$styles.content">
     {children}
   </div>
 </div>
@@ -1252,7 +1252,7 @@ Attributes allow you to define dynamic component properties. For example:
 
 <!-- Components -->
 
-<!-- Generally I'd recommend just a `{className}` binding instead of `{customClassName}` class name, which I'm only using here to make more clear around how it works. -->
+<!-- Generally I'd recommend just a `{class}` binding instead of `{customClassName}` class name, which I'm only using here to make more clear around how it works. -->
 <!--
   @frame { visible: false }
 -->
@@ -1304,7 +1304,7 @@ Bindings can also be defined outside of string attributes. For example:
 
 ```html
 <div component as="Test">
-  <span className="title" ref={spanRef}>
+  <span class="title" ref={spanRef}>
     {title}
   </span>
   {children}
@@ -1317,7 +1317,7 @@ You can also use the shorthand approach like so:
 
 ```html
 <div component as="Test" {ref}>
-  <span className="title">
+  <span class="title">
     {title}
   </span>
   {children}
@@ -1337,21 +1337,21 @@ This is particularly useful for making your code more DRY. For example:
 
 ### Optional bindings
 
-By default, bindings are required. So if you define `{className}` on an element, that property will be required when compiled into application code. To make a binding optional, just add a `?` after the binding name like so:
+By default, bindings are required. So if you define `{class}` on an element, that property will be required when compiled into application code. To make a binding optional, just add a `?` after the binding name like so:
 
 ```html
-<div component as="Message" {className?}>
+<div component as="Message" {class?}>
   {children}
 </div>
 ```
 
-☝🏻 Here, `className` is optional, whereas `children` is not. When compiled to TypeScript, here's what you get:
+☝🏻 Here, `class` is optional, whereas `children` is not. When compiled to TypeScript, here's what you get:
 
 ```typescript
 /* other generated code here */
 
 type MessageProps = {
-  className?: Function,
+  class?: Function,
   children: ReactNode,
 };
 
@@ -1385,9 +1385,9 @@ The variant style syntax allows you to apply classes based on component properti
   @frame { visible: false }
 -->
 <div component as="Header"
-  className:big="big"
-  className:medium="medium"
-  className:small="small">
+  class:big="big"
+  class:medium="medium"
+  class:small="small">
 
   <style>
     font-family: Luminari;
