@@ -2,11 +2,13 @@ import { Repository } from "./git";
 import * as URL from "url";
 import * as crypto from "crypto";
 import { Logger } from "tandem-common";
+import execa from "execa";
 import { Package } from "./package";
 import { EngineDelegateEvent } from "paperclip";
 import { PaperclipProject } from "./paperclip";
 import { VFS } from "./vfs";
 import { Workspace } from "./workspace";
+import { Options } from "../core/options";
 
 export class Project {
   private _pc: PaperclipProject;
@@ -19,8 +21,9 @@ export class Project {
   constructor(
     readonly url: string,
     private _branch: string,
-    private _vfs: VFS,
-    private _logger: Logger
+    _vfs: VFS,
+    _logger: Logger,
+    private _options: Options
   ) {
     const directory = isUrlLocal(this.url)
       ? URL.fileURLToPath(this.url)
@@ -32,6 +35,15 @@ export class Project {
       _vfs,
       _logger
     );
+  }
+
+  /**
+   */
+
+  open() {
+    execa("open", [
+      `http://localhost:${this._options.http.port}?projectId=${this.id}&showAll=true`
+    ]);
   }
 
   /**
@@ -70,15 +82,29 @@ export class Project {
   /**
    */
 
+  get engine() {
+    return this._pc.engine;
+  }
+
+  /**
+   */
+
   openPCFile = (uri: string) => {
-    return this._pc.openFile(uri);
+    return this._pc.engine.open(uri);
   };
 
   /**
    */
 
   getPCContent = (uri: string) => {
-    return this._pc.getVirtContent(uri);
+    return this._pc.engine.getVirtualContent(uri);
+  };
+
+  /**
+   */
+
+  updatePCContent = (uri: string, content: string) => {
+    return this._pc.engine.updateVirtualFileContent(uri, content);
   };
 
   /**
@@ -90,7 +116,9 @@ export class Project {
       await this.repository.checkout(this._branch);
     }
 
-    await this.package.install();
+    if (this._options.project?.installDependencies !== false) {
+      await this.package.install();
+    }
 
     // start the PC engine. At this point we're ready to start working
     this._pc.start();
@@ -127,9 +155,6 @@ export class Project {
   getAllPaperclipScreens() {
     return this._pc.getAllScreens();
   }
-
-  /**
-   */
 }
 
 const isUrlLocal = (url: string) => {

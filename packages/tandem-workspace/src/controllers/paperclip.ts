@@ -42,22 +42,8 @@ export class PaperclipProject {
   /**
    */
 
-  getAllScreens() {
-    return this._engine.getAllLoadedData();
-  }
-
-  /**
-   */
-
-  openFile(uri: string) {
-    return this._engine.open(uri);
-  }
-
-  /**
-   */
-
-  getVirtContent(uri: string) {
-    return this._engine.getVirtualContent(uri);
+  get engine() {
+    return this._engine;
   }
 
   /**

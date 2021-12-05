@@ -9285,6 +9285,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"get-port@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "get-port@npm:6.0.0"
+  checksum: 9c7b370a00deb8f8330a5a5c38b5902a0dec3725890f4472e665b0d17caf448d3805ca22fc66fa68721018e9ee99773c0c253d9ec70d2ca70b5a8e602aed7629
+  languageName: node
+  linkType: hard
+
 "get-stream@npm:^4.0.0, get-stream@npm:^4.1.0":
   version: 4.1.0
   resolution: "get-stream@npm:4.1.0"
@@ -14224,6 +14231,7 @@ __metadata:
     paperclip-web-renderer: ^18.0.2
     plist: ^3.0.1
     tandem-designer: ^18.0.1
+    tandem-workspace: "workspace:^"
     typescript: ^4.2.3
     vscode-languageclient: 6.0.1
     vscode-languageserver: 6.0.1
@@ -18108,7 +18116,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"tandem-workspace@workspace:packages/tandem-workspace":
+"tandem-workspace@workspace:^, tandem-workspace@workspace:packages/tandem-workspace":
   version: 0.0.0-use.local
   resolution: "tandem-workspace@workspace:packages/tandem-workspace"
   dependencies:
@@ -18118,6 +18126,7 @@ __metadata:
     cypress: ^8.4.1
     execa: ^5.1.1
     fs-extra: ^10.0.0
+    get-port: ^6.0.0
     glob: ^7.1.7
     nodemon: ^2.0.12
     paperclip: ^18.0.0

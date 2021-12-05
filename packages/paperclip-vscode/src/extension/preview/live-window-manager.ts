@@ -7,11 +7,12 @@ import {
   Observer
 } from "paperclip-common";
 import { LiveWindow, LiveWindowState } from "./live-window";
-import { HTTPServerStarted } from "tandem-designer/lib/server/services/http-server";
-import {
-  ActionType,
-  LocationChanged
-} from "../../../../paperclip-designer/lib";
+import { DesignServerStarted } from "../language/server/events";
+// import { HTTPServerStarted } from "tandem-designer/lib/server/services/http-server";
+// import {
+//   ActionType,
+//   LocationChanged
+// } from "../../../../paperclip-designer/lib";
 
 export class LiveWindowManager implements Observer {
   readonly events: Observable;
@@ -21,10 +22,10 @@ export class LiveWindowManager implements Observer {
     this._windows = [];
     this.events = new Observable();
   }
-  _onDevServerStarted = ({ port }: HTTPServerStarted) => {
-    this._devServerPort = port;
+  _onDevServerStarted = ({ httpPort }: DesignServerStarted) => {
+    this._devServerPort = httpPort;
     for (const window of this._windows) {
-      window.setDevServerPort(port);
+      window.setDevServerPort(httpPort);
     }
   };
   getLength() {
@@ -60,6 +61,6 @@ export class LiveWindowManager implements Observer {
   }
 
   handleEvent = eventHandlers({
-    [HTTPServerStarted.TYPE]: this._onDevServerStarted
+    [DesignServerStarted.TYPE]: this._onDevServerStarted
   });
 }

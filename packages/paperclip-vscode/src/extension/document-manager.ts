@@ -12,8 +12,10 @@ import {
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
 import { eventHandlers, Observer } from "paperclip-common";
-import { RevealSourceRequested } from "./language/server/events";
-import { PCSourceEdited } from "tandem-designer/lib/server/services/rpc";
+import {
+  PCContentChanged,
+  RevealSourceRequested
+} from "./language/server/events";
 import { stripFileProtocol } from "paperclip-utils";
 import * as URL from "url";
 
@@ -102,27 +104,28 @@ export class DocumentManager implements Observer {
     );
   };
 
-  private _onPCSourceEdited = async ({
-    changes: changesByUri
-  }: PCSourceEdited) => {
-    for (const uri in changesByUri) {
-      const changes = changesByUri[uri];
-      const filePath = URL.fileURLToPath(uri);
-      const doc = await workspace.openTextDocument(filePath);
-      const tedits = changes.map(change => {
-        return new TextEdit(
-          new Range(doc.positionAt(change.start), doc.positionAt(change.end)),
-          change.value
-        );
-      });
-      const wsEdit = new WorkspaceEdit();
-      wsEdit.set(Uri.parse(uri), tedits);
-      await workspace.applyEdit(wsEdit);
-    }
-  };
+  // private _onPCSourceEdited = async ({
+  //   uri,
+  //   change
+  // }: PCContentChanged) => {
+  //   for (const uri in changesByUri) {
+  //     const changes = changesByUri[uri];
+  //     const filePath = URL.fileURLToPath(uri);
+  //     const doc = await workspace.openTextDocument(filePath);
+  //     const tedits = changes.map(change => {
+  //       return new TextEdit(
+  //         new Range(doc.positionAt(change.start), doc.positionAt(change.end)),
+  //         change.value
+  //       );
+  //     });
+  //     const wsEdit = new WorkspaceEdit();
+  //     wsEdit.set(Uri.parse(uri), tedits);
+  //     await workspace.applyEdit(wsEdit);
+  //   }
+  // };
 
   handleEvent = eventHandlers({
-    [RevealSourceRequested.TYPE]: this._onRevealSourceRequested,
-    [PCSourceEdited.TYPE]: this._onPCSourceEdited
+    [RevealSourceRequested.TYPE]: this._onRevealSourceRequested
+    // [PCContentChanged.TYPE]: this._onPCSourceEdited
   });
 }

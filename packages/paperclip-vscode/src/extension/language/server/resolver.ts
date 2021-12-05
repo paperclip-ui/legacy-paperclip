@@ -21,15 +21,18 @@ import {
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "paperclip-language-service";
-import { PCEngineInitialized } from "tandem-designer/lib/server/services/pc-engine";
+// import { PCEngineInitialized } from "tandem-designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
 import * as parseColor from "color";
 import { BaseEvent, Observable } from "paperclip-common";
 import { stripFileProtocol } from "paperclip-utils";
-import { DesignServerUpdated, DesignServerUpdating } from "./events";
+import {
+  DesignServerUpdated,
+  DesignServerUpdating,
+  ProjectStarted
+} from "./events";
 import { SourceLinted } from "paperclip-language-service";
-import * as url from "url";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
@@ -46,9 +49,9 @@ export class LanguageRequestResolver {
   }
 
   handleEvent(event) {
-    if (event.type === PCEngineInitialized.TYPE) {
+    if (event.type === ProjectStarted.TYPE) {
       this._service = new PaperclipLanguageService(
-        (event as PCEngineInitialized).engine
+        (event as ProjectStarted).project.engine
       );
       this._listen();
     } else if (event.type === DesignServerUpdating.TYPE) {

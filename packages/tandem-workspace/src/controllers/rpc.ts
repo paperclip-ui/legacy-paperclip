@@ -51,6 +51,7 @@ class Connection {
     channels.editCodeChannel(adapter).listen(this._editCode);
     channels.commitChangesChannel(adapter).listen(this._commitChanges);
     channels.setBranchChannel(adapter).listen(this._setBranch);
+    channels.editPCSourceChannel(adapter).listen(this._editPCSource);
   }
 
   private getProject() {
@@ -59,6 +60,10 @@ class Connection {
 
   private _editCode = async ({ uri, value }) => {
     this._vfs.updateFileContent(uri, value);
+  };
+
+  private _editPCSource = async ({}) => {
+    console.log("TODO");
   };
 
   private _getAllScreens = async () => {

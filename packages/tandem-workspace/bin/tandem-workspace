@@ -17,13 +17,16 @@ yargs.command(
   ({ project, port, open, autoSave, branch }) => {
     start({
       cwd: process.cwd(),
-      openInitial: open,
       autoSave,
       http: {
         port: port,
-      },
-      project,
-      branch,
+      }
+    }).then(workspace => 
+      workspace.start(project, branch)
+    ).then(project => {
+      if (open) {
+        project.open();
+      }
     });
   }
 ).argv;

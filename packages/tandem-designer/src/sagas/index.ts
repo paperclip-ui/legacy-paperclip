@@ -1,23 +1,7 @@
 import Mousetrap, { addKeycodes } from "mousetrap";
 import SockJSClient from "sockjs-client";
-import {
-  computeVirtJSObject,
-  LoadedPCData,
-  VirtNodeSource,
-  nodePathToAry,
-  EngineDelegateChanged
-} from "paperclip-utils";
 import * as Url from "url";
-import {
-  fork,
-  put,
-  take,
-  takeEvery,
-  select,
-  call,
-  takeLatest,
-  throttle
-} from "redux-saga/effects";
+import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import * as qs from "querystring";
 import {
@@ -28,70 +12,24 @@ import {
   globalZKeyDown,
   globalYKeyDown,
   globalMetaKeyUp,
-  Action,
-  fileOpened,
-  pcVirtObjectEdited,
   CanvasMouseUp,
-  pasted,
-  globalBackspaceKeySent,
   globalSaveKeyPress,
   globalHKeyDown,
   locationChanged,
-  clientConnected,
-  metaClicked,
   gridHotkeyPressed,
-  getAllScreensRequested,
   zoomOutKeyPressed,
   zoomInKeyPressed,
   globalOptionKeyDown,
   globalOptionKeyUp,
   actionHandled,
   redirectRequest,
-  virtualNodeStylesInspected,
-  NodeBreadcrumbClicked,
-  LayerLeafClicked,
-  allPCContentLoaded,
-  serverOptionsLoaded,
-  ServerOptionsLoaded,
-  dirLoaded,
-  pcFileLoaded,
-  virtualNodeSourcesLoaded,
-  StyleRuleFileNameClicked,
   windowFocused,
   windowBlurred
 } from "../actions";
-import {
-  AppState,
-  DesignerState,
-  getActiveFrameIndex,
-  getActivePCData,
-  getFrameFromIndex,
-  getNodeInfoAtPoint,
-  getScopedBoxes,
-  getSelectedFrames,
-  isExpanded,
-  SyncLocationMode
-} from "../state";
-import { getVirtTarget } from "paperclip-utils";
+import { AppState, SyncLocationMode } from "../state";
 import { handleCanvas } from "./canvas";
-import {
-  PCMutation,
-  PCMutationActionKind
-} from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { omit } from "lodash";
-import {
-  getAllScreensChannel,
-  inspectNodeStyleChannel,
-  popoutWindowChannel,
-  revealNodeSourceChannel,
-  loadDirectoryChannel,
-  openFileChannel,
-  loadVirtualNodeSourcesChannel,
-  revealNodeSourceByIdChannel,
-  editPCSourceChannel,
-  eventsChannel
-} from "../rpc/channels";
 import { sockAdapter } from "paperclip-common";
 import { handleRPC } from "./rpc";
 

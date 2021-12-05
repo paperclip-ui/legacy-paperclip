@@ -126,7 +126,7 @@
     ]
   },
   "scripts": {
-    "build2": "tsc && npm run build:syntaxes",
+    "build": "tsc && npm run build:syntaxes",
     "build:syntaxes": "node lib/scripts/build",
     "build:syntaxes:watch": "nodemon --exec \"node lib/scripts/build\" --watch ./syntaxes/paperclip-html.yaml",
     "xtest": "node lib/test/run",
@@ -176,6 +176,7 @@
     "paperclip-utils": "^18.0.2",
     "paperclip-web-renderer": "^18.0.2",
     "tandem-designer": "^18.0.1",
+    "tandem-workspace": "workspace:^",
     "vscode-languageclient": "6.0.1",
     "vscode-languageserver": "6.0.1",
     "vscode-languageserver-protocol": "3.15.3",

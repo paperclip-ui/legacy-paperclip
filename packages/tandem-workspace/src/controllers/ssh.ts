@@ -1,6 +1,5 @@
 import * as fsa from "fs-extra";
 import * as path from "path";
-import execa from "execa";
 import { exec } from "child_process";
 import { Logger, ok } from "tandem-common";
 
