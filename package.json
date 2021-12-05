@@ -36,7 +36,7 @@
   },
   "scripts": {
     "test": "lerna run test",
-    "build": "lerna run build",
+    "build": "yarn workspaces foreach -t run build",
     "lint": "lerna run lint",
     "link:tandem": "yarn link $TANDEM_HOME/packages/designer && yarn link $TANDEM_HOME/packages/design-system",
     "postinstall2": "yarn workspaces foreach -t run build",

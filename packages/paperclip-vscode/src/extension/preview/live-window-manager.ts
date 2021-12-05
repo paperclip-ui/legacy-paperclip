@@ -1,11 +1,5 @@
 import { WebviewPanel, window } from "vscode";
-import {
-  BaseEvent,
-  Disposable,
-  eventHandlers,
-  Observable,
-  Observer
-} from "paperclip-common";
+import { eventHandlers, Observable, Observer } from "paperclip-common";
 import { LiveWindow, LiveWindowState } from "./live-window";
 import { DesignServerStarted } from "../language/server/events";
 // import { HTTPServerStarted } from "tandem-designer/lib/server/services/http-server";
