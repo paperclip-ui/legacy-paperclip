@@ -32,20 +32,20 @@
     white-space: nowrap;
     margin-left: var(--spacing-3);
   </style>
-  <span className="control ">{name}</span>
-  <span className="token">=</span>
-  <span className="string">"{value}"</span>
+  <span class="control ">{name}</span>
+  <span class="token">=</span>
+  <span class="string">"{value}"</span>
 </div>
 
 
 <div export
   component
   as="Leaf"
-  {className?}
+  {class?}
   {onClick?}
-  className:active="active"
-  className:hover="hover"
-  className:inline="inline"
+  class:active="active"
+  class:hover="hover"
+  class:inline="inline"
   style="--depth: {depth}">
   <style>
     padding: var(--spacing-1);
@@ -66,8 +66,8 @@
 <Leaf export
   component
   as="OpenTag"
-  className="tag"
-  className:noChildren="no-children"
+  class="tag"
+  class:noChildren="no-children"
   {active}
   {hover}
   {depth}
@@ -84,7 +84,7 @@
     <style>
       position: relative;
     </style>
-    <div className="token" onClick={onExpandToggleClick}>
+    <div class="token" onClick={onExpandToggleClick}>
       <style>
         position: absolute;
         left: 0;
@@ -107,17 +107,17 @@
     <style>
       display: flex;
     </style>
-    <span className="token">&lt;</span>
-    <span className="control">{name}</span>
+    <span class="token">&lt;</span>
+    <span class="control">{name}</span>
 
-    <span className:attributes="attributes">
+    <span class:attributes="attributes">
       <style>
         display: flex;
         flex-wrap: nowrap;
       </style>
       {attributes}
 
-      <span className="token">{noChildren && " />" || ">"}</span>
+      <span class="token">{noChildren && " />" || ">"}</span>
     </span>
   </div>
   {collapsed && !isVoid && !noChildren && <fragment>
@@ -127,10 +127,10 @@
 </Leaf>
 
 
-<Leaf export component as="CloseTag" {depth} className="tag" {inline?}>
-  <span className="token">&lt;/</span>
-  <span className="control">{name}</span>
-  <span className="token">&gt;</span>
+<Leaf export component as="CloseTag" {depth} class="tag" {inline?}>
+  <span class="token">&lt;/</span>
+  <span class="control">{name}</span>
+  <span class="token">&gt;</span>
 </Leaf>
 
 
@@ -149,14 +149,14 @@
   ...
 </div>
 
-<div export component as="Node" className="code {className?}">{children}</div>
+<div export component as="Node" class="code {class?}">{children}</div>
 
 <Node export
   component
   as="Element"
-  className:isVoid="is-void collapsed"
-  className:collapsed="collapsed"
-  className:children="has-children">
+  class:isVoid="is-void collapsed"
+  class:collapsed="collapsed"
+  class:children="has-children">
   <style>
     &.collapsed {
       display: flex;
@@ -179,7 +179,7 @@
   {!collapsed && !isVoid && <CloseTag {depth} {name} />}
 </Node>
 
-<Node export component as="Text" className="tag text" {depth}>
+<Node export component as="Text" class="tag text" {depth}>
   <Leaf {active} {depth} onClick={onLeafClick}>{children}</Leaf>
 </Node>
 

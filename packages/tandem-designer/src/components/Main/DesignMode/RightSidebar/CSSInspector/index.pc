@@ -41,7 +41,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 22, y: 4 }
 -->
-<div component as="StyleRuleIcon" {title} {className?}>
+<div component as="StyleRuleIcon" {title} {class?}>
   <style>
     opacity: 0.5;
     position: relative;
@@ -59,9 +59,9 @@
 <Pane.Section export
   component
   as="StyleRule"
-  className="section"
-  className:mediaActive="media-active"
-  className:isGlobal="is-global">
+  class="section"
+  class:mediaActive="media-active"
+  class:isGlobal="is-global">
   <div>
     <style>
       padding: var(--spacing-4) var(--spacing-5);
@@ -71,14 +71,14 @@
       padding-bottom: 0;
     </style>
     <div>
-      <span className="statement code" className:boldSelector="bold-selector">
+      <span class="statement code" class:boldSelector="bold-selector">
         <style>
           &.bold-selector {
             font-weight: 600;
           }
         </style>
         {selector}
-      </span>&nbsp;<span className="token">&#123;</span>
+      </span>&nbsp;<span class="token">&#123;</span>
     </div>
     <div>
       <style>
@@ -127,7 +127,7 @@
       padding: var(--spacing-4) var(--spacing-5);
       padding-top: 0;
     </style>
-    <span className="token">&#125;</span>
+    <span class="token">&#125;</span>
   </div>
 </Pane.Section>
 
@@ -135,7 +135,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleRuleProperty" className:disabled="disabled">
+<div export component as="StyleRuleProperty" class:disabled="disabled">
   <style>
     display: flex;
     grid-column-gap: var(--spacing-3);
@@ -157,17 +157,17 @@
       color: inherit;
     }
   </style>
-  <div className:boldName="bold-name">
+  <div class:boldName="bold-name">
     <style>
       white-space: nowrap;
       &.bold-name {
         font-weight: 600;
       }
     </style>
-    <span className="decl-name code">{name}</span>
-    <span className="token">:</span>
+    <span class="decl-name code">{name}</span>
+    <span class="token">:</span>
   </div>
-  <div className="decl-value code" className:boldValue="bold-value">
+  <div class="decl-value code" class:boldValue="bold-value">
     <style>
       flex: 1;
       &.bold-value {
@@ -182,12 +182,7 @@
 <!--
   @frame { visible: false }
 -->
-<span export
-  component
-  as="Expression"
-  {className?}
-  {style?}
-  className:last="last">
+<span export component as="Expression" {class?} {style?} class:last="last">
   <style>
     & > :global(*) {
       display: inline;
@@ -195,7 +190,7 @@
   </style>
 
   {children}
-  <span className="closing token">
+  <span class="closing token">
     <style>
       display: none;
     </style>
@@ -229,7 +224,7 @@
   @frame { visible: false }
 -->
 <Expression component as="UnitPart">
-  <span className="keyword-input">
+  <span class="keyword-input">
     <style>
       border-radius: var(--radius-1);
       padding: 0 var(--spacing-2);
@@ -242,7 +237,7 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="ScopedElementSelector" className="code">
+<span export component as="ScopedElementSelector" class="code">
   <style>
     background: rgb(228, 228, 228);
     padding: 0px var(--spacing-2);
@@ -258,7 +253,7 @@
 <!--
   @frame { visible: false }
 -->
-<UnitPart component as="KeywordPart" {value} className="keyword-input" />
+<UnitPart component as="KeywordPart" {value} class="keyword-input" />
 
 
 <!--
@@ -292,7 +287,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="PanelSection" className="section font-regular">
+<div export component as="PanelSection" class="section font-regular">
   <div>
     <style>
       padding: var(--spacing-4) var(--spacing-5);
@@ -371,11 +366,7 @@
 <!--
   @frame { visible: false }
 -->
-<button export
-  component
-  as="Tab"
-  className="button-reset"
-  className:active="active">
+<button export component as="Tab" class="button-reset" class:active="active">
   <style>
     border-top: 2px solid transparent;
     padding: var(--spacing-3) var(--spacing-4);
@@ -404,7 +395,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ComputedProperty" className:collapsed="collapsed">
+<div export component as="ComputedProperty" class:collapsed="collapsed">
   <div>
     <style>
       display: flex;
@@ -433,8 +424,8 @@
           flex: 1;
         }
       </style>
-      <span className="decl-name">{name}</span>
-      <span className="decl-value">{value}</span>
+      <span class="decl-name">{name}</span>
+      <span class="decl-value">{value}</span>
     </div>
   </div>
   {children}
@@ -444,7 +435,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ComputedPropertySource" className:disabled="disabled">
+<div export component as="ComputedPropertySource" class:disabled="disabled">
   <style>
     border-top: 1px solid rgb(240, 240, 240);
     display: flex;
@@ -467,7 +458,7 @@
 <!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
-<Pane.Container export component as="Preview" className="font-regular">
+<Pane.Container export component as="Preview" class="font-regular">
   <Tabs>
     <Tab active>Rules</Tab>
     <Tab>Computed</Tab>

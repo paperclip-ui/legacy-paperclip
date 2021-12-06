@@ -30,7 +30,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="default" {className?} className:immediate="immediate">
+<div export component as="default" {class?} class:immediate="immediate">
   <style>
     --size: 30px;
     background: rgb(117, 117, 117);
@@ -60,11 +60,7 @@
 <!--
   @frame { visible: false, title: "Spinner", width: 559, height: 435, x: 1092, y: 330 }
 -->
-<div export
-  component
-  as="Preview"
-  className:dark="dark"
-  className:light="light">
+<div export component as="Preview" class:dark="dark" class:light="light">
   <style>
     background: rgb(255, 255, 255);
     width: 100%;

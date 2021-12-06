@@ -13,9 +13,9 @@
 <div export
   component
   as="default"
-  className:flex="flex"
-  className:scrollable="scrollable"
-  className="font-regular">
+  class:flex="flex"
+  class:scrollable="scrollable"
+  class="font-regular">
   <style>
     display: flex;
     flex-direction: column;
@@ -45,7 +45,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Section" className="section">
+<div export component as="Section" class="section">
   <style>
   </style>
   {children}
@@ -54,7 +54,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="font-regular">
+<div export component as="Container" class="font-regular">
   <style>
     display: flex;
     flex-direction: column;

@@ -17,13 +17,13 @@
 <div export
   component
   as="MenuItem"
-  {className?}
+  {class?}
   {onMouseDown?}
   {onClick?}
   tabIndex="-1"
-  className:active="active"
-  className:hover="hover"
-  className:noFocus="no-focus">
+  class:active="active"
+  class:hover="hover"
+  class:noFocus="no-focus">
   <style>
     padding: 8px 14px;
     cursor: pointer;
@@ -61,10 +61,10 @@
 <div export
   component
   as="Menu"
-  className:round="round"
-  className="v2 {className?}"
+  class:round="round"
+  class="v2 {class?}"
   {style?}
-  className:right="right">
+  class:right="right">
   <style>
   </style>
   <style>
@@ -111,13 +111,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export
-  component
-  as="Container"
-  tabIndex="-1"
-  {onClick?}
-  {className?}
-  {onBlur}>
+<div export component as="Container" tabIndex="-1" {onClick?} {class?} {onBlur}>
   <style>
     position: relative;
     outline: none;
@@ -131,9 +125,9 @@
 -->
 <div component
   as="Preview"
-  className:right="right"
-  className:dark="dark"
-  className:light="light">
+  class:right="right"
+  class:dark="dark"
+  class:light="light">
   <style>
     padding: 10px;
     display: flex;

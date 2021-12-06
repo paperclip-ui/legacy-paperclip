@@ -116,6 +116,12 @@ export class LiveWindow {
   private _render() {
     const state = this.getState();
 
+    console.log(
+      `http://localhost:${this._devServerPort}${
+        state.location.pathname
+      }?${qs.stringify(state.location.query)}`
+    );
+
     this._panel.title = `⚡️ ${
       state.sticky
         ? "sticky preview"
@@ -212,7 +218,7 @@ export class LiveWindow {
 }
 
 const getLocationFromUri = (uri: string): LiveWindowLocation => ({
-  pathname: "/canvas",
+  pathname: "/",
   query: {
     canvasFile: uri
   }

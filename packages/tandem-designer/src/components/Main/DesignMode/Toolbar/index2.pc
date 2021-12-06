@@ -51,7 +51,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Toolbar" className="v2 {className?}">
+<div export component as="Toolbar" class="v2 {class?}">
   <style>
     background: var(--grey-100);
     color: var(--text-color);
@@ -99,7 +99,7 @@
 <!--
   @frame { visible: false }
 -->
-<i export component as="GridButton" className:selected="selected">
+<i export component as="GridButton" class:selected="selected">
   <style>
     --size: var(--icon-size);
     mask-image: url('./gridv2.svg');
@@ -165,7 +165,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Tab" className:active="active" {onClick?}>
+<div export component as="Tab" class:active="active" {onClick?}>
   <style>
     display: inline-flex;
     align-items: center;
@@ -227,11 +227,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export
-  component
-  as="EnvPopup"
-  className="light"
-  className:visible="visible">
+<div export component as="EnvPopup" class="light" class:visible="visible">
   <style>
     transition: 0.2s;
     opacity: 0;
@@ -266,7 +262,7 @@
   {onClick?}
   {onDoubleClick?}
   {onChange?}
-  className:focus="focus">
+  class:focus="focus">
   <style>
     width: 33px;
     border: none;

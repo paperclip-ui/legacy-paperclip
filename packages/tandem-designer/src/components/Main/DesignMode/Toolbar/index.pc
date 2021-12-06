@@ -14,7 +14,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Zoom" className="zoom" className:hidden="hidden">
+<div export component as="Zoom" class="zoom" class:hidden="hidden">
   <style>
     border-left: 1px solid var(--border-color);
     font-size: 0.8em;
@@ -47,15 +47,15 @@
       }
     }
   </style>
-  <button className="$icons.icon minus" onClick={onMinusClick} />
-  <button className="$icons.icon plus" onClick={onPlusClick} />
+  <button class="$icons.icon minus" onClick={onMinusClick} />
+  <button class="$icons.icon plus" onClick={onPlusClick} />
   <span>{amount}%</span>
 </div>
 
 <!--
   @frame { visible: false }
 -->
-<button export component as="PaintButton" {onClick?} className="brush">
+<button export component as="PaintButton" {onClick?} class="brush">
   <style>
     border: none;
     color: inherit;
@@ -76,13 +76,13 @@
       }
     }
   </style>
-  <i className="$icons.icon" className:active="active" />
+  <i class="$icons.icon" class:active="active" />
 </button>
 
 <!--
   @frame { visible: false }
 -->
-<button export component as="GridButton" {onClick?} className="grid">
+<button export component as="GridButton" {onClick?} class="grid">
   <style>
     border: none;
     color: inherit;
@@ -104,13 +104,13 @@
       }
     }
   </style>
-  <i className="$icons.icon" className:active="active" />
+  <i class="$icons.icon" class:active="active" />
 </button>
 
 <!--
   @frame { visible: false }
 -->
-<button export component as="MagnifyButton" {onClick?} className="grid">
+<button export component as="MagnifyButton" {onClick?} class="grid">
   <style>
     border: none;
     color: inherit;
@@ -131,7 +131,7 @@
       }
     }
   </style>
-  <i className="$icons.icon" className:active="active" />
+  <i class="$icons.icon" class:active="active" />
 </button>
 
 <!--
@@ -170,11 +170,7 @@
 <!--
   @frame { visible: false }
 -->
-<button export
-  component
-  as="CollapseButton"
-  {onClick}
-  className:active="active">
+<button export component as="CollapseButton" {onClick} class:active="active">
   <style>
     border: none;
     color: inherit;
@@ -197,13 +193,13 @@
       }
     }
   </style>
-  <i className="$icons.icon" className:active="active" />
+  <i class="$icons.icon" class:active="active" />
 </button>
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="Controls" className="controls">
+<div export component as="Controls" class="controls">
   <style>
     padding: 4px 14px;
     display: flex;
@@ -228,8 +224,8 @@
 <div export
   component
   as="Container"
-  className="toolbar {className?}"
-  className:gridMode="grid-mode">
+  class="toolbar {class?}"
+  class:gridMode="grid-mode">
   <style>
     --border-color: var(--vscode-editorGroup-border, #777);
     background: var(--vscode-breadcrumb-background, var(--background-2));
@@ -274,7 +270,7 @@
       }
     }
   </style>
-  <i className="$icons.icon" />
+  <i class="$icons.icon" />
 </button>
 
 <!--
@@ -309,7 +305,7 @@
   @frame { visible: false }
 -->
 <fragment export component as="Preview" {gridMode?}>
-  <Container className="light" className="{className?}">
+  <Container class="light" class="{class?}">
     <Controls>
       <GridButton />
       <Zoom amount="100" />
@@ -365,7 +361,7 @@
   component
   as="EnvironmentOption"
   data-kind={kind}
-  className:os="has_os"
+  class:os="has_os"
   {onClick?}>
   <style>
     padding: 4px 8px;
@@ -453,8 +449,8 @@
 <div export
   component
   as="EnvironmentPopup"
-  className="light"
-  className:visible="visible">
+  class="light"
+  class:visible="visible">
   <style>
     position: absolute;
     background: var(--background-100);

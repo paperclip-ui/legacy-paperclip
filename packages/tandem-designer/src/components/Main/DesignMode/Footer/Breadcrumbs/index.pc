@@ -16,7 +16,7 @@
   component
   as="Breadcrumbs"
   data-label="Breadcrumbs"
-  className="font-default">
+  class="font-default">
   <style>
     display: flex;
     flex-flow: row;
@@ -42,8 +42,8 @@
   {onMouseEnter?}
   {onMouseLeave?}
   data-label="Breadcrumb"
-  className:hover="hover"
-  className:active="active">
+  class:hover="hover"
+  class:active="active">
   <style>
     --bg-color: rgb(211, 211, 211);
     --arrow-size: 15px;
@@ -95,7 +95,7 @@
   <style>
     display: inline-flex;
   </style>
-  {<div className:instance="instance show" className:text="text show">
+  {<div class:instance="instance show" class:text="text show">
     <style>
 
       margin-right: var(--spacing-3);

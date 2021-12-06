@@ -60,7 +60,7 @@
 <!--
   @frame { visible: false }
 -->
-<i export component as="ShadowIcon" className:bw="bw">
+<i export component as="ShadowIcon" class:bw="bw">
   <style>
     --size: 0.8em;
     padding-right: 2px;

@@ -15,7 +15,7 @@ TODOS:
 <!--
   @frame { visible: false, title: "Container", width: 1024, height: 768, x: -3, y: -73 }
 -->
-<div export component as="Container" className="editor {className?}">
+<div export component as="Container" class="editor {class?}">
   <style>
     display: flex;
     flex-direction: row;

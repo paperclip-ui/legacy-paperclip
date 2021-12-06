@@ -16,12 +16,12 @@
 <!--
   @frame { visible: false }
 -->
-<ul export component as="default" className="list">{children}</ul>
+<ul export component as="default" class="list">{children}</ul>
 
 <!--
   @frame { visible: false }
 -->
-<li export component as="Item" className="item" className:alt="item--alt">
+<li export component as="Item" class="item" class:alt="item--alt">
   {children}
 </li>
 

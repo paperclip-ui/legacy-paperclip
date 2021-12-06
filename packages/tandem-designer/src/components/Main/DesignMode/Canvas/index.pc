@@ -18,7 +18,7 @@
   {onScroll?}
   {onWheelCapture?}
   data-label="Canvas"
-  className="canvas">
+  class="canvas">
   <style>
     width: 100%;
     height: 100%;
@@ -33,7 +33,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Inner" {style?} className="inner">{children}</div>
+<div export component as="Inner" {style?} class="inner">{children}</div>
 
 
 <!--

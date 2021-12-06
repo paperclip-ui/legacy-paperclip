@@ -2,7 +2,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="v2 dark font-default">
+<div export component as="Container" class="v2 dark font-default">
   <style>
     display: flex;
     flex-direction: column;
@@ -26,7 +26,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Content" className:slim="slim">
+<div export component as="Content" class:slim="slim">
   <style>
     height: 100%;
     &.slim {
@@ -41,7 +41,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="CantEditScreen" className="v2 dark">
+<div export component as="CantEditScreen" class="v2 dark">
   <style>
     background: var(--grey-night-500);
     width: 100%;

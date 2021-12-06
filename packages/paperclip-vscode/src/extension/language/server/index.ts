@@ -19,6 +19,7 @@ export class PaperclipLanguageServer {
   }
   activate() {
     this._connection.activate();
+    console.log("ACTIVATE");
   }
 }
 

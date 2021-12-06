@@ -22,11 +22,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export
-  component
-  as="Container"
-  className="grid"
-  style="--columns: {columns};">
+<div export component as="Container" class="grid" style="--columns: {columns};">
   {children}
 </div>
 
@@ -34,7 +30,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 73, y: 33 }
 -->
-<div export component as="Item" className="item" style="--span: {span};">
+<div export component as="Item" class="item" style="--span: {span};">
   {children}
 </div>
 

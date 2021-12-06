@@ -12,4 +12,4 @@
 -->
 
 
-<div export component as="Preview" className="preview $theme.full-wh" />
+<div export component as="Preview" class="preview $theme.full-wh" />

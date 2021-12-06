@@ -1,7 +1,7 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="DummySpan" className="font-default">
+<span export component as="DummySpan" class="font-default">
   <style>
     pointer-events: none;
     position: absolute;
@@ -17,7 +17,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className:autoResize="auto-resize">
+<div export component as="Container" class:autoResize="auto-resize">
   <style>
     position: relative;
     & :global(input) {

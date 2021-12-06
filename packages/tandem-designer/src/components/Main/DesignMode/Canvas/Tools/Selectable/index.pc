@@ -5,7 +5,7 @@
   export
   component
   {onMouseDown}
-  {className?}
+  {class?}
   style="--x: {x}; --y: {y}"
   data-id="knob-{x}-{y}">
   <style>
@@ -46,8 +46,8 @@
   {onMouseDown?}
   {style?}
   {onClick?}
-  className:knobs="has-knobs"
-  className="overlay">
+  class:knobs="has-knobs"
+  class="overlay">
   <style>
     --background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
     --foreground: var(--vscode-button-foreground, white);
@@ -80,7 +80,7 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="PreviewBox" {style?} className="preview-box">
+<div component as="PreviewBox" {style?} class="preview-box">
   <style>
     background: orange;
     display: inline-block;

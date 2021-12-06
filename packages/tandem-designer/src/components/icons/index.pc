@@ -27,9 +27,9 @@
 <div export
   component
   as="Icon"
-  className="icon {className?}"
-  className:dots="icon--dots"
-  className:plus="icon--plus" />
+  class="icon {class?}"
+  class:dots="icon--dots"
+  class:plus="icon--plus" />
 
 
 <!--

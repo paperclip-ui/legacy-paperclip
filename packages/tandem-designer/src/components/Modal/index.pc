@@ -3,7 +3,7 @@
 <import src="components/Box/index.pc" as="Box" />
 <import src="tandem-design-system/src/TextInput.pc" as="Input" />
 
-<div export component as="Container" className="font-regular">
+<div export component as="Container" class="font-regular">
   <style>
     background: rgba(105, 105, 105, 0.5);
     width: 100vw;

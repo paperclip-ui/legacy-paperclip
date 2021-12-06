@@ -10,7 +10,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 142, y: 144 }
 -->
-<div export component as="ErrorBanner" {onClick} className="error-banner">
+<div export component as="ErrorBanner" {onClick} class="error-banner">
   <style>
     cursor: pointer;
     bottom: 0;

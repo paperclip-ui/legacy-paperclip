@@ -61,31 +61,29 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" {style?} className="container">
-  {children}
-</div>
+<div export component as="Container" {style?} class="container">{children}</div>
 
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="FromOutline" {style} className="from-outline" />
+<div export component as="FromOutline" {style} class="from-outline" />
 
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="ToOutline" {style} className="to-outline" />
+<div export component as="ToOutline" {style} class="to-outline" />
 
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="MeasuringStick" {style} className="measuring-stick">
-  <span className="measuring-label"
-    className:vertical="measuring-label--vertical"
-    className:horizontal="measuring-label--horizontal"
-    className:flipLabel="measuring-label--flip">
+<div export component as="MeasuringStick" {style} class="measuring-stick">
+  <span class="measuring-label"
+    class:vertical="measuring-label--vertical"
+    class:horizontal="measuring-label--horizontal"
+    class:flipLabel="measuring-label--flip">
     {distance}
   </span>
 </div>
@@ -94,7 +92,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Guide" {style} className="guide" />
+<div export component as="Guide" {style} class="guide" />
 
 
 <!--

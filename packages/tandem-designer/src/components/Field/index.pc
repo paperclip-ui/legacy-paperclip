@@ -40,12 +40,12 @@
 <div export
   component
   as="default"
-  className="field"
-  className:col1="field--col1"
-  className:inline="field--inline"
-  className:noLabel="field--noLabel">
+  class="field"
+  class:col1="field--col1"
+  class:inline="field--inline"
+  class:noLabel="field--noLabel">
   <label>{label}</label>
-  <div className="input">{children}</div>
+  <div class="input">{children}</div>
 </div>
 
 <div>{children}</div>

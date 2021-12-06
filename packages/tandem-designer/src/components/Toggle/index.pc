@@ -37,7 +37,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ButtonGroup" className="button-group">{children}</div>
+<div export component as="ButtonGroup" class="button-group">{children}</div>
 
 
 <!--
@@ -46,9 +46,9 @@
 <button export
   component
   as="Button"
-  className="button"
-  className:selected="button--selected"
-  className:hover="button--hover">
+  class="button"
+  class:selected="button--selected"
+  class:hover="button--hover">
   {children}
 </button>
 
@@ -56,7 +56,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 44, y: 31 }
 -->
-<div className="preview">
+<div class="preview">
   <ButtonGroup>
     <Button selected>a</Button>
     <Button>b</Button>
@@ -69,7 +69,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 64, y: 38 }
 -->
-<div className="preview">
+<div class="preview">
   <ButtonGroup>
     <Button>a</Button>
     <Button>b</Button>
@@ -82,7 +82,7 @@
 <!--
   @frame { title: "Button Group", width: 1024, height: 768, x: 0, y: 0 }
 -->
-<div className="preview">
+<div class="preview">
   <ButtonGroup>
     <Button>a</Button>
     <Button>b</Button>

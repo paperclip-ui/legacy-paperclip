@@ -8,15 +8,15 @@
   component
   as="default"
   {style}
-  {className?}
+  {class?}
   data-label="Resizable"
-  className:scrollable="scrollable"
-  className:disabled="disabled"
-  className:dragging="dragging"
-  className:right="right"
-  className:left="left"
-  className:bottom="bottom"
-  className:fixedSize="fixed-size">
+  class:scrollable="scrollable"
+  class:disabled="disabled"
+  class:dragging="dragging"
+  class:right="right"
+  class:left="left"
+  class:bottom="bottom"
+  class:fixedSize="fixed-size">
   <style>
     --bar-size: 2px;
     display: flex;

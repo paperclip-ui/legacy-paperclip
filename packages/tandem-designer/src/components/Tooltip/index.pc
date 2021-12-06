@@ -57,11 +57,11 @@
   component
   as="Box"
   {style}
-  className="box"
-  className:left="box--left"
-  className:right="box--right"
-  className:top="box--top"
-  className:bottom="box--bottom">
+  class="box"
+  class:left="box--left"
+  class:right="box--right"
+  class:top="box--top"
+  class:bottom="box--bottom">
   {children}
 </div>
 

@@ -8,8 +8,8 @@
 <div export
   component
   as="FilterTextInput"
-  className="v2 {className?}"
-  className:dark="dark">
+  class="v2 {class?}"
+  class:dark="dark">
   <style>
     position: relative;
     display: inline-block;

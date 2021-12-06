@@ -1,13 +1,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export
-  component
-  as="Container"
-  {tagName?}
-  {style?}
-  {className?}
-  {onScroll}>
+<div export component as="Container" {tagName?} {style?} {class?} {onScroll}>
   <style>
     height: 100%;
     width: 100%;

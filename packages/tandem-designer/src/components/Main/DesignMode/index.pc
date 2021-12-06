@@ -14,7 +14,7 @@
 <div export
   component
   as="Container"
-  className="{className?}"
+  class="{class?}"
   data-label="Design mode Container">
   <style>
     position: relative;

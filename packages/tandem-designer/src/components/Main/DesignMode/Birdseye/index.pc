@@ -8,9 +8,9 @@
   component
   as="Cell"
   data-label="Cell"
-  className="v2 {className?}"
-  className:warn="warn"
-  className:hover="hover"
+  class="v2 {class?}"
+  class:warn="warn"
+  class:hover="hover"
   {onClick?}
   {onMouseDown?}>
   <style>
@@ -134,7 +134,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 100, y: 56 }
 -->
-<i component as="WarningIcon" {className?}>
+<i component as="WarningIcon" {class?}>
   <style>
     --size: 1.2em;
     position: relative;
@@ -167,7 +167,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Header" className="v2">
+<div export component as="Header" class="v2">
   <style>
     padding: 12px 14px;
     background: var(--grey-200);

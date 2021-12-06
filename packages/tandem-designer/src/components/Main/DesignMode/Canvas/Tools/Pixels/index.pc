@@ -21,13 +21,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Pixels" {style?} className="grid" />
+<div export component as="Pixels" {style?} class="grid" />
 
 
 <!--
   @frame { visible: false }
 -->
-<div className="pixel" />
+<div class="pixel" />
 
 
 <!--

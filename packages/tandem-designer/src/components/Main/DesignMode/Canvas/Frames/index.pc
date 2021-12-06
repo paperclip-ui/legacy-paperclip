@@ -2,7 +2,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Frame" {style?} {className?}>
+<div export component as="Frame" {style?} {class?}>
   <style>
     position: absolute;
     width: 1024px;

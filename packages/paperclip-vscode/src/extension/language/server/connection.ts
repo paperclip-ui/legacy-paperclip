@@ -76,6 +76,7 @@ export class PaperclipLanguageServerConnection implements Observer {
 
   handleEvent(event: BaseEvent) {
     if (event["toJSON"] || event["public"]) {
+      console.log("send server event", event);
       this._connection.sendNotification(
         $$EVENT,
         event["toJSON"] ? event["toJSON"]() : event

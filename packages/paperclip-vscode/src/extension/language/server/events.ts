@@ -45,6 +45,9 @@ export class DesignServerStarted {
   static TYPE = "PaperclipDesignServer/DesignServerStarted";
   readonly type = DesignServerStarted.TYPE;
   constructor(readonly httpPort: number) {}
+  toJSON() {
+    return { httpPort: this.httpPort, type: this.type };
+  }
 }
 
 export class UpdatedTextDocuments {

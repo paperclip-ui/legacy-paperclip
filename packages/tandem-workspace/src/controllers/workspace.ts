@@ -18,8 +18,6 @@ export class Workspace {
   ) {}
 
   async start(pathOrUrl: string, branch?: string) {
-    console.log("PORf!", pathOrUrl);
-
     const repoUrl = getProjectUrl(pathOrUrl);
 
     this._logger.info(`Starting repo ${repoUrl}#${branch}`);
@@ -56,7 +54,7 @@ export class Workspace {
 }
 
 const getProjectUrl = (pathOrUrl: string) => {
-  if (pathOrUrl.indexOf("git@") === 0) {
+  if (pathOrUrl.search(/(git@|file:)/) === 0) {
     return pathOrUrl;
   }
 

@@ -55,7 +55,7 @@ export class PaperclipDesignServer implements Observer {
     this._project.updatePCContent(uri, content);
   };
   private _onTextDocumentChanged = ({ uri, content }: TextDocumentChanged) => {
-    if (this._windowFocused) {
+    if (this._windowFocused || !this._project) {
       return;
     }
 

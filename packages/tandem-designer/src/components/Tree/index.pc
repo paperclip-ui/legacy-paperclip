@@ -5,11 +5,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export
-  component
-  as="Node"
-  className="node {className?}"
-  style="--depth: {depth}">
+<div export component as="Node" class="node {class?}" style="--depth: {depth}">
   <style>
     .leaf {
       font-size: 12px;
@@ -61,18 +57,18 @@
       margin-left: 10px;
     }
   </style>
-  <div className="leaf"
-    className:alt="leaf--alt"
-    className:hovering="leaf--hovering"
-    className:selected="leaf--selected"
-    className:open="leaf--hasChildren--open"
-    className:hasChildren="leaf--hasChildren"
+  <div class="leaf"
+    class:alt="leaf--alt"
+    class:hovering="leaf--hovering"
+    class:selected="leaf--selected"
+    class:open="leaf--hasChildren--open"
+    class:hasChildren="leaf--hasChildren"
     onClick={onLeafClick}>
     {icon}
     {leaf}
-    <div className="controls">{controls}</div>
+    <div class="controls">{controls}</div>
   </div>
-  <div className="child-nodes">{children}</div>
+  <div class="child-nodes">{children}</div>
 </div>
 
 

@@ -180,14 +180,14 @@
 -->
 
 
-<div component as="BoxModel" className="BoxModel" />
+<div component as="BoxModel" class="BoxModel" />
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 1024, y: 81 }
 -->
 
 
-<div component as="PaddingModel" className="PaddingModel BoxModel" />
+<div component as="PaddingModel" class="PaddingModel BoxModel" />
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 1303, y: -55 }
@@ -196,7 +196,7 @@
 
 
 
-<div component as="MarginModel" className="MarginModel BoxModel" />
+<div component as="MarginModel" class="MarginModel BoxModel" />
 
 
 
@@ -205,13 +205,9 @@
 -->
 
 
-<div component
-  as="Field"
-  className="Field"
-  className:col1="col1"
-  className:col2="col2">
-  <div className="label">{label}</div>
-  <div className="input">{input}</div>
+<div component as="Field" class="Field" class:col1="col1" class:col2="col2">
+  <div class="label">{label}</div>
+  <div class="input">{input}</div>
 </div>
 
 
@@ -222,7 +218,7 @@
 
 
 
-<div component as="Dropdown" className="Dropdown">{children}</div>
+<div component as="Dropdown" class="Dropdown">{children}</div>
 
 
 <!--
@@ -230,7 +226,7 @@
 -->
 
 
-<div component as="LineHeightIcon" className="LineHeightIcon" />
+<div component as="LineHeightIcon" class="LineHeightIcon" />
 
 
 <!--
@@ -242,24 +238,24 @@
 
 
 
-<div className="Editor">
-  <div className="Canvas">
-    <div className="CanvasPreview">
-      <div className="Frame">
-        <div className="title">A simple box</div>
-        <div className="box">
+<div class="Editor">
+  <div class="Canvas">
+    <div class="CanvasPreview">
+      <div class="Frame">
+        <div class="title">A simple box</div>
+        <div class="box">
           I am a box.
           <!-- <PaddingModel /> -->
           <MarginModel />
         </div>
       </div>
     </div>
-    <div className="CanvasTools" />
+    <div class="CanvasTools" />
   </div>
 
-  <div className="ElementStyles">
-    <div className="header">.BigBox .SmallerBox</div>
-    <div className="content">
+  <div class="ElementStyles">
+    <div class="header">.BigBox .SmallerBox</div>
+    <div class="content">
       <Field label="Font Family"
         input={<Dropdown>Roboto</Dropdown>}
         col1 />

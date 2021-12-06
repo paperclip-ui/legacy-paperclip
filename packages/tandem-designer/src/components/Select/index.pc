@@ -4,11 +4,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export
-  component
-  as="default"
-  className="button-base {className?}"
-  {onClick?}>
+<div export component as="default" class="button-base {class?}" {onClick?}>
   <style>
     padding: var(--spacing-2) var(--spacing-3);
     user-select: none;
@@ -25,7 +21,7 @@
     }
   </style>
 
-  <span className="label">{placeholder}</span>
+  <span class="label">{placeholder}</span>
 
   <i>
     <style>
@@ -48,9 +44,9 @@
   {onClick}
   {onBlur}
   {ref}
-  className="font-default {className?}"
-  className:open="open"
-  className:disabled="disabled">
+  class="font-default {class?}"
+  class:open="open"
+  class:disabled="disabled">
   <style>
     position: relative;
     &.disabled {
@@ -68,8 +64,8 @@
   component
   as="MenuItem"
   {onClick?}
-  className:hover="hover"
-  className:active="active">
+  class:hover="hover"
+  class:active="active">
   <style>
     border-bottom: 1px solid var(--border-color);
     padding: var(--spacing-2) var(--spacing-3);
