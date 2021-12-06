@@ -40,11 +40,10 @@ export class PaperclipDesignServer implements Observer {
         installDependencies: false
       }
     });
-    this.events.dispatch(new DesignServerStarted(this._port));
 
     const cwd = workspaceFolders[0].uri;
     this._project = await this._workspace.start(cwd);
-    this.events.dispatch(new ProjectStarted(this._project));
+    this.events.dispatch(new DesignServerStarted(this._port, this._project.id));
   };
 
   private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {

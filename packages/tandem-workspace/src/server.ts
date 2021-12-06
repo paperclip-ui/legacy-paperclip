@@ -49,6 +49,11 @@ const prepare = async (options: Options) => {
 
   addRoutes(kernel);
 
+  // need to wait for http server to spin up. This is a really dumb approach.
+  await new Promise(resolve => {
+    setTimeout(resolve, 500);
+  });
+
   return kernel;
 };
 

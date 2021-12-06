@@ -44,9 +44,13 @@ export class ProjectStarted {
 export class DesignServerStarted {
   static TYPE = "PaperclipDesignServer/DesignServerStarted";
   readonly type = DesignServerStarted.TYPE;
-  constructor(readonly httpPort: number) {}
+  constructor(readonly httpPort: number, readonly projectId: string) {}
   toJSON() {
-    return { httpPort: this.httpPort, type: this.type };
+    return {
+      httpPort: this.httpPort,
+      type: this.type,
+      projectId: this.projectId
+    };
   }
 }
 

@@ -1,21 +1,6 @@
-import {
-  Uri,
-  window,
-  commands,
-  TextEditor,
-  Range,
-  WebviewPanel,
-  ExtensionContext,
-  ViewColumn,
-  workspace,
-  Selection,
-  env,
-  TextDocumentChangeEvent,
-  TextEdit,
-  WorkspaceEdit
-} from "vscode";
+import { window, WebviewPanel, ViewColumn } from "vscode";
 import * as path from "path";
-import { ImmutableStore, Observer } from "paperclip-common";
+import { ImmutableStore } from "paperclip-common";
 import { EventEmitter } from "events";
 import * as qs from "querystring";
 
@@ -40,6 +25,7 @@ export class LiveWindow {
   static TYPE = "paperclip-preview";
   private _store: ImmutableStore<LiveWindowState>;
   private _em: EventEmitter;
+  private _projectId: string;
 
   constructor(
     state: LiveWindowState,
@@ -84,8 +70,9 @@ export class LiveWindow {
    * TODO - probably need to change to be event based instead.
    */
 
-  setDevServerPort(port: number) {
+  setDevServerInfo(port: number, projectId: string) {
     this._devServerPort = port;
+    this._projectId = projectId;
     this._render();
   }
 
@@ -115,12 +102,6 @@ export class LiveWindow {
 
   private _render() {
     const state = this.getState();
-
-    console.log(
-      `http://localhost:${this._devServerPort}${
-        state.location.pathname
-      }?${qs.stringify(state.location.query)}`
-    );
 
     this._panel.title = `⚡️ ${
       state.sticky
@@ -178,7 +159,9 @@ export class LiveWindow {
     <body>
       <iframe id="app" src="http://localhost:${this._devServerPort}${
       state.location.pathname
-    }?${qs.stringify(state.location.query)}"></iframe>
+    }?${qs.stringify(state.location.query)}&embedded=1&projectId=${
+      this._projectId
+    }"></iframe>
     </body>
     </html>`;
   }

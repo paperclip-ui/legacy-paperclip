@@ -11,7 +11,7 @@ export const MainBase = () => {
   return (
     <styles.Container>
       {!state.designer.ui.query.embedded && <LeftSidebar />}
-      <CodeMode />
+      {!state.designer.ui.query.embedded && <CodeMode />}
       <DesignMode />
     </styles.Container>
   );

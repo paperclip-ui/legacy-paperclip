@@ -16,10 +16,10 @@ export class LiveWindowManager implements Observer {
     this._windows = [];
     this.events = new Observable();
   }
-  _onDevServerStarted = ({ httpPort }: DesignServerStarted) => {
+  _onDevServerStarted = ({ httpPort, projectId }: DesignServerStarted) => {
     this._devServerPort = httpPort;
     for (const window of this._windows) {
-      window.setDevServerPort(httpPort);
+      window.setDevServerInfo(httpPort, projectId);
     }
   };
   getLength() {
