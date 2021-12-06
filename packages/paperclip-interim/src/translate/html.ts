@@ -66,6 +66,7 @@ const translateComponent = (
   const { tagName, innerTagName } = getTagNameParts(component.tagName);
 
   return {
+    id: component.id,
     tagName,
     as,
     innerTagName,
@@ -355,6 +356,7 @@ export const translateElement = (
 ): InterimElement => {
   const { tagName, innerTagName } = getTagNameParts(element.tagName);
   return {
+    id: element.id,
     kind: InterimNodeKind.Element,
     innerTagName,
     tagName: tagName,

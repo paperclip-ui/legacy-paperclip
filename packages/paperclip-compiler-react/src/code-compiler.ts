@@ -222,6 +222,8 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
     context = addBuffer([`"ref": ref,\n`])(context);
   }
 
+  context = addBuffer([`"key": "${element.id}",\n`])(context);
+
   context = writeJoin(
     attrKeys,
     ",\n",

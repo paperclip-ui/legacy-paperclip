@@ -15,6 +15,7 @@ export type InterimBaseNode<TKind extends InterimNodeKind> = {
 };
 
 type BaseElement<TKind extends InterimNodeKind> = {
+  id: string;
   tagName: string;
   attributes: Record<string, InterimAttribute>;
   innerTagName?: string; // imp

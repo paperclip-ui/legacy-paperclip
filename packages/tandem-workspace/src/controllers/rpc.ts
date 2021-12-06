@@ -8,8 +8,13 @@ import { isPlainTextFile, Logger } from "tandem-common";
 import * as URL from "url";
 import * as path from "path";
 import * as fs from "fs";
-import { engineDelegateChanged, isPaperclipFile } from "paperclip-utils";
+import {
+  engineDelegateChanged,
+  isPaperclipFile,
+  VirtNodeSource
+} from "paperclip-utils";
 import { VFS } from "./vfs";
+import { PCMutation, PCSourceWriter } from "paperclip-source-writer";
 
 export class RPC {
   constructor(
@@ -45,6 +50,9 @@ class Connection {
     const adapter = sockAdapter(connection);
     this._events = channels.eventsChannel(adapter);
     channels.getAllScreensChannel(adapter).listen(this._getAllScreens);
+    channels
+      .loadVirtualNodeSourcesChannel(adapter)
+      .listen(this._loadNodeSources);
     channels.helloChannel(adapter).listen(this._initialize);
     channels.loadDirectoryChannel(adapter).listen(this._loadDirectory);
     channels.openFileChannel(adapter).listen(this._openFile);
@@ -62,8 +70,30 @@ class Connection {
     this._vfs.updateFileContent(uri, value);
   };
 
-  private _editPCSource = async ({}) => {
+  private _editPCSource = async (mutations: PCMutation[]) => {
+    const writer = new PCSourceWriter(this.getProject().engine);
+    const changes = writer.apply(mutations);
     console.log("TODO");
+  };
+
+  private _loadNodeSources = (sources: VirtNodeSource[]) => {
+    const project = this.getProject();
+
+    console.log(
+      sources.map(info => {
+        return {
+          virtualNodePath: info.path,
+          source: project.engine.getVirtualNodeSourceInfo(info.path, info.uri)
+        };
+      })
+    );
+
+    return sources.map(info => {
+      return {
+        virtualNodePath: info.path,
+        source: project.engine.getVirtualNodeSourceInfo(info.path, info.uri)
+      };
+    });
   };
 
   private _getAllScreens = async () => {

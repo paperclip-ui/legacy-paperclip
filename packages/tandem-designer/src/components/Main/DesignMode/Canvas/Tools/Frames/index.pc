@@ -78,7 +78,7 @@
   <input type="text"
     {onBlur?}
     ref={inputRef}
-    autofocus={editing}
+    autoFocus={editing}
     defaultValue={value}
     {onKeyPress?}>
     <style>

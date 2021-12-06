@@ -496,7 +496,7 @@
       defaultValue={filterValue}
       onChange={onFilterChange}
       onBlur={onFilterBlur}
-      autofocus>
+      autoFocus>
       <style>
         margin: 0px;
         width: 100%;
