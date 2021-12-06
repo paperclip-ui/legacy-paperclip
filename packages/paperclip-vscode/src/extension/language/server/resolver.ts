@@ -28,6 +28,7 @@ import * as parseColor from "color";
 import { BaseEvent, Observable } from "paperclip-common";
 import { stripFileProtocol } from "paperclip-utils";
 import {
+  DesignServerStarted,
   DesignServerUpdated,
   DesignServerUpdating,
   ProjectStarted
@@ -45,21 +46,22 @@ export class LanguageRequestResolver {
     private _connection: Connection,
     private _documents: DocumentManager
   ) {
+    [this._engineReady, this._resolveEngineReady] = deferPromise();
     this.events = new Observable();
+    this._listen();
   }
 
   handleEvent(event) {
-    if (event.type === ProjectStarted.TYPE) {
+    if (event.type === DesignServerStarted.TYPE) {
       this._service = new PaperclipLanguageService(
-        (event as ProjectStarted).project.engine
+        (event as DesignServerStarted).project.engine
       );
-      this._listen();
+      this._service.events.observe({
+        handleEvent: this._onServiceEvent
+      });
+      this._resolveEngineReady();
     } else if (event.type === DesignServerUpdating.TYPE) {
-      this._engineReady =
-        this._engineReady ||
-        new Promise(resolve => {
-          this._resolveEngineReady = resolve;
-        });
+      [this._engineReady, this._resolveEngineReady] = deferPromise();
     } else if (event.type === DesignServerUpdated.TYPE) {
       this._resolveEngineReady();
       this._engineReady = undefined;
@@ -70,10 +72,6 @@ export class LanguageRequestResolver {
     if (this._listening) {
       return;
     }
-
-    this._service.events.observe({
-      handleEvent: this._onServiceEvent
-    });
 
     this._listening = true;
 
@@ -257,4 +255,14 @@ const getColorPresentation = (
   );
   const label = info.toString();
   return { label, textEdit: TextEdit.replace(range, label) };
+};
+
+const deferPromise = () => {
+  let _resolve;
+
+  let promise = new Promise(resolve => {
+    _resolve = resolve;
+  });
+
+  return [promise, _resolve];
 };

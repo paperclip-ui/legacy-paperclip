@@ -137,6 +137,7 @@
 <div export component as="ExpandButton" {onClick?}>
   <style>
     background: rgb(228, 228, 228);
+    display: inline-block;
     border-radius: 2px;
     padding: 0px var(--spacing-2);
     margin: 0px var(--spacing-2);

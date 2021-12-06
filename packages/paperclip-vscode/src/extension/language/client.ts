@@ -5,7 +5,7 @@ import {
   Observable,
   Observer
 } from "paperclip-common";
-import { workspace, ExtensionContext, window } from "vscode";
+import { workspace, ExtensionContext } from "vscode";
 
 import {
   LanguageClient,

@@ -43,7 +43,9 @@ export class PaperclipDesignServer implements Observer {
 
     const cwd = workspaceFolders[0].uri;
     this._project = await this._workspace.start(cwd);
-    this.events.dispatch(new DesignServerStarted(this._port, this._project.id));
+    this.events.dispatch(
+      new DesignServerStarted(this._port, this._project.id, this._project)
+    );
   };
 
   private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {

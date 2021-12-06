@@ -52,9 +52,9 @@ class PaperclipExtension implements Disposable {
     this._events.observe(this._documentManager);
   }
   activate() {
+    this._windows.activate();
     this._documentManager.activate();
     this._commandManager.activate();
-    this._windows.activate();
     this._languageClient.activate();
   }
   dispose() {

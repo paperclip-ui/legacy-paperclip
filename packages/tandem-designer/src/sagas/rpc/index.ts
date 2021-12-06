@@ -158,7 +158,6 @@ function* handleProjectDirectory(
   yield takeLatest(ActionType.SERVER_OPTIONS_LOADED, function*({
     payload: { localResourceRoots }
   }: ServerOptionsLoaded) {
-    console.log("OPTT");
     yield call(
       loadProjectDirectory,
       loadRemoteDirectory,
@@ -401,11 +400,9 @@ function* handleClientComunication(client) {
   function* maybeLoadCanvasFile() {
     const state: AppState = yield select();
     const currUri = state.designer.ui.query.canvasFile;
-    console.log("CU", currUri, state.designer.projectDirectory);
     if (state.designer.projectDirectory && currUri !== _previousFileUri) {
       _previousFileUri = currUri;
       if (currUri) {
-        console.log("LOADED");
         yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
         yield call(loadNested, currUri);
         const result = yield call(openFile.call, { uri: currUri });

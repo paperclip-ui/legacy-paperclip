@@ -12,12 +12,14 @@ export class LiveWindowManager implements Observer {
   readonly events: Observable;
   private _windows: LiveWindow[];
   private _devServerPort: number;
+  private _projectId: string;
   constructor() {
     this._windows = [];
     this.events = new Observable();
   }
   _onDevServerStarted = ({ httpPort, projectId }: DesignServerStarted) => {
     this._devServerPort = httpPort;
+    this._projectId = projectId;
     for (const window of this._windows) {
       window.setDevServerInfo(httpPort, projectId);
     }
@@ -34,7 +36,12 @@ export class LiveWindowManager implements Observer {
     return false;
   }
   open(uri: string, sticky: boolean) {
-    const liveWindow = LiveWindow.newFromUri(uri, sticky, this._devServerPort);
+    const liveWindow = LiveWindow.newFromUri(
+      uri,
+      sticky,
+      this._devServerPort,
+      this._projectId
+    );
     this._add(liveWindow);
   }
   private _add(window: LiveWindow) {
@@ -49,7 +56,14 @@ export class LiveWindowManager implements Observer {
         panel: WebviewPanel,
         state: LiveWindowState
       ) => {
-        this._add(LiveWindow.newFromPanel(panel, state, this._devServerPort));
+        this._add(
+          LiveWindow.newFromPanel(
+            panel,
+            state,
+            this._devServerPort,
+            this._projectId
+          )
+        );
       }
     });
   }
