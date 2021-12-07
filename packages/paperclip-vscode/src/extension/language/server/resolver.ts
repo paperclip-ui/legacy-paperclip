@@ -232,11 +232,11 @@ export class LanguageRequestResolver {
     const document = this._documents.getDocument(uri);
     return this._service
       .getLinks(uri)
-      .map(({ uri, location: { start, end } }) => ({
+      .map(({ uri, range: { start, end } }) => ({
         target: uri,
         range: {
-          start: document.positionAt(start),
-          end: document.positionAt(end)
+          start: document.positionAt(start.pos),
+          end: document.positionAt(end.pos)
         }
       })) as DocumentLink[];
   };

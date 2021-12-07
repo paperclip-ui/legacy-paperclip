@@ -54,7 +54,13 @@ export type DefinitionInfo = {
   sourceDefinitionRange: StringRange;
 };
 
-const EMPTY = {
+type CollectASTInfoResult = {
+  colors: ColorInfo[];
+  links: DocumentLinkInfo[];
+  definitions: DefinitionInfo[];
+};
+
+const EMPTY: CollectASTInfoResult = {
   colors: [],
   links: [],
   definitions: []
@@ -64,7 +70,7 @@ export const collectASTInfo = (
   entryUri: string,
   graph: DependencyGraph,
   evaluated: Record<string, LoadedData>
-) => {
+): CollectASTInfoResult => {
   if (!graph[entryUri]) {
     return EMPTY;
   }
