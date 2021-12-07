@@ -90,10 +90,12 @@ class Connection {
     this._vfs.updateFileContent(uri, value);
   };
 
+  // TODO - need to remove this eventually in favor of CRDT document sync
+
   private _editPCSource = async (mutations: PCMutation[]) => {
     const writer = new PCSourceWriter(this.getProject().engine);
     const changes = writer.apply(mutations);
-    console.log("TODO");
+    this._options.adapter?.applyCodeChanges(changes);
   };
 
   private _revealSource = (source: VirtNodeSource) => {

@@ -7,7 +7,7 @@
 </style>
 
 <!--
-  @frame { title: "Login, register form / Desktop (https://tailwindcomponents.com/component/login-register-form)", width: 1239, height: 768, x: 0, y: 0 }
+  @frame { title: "Login, register form / Desktop (https://tailwindcomponents.com/component/login-register-form)", width: 1007, height: 768, x: -55, y: -42 }
 -->
 <section component as="SignIn" class="font-sans min-h-screen flex flex-col">
   <nav>

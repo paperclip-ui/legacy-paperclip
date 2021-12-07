@@ -7,6 +7,7 @@ import {
   DesignServerUpdated,
   DesignServerUpdating,
   Initialized,
+  PCSourceEdited,
   RevealSourceRequested,
   TextDocumentChanged,
   TextDocumentOpened
@@ -17,6 +18,7 @@ import {
   Project
 } from "tandem-workspace/lib/server";
 import { ExprSource } from "paperclip-utils";
+import { ContentChange } from "paperclip-source-writer";
 
 const UPDATE_THROTTLE = 10;
 
@@ -24,6 +26,9 @@ class WorkspaceAadapter {
   constructor(private _events: Observable) {}
   revealSource(source: ExprSource) {
     this._events.dispatch(new RevealSourceRequested(source));
+  }
+  applyCodeChanges(changes: Record<string, ContentChange[]>) {
+    this._events.dispatch(new PCSourceEdited(changes));
   }
 }
 

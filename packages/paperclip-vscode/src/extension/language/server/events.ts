@@ -1,6 +1,7 @@
 import { ExprSource } from "paperclip-utils";
 import { WorkspaceFolder } from "vscode-languageserver";
 import { Project } from "tandem-workspace/lib/server";
+import { ContentChange } from "paperclip-source-writer";
 
 export class RevealSourceRequested {
   static TYPE = "RevealSourceRequested";
@@ -21,6 +22,15 @@ export class TextDocumentChanged {
   static TYPE = "PaperclipLanguageServerConnection/TextDocumentChanged";
   readonly type = TextDocumentChanged.TYPE;
   constructor(readonly uri: string, readonly content: string) {}
+}
+
+export class PCSourceEdited {
+  static TYPE = "PaperclipDesignServer/PCSourceEdited";
+  readonly type = PCSourceEdited.TYPE;
+  constructor(readonly changes: Record<string, ContentChange[]>) {}
+  toJSON() {
+    return { type: this.type, changes: this.changes };
+  }
 }
 
 export class TextDocumentPreview {
