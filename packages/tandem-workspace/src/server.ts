@@ -40,7 +40,7 @@ const prepare = async (options: Options) => {
     expressServer,
     httpServer,
     sockio: sock,
-    rpc: new RPC(sock, workspace, vfs, logger, httpPort),
+    rpc: new RPC(sock, workspace, vfs, logger, httpPort, options),
     designer: new Designer(expressServer, httpServer),
     workspace,
     logger

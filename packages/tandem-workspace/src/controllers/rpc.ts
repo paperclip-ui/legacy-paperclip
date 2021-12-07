@@ -10,12 +10,14 @@ import * as path from "path";
 import * as fs from "fs";
 import {
   engineDelegateChanged,
+  Expression,
   isPaperclipFile,
   VirtNodeSource
 } from "paperclip-utils";
 import { VFS } from "./vfs";
 import { PCMutation, PCSourceWriter } from "paperclip-source-writer";
 import { exec } from "child_process";
+import { Options } from "../core/options";
 
 export class RPC {
   constructor(
@@ -23,7 +25,8 @@ export class RPC {
     private _workspace: Workspace,
     private _vfs: VFS,
     private _logger: Logger,
-    private _httpPort: number
+    private _httpPort: number,
+    private _options: Options
   ) {
     sockio.on("connection", this._onConnection);
   }
@@ -34,7 +37,8 @@ export class RPC {
       this._workspace,
       this._vfs,
       this._logger,
-      this._httpPort
+      this._httpPort,
+      this._options
     );
   };
 }
@@ -54,7 +58,8 @@ class Connection {
     private _workspace: Workspace,
     private _vfs: VFS,
     private _logger: Logger,
-    private _httpPort: number
+    private _httpPort: number,
+    private _options: Options
   ) {
     const adapter = sockAdapter(connection);
     this._events = channels.eventsChannel(adapter);
@@ -65,6 +70,10 @@ class Connection {
     channels.helloChannel(adapter).listen(this._initialize);
     channels.loadDirectoryChannel(adapter).listen(this._loadDirectory);
     channels.inspectNodeStyleChannel(adapter).listen(this._inspectNode);
+    channels.revealNodeSourceChannel(adapter).listen(this._revealSource);
+    channels
+      .revealNodeSourceByIdChannel(adapter)
+      .listen(this._revealSourceById);
     channels.popoutWindowChannel(adapter).listen(this._popoutWindow);
     channels.openFileChannel(adapter).listen(this._openFile);
     channels.editCodeChannel(adapter).listen(this._editCode);
@@ -85,6 +94,30 @@ class Connection {
     const writer = new PCSourceWriter(this.getProject().engine);
     const changes = writer.apply(mutations);
     console.log("TODO");
+  };
+
+  private _revealSource = (source: VirtNodeSource) => {
+    const info = this.getProject().engine.getVirtualNodeSourceInfo(
+      source.path,
+      source.uri
+    );
+    if (info) {
+      this._options.adapter?.revealSource(info);
+    }
+  };
+
+  private _revealSourceById = (sourceId: string) => {
+    const [uri, expr] = this.getProject().engine.getExpressionById(
+      sourceId
+    ) as [string, Expression];
+
+    this._options.adapter?.revealSource({
+      sourceId,
+      textSource: {
+        range: expr.range,
+        uri
+      }
+    });
   };
 
   private _loadNodeSources = (sources: VirtNodeSource[]) => {

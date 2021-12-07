@@ -1,5 +1,11 @@
+import { ExprSource } from "paperclip-utils";
+
 export type ProjectOptions = {
   installDependencies?: boolean;
+};
+
+export type WorkspaceAdapter = {
+  revealSource: (source: ExprSource) => void;
 };
 
 export type Options = {
@@ -11,4 +17,6 @@ export type Options = {
   // branch of project
   branch?: string;
   project?: ProjectOptions;
+
+  adapter?: WorkspaceAdapter;
 };

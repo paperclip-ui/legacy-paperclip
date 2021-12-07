@@ -322,6 +322,7 @@ function* handleClientComunication(client) {
     function*({
       payload: { metaKey, nodePath }
     }: NodeBreadcrumbClicked | LayerLeafClicked) {
+      console.log("META A A A ");
       if (!metaKey) {
         return;
       }

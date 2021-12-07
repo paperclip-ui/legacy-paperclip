@@ -7,6 +7,7 @@ import {
   DesignServerUpdated,
   DesignServerUpdating,
   Initialized,
+  RevealSourceRequested,
   TextDocumentChanged,
   TextDocumentOpened
 } from "./events";
@@ -15,8 +16,16 @@ import {
   Workspace,
   Project
 } from "tandem-workspace/lib/server";
+import { ExprSource } from "paperclip-utils";
 
 const UPDATE_THROTTLE = 10;
+
+class WorkspaceAadapter {
+  constructor(private _events: Observable) {}
+  revealSource(source: ExprSource) {
+    this._events.dispatch(new RevealSourceRequested(source));
+  }
+}
 
 export class PaperclipDesignServer implements Observer {
   readonly events: Observable;
@@ -39,7 +48,8 @@ export class PaperclipDesignServer implements Observer {
       },
       project: {
         installDependencies: false
-      }
+      },
+      adapter: new WorkspaceAadapter(this.events)
     });
 
     const cwd = workspaceFolders[0].uri;
