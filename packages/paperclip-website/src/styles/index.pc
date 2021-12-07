@@ -419,7 +419,7 @@
         @include section-icon {}
       </style>
     </icons.Icon>
-    <div clasName="_info">
+    <div className="_info">
       <div class="_title">
         <style>
           font-size: 1.3em;

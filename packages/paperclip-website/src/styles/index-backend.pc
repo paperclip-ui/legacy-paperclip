@@ -4,12 +4,12 @@
 <import src="./button.pc" as="button" />
 <import src="./icons/icons.pc" as="icons" />
 
-<!-- You should be able to <i>see</i> what you're building in
-                    realtime, and that's what Paperclip provides - tooling to
-                    build your UIs <i>visually</i>. No more need to jump back
-                    and forth between the browser and code.
+<!--  You should be able to <i>see</i> what you're building in
+  realtime, and that's what Paperclip provides - tooling to
+  build your UIs <i>visually</i>. No more need to jump back
+  and forth between the browser and code.
 
-                    -->
+-->
 <style>
   :root {
     --row-max-width: 10200px;
@@ -32,7 +32,6 @@
     flex-shrink: 0;
     font-size: 1.7em;
     position: relative;
-    /* top: 2px; */
   }
 </style>
 
@@ -41,19 +40,22 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="Highlight" className="_highlight" 
+<span export
+  component
+  as="Highlight"
+  className="_highlight"
   className:noBreak="noBreak"
   className:darker="darker"
   className:bold="bold">
   <style>
     color: var(--color-green-neon-light);
+    font-weight: 500;
     :self(.darker) {
       color: var(--color-green-army);
     }
     :self(.bold) {
       font-weight: 600;
     }
-    font-weight: 500;
     :self(.noBreak) {
       white-space: nowrap;
     }
@@ -69,7 +71,7 @@
   <style>
     background: rgb(245, 245, 245);
     line-height: 1.6em;
-    * { 
+    * {
       box-sizing: border-box;
     }
   </style>
@@ -82,18 +84,13 @@
 -->
 <layout.Container export component as="Header" className="$_header $_main">
   <style>
-    /* background: rgb(58, 60, 65); */
-    background: rgb(48, 50, 56);
-    /* background: rgb(68, 70, 77); */
-    /* color: white; */
 
+    background: rgb(48, 50, 56);
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
-    
   </style>
   <layout.Row>
-
     <!-- Blurb -->
     <div>
       <style>
@@ -106,27 +103,21 @@
       <div className="_title">
         <style>
           color: rgba(255, 255, 255, 0.9);
-
-          /* filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164)); */
-          @include typography.text-secondary;
           font-size: 1.58em;
           line-height: 1.3em;
-          /* white-space: nowrap; */
           margin-bottom: var(--gap-5);
           font-weight: 600;
           letter-spacing: 0.04em;
+          @include typography.text-secondary {}
         </style>
         {title}
       </div>
       <div className="_subtext">
         <style>
           color: rgba(255, 255, 255, 0.9);
-          /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
           font-weight: 500;
           letter-spacing: 0.075em;
           line-height: 1.8em;
-          /* padding-right: 20px; */
-
           ._emoji {
             color: rgba(255, 255, 255, 1);
           }
@@ -136,42 +127,36 @@
       <div className="_cta">
         <style>
           margin-top: 15px;
-          :global(a) { 
+          :global(a) {
             margin-right: 15px;
             margin-top: 15px;
-            &:first-child {
-              margin-left: 0;
-            }
             @include tiny {
               width: 100%;
               box-sizing: border-box;
               margin-right: 0;
+            }
+            &:first-child {
+              margin-left: 0;
             }
           }
         </style>
         {cta}
       </div>
     </div>
-    </layout.Row>
-    <layout.Row>
-      <div className="_preview">
-        <style>
-          width: 100%;
-
-          /* left: calc(100% - 400px); */
-          /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
-          :global(img, video) {
-            border-radius: 4px;
-            max-width: 100%;
-            box-sizing: border-box;
-            /* border-radius: 4px; */
-            /* box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247); */
-            /* border: 1px solid rgba(99, 99, 99, 0.404); */
-            margin-bottom: -16px;
-          }
-        </style>
-        {preview}
-      </div>
+  </layout.Row>
+  <layout.Row>
+    <div className="_preview">
+      <style>
+        width: 100%;
+        :global(img, video) {
+          border-radius: 4px;
+          max-width: 100%;
+          box-sizing: border-box;
+          margin-bottom: -16px;
+        }
+      </style>
+      {preview}
+    </div>
   </layout.Row>
 </layout.Container>
 
@@ -196,21 +181,19 @@
 <div export component as="Summary" className="_summary $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
-    @include layout.py-6;
+    @include layout.py-6 {}
   </style>
   <div className="$layout._col12">
     <div className="_title">
       <style>
-        @include typography.text-secondary;
         font-size: 1.2em;
         font-weight: 500;
         margin-bottom: var(--gap-4);
+        @include typography.text-secondary {}
       </style>
       {title}
     </div>
-    <div className="_text">
-      {text}
-    </div>
+    <div className="_text">{text}</div>
   </div>
 </div>
 
@@ -231,16 +214,17 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="MainFeatureItem" className="_item $layout._col $layout._col6">
+<div export
+  component
+  as="MainFeatureItem"
+  className="_item $layout._col $layout._col6">
   <style>
-    @include layout.py-6;
     display: flex;
     flex-direction: column;
-
+    @include layout.py-6 {}
     :self(:first-child) {
       border-right: 1px solid rgb(226, 226, 226);
       padding-right: 30px;
-
       @include mobile {
         padding-right: 0px;
         border-right: 0px;
@@ -259,11 +243,11 @@
   </style>
   <div className="_heading">
     <style>
-     display: flex;
+      display: flex;
     </style>
     <icons.Icon name={iconName} className="$_icon">
       <style>
-        @include section-icon;
+        @include section-icon {}
       </style>
     </icons.Icon>
     <div className="_info">
@@ -273,11 +257,11 @@
       </style>
       <div className="_title">
         <style>
-          @include typography.text-secondary;
           font-size: 1.2em;
           display: flex;
           font-weight: 500;
           margin-bottom: var(--gap-4);
+          @include typography.text-secondary {}
         </style>
         <span>{title}</span>
       </div>
@@ -295,9 +279,7 @@
       :global(.prism-code) {
         max-height: 400px;
       }
-      :global(.prism-code > div) {
-        /* height: 400px; */
-      }
+      :global(.prism-code > div) {}
     </style>
     {example}
   </div>
@@ -308,11 +290,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="VariousFeatures" className="_various-features $layout._row">
+<div export
+  component
+  as="VariousFeatures"
+  className="_various-features $layout._row">
   <style>
     border-top: 1px solid rgb(255, 255, 255);
     border-bottom: 1px solid rgb(226, 226, 226);
-
   </style>
   {children}
 </div>
@@ -321,7 +305,10 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="VariousFeatureItem" className="_item $layout._col $layout._col3">
+<div export
+  component
+  as="VariousFeatureItem"
+  className="_item $layout._col $layout._col3">
   <style>
     :self {
       @include layout.py-6;
@@ -339,23 +326,21 @@
   </style>
   <icons.Icon name={iconName} className="$_icon">
     <style>
-      @include section-icon;
+      @include section-icon {}
     </style>
   </icons.Icon>
   <div className="_info">
     <div className="_title">
       <style>
-        @include typography.text-secondary;
         font-size: 18px;
         font-weight: 500;
         align-items: flex-start;
         margin-bottom: 20px;
+        @include typography.text-secondary {}
       </style>
       <span>{title}</span>
     </div>
-    <div className="_details">
-      {description}
-    </div>
+    <div className="_details">{description}</div>
   </div>
 </div>
 
@@ -363,7 +348,10 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="BigFeature" className="_big-feature $layout._section $layout._row">
+<div export
+  component
+  as="BigFeature"
+  className="_big-feature $layout._section $layout._row">
   <style>
     border-bottom: 1px solid rgb(226, 226, 226);
     border-top: 1px solid rgb(255, 255, 255);
@@ -372,23 +360,21 @@
     <style>
       display: flex;
     </style>
-    <!-- <icons.Icon name="grow" className="$_icon">
+    <!--  <icons.Icon name="grow" className="$_icon">
       <style>
-        @include section-icon;
+      @include ""-icon;
       </style>
-    </icons.Icon> -->
-    <div clasName="_info">
+      </icons.Icon>-->
+    <div className="_info">
       <div className="_title">
         <style>
-          @include typography.text-secondary;
           font-size: 1.3em;
           margin-bottom: var(--gap-4);
+          @include typography.text-secondary {}
         </style>
         {title}
       </div>
-      <div className="_details">
-        {description}
-      </div>
+      <div className="_details">{description}</div>
       <a className="_mini-cta-link" href={ctaHref?}>
         <style>
           display: flex;
@@ -397,15 +383,13 @@
           align-items: center;
           color: inherit;
           text-decoration: none;
-
-
           ._mini-cta-icon {
             font-size: 0.9em;
             margin-left: 6px;
           }
         </style>
 
-        {ctaText} <icons.Icon name="chevron-right" className="$_mini-cta-icon" />
+        {ctaText}<icons.Icon name="chevron-right" className="$_mini-cta-icon" />
       </a>
     </div>
   </div>
@@ -418,12 +402,7 @@
         }
         :global(img, video) {
           border-radius: 4px;
-          /* border: 1px solid rgba(255, 255, 255, 0.363); */
-          /* box-shadow: 4px 4px 4px 4px #F60; */
-          /* filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.226)); */
-          @include mobile {
-            /* width: 100%; */
-          }
+          @include mobile;
         }
       }
     </style>
@@ -439,80 +418,69 @@
   @frame { visible: false, title: "Desktop", width: 1452, height: 3102, x: -274, y: -13 }
 -->
 <Home component as="Preview">
-  <Header 
-    title={<fragment>A hybrid approach to building web applications.</fragment>}
-    description={<fragment>Realtime previews, visual regression testing, and more. Paperclip is a template language that comes with tooling to help you build UIs more quickly & safely. </fragment>}
+  <Header title={<fragment>
+      A hybrid approach to building web applications.
+    </fragment>}
+    description={<fragment>
+      Realtime previews, visual regression testing, and more. Paperclip is a
+      template language that comes with tooling to help you build UIs more
+      quickly & safely.
+    </fragment>}
     cta={<fragment>
-      <button.Anchor className="$typography.semi-bold" strong>Sign up for early access</button.Anchor>
+      <button.Anchor className="$typography.semi-bold" strong>
+        Sign up for early access
+      </button.Anchor>
       <!-- <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor> -->
     </fragment>}
-    preview={<video src="../../static/vid/paperclip-fast-demo.mp4" autoplay loop />}
-  />
+    preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
+      autoplay
+      loop />} />
 
   <!-- <Summary title="Why?" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " /> -->
 
   <MainFeatures>
-    <MainFeatureItem
-      iconName="shapes"
+    <MainFeatureItem iconName="shapes"
       title="A minimalistic template language"
       description="Paperclip only covers basic HTML & CSS that can be written to cover primitive UI components which can then be imported directly into your app."
-      example={<CodePreview />}
-    />
-    <MainFeatureItem
-      iconName="reactjs"
+      example={<CodePreview />} />
+    <MainFeatureItem iconName="reactjs"
       title="Compiles plain, efficient code"
       description="Paperclip templates "
-      example={<CodePreview />}
-    />
+      example={<CodePreview />} />
   </MainFeatures>
 
   <MainFeatures>
-    <MainFeatureItem
-      iconName="chaotic-1"
+    <MainFeatureItem iconName="chaotic-1"
       title="Keep CSS under control"
       description="There is no global CSS in Paperclip. Instead, Paperclip has syntax that allows you to explicitly reference styles from other files, so you don't have to worry about leaky CSS."
-      example={<CodePreview />}
-    />
-    <MainFeatureItem
-      iconName="reactjs"
+      example={<CodePreview />} />
+    <MainFeatureItem iconName="reactjs"
       title="Works with third-party CSS"
       description="Kee "
-      example={<CodePreview />}
-    />
+      example={<CodePreview />} />
   </MainFeatures>
 
-  <VariousFeatures>    
-    <VariousFeatureItem 
-      iconName="chaotic-1"
+  <VariousFeatures>
+    <VariousFeatureItem iconName="chaotic-1"
       title="Keep CSS under control"
-      description="There is no global CSS in Paperclip. Instead, you explicitly"
-    /> 
-    <VariousFeatureItem 
-      iconName="link"
+      description="There is no global CSS in Paperclip. Instead, you explicitly" />
+    <VariousFeatureItem iconName="link"
       title="Strongly typed"
-      description="UIs compile to strongly typed code, so worry less about breaking changes."
-    />
-    <VariousFeatureItem 
-      iconName="grow"
+      description="UIs compile to strongly typed code, so worry less about breaking changes." />
+    <VariousFeatureItem iconName="grow"
       title="Incrementally adoptable"
-      description="Paperclip compliments your existing codebase, so use it as you go."
-    />
+      description="Paperclip compliments your existing codebase, so use it as you go." />
   </VariousFeatures>
 
-  <BigFeature 
-    title="IDE integration"
+  <BigFeature title="IDE integration"
     description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
     preview={<img src="./assets/realtime-editing-2.gif" />}
-    ctaText="View the extension"
-  />
+    ctaText="View the extension" />
 
-  <BigFeature 
-    title="Never miss a CSS Bug"
+  <BigFeature title="Never miss a CSS Bug"
     description="Use the visual regression tool to catch every visual state of your UI. No more broken window CSS. 🎉"
     preview={<img src="./assets/realtime-editing-2.gif" />}
-    ctaText="View the API"
-  />
-
+    ctaText="View the API" />
 </Home>
 
 
