@@ -14086,6 +14086,7 @@ __metadata:
   dependencies:
     "@types/mocha": ^8.0.0
     crc32: ^0.2.2
+    mocha: ^7.0.1
     paperclip: ^18.0.2
     typescript: ^4.2.3
   languageName: unknown
