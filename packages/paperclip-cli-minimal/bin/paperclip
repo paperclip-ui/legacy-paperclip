@@ -7,6 +7,7 @@ const argv = require("yargs")
   yargs
   .option("watch", desc("watch for changes"))
   .option("targets", desc("Target files to generate"))
+  .option("output", desc("Output directory"))
   .option("write", desc("Write compiled file"))
   .option("verbose", desc("Write verbose information"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
@@ -17,6 +18,7 @@ const argv = require("yargs")
     config: argv.config,
     write: argv.write,
     css: argv.css,
+    output: argv.output,
     watch: argv.watch,
     definition: argv.definition,
     targets: argv.targets && argv.targets.split(",").map(v => v.trim()),
