@@ -4,8 +4,9 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "yarn build:definition && tsc",
-    "build:definition": "paperclip build --definition --write --targets=d.ts,js,css --verbose",
+    "build": "yarn build:definition && yarn build:pc && tsc",
+    "build:definition": "paperclip build --definition --write --targets=d.ts --output=src --verbose",
+    "build:pc": "paperclip build --definition --write --targets=d.ts,js,css --verbose",
     "build:watch": "paperclip build --definition --watch --write"
   },
   "author": "",

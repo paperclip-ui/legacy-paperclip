@@ -12,6 +12,7 @@ export type BuildOptions = {
   cwd: string;
   config?: string;
   write: boolean;
+  output?: string;
   targets?: string[];
   watch: boolean;
   compilerName?: string;
@@ -93,7 +94,8 @@ const loadConfig = (options: BuildOptions): PaperclipConfig => {
   } catch (e) {}
 
   const srcDir = options.outputDirectory || localConfig.srcDir;
-  const outDir = localConfig.compilerOptions?.outDir || srcDir;
+  const outDir =
+    options.output || localConfig.compilerOptions?.outDir || srcDir;
 
   return {
     ...localConfig,

@@ -34,12 +34,14 @@ const argv = require("yargs")
   .option("watch", desc("watch for changes"))
   .option("write", desc("Write compiled file"))
   .option("verbose", desc("Write verbose information"))
+  .option("output", desc("output directory of files"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
 }, argv => {
   build({
     cwd: process.cwd(),
     config: argv.config,
     write: argv.write,
+    output: argv.output,
     css: argv.css,
     watch: argv.watch,
     definition: argv.definition,
