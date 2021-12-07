@@ -37,7 +37,7 @@
   "scripts": {
     "test": "yarn workspaces foreach -vip run test",
     "build": "yarn workspaces foreach -viA --topological-dev run build",
-    "lint": "yarn workspaces foreach -vip run test",
+    "lint": "yarn workspaces foreach -vi run lint",
     "link:tandem": "yarn link $TANDEM_HOME/packages/designer && yarn link $TANDEM_HOME/packages/design-system",
     "postinstall2": "yarn workspaces foreach -t run build",
     "clean": "find ./ -name node_modules -exec rm -rf {} \\;",
