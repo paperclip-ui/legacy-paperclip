@@ -14018,7 +14018,6 @@ __metadata:
     paperclip-utils: ^18.0.2
     resolve: ^1.15.1
     shelljs: ^0.8.4
-    tandem-designer: 18.0.1
     typescript: ^4.2.3
     yargs: ^15.1.0
   bin:
@@ -18038,7 +18037,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"tandem-designer@18.0.1, tandem-designer@^18.0.1, tandem-designer@workspace:packages/tandem-designer":
+"tandem-designer@^18.0.1, tandem-designer@workspace:packages/tandem-designer":
   version: 0.0.0-use.local
   resolution: "tandem-designer@workspace:packages/tandem-designer"
   dependencies:
