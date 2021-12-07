@@ -84,7 +84,6 @@ export function* handleRPC() {
 
 function* handleServerOptions(client: Connection) {
   const hello = helloChannel(client);
-  console.log("RUN");
   yield takeState(
     (state: AppState) => state.designer.ui.query.projectId,
     loadServerOptions,
@@ -97,7 +96,6 @@ function* loadServerOptions(
   projectId: string,
   getOptions: ReturnType<typeof helloChannel>
 ) {
-  console.log("LOAD SERVER OPS", projectId);
   const options = yield call(getOptions.call, { projectId });
   yield put(serverOptionsLoaded(options));
 }

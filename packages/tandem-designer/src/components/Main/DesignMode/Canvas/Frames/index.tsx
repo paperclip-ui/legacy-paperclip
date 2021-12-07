@@ -221,12 +221,10 @@ class MultiFrameController {
 
       if (controller.isMounted(mountedRendererIds)) {
         if (!controller.isInitialized()) {
-          // console.log("INIT", fileData);
           controller.initialize(fileData[fileUri]);
         }
 
         if (currentEngineEvents[controller.id]) {
-          // console.log("HANDLE EVV", currentEngineEvents[controller.id], fileData);
           controller.handleEvents(
             currentEngineEvents[controller.id],
             fileData[fileUri].preview

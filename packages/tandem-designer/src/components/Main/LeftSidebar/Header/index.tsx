@@ -54,9 +54,6 @@ const NewBranch = memo(() => {
   };
   const onPromptClose = (value?: string) => {
     setShowPrompt(false);
-    if (value) {
-      console.log("VALUE");
-    }
   };
 
   return (

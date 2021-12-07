@@ -16,7 +16,6 @@ export const rpcEngine = ({
   //   const projectId = getState().designer.ui.query.canvasFile;
   //   if (projectId) {
   //     const config = await channels.hello.call({projectId});
-  //     console.log(config);
   //   }
   // };
 

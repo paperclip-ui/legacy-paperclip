@@ -21,10 +21,9 @@ const prepare = async (options: Options) => {
   const logger = new Logger();
   logger.info(`Workspace started 🚀`);
 
-  const [expressServer, httpServer] = startHTTPServer(
-    options.http?.port || (await getPort()),
-    logger
-  );
+  const httpPort = options.http?.port || (await getPort());
+
+  const [expressServer, httpServer] = startHTTPServer(httpPort, logger);
 
   const vfs = new VFS(options.autoSave, logger);
   const sock = new SocketIo(httpServer);
@@ -41,7 +40,7 @@ const prepare = async (options: Options) => {
     expressServer,
     httpServer,
     sockio: sock,
-    rpc: new RPC(sock, workspace, vfs, logger),
+    rpc: new RPC(sock, workspace, vfs, logger, httpPort),
     designer: new Designer(expressServer, httpServer),
     workspace,
     logger

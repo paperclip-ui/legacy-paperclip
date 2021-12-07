@@ -15,19 +15,27 @@ import {
 } from "paperclip-utils";
 import { VFS } from "./vfs";
 import { PCMutation, PCSourceWriter } from "paperclip-source-writer";
+import { exec } from "child_process";
 
 export class RPC {
   constructor(
     sockio: SocketIo,
     private _workspace: Workspace,
     private _vfs: VFS,
-    private _logger: Logger
+    private _logger: Logger,
+    private _httpPort: number
   ) {
     sockio.on("connection", this._onConnection);
   }
   private _onConnection = (connection: sockjs.Connection) => {
     this._logger.info(`Connection established`);
-    new Connection(connection, this._workspace, this._vfs, this._logger);
+    new Connection(
+      connection,
+      this._workspace,
+      this._vfs,
+      this._logger,
+      this._httpPort
+    );
   };
 }
 
@@ -45,7 +53,8 @@ class Connection {
     connection: sockjs.Connection,
     private _workspace: Workspace,
     private _vfs: VFS,
-    private _logger: Logger
+    private _logger: Logger,
+    private _httpPort: number
   ) {
     const adapter = sockAdapter(connection);
     this._events = channels.eventsChannel(adapter);
@@ -55,6 +64,8 @@ class Connection {
       .listen(this._loadNodeSources);
     channels.helloChannel(adapter).listen(this._initialize);
     channels.loadDirectoryChannel(adapter).listen(this._loadDirectory);
+    channels.inspectNodeStyleChannel(adapter).listen(this._inspectNode);
+    channels.popoutWindowChannel(adapter).listen(this._popoutWindow);
     channels.openFileChannel(adapter).listen(this._openFile);
     channels.editCodeChannel(adapter).listen(this._editCode);
     channels.commitChangesChannel(adapter).listen(this._commitChanges);
@@ -79,21 +90,26 @@ class Connection {
   private _loadNodeSources = (sources: VirtNodeSource[]) => {
     const project = this.getProject();
 
-    console.log(
-      sources.map(info => {
-        return {
-          virtualNodePath: info.path,
-          source: project.engine.getVirtualNodeSourceInfo(info.path, info.uri)
-        };
-      })
-    );
-
     return sources.map(info => {
       return {
         virtualNodePath: info.path,
         source: project.engine.getVirtualNodeSourceInfo(info.path, info.uri)
       };
     });
+  };
+
+  private _popoutWindow = ({ path }) => {
+    let host = `http://localhost:${this._httpPort}`;
+    let url = host + path;
+    exec(`open "${url}"`);
+  };
+
+  private _inspectNode = (sources: VirtNodeSource[]) => {
+    const project = this.getProject();
+    return sources.map(source => [
+      source,
+      project.engine.inspectNodeStyles(source, 0)
+    ]);
   };
 
   private _getAllScreens = async () => {

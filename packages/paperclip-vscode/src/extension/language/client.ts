@@ -81,7 +81,6 @@ export class PaperclipLanguageClient implements Disposable {
     this._client.stop();
   }
   private _onServerEvent = (event: BaseEvent) => {
-    console.log("SERVER EVENT", event);
     this.events.dispatch(event);
   };
 }
