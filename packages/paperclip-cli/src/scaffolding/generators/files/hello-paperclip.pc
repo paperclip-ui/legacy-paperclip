@@ -1,6 +1,6 @@
 <!--
 
-To open the live preview, type `command + shift + p`, and select 
+To open the live preview, type `command + shift + p`, and select
 "Paperclip: Open Live Preview"
 
 -->
@@ -42,14 +42,10 @@ To open the live preview, type `command + shift + p`, and select
   @frame { visible: false, title: "" }
 -->
 
-<div export component as="Message" className="Message">
-  {children}!
-</div>
+<div export component as="Message" class="Message">{children}!</div>
 
 <!--
   @frame { title: "Hello Paperclip", width: 1024, height: 768, x: 206, y: 63 }
 -->
 
-<Message>
-  Hello Paperclip!
-</Message>
+<Message>Hello Paperclip!</Message>

@@ -10,8 +10,8 @@
   {title?}
   {tagName?}
   {href?}
-  className="button-base {className?}"
-  className:secondary="secondary"
+  class="button-base {class?}"
+  class:secondary="secondary"
   {onClick?}>
   <style>
     cursor: pointer;

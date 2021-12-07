@@ -7,7 +7,6 @@
   }
 
   @export {
-
     @mixin chaotic-1 {
       @include icon;
       background-image: url(./chaotic-1.svg);
@@ -108,14 +107,14 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 112, y: 144 }
 -->
-<div export component as="Icon" className="icon {name} {className?}" />
+<div export component as="Icon" class="icon {name} {class?} {className?}" />
 
 
 
 <!--
   @frame { title: "Icons", width: 1024, height: 768, x: 119, y: 60 }
 -->
-<div className="preview">
+<div class="preview">
   <Icon name="chaotic-1" />
   <Icon name="grow" />
   <Icon name="link" />

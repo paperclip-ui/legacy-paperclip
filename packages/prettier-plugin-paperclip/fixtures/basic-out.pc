@@ -35,8 +35,8 @@
   something
 </div>
 
-<div className:a="b" />
-<div className:a="b $a {a?.b.c?}" />
+<div class:a="b" />
+<div class:a="b $a {a?.b.c?}" />
 <div a={<div>
     I don't
     <div>I break</div>

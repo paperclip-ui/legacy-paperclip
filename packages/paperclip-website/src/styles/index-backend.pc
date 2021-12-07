@@ -43,10 +43,10 @@
 <span export
   component
   as="Highlight"
-  className="_highlight"
-  className:noBreak="noBreak"
-  className:darker="darker"
-  className:bold="bold">
+  class="_highlight"
+  class:noBreak="noBreak"
+  class:darker="darker"
+  class:bold="bold">
   <style>
     color: var(--color-green-neon-light);
     font-weight: 500;
@@ -67,7 +67,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Home" className="_home $typography.text-default">
+<div export component as="Home" class="_home $typography.text-default">
   <style>
     background: rgb(245, 245, 245);
     line-height: 1.6em;
@@ -82,7 +82,7 @@
 <!--
   @frame { visible: false }
 -->
-<layout.Container export component as="Header" className="$_header $_main">
+<layout.Container export component as="Header" class="$_header $_main">
   <style>
 
     background: rgb(48, 50, 56);
@@ -100,7 +100,7 @@
         margin-bottom: 72px;
         text-align: center;
       </style>
-      <div className="_title">
+      <div class="_title">
         <style>
           color: rgba(255, 255, 255, 0.9);
           font-size: 1.58em;
@@ -112,7 +112,7 @@
         </style>
         {title}
       </div>
-      <div className="_subtext">
+      <div class="_subtext">
         <style>
           color: rgba(255, 255, 255, 0.9);
           font-weight: 500;
@@ -124,7 +124,7 @@
         </style>
         {description}
       </div>
-      <div className="_cta">
+      <div class="_cta">
         <style>
           margin-top: 15px;
           :global(a) {
@@ -145,7 +145,7 @@
     </div>
   </layout.Row>
   <layout.Row>
-    <div className="_preview">
+    <div class="_preview">
       <style>
         width: 100%;
         :global(img, video) {
@@ -164,7 +164,7 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="CodePreview" className="_code-preview">
+<div component as="CodePreview" class="_code-preview">
   <style>
     width: 100%;
     height: 100%;
@@ -178,13 +178,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Summary" className="_summary $layout._row">
+<div export component as="Summary" class="_summary $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
     @include layout.py-6 {}
   </style>
-  <div className="$layout._col12">
-    <div className="_title">
+  <div class="$layout._col12">
+    <div class="_title">
       <style>
         font-size: 1.2em;
         font-weight: 500;
@@ -193,7 +193,7 @@
       </style>
       {title}
     </div>
-    <div className="_text">{text}</div>
+    <div class="_text">{text}</div>
   </div>
 </div>
 
@@ -202,7 +202,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="MainFeatures" className="_main-features $layout._row">
+<div export component as="MainFeatures" class="_main-features $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
     border-bottom: 1px solid rgb(226, 226, 226);
@@ -217,7 +217,7 @@
 <div export
   component
   as="MainFeatureItem"
-  className="_item $layout._col $layout._col6">
+  class="_item $layout._col $layout._col6">
   <style>
     display: flex;
     flex-direction: column;
@@ -241,21 +241,21 @@
       }
     }
   </style>
-  <div className="_heading">
+  <div class="_heading">
     <style>
       display: flex;
     </style>
-    <icons.Icon name={iconName} className="$_icon">
+    <icons.Icon name={iconName} class="$_icon">
       <style>
         @include section-icon {}
       </style>
     </icons.Icon>
-    <div className="_info">
+    <div class="_info">
       <style>
         display: flex;
         flex-direction: column;
       </style>
-      <div className="_title">
+      <div class="_title">
         <style>
           font-size: 1.2em;
           display: flex;
@@ -265,7 +265,7 @@
         </style>
         <span>{title}</span>
       </div>
-      <div className="_details">
+      <div class="_details">
         <style>
           margin-bottom: 2em;
         </style>
@@ -273,7 +273,7 @@
       </div>
     </div>
   </div>
-  <div className="_example">
+  <div class="_example">
     <style>
       font-size: 14px;
       :global(.prism-code) {
@@ -293,7 +293,7 @@
 <div export
   component
   as="VariousFeatures"
-  className="_various-features $layout._row">
+  class="_various-features $layout._row">
   <style>
     border-top: 1px solid rgb(255, 255, 255);
     border-bottom: 1px solid rgb(226, 226, 226);
@@ -308,7 +308,7 @@
 <div export
   component
   as="VariousFeatureItem"
-  className="_item $layout._col $layout._col3">
+  class="_item $layout._col $layout._col3">
   <style>
     :self {
       @include layout.py-6;
@@ -324,13 +324,13 @@
     }
 
   </style>
-  <icons.Icon name={iconName} className="$_icon">
+  <icons.Icon name={iconName} class="$_icon">
     <style>
       @include section-icon {}
     </style>
   </icons.Icon>
-  <div className="_info">
-    <div className="_title">
+  <div class="_info">
+    <div class="_title">
       <style>
         font-size: 18px;
         font-weight: 500;
@@ -340,7 +340,7 @@
       </style>
       <span>{title}</span>
     </div>
-    <div className="_details">{description}</div>
+    <div class="_details">{description}</div>
   </div>
 </div>
 
@@ -351,22 +351,22 @@
 <div export
   component
   as="BigFeature"
-  className="_big-feature $layout._section $layout._row">
+  class="_big-feature $layout._section $layout._row">
   <style>
     border-bottom: 1px solid rgb(226, 226, 226);
     border-top: 1px solid rgb(255, 255, 255);
   </style>
-  <div className="$layout._col $layout._col3">
+  <div class="$layout._col $layout._col3">
     <style>
       display: flex;
     </style>
-    <!--  <icons.Icon name="grow" className="$_icon">
+    <!--  <icons.Icon name="grow" class="$_icon">
       <style>
       @include ""-icon;
       </style>
       </icons.Icon>-->
-    <div className="_info">
-      <div className="_title">
+    <div class="_info">
+      <div class="_title">
         <style>
           font-size: 1.3em;
           margin-bottom: var(--gap-4);
@@ -374,8 +374,8 @@
         </style>
         {title}
       </div>
-      <div className="_details">{description}</div>
-      <a className="_mini-cta-link" href={ctaHref?}>
+      <div class="_details">{description}</div>
+      <a class="_mini-cta-link" href={ctaHref?}>
         <style>
           display: flex;
           margin-top: 10px;
@@ -389,11 +389,11 @@
           }
         </style>
 
-        {ctaText}<icons.Icon name="chevron-right" className="$_mini-cta-icon" />
+        {ctaText}<icons.Icon name="chevron-right" class="$_mini-cta-icon" />
       </a>
     </div>
   </div>
-  <div className="_preview">
+  <div class="_preview">
     <style>
       :self {
         margin-left: 15px;
@@ -427,10 +427,10 @@
       quickly & safely.
     </fragment>}
     cta={<fragment>
-      <button.Anchor className="$typography.semi-bold" strong>
+      <button.Anchor class="$typography.semi-bold" strong>
         Sign up for early access
       </button.Anchor>
-      <!-- <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor> -->
+      <!-- <button.Anchor secondary class="$typography.semi-bold">Check out on GitHub</button.Anchor> -->
     </fragment>}
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
       autoplay

@@ -7,9 +7,9 @@
   component
   as="default"
   {disabled?}
-  className="input v2 {className?}"
-  className:dark="dark"
-  className:light="light"
+  class="input v2 {class?}"
+  class:dark="dark"
+  class:light="light"
   {type}
   {onBlur?}
   {onFocus?}

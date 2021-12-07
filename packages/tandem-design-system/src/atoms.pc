@@ -299,7 +299,7 @@
   </Section>
 </div>
 
-<div export component as="Preview" className:padded="padded" {className?}>
+<div export component as="Preview" class:padded="padded" {class?}>
   <style>
     &.padded {
       padding: var(--spacing-4);
