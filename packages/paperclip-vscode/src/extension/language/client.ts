@@ -21,7 +21,7 @@ import { $$EVENT } from "./server/constants";
  * Spins up language server
  */
 
-export class PaperclipLanguageClient implements Disposable, Observer {
+export class PaperclipLanguageClient implements Disposable {
   readonly events: Observable;
 
   private _client: LanguageClient;
@@ -60,8 +60,6 @@ export class PaperclipLanguageClient implements Disposable, Observer {
       clientOptions
     );
   }
-
-  handleEvent = () => {};
 
   // handleEvent = eventHandlers({
   //   [PCEngineCrashed.TYPE]: () => {

@@ -1,11 +1,12 @@
 import { eventHandlers, Observable, Observer } from "paperclip-common";
+
+// eslint-disable-next-line
 const getPort = require("get-port");
 import {
   DesignServerStarted,
   DesignServerUpdated,
   DesignServerUpdating,
   Initialized,
-  ProjectStarted,
   TextDocumentChanged,
   TextDocumentOpened
 } from "./events";

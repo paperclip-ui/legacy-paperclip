@@ -31,8 +31,6 @@ const getEngine = async (): Promise<EngineDelegate> => {
 
 const virtualModuleInstances = new Map();
 
-let _loadedStyleFiles = {};
-
 async function pcLoader(
   source: string,
   virtualModules: VirtualModules,

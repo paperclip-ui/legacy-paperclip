@@ -260,7 +260,7 @@ const getColorPresentation = (
 const deferPromise = () => {
   let _resolve;
 
-  let promise = new Promise(resolve => {
+  const promise = new Promise(resolve => {
     _resolve = resolve;
   });
 
