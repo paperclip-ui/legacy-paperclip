@@ -220,7 +220,7 @@ const generateSelector = memoize((info: SelectorInfo) => {
         if (info.scope?.kind === SelectorScopeKind.Document) {
           return "*";
         } else {
-          return <styles.ScopedElementSelector />;
+          return <styles.ScopedElementSelector key={info.name} />;
         }
       } else {
         return "." + info.name;

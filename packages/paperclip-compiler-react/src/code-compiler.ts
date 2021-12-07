@@ -222,7 +222,7 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
     context = addBuffer([`"ref": ref,\n`])(context);
   }
 
-  context = addBuffer([`"key": "${element.id}",\n`])(context);
+  // context = addBuffer([`"key": "${element.id}",\n`])(context);
 
   context = writeJoin(
     attrKeys,
@@ -443,8 +443,8 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
     return addBuffer([`null`])(context);
   }
 
-  context = addBuffer([`[\n`])(context);
-  context = startBlock(context);
+  // context = addBuffer([`[\n`])(context);
+  context = addBuffer(["\n", startBlock])(context);
   context = writeJoin(children, ",\n", child => {
     switch (child.kind) {
       case InterimNodeKind.Element: {
@@ -458,6 +458,8 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
       }
     }
   })(context);
+  context = startBlock(context);
 
-  return addBuffer([endBlock, `]`])(context);
+  return context;
+  // return addBuffer([endBlock, `]`])(context);
 };

@@ -30,7 +30,7 @@ export const StyleDeclaration = ({
       value={
         <styles.StyleRulePropertyValue onClick={onClick}>
           {editingValue ? (
-            <styles.Expression>
+            <styles.Expression key="child">
               <BlendedTextInput
                 autoResize
                 value={info.value}

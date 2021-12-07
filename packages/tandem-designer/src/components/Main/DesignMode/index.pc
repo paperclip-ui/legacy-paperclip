@@ -54,6 +54,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -54, y: -1303 }
+-->
 <div export component as="NoPreview">
   <style>
     background: rgb(231, 231, 231);

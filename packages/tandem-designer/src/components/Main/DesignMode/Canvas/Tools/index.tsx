@@ -4,7 +4,6 @@ import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";
 import { Selectable } from "./Selectable";
-import { getScaledPoint } from "../../../../../state";
 import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
@@ -16,7 +15,7 @@ import {
   VirtualNodeKind
 } from "paperclip-utils";
 import {
-  canvasMouseUp,
+  canvasMouseDown,
   canvasMouseLeave,
   canvasMouseMoved,
   canvasDoubleClick
@@ -57,10 +56,10 @@ export const Tools = () => {
     [dispatch]
   );
 
-  const onMouseUp = useCallback(
+  const onMouswDown = useCallback(
     (event: React.MouseEvent<any>) => {
       dispatch(
-        canvasMouseUp({
+        canvasMouseDown({
           metaKey: event.metaKey,
           ctrlKey: event.ctrlKey,
           shiftKey: event.shiftKey,
@@ -99,7 +98,7 @@ export const Tools = () => {
   return (
     <styles.Tools
       ref={toolsRef}
-      onMouseUp={onMouseUp}
+      onMouseDown={onMouswDown}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >

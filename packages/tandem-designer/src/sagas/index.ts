@@ -12,7 +12,7 @@ import {
   globalZKeyDown,
   globalYKeyDown,
   globalMetaKeyUp,
-  CanvasMouseUp,
+  CanvasMouseDown,
   globalSaveKeyPress,
   globalHKeyDown,
   locationChanged,
@@ -40,8 +40,10 @@ export default function* mainSaga(
   getState: AppStateSelector
 ) {
   yield fork(handleRenderer, getState);
-  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function*(action: CanvasMouseUp) {
-    yield call(handleCanvasMouseUp, action, getState);
+  yield takeEvery(ActionType.CANVAS_MOUSE_DOWN, function*(
+    action: CanvasMouseDown
+  ) {
+    yield call(handleCanvasMouseDown, action, getState);
   });
 
   yield fork(handleRPC);
@@ -87,7 +89,7 @@ function* handleRenderer(getState: AppStateSelector) {
   });
 }
 
-function* handleCanvasMouseUp(
+function* handleCanvasMouseDown(
   action: CanvasMouseUp,
   getState: AppStateSelector
 ) {

@@ -27,8 +27,7 @@ import { compare, applyPatch } from "fast-json-patch";
 import {
   Action,
   ActionType,
-  CanvasMouseUp,
-  ExternalActionType,
+  CanvasMouseDown,
   LocationChanged,
   RedirectRequested,
   ServerActionType
@@ -54,7 +53,6 @@ import {
   stripFileProtocol
 } from "paperclip-utils";
 import * as path from "path";
-import { actionCreator } from "../actions/base";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -511,7 +509,7 @@ export const reduceDesigner = (
         newDesigner.optionKeyDown = false;
       });
     }
-    case ActionType.CANVAS_MOUSE_UP: {
+    case ActionType.CANVAS_MOUSE_DOWN: {
       if (designer.resizerMoving) {
         return designer;
       }
@@ -780,7 +778,7 @@ export const reduceDesigner = (
 
 const handleDoubleClick = (
   designer: DesignerState,
-  action: CanvasMouseUp
+  action: CanvasMouseDown
 ): [DesignerState, boolean] => {
   const oldTimestamp = designer.canvasClickTimestamp;
 
@@ -795,6 +793,7 @@ const handleDoubleClick = (
       false
     ];
   }
+
   const nodePath = getNodeInfoAtPoint(
     designer.canvas.mousePosition,
     designer.canvas.transform,
@@ -805,6 +804,8 @@ const handleDoubleClick = (
     ),
     isExpanded(designer) ? getActiveFrameIndex(designer) : null
   )?.nodePath;
+
+  console.log(nodePath);
 
   designer = produce(designer, newDesigner => {
     newDesigner.canvasClickTimestamp = action.payload.timestamp;

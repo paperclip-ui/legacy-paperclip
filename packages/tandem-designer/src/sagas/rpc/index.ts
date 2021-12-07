@@ -12,8 +12,6 @@ import {
 import { eventChannel } from "redux-saga";
 
 import { Channel, sockAdapter } from "paperclip-common";
-import SockJSClient from "sockjs-client";
-import * as URL from "url";
 import {
   fileLoaded,
   StyleRuleFileNameClicked,
@@ -22,7 +20,7 @@ import {
   globalBackspaceKeySent,
   fileOpened,
   FSItemClicked,
-  CanvasMouseUp,
+  CanvasMouseDown,
   LayerLeafClicked,
   NodeBreadcrumbClicked,
   redirectRequest,
@@ -259,7 +257,7 @@ function* handleClientComunication(client) {
 
   yield takeEvery(
     [
-      ActionType.CANVAS_MOUSE_UP,
+      ActionType.CANVAS_MOUSE_DOWN,
       ActionType.FRAME_TITLE_CLICKED,
       ActionType.ENGINE_DELEGATE_CHANGED
     ],
@@ -293,7 +291,7 @@ function* handleClientComunication(client) {
     500,
     [
       ActionType.NODE_BREADCRUMB_CLICKED,
-      ActionType.CANVAS_MOUSE_UP,
+      ActionType.CANVAS_MOUSE_DOWN,
       ActionType.FRAME_TITLE_CLICKED,
       ActionType.LAYER_LEAF_CLICKED,
       ActionType.ENGINE_DELEGATE_CHANGED,
@@ -322,7 +320,6 @@ function* handleClientComunication(client) {
     function*({
       payload: { metaKey, nodePath }
     }: NodeBreadcrumbClicked | LayerLeafClicked) {
-      console.log("META A A A ");
       if (!metaKey) {
         return;
       }
@@ -334,9 +331,9 @@ function* handleClientComunication(client) {
     }
   );
 
-  yield takeEvery([ActionType.CANVAS_MOUSE_UP], function*({
+  yield takeEvery([ActionType.CANVAS_MOUSE_DOWN], function*({
     payload: { metaKey }
-  }: CanvasMouseUp) {
+  }: CanvasMouseDown) {
     if (!metaKey) {
       return;
     }
@@ -424,16 +421,22 @@ function* handleClientComunication(client) {
 
       yield call(
         editPCSource.call,
-        state.designer.selectedNodePaths.map((info, i) => {
-          const frame = getFrameFromIndex(Number(info), state.designer);
-          return {
-            targetId: state.designer.selectedNodeSources[i].source.sourceId,
-            action: {
-              kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-              annotations: computeVirtJSObject(frame.annotations)
+        state.designer.selectedNodePaths
+          .map((info, i) => {
+            const frame = getFrameFromIndex(Number(info), state.designer);
+            if (!frame) {
+              return null;
             }
-          };
-        }) as PCMutation[]
+            return {
+              // may not exist if source is not returned in time for this edit
+              targetId: state.designer.selectedNodeSources[i]?.source.sourceId,
+              action: {
+                kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+                annotations: computeVirtJSObject(frame.annotations)
+              }
+            };
+          })
+          .filter(v => v?.targetId) as PCMutation[]
       );
     }
   );
@@ -444,14 +447,18 @@ function* handleClientComunication(client) {
     if (state.designer.selectedNodePaths.length) {
       yield call(
         editPCSource.call,
-        state.designer.selectedNodePaths.map((v, index) => {
-          return {
-            targetId: state.designer.selectedNodeSources[index].source.sourceId,
-            action: {
-              kind: PCMutationActionKind.EXPRESSION_DELETED
-            }
-          };
-        }) as PCMutation[]
+        state.designer.selectedNodePaths
+          .map((v, index) => {
+            // may not exist if source is not returned in time for this edit
+            return {
+              targetId:
+                state.designer.selectedNodeSources[index]?.source.sourceId,
+              action: {
+                kind: PCMutationActionKind.EXPRESSION_DELETED
+              }
+            };
+          })
+          .filter(v => v.targetId) as PCMutation[]
       );
     }
 

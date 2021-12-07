@@ -7,6 +7,7 @@
   class="tools"
   {onClick?}
   {onMouseUp?}
+  {onMouseDown?}
   {onDoubleClick?}
   {onMouseMove?}
   {onMouseLeave?}
