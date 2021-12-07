@@ -32,7 +32,8 @@ const prepare = async (options: Options) => {
     new SSHKeys(logger),
     vfs,
     logger,
-    options
+    options,
+    httpPort
   );
 
   const kernel: Kernel = {

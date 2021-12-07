@@ -6,6 +6,7 @@ const glob = require("glob");
 const {init, devStart} = require("../lib/cli");
 const {build} = require("paperclip-cli-minimal");
 const fs = require("fs");
+const {start: startWorkspace} = require("tandem-workspace/lib/server");
 
 // const argv = require("yargs")
 // .option("compiler", {
@@ -63,10 +64,17 @@ const argv = require("yargs")
   .default("port", 4000)
   .default("open", true)
 }, argv => {
-  devStart({
-    port: argv.port,
-    open: argv.open,
-    cwd: process.cwd()
+  startWorkspace({
+    http: {
+      port: argv.porg
+    },
+    project: {
+      installDependencies: false
+    }
+  }).then((workspace) => {
+    workspace.start(process.cwd()).then(project => {
+      project.openBrowser();
+    });
   });
 })
 .argv;

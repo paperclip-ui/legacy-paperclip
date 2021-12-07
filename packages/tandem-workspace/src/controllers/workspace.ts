@@ -14,7 +14,8 @@ export class Workspace {
     private _ssh: SSHKeys,
     readonly vfs: VFS,
     private _logger: Logger,
-    private _options: Options
+    private _options: Options,
+    private _httpPort: number
   ) {}
 
   async start(pathOrUrl: string, branch?: string) {
@@ -29,7 +30,8 @@ export class Workspace {
         branch,
         this.vfs,
         this._logger,
-        this._options
+        this._options,
+        this._httpPort
       ));
     return await project.start();
   }

@@ -38,6 +38,7 @@
     "crc32": "^0.2.2",
     "mocha": "^7.0.1",
     "paperclip-utils": "^18.0.2",
+    "tandem-workspace": "workspace:^",
     "url": "^0.11.0"
   },
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",

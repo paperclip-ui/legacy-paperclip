@@ -23,7 +23,8 @@ export class Project {
     private _branch: string,
     _vfs: VFS,
     _logger: Logger,
-    private _options: Options
+    private _options: Options,
+    private _httpPort: number
   ) {
     const directory = isUrlLocal(this.url)
       ? URL.fileURLToPath(this.url)
@@ -40,9 +41,10 @@ export class Project {
   /**
    */
 
-  open() {
+  openBrowser() {
+    // TODO - remove embedded flag
     execa("open", [
-      `http://localhost:${this._options.http.port}?projectId=${this.id}&showAll=true`
+      `http://localhost:${this._httpPort}?projectId=${this.id}&showAll=true&embedded=true`
     ]);
   }
 
