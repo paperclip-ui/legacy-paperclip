@@ -3,7 +3,6 @@ import * as URL from "url";
 import * as path from "path";
 import * as fs from "fs";
 import { EventEmitter } from "events";
-import * as resolve from "resolve";
 import * as chokidar from "chokidar";
 import { EngineDelegate } from "paperclip";
 import { InterimCompiler, InterimModule } from "paperclip-interim";
