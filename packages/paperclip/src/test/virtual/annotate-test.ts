@@ -248,7 +248,10 @@ describe(__filename + "#", () => {
         kind: "Text",
         raws: { before: "", after: "" },
         value: "\\@frame",
-        location: { start: 14, end: 21 }
+        range: {
+          start: { pos: 14, line: 3, column: 13 },
+          end: { pos: 21, line: 3, column: 20 }
+        }
       }
     ]);
   });
@@ -280,7 +283,10 @@ describe(__filename + "#", () => {
         kind: "Text",
         raws: { before: "", after: "" },
         value: 'span component as="Test">\n        Hello\n      </span',
-        location: { start: 14, end: 66 }
+        range: {
+          start: { pos: 14, line: 3, column: 13 },
+          end: { pos: 66, line: 5, column: 13 }
+        }
       }
     ]);
   });

@@ -1,0 +1,379 @@
+<import src="frontend/components/Button/index.pc" as="Button" />
+<import src="tandem-designer/src/styles/utils.pc" as="utils" />
+<import src="tandem-designer/src/components/Select/index2.pc" as="Select" />
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 19, y: 918 }
+-->
+<div export component as="Toolbar" className="v2">
+  <style>
+    height: 40px;
+    width: 100%;
+    background: var(--grey-night-500);
+    text-align: center;
+    display: flex;
+    align-items: stretch;
+    color: white;
+    border-bottom: 2px solid var(--grey-night-300);
+    flex-shrink: 0;
+    position: relative;
+  </style>
+  <Logo />
+
+  <div>
+    <style>
+      margin-left: 21px;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+    </style>
+    {leftControls}
+  </div>
+
+  <div>
+    <style>
+      width: 100%;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    </style>
+    {documentName}
+  </div>
+
+  <!-- Spacer -->
+  <div>
+    <style>
+      width: 100%;
+    </style>
+  </div>
+  <div>
+    <style>
+      padding-right: 28px;
+      z-index: 1;
+      display: flex;
+      align-items: stretch;
+    </style>
+    {rightControls}
+  </div>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="DownloadButton"
+  {onClick}
+  className:highlight="highlight">
+  <style>
+    --size: 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+    color: var(--grey-300);
+    &:hover {
+      color: var(--grey-100);
+    }
+  </style>
+  <i>
+    <style>
+      mask-image: url("./download.svg");
+      @include utils.mask {}
+    </style>
+  </i>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="NavAction"
+  {onClick}
+  {title?}
+  className:disabled="disabled"
+  className:hover="hover"
+  className:save="save"
+  className:download="download"
+  className:publish="publish">
+  <style>
+    color: var(--grey-300);
+    font-size: 14px;
+    display: flex;
+    margin-left: 24px;
+    cursor: pointer;
+    white-space: nowrap;
+    &:first-child {
+      margin-left: 0px;
+    }
+    &:hover, &.hover {
+      color: var(--color-blue-100);
+    }
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      &:hover {
+        color: var(--grey-300);
+      }
+    }
+  </style>
+  <i>
+    <style>
+      --size: 18px;
+      position: relative;
+      top: 1px;
+      margin-right: 8px;
+      @include utils.mask {}
+      &:within(.save) {
+        mask-image: url("./upload.svg");
+      }
+      &:within(.download) {
+        mask-image: url("./box.svg");
+      }
+      &:within(.publish) {
+        --size: 15px;
+        mask-image: url("./share5.svg");
+      }
+    </style>
+  </i>
+  {children}
+</div>
+
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 63, y: 31 }
+-->
+<div export
+  component
+  as="ShareButton"
+  {onClick}
+  className:highlight="highlight">
+  <style>
+    --size: 18px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    top: -1px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+    color: var(--grey-300);
+    &:hover {
+      color: var(--grey-100);
+    }
+  </style>
+  <i>
+    <style>
+      mask-image: url("./share5.svg");
+      @include utils.mask {}
+    </style>
+  </i>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<button export component as="LogoutButton" {onClick}>
+  <style>
+    --size: 18px;
+    cursor: pointer;
+    mask-image: url("./logout2.svg");
+    margin-left: 14px;
+    @include utils.mask-button {}
+    @include utils.mask {}
+    & {
+      background: var(--grey-300);
+    }
+  </style>
+</button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="ProfileSelectButton"
+  {className?}
+  {style?}
+  {onClick}
+  className:active="active">
+  <style>
+    display: flex;
+    align-items: center;
+    padding: 7px;
+    transition: 0.2s;
+    cursor: pointer;
+    &.active {
+      background: var(--grey-night-300);
+    }
+  </style>
+  {children}
+  <i>
+    <style>
+      margin-left: 7px;
+      color: var(--grey-300);
+      --size: 7px;
+      mask-image: url("./arrow-down.svg");
+      @include utils.mask {}
+    </style>
+  </i>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ProfileIcon" {className?} {style?}>
+  <style>
+    --size: 24px;
+    width: var(--size);
+    height: var(--size);
+    background-position: 50%;
+    background-size: 130%;
+    background-repeat: no-repeat;
+    border-radius: 99px;
+    border: 2px solid var(--grey-400);
+  </style>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export
+  component
+  as="SaveStatus"
+  className:success="success"
+  className:failed="failed"
+  className:pending="pending">
+  <style>
+    --size: 15px;
+    margin-left: 14px;
+    @include utils.mask {}
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    &.pending {
+      color: var(--grey-300);
+      mask-image: url("./spin.svg");
+      animation: spin 1.5s linear infinite;
+    }
+    &.success {
+      --size: 18px;
+      color: rgb(127, 241, 127);
+      mask-image: url("./check.svg");
+    }
+    &.failed {
+      --size: 12px;
+      color: rgb(241, 127, 127);
+      mask-image: url("./x2.svg");
+    }
+  </style>
+</i>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 323, y: -53 }
+-->
+<div export component as="Logo">
+  <style>
+    display: flex;
+    align-items: center;
+  </style>
+  <img src="./logo.svg">
+    <style>
+      height: 24px;
+      position: relative;
+      top: 1px;
+      margin-left: 21px;
+    </style>
+  </img>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Select.Container export component as="ProfileSelect" {onBlur} className="dark">
+  <style>
+    display: flex;
+  </style>
+  {children}
+  {menu}
+</Select.Container>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Select.Menu export component as="ProfileMenu" className="right">
+  <style>
+    min-width: 150px;
+  </style>
+  <Select.MenuItem onClick={onLogoutClick}>
+    Log out
+    <i>
+      <style>
+        --size: 1em;
+        color: var(--grey-300);
+        cursor: pointer;
+        mask-image: url("./logout2.svg");
+        margin-left: 14px;
+        @include utils.mask {}
+      </style>
+    </i>
+  </Select.MenuItem>
+  <Select.MenuItem onClick={onMyProjectsClick}>My Projects</Select.MenuItem>
+</Select.Menu>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 323, y: -53 }
+-->
+<Toolbar export
+  component
+  as="Preview"
+  documentName="Untitled"
+  leftControls={<fragment>
+    {loggedIn && <fragment>
+      <NavAction save>Save as...</NavAction>
+      <NavAction download hover>Download</NavAction>
+      <NavAction disabled publish>Share</NavAction>
+    </fragment> || <Button.Button primary>Log in to save</Button.Button>}
+  </fragment>}
+  rightControls={<fragment>
+    {loggedIn && <fragment>
+      <ProfileSelect menu={showLoggedInMenu && <ProfileMenu />}>
+        <ProfileSelectButton active={showLoggedInMenu}>
+          <ProfileIcon>
+            <style>
+              background-image: url("./profile.jpg");
+            </style>
+          </ProfileIcon>
+        </ProfileSelectButton>
+      </ProfileSelect>
+    </fragment>}
+  </fragment>} />
+
+
+<!--
+  @frame { title: "Toolbar / logged in", width: 1024, height: 260, x: 1143, y: -12 }
+-->
+<Preview loggedIn />
+
+<!--
+  @frame { title: "Toolbar / logged in / menu open", width: 1024, height: 260, x: 1181, y: 464 }
+-->
+<Preview loggedIn showLoggedInMenu />

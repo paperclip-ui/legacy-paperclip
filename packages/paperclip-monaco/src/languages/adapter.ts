@@ -4,7 +4,7 @@ import {
   IRange,
   languages,
   Position
-} from "monaco-editor-core";
+} from "monaco-editor";
 import { Color, IPaperclipEngineInfoProvider } from "./service/base";
 import * as parseColor from "color";
 
@@ -26,16 +26,16 @@ export class PaperclipMonacoServiceAdapter
       model.uri.path.substr(1)
     );
 
-    return colors.map(({ color, location }) => {
-      const start = model.getPositionAt(location.start);
-      const end = model.getPositionAt(location.end);
+    return colors.map(({ color, start, end }) => {
+      const startPos = model.getPositionAt(start);
+      const endPos = model.getPositionAt(end);
       return {
         color,
         range: {
-          startLineNumber: start.lineNumber,
-          startColumn: start.column,
-          endColumn: end.column,
-          endLineNumber: end.lineNumber
+          startLineNumber: startPos.lineNumber,
+          startColumn: startPos.column,
+          endColumn: startPos.column,
+          endLineNumber: endPos.lineNumber
         }
       };
     });
@@ -77,12 +77,12 @@ export class PaperclipMonacoServiceAdapter
 
     return {
       incomplete: true,
-      suggestions: suggestions.map(({ label, insertText, location }) => {
+      suggestions: suggestions.map(({ label, insertText, range }) => {
         return {
           label,
           kind: languages.CompletionItemKind.Property,
           insertText,
-          range: getRange(model, location.start, location.end)
+          range: getRange(model, range.start.pos, range.end.pos)
         };
       })
     };

@@ -14,14 +14,15 @@
   "scripts": {
     "test": "",
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch --preserveWatchOutput"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "husky": "^4.2.5",
     "p-limit": "^2.3.0",
-    "pretty-quick": "^2.0.1"
+    "pretty-quick": "^2.0.1",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
     "chalk": "^4.0.0",

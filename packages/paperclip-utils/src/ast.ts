@@ -12,7 +12,7 @@ import {
   isRule,
   StyleExpression
 } from "./css-ast";
-import { BasicRaws, SourceLocation } from "./base-ast";
+import { BasicRaws, StringRange } from "./base-ast";
 import { flattenTreeNode, getNodePath, getTreeNodeMap } from "./tree";
 import * as crc32 from "crc32";
 import { resolveImportFile } from "./resolve";
@@ -43,19 +43,19 @@ export type BaseNode<TKind extends NodeKind> = {
 // TODO - include location here.
 export type Text = {
   value: string;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseNode<NodeKind.Text>;
 
 export type Annotation = {
   properties: AnnotationProperty[];
-  location: SourceLocation;
+  range: StringRange;
 } & BaseNode<NodeKind.Annotation>;
 
 export declare type Comment = {
   raws: BasicRaws;
   value: string;
   annotation: Annotation;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseNode<NodeKind.Comment>;
 
 export enum AnnotationPropertyKind {
@@ -86,14 +86,14 @@ export type ElementRaws = {
 
 export type Element = {
   id: string;
-  location: SourceLocation;
+  range: StringRange;
   raws: ElementRaws;
 
   // TODO - change this to OpenTag. Don't keep location here
-  openTagLocation: SourceLocation;
+  openTagRange: StringRange;
 
   // TODO - change this to ElementTagName. name should go in value
-  tagNameLocation: SourceLocation;
+  tagNameRange: StringRange;
   tagName: string;
   attributes: Attribute[];
   value: string;
@@ -102,7 +102,7 @@ export type Element = {
 
 export type StyleElement = {
   sheet: Sheet;
-  location: SourceLocation;
+  range: StringRange;
   raws: BasicRaws;
 } & BaseNode<NodeKind.StyleElement>;
 
@@ -119,25 +119,25 @@ type BaseAttribute<TKind extends AttributeKind> = {
 
 type ShorthandAttribute = {
   reference: JsExpression;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseAttribute<AttributeKind.ShorthandAttribute>;
 
 type SpreadAttribute = {
   script: JsExpression;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseAttribute<AttributeKind.SpreadAttribute>;
 
 type KeyValueAttribute = {
   name: string;
   value?: AttributeValue;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseAttribute<AttributeKind.KeyValueAttribute>;
 
 export type PropertyBoundAttribute = {
   name: string;
   bindingName: string;
   value: AttributeValue;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseAttribute<AttributeKind.PropertyBoundAttribute>;
 
 export type Attribute =
@@ -158,7 +158,7 @@ export type BaseAttributeValue<TKind extends AttributeValueKind> = {
 
 export type StringAttributeValue = {
   value: string;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseAttributeValue<AttributeValueKind.String>;
 
 export enum DynamicStringAttributeValuePartKind {
@@ -174,14 +174,14 @@ type BaseDynamicStringAttributeValuePart<
 };
 
 type DynamicStringLiteralPart = {
-  location: SourceLocation;
+  range: StringRange;
   value: string;
 } & BaseDynamicStringAttributeValuePart<
   DynamicStringAttributeValuePartKind.Literal
 >;
 
 type DynamicStringClassNamePiercePart = {
-  location: SourceLocation;
+  range: StringRange;
   className: string;
 } & BaseDynamicStringAttributeValuePart<
   DynamicStringAttributeValuePartKind.ClassNamePierce
@@ -197,12 +197,12 @@ export type DynamicStringAttributeValuePart =
 
 export type DynamicStringAttributeValue = {
   values: DynamicStringAttributeValuePart[];
-  location: SourceLocation;
+  range: StringRange;
 } & BaseAttributeValue<AttributeValueKind.DyanmicString>;
 
 export type SlotAttributeValue = {
   script: JsExpression;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseAttributeValue<AttributeValueKind.Slot>;
 
 export type AttributeValue =
@@ -213,12 +213,12 @@ export type AttributeValue =
 export type Fragment = {
   value: string;
   children: Node[];
-  location: SourceLocation;
+  range: StringRange;
 } & BaseNode<NodeKind.Fragment>;
 
 export type Slot = {
   script: JsExpression;
-  location: SourceLocation;
+  range: StringRange;
   raws: BasicRaws;
 } & BaseNode<NodeKind.Slot>;
 
@@ -530,16 +530,6 @@ export const traverseExpression = (
     }
   }
   return true;
-};
-
-export const getCompletionItems = (root: Expression, position: number) => {
-  let parent: Expression;
-  let previousSibling: Expression;
-  traverseExpression(root, expr => {
-    if (!expr.location) {
-      console.error("ERRRR", expr);
-    }
-  });
 };
 
 const traverseExpressions = (

@@ -1,0 +1,15 @@
+<style>
+  .preview {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 66, y: -11 }
+-->
+
+
+<div export component as="Preview" class="preview $theme.full-wh" />

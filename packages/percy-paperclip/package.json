@@ -1,24 +1,23 @@
 {
   "name": "percy-paperclip",
-  "version": "17.14.21",
+  "version": "18.0.3",
   "description": "Percy integration for Paperclip",
   "main": "index.js",
-  "bin": {
-    "percy-paperclip": "./bin/percy-paperclip"
-  },
+  "bin": "./bin/percy-paperclip",
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch --preserveWatchOutput"
   },
   "author": "",
   "license": "ISC",
-  "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "devDependencies": {
     "@types/mime": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
-    "eslint": "^7.4.0"
+    "eslint": "^7.4.0",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
     "@percy/client": "^1.0.0-beta.64",
@@ -28,7 +27,7 @@
     "lodash": "^4.17.19",
     "mime": "^2.4.6",
     "p-limit": "^3.1.0",
-    "paperclip": "^17.14.21",
+    "paperclip": "^18.0.3",
     "w3c-xmlhttprequest": "^2.1.3",
     "yargs": "^15.3.1"
   }

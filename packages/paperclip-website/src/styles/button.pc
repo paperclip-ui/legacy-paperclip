@@ -2,10 +2,8 @@
 <style>
   ._button {
     background: var(--color-green-neon-light);
-    /* color: var(--color-green-neon-light); */
     border: 2px solid var(--color-green-neon-light);
     border-radius: 24px;
-    /* box-shadow: 0px 0px 4px 4px rgba(0, 0, 0, 0.05); */
     padding: 8px 20px;
     display: inline-block;
     text-decoration: none;
@@ -19,13 +17,11 @@
       background-color: var(--color-green-neon);
     }
     &--secondary {
-
-      /* higher priority */
+      color: var(--color-green-neon-light);
       && {
         background-color: transparent;
       }
 
-      color: var(--color-green-neon-light);
       &:hover {
         color: var(--color-green-neon);
       }
@@ -37,7 +33,13 @@
 <!--
   @frame { visible: false }
 -->
-<a export component as="Anchor" className="_button {className?}" className:secondary="_button--secondary" className:strong="_button--strong" {href?}>
+<a export
+  component
+  as="Anchor"
+  class="_button {class?} {className?}"
+  class:secondary="_button--secondary"
+  class:strong="_button--strong"
+  {href?}>
   {children}
 </a>
 
@@ -45,6 +47,4 @@
 <!--
   @frame { visible: false }
 -->
-<Anchor href="#">
-  hello world
-</Anchor>
+<Anchor href="#">hello world</Anchor>

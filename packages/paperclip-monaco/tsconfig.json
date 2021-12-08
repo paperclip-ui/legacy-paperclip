@@ -3,6 +3,7 @@
     "outDir": "./lib",
     "target": "es5",
     "moduleResolution": "node",
+    "declaration": true,
     "module": "esnext",
     "allowSyntheticDefaultImports": true
   },

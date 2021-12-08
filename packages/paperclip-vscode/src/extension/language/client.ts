@@ -5,7 +5,7 @@ import {
   Observable,
   Observer
 } from "paperclip-common";
-import { workspace, ExtensionContext, window } from "vscode";
+import { workspace, ExtensionContext } from "vscode";
 
 import {
   LanguageClient,
@@ -15,13 +15,13 @@ import {
 } from "vscode-languageclient";
 import * as path from "path";
 import { $$EVENT } from "./server/constants";
-import { PCEngineCrashed } from "paperclip-designer/lib/server/services/pc-engine";
+// import { PCEngineCrashed } from "tandem-designer/lib/server/services/pc-engine";
 
 /**
  * Spins up language server
  */
 
-export class PaperclipLanguageClient implements Disposable, Observer {
+export class PaperclipLanguageClient implements Disposable {
   readonly events: Observable;
 
   private _client: LanguageClient;
@@ -61,13 +61,13 @@ export class PaperclipLanguageClient implements Disposable, Observer {
     );
   }
 
-  handleEvent = eventHandlers({
-    [PCEngineCrashed.TYPE]: () => {
-      window.showWarningMessage(
-        "Paperclip crashed - you'll need to reload this window."
-      );
-    }
-  });
+  // handleEvent = eventHandlers({
+  //   [PCEngineCrashed.TYPE]: () => {
+  //     window.showWarningMessage(
+  //       "Paperclip crashed - you'll need to reload this window."
+  //     );
+  //   }
+  // });
 
   async activate() {
     this._client.start();

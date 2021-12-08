@@ -1,6 +1,7 @@
 {
-  "compilerOptions": {},
-  "outputDirectory": "./lib",
-  "sourceDirectory": "./src",
-  "moduleDirectories": ["modules"]
+  "compilerOptions": {
+    "outDir": "./lib"
+  },
+  "srcDir": "./src",
+  "moduleDirs": ["modules"]
 }

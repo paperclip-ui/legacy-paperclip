@@ -21,15 +21,19 @@ import {
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "paperclip-language-service";
-import { PCEngineInitialized } from "paperclip-designer/lib/server/services/pc-engine";
+// import { PCEngineInitialized } from "tandem-designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
 import * as parseColor from "color";
 import { BaseEvent, Observable } from "paperclip-common";
 import { stripFileProtocol } from "paperclip-utils";
-import { DesignServerUpdated, DesignServerUpdating } from "./events";
+import {
+  DesignServerStarted,
+  DesignServerUpdated,
+  DesignServerUpdating,
+  ProjectStarted
+} from "./events";
 import { SourceLinted } from "paperclip-language-service";
-import * as url from "url";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
@@ -42,21 +46,22 @@ export class LanguageRequestResolver {
     private _connection: Connection,
     private _documents: DocumentManager
   ) {
+    [this._engineReady, this._resolveEngineReady] = deferPromise();
     this.events = new Observable();
+    this._listen();
   }
 
   handleEvent(event) {
-    if (event.type === PCEngineInitialized.TYPE) {
+    if (event.type === DesignServerStarted.TYPE) {
       this._service = new PaperclipLanguageService(
-        (event as PCEngineInitialized).engine
+        (event as DesignServerStarted).project.engine
       );
-      this._listen();
+      this._service.events.observe({
+        handleEvent: this._onServiceEvent
+      });
+      this._resolveEngineReady();
     } else if (event.type === DesignServerUpdating.TYPE) {
-      this._engineReady =
-        this._engineReady ||
-        new Promise(resolve => {
-          this._resolveEngineReady = resolve;
-        });
+      [this._engineReady, this._resolveEngineReady] = deferPromise();
     } else if (event.type === DesignServerUpdated.TYPE) {
       this._resolveEngineReady();
       this._engineReady = undefined;
@@ -67,10 +72,6 @@ export class LanguageRequestResolver {
     if (this._listening) {
       return;
     }
-
-    this._service.events.observe({
-      handleEvent: this._onServiceEvent
-    });
 
     this._listening = true;
 
@@ -112,8 +113,8 @@ export class LanguageRequestResolver {
           return {
             ...diagnostic,
             range: {
-              start: textDocument.positionAt(diagnostic.location.start),
-              end: textDocument.positionAt(diagnostic.location.end)
+              start: textDocument.positionAt(diagnostic.range.start.pos),
+              end: textDocument.positionAt(diagnostic.range.end.pos)
             }
           };
         })
@@ -138,11 +139,11 @@ export class LanguageRequestResolver {
     await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
-    return this._service.getDocumentColors(uri).map(({ value, location }) => {
+    return this._service.getDocumentColors(uri).map(({ value, start, end }) => {
       return {
         range: {
-          start: document.positionAt(location.start),
-          end: document.positionAt(location.end)
+          start: document.positionAt(start),
+          end: document.positionAt(end)
         },
         color: value
       };
@@ -177,18 +178,24 @@ export class LanguageRequestResolver {
       .filter(info => {
         const offset = document.offsetAt(params.position);
         return (
-          offset >= info.instanceLocation.start &&
-          offset <= info.instanceLocation.end
+          offset >= info.instanceRange.start.pos &&
+          offset <= info.instanceRange.end.pos
         );
       })
       .map(
         ({
           sourceUri,
-          instanceLocation: { start: instanceStart, end: instanceEnd },
-          sourceLocation: { start: sourceStart, end: sourceEnd },
-          sourceDefinitionLocation: {
-            start: definitionStart,
-            end: definitionEnd
+          instanceRange: {
+            start: { pos: instanceStart },
+            end: { pos: instanceEnd }
+          },
+          sourceRange: {
+            start: { pos: sourceStart },
+            end: { pos: sourceEnd }
+          },
+          sourceDefinitionRange: {
+            start: { pos: definitionStart },
+            end: { pos: definitionEnd }
           }
         }) => {
           const sourceDocument =
@@ -225,11 +232,11 @@ export class LanguageRequestResolver {
     const document = this._documents.getDocument(uri);
     return this._service
       .getLinks(uri)
-      .map(({ uri, location: { start, end } }) => ({
+      .map(({ uri, range: { start, end } }) => ({
         target: uri,
         range: {
-          start: document.positionAt(start),
-          end: document.positionAt(end)
+          start: document.positionAt(start.pos),
+          end: document.positionAt(end.pos)
         }
       })) as DocumentLink[];
   };
@@ -248,4 +255,14 @@ const getColorPresentation = (
   );
   const label = info.toString();
   return { label, textEdit: TextEdit.replace(range, label) };
+};
+
+const deferPromise = () => {
+  let _resolve;
+
+  const promise = new Promise(resolve => {
+    _resolve = resolve;
+  });
+
+  return [promise, _resolve];
 };

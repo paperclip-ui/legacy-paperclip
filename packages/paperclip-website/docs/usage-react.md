@@ -48,10 +48,10 @@ export default () => {
 
 <!-- Components -->
 
-<div export component as="Container" className="container">
+<div export component as="Container" class="container">
   Current count: {children}
 </div>
-<div export component as="CurrentCount" className="current-count">
+<div export component as="CurrentCount" class="current-count">
   {children}
 </div>
 

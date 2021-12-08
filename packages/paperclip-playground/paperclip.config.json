@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "name": "paperclip-compiler-react",
-    "module": "es6"
-  },
-  "sourceDirectory": "./src",
-  "moduleDirectories": ["../../node_modules", "../..", "node_modules"]
-}

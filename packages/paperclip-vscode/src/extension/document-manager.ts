@@ -12,8 +12,10 @@ import {
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
 import { eventHandlers, Observer } from "paperclip-common";
-import { RevealSourceRequested } from "./language/server/events";
-import { PCSourceEdited } from "paperclip-designer/lib/server/services/rpc";
+import {
+  PCSourceEdited,
+  RevealSourceRequested
+} from "./language/server/events";
 import { stripFileProtocol } from "paperclip-utils";
 import * as URL from "url";
 
@@ -89,8 +91,8 @@ export class DocumentManager implements Observer {
             fixFileUrlCasing(textSource.uri)
       ) || (await window.showTextDocument(textDocument, ViewColumn.One));
     editor.selection = new Selection(
-      textDocument.positionAt(textSource.location.start),
-      textDocument.positionAt(textSource.location.end)
+      textDocument.positionAt(textSource.range.start.pos),
+      textDocument.positionAt(textSource.range.end.pos)
     );
     editor.revealRange(editor.selection);
   };

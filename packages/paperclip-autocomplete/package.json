@@ -1,12 +1,12 @@
 {
   "name": "paperclip-autocomplete",
-  "version": "17.14.21",
+  "version": "18.0.3",
   "description": "Internal Autocomplete helper util for language clients",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
-    "build:watch": "tsc --watch",
+    "build:watch": "tsc --watch --preserveWatchOutput",
     "test": "mocha -R spec lib/test/**/*-test.js"
   },
   "author": "",
@@ -18,7 +18,8 @@
     "@typescript-eslint/parser": "^3.6.1",
     "chai": "^4.2.0",
     "eslint": "^7.4.0",
-    "mocha": "^8.0.1"
+    "mocha": "^8.0.1",
+    "typescript": "^4.2.3"
   },
-  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159"
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a"
 }

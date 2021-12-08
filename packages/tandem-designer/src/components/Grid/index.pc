@@ -1,0 +1,51 @@
+<style>
+
+  .grid {
+    --gap: 8px;
+    --columns: 1fr 1fr;
+    display: grid;
+    grid-template-columns: var(--columns);
+    grid-gap: var(--gap);
+  }
+
+  .item {
+    --span: 1;
+    grid-column-start: 1fr;
+    grid-column-end: span var(--span, 1);
+  }
+
+
+  .preview {}
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" class="grid" style="--columns: {columns};">
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 73, y: 33 }
+-->
+<div export component as="Item" class="item" style="--span: {span};">
+  {children}
+</div>
+
+
+<!--
+  @frame { title: "Grid", width: 1024, height: 768, x: 29, y: 31 }
+-->
+<div>
+  <Container columns="1fr 1fr 1fr">
+    <Item span="2">A</Item>
+    <Item>B</Item>
+    <Item>C</Item>
+    <Item span="3">D</Item>
+    <Item>E</Item>
+    <Item>F</Item>
+    <Item>G</Item>
+  </Container>
+</div>

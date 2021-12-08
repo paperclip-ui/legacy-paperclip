@@ -1,0 +1,40 @@
+<style>
+  .list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .item {
+    padding: var(--input-padding);
+    &--alt {
+      background: var(--background-3);
+    }
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<ul export component as="default" class="list">{children}</ul>
+
+<!--
+  @frame { visible: false }
+-->
+<li export component as="Item" class="item" class:alt="item--alt">
+  {children}
+</li>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div>
+  <default>
+    <Item>Item</Item>
+    <Item>Item</Item>
+    <Item>Item</Item>
+    <Item>Item</Item>
+    <Item>Item</Item>
+  </default>
+</div>

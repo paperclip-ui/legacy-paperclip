@@ -1,0 +1,49 @@
+<style>
+  .grid {
+    --stroke-width: 2px;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    filter: contrast(0);
+    pointer-events: none;
+  }
+  .pixel {
+    background: #F60;
+    width: 1px;
+    height: 1px;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Pixels" {style?} class="grid" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div class="pixel" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<svg width="5" height="5" xmlns="http://www.w3.org/2000/svg">
+  <line x1="0" y1="5" x2="5" y2="5" style="stroke: black; stroke-width: 1px;" />
+  <line x1="5" y1="0" x2="5" y2="5" style="stroke: black; stroke-width: 1px;" />
+</svg>
+
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 96, y: 68 }
+-->
+<Pixels />
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 96, y: 68 }
+-->

@@ -1,12 +1,12 @@
 {
   "name": "paperclip-utils",
-  "version": "17.14.21",
+  "version": "18.0.3",
   "description": "Internal utils for Paperclip",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
-    "build:watch": "tsc --watch",
+    "build:watch": "tsc --watch --preserveWatchOutput",
     "test": "mocha ./lib/test/**/*-test.js"
   },
   "author": "",
@@ -21,7 +21,7 @@
     "path": "^0.12.7",
     "url": "^0.11.0"
   },
-  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "devDependencies": {
     "@types/chokidar": "^2.1.3",
     "@types/glob": "^7.1.3",
@@ -31,6 +31,7 @@
     "chokidar": "^3.4.1",
     "eslint": "^7.4.0",
     "glob": "^7.1.6",
-    "mocha": "^7.2.0"
+    "mocha": "^7.2.0",
+    "typescript": "^4.2.3"
   }
 }

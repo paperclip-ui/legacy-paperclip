@@ -1,0 +1,80 @@
+<import src="components/Select/index.pc" as="Select" />
+<import src="styles/utils.pc" as="utils" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Preview">
+  <div>
+    <style>
+      padding: 10px;
+    </style>
+    <Select.Preview placeholder="div" />
+  </div>
+
+  <div>
+    <style>
+    </style>
+    <div>
+      <style>
+        background: var(--background-2);
+        padding: 5px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      </style>
+      :self
+
+      <i>
+        <style>
+          --size: 1em;
+          mask-image: url(./plus.svg);
+          @include utils.mask {}
+        </style>
+      </i>
+    </div>
+
+    <PropertyList>
+      <PropertyItem name="background" value="rgba(0,0,0)" />
+      <PropertyItem name="color" value="blue" />
+      <PropertyItem name="display" value="inline-block" />
+    </PropertyList>
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<ul component as="PropertyList">
+  <style>
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  </style>
+  {children}
+</ul>
+
+
+<!--
+  @frame { visible: false }
+-->
+<li component as="PropertyItem">
+  <style>
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    border-bottom: 1px solid rgb(70, 70, 70);
+    padding: 5px 10px;
+    .name {
+      width: 100%;
+    }
+    .value {
+      width: 100%;
+    }
+  </style>
+  <span class="name">{name}</span>
+  <span class="value">{value}</span>
+</li>

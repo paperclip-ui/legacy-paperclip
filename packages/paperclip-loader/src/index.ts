@@ -13,7 +13,7 @@ import * as path from "path";
 import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules";
-import { LoadedData, getStyleExports } from "paperclip";
+import { buildFile } from "paperclip-builder";
 
 let _engine: EngineDelegate;
 
@@ -31,8 +31,6 @@ const getEngine = async (): Promise<EngineDelegate> => {
 
 const virtualModuleInstances = new Map();
 
-let _loadedStyleFiles = {};
-
 async function pcLoader(
   source: string,
   virtualModules: VirtualModules,
@@ -41,7 +39,7 @@ async function pcLoader(
   this.cacheable();
   const callback = this.async();
 
-  const { resourceProtocol, configFile = PC_CONFIG_FILE_NAME }: Options =
+  const { configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
 
   let config: PaperclipConfig;
@@ -54,24 +52,32 @@ async function pcLoader(
   }
 
   const engine = await getEngine();
-  const compiler = require(resolve.sync(config.compilerOptions.name, {
-    basedir: process.cwd()
-  }));
-  let info: LoadedData;
-  let ast: any;
+  let files: Record<string, string> = {};
 
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
-    ast = await engine.parseContent(source, resourceUrl);
+    files = await buildFile(resourceUrl, engine, {
+      config: {
+        ...config,
+        compilerOptions: {
+          ...(config.compilerOptions || {}),
+          importAssetsAsModules: true,
 
-    info = await engine.open(resourceUrl);
+          // leave this stuff up to Webpack
+          embedAssetMaxSize: 0,
+          assetPrefix: null
+        }
+      },
+      cwd: process.cwd()
+    });
   } catch (e) {
     // eesh 🙈
-    const info =
-      e && e.location ? e : e.info && e.info.location ? e.info : null;
-    if (info && info.location) {
+    const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
+    if (info && info.range) {
       console.error(getPrettyMessage(info, source, resourceUrl, process.cwd()));
+    } else {
+      console.error(e);
     }
 
     return callback(
@@ -79,38 +85,21 @@ async function pcLoader(
     );
   }
 
-  const { sheet } = info;
+  const { js, ...exts } = files;
 
-  const styleCache = { ..._loadedStyleFiles };
-  _loadedStyleFiles = styleCache;
+  for (const ext in exts) {
+    let filePath = `${resourceUrl}.${ext}`;
 
-  let sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
-  const sheetFileName = path.basename(sheetFilePath);
+    // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
+    if (process.platform === "win32") {
+      filePath = filePath.replace(/\/+/g, "\\");
+    }
 
-  const code = compiler.compile(
-    {
-      ast,
-      classNames: getStyleExports(info).classNames,
-      sheetRelativeFilePath: `./${sheetFileName}`
-    },
-    resourceUrl,
-    config.compilerOptions
-  );
-
-  const sheetCode = stringifyCSSSheet(sheet, {
-    uri: resourceUrl,
-    resolveUrl:
-      resourceProtocol && (url => url.replace("file:", resourceProtocol))
-  });
-
-  // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
-  if (process.platform === "win32") {
-    sheetFilePath = sheetFilePath.replace(/\/+/g, "\\");
+    const fileUrl = url.fileURLToPath(filePath);
+    virtualModules.writeModule(fileUrl, exts[ext]);
   }
 
-  virtualModules.writeModule(sheetFilePath, sheetCode);
-
-  callback(null, code);
+  callback(null, js);
 }
 
 module.exports = function(source: string) {

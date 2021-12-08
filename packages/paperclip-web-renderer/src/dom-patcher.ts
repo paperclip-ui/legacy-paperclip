@@ -11,7 +11,7 @@ export interface Patchable {
   appendChild(child: Node);
   removeChild(child: Node);
   insertBefore(child: Node, before: Node);
-  namespaceURI: string;
+  namespaceURI: any;
 }
 
 export const patchNativeNode = (
@@ -56,10 +56,10 @@ export const patchNativeNode = (
             resolveUrl,
             parent.namespaceURI
           ),
-          target as ChildNode
+          (target as any) as ChildNode
         );
 
-        parent.removeChild(target as ChildNode);
+        parent.removeChild((target as any) as ChildNode);
         break;
       }
       case ActionKind.RemoveAttribute: {
@@ -78,7 +78,7 @@ export const patchNativeNode = (
         break;
       }
       case ActionKind.SetText: {
-        const text = target as Text;
+        const text = (target as any) as Text;
 
         // fixes https://github.com/crcn/paperclip/issues/609
         text.nodeValue = entities.decode(action.value.replace(/[\s\r]+/g, " "));
@@ -88,5 +88,8 @@ export const patchNativeNode = (
   }
 };
 
-const getTargetFromPath = (mount: Patchable, nodePath: number[]) =>
-  nodePath.reduce((current: Patchable, i) => current.childNodes[i], mount);
+const getTargetFromPath = (mount: Patchable, nodePath: number[]): Patchable =>
+  (nodePath.reduce(
+    (current: Patchable, i) => current.childNodes[i] as any,
+    mount
+  ) as any) as Patchable;

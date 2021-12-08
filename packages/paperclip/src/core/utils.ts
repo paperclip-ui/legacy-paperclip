@@ -106,14 +106,11 @@ const resolveResources = (
   cwd: string,
   filterFiles: (dir: string) => string[]
 ) => {
-  const sourceDir =
-    config.sourceDirectory === "."
-      ? cwd
-      : path.join(cwd, config.sourceDirectory);
+  const sourceDir = config.srcDir === "." ? cwd : path.join(cwd, config.srcDir);
   const filePaths = filterFiles(sourceDir);
 
-  if (config.moduleDirectories) {
-    for (const modulesDirname of config.moduleDirectories) {
+  if (config.moduleDirs) {
+    for (const modulesDirname of config.moduleDirs) {
       const moduleDirPath = path.join(cwd, modulesDirname);
       const moduleRoots = resolveModuleRoots(moduleDirPath);
       for (const moduleDir of moduleRoots) {
@@ -132,7 +129,7 @@ const resolveResources = (
         );
 
         const moduleSources = filterFiles(
-          path.join(moduleDir, moduleConfig.sourceDirectory)
+          path.join(moduleDir, moduleConfig.srcDir)
         );
 
         filePaths.push(...moduleSources);
@@ -159,7 +156,7 @@ export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
   // const ext = `+(jpg|jpeg|png|gif|svg)`;
   const exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".ttf"];
 
-  // const sourceDir = config.sourceDirectory;
+  // const sourceDir = config.srcDir;
 
   return resolveResources(
     config,
@@ -183,7 +180,7 @@ const getModulePath = (
 ) => {
   const configDir = path.dirname(url.fileURLToPath(configUri));
 
-  const moduleDirectory = path.join(configDir, config.sourceDirectory) + "/";
+  const moduleDirectory = path.join(configDir, config.srcDir) + "/";
 
   if (fullPath.indexOf(moduleDirectory) === 0) {
     const modulePath = fullPath.replace(moduleDirectory, "");
@@ -195,8 +192,8 @@ const getModulePath = (
     }
   }
 
-  if (config.moduleDirectories) {
-    for (const moduleDirectory of config.moduleDirectories) {
+  if (config.moduleDirs) {
+    for (const moduleDirectory of config.moduleDirs) {
       const fullModulePath = path.join(configDir, moduleDirectory);
       if (fullPath.indexOf(fullModulePath) === 0) {
         return fullPath.replace(fullModulePath, "").substr(1);

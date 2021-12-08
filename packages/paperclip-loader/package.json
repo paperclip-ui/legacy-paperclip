@@ -1,23 +1,25 @@
 {
   "name": "paperclip-loader",
-  "version": "17.14.21",
+  "version": "18.0.3",
   "description": "Webpack loader for Paperclip",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build:watch": "tsc --watch --preserveWatchOutput",
     "lint": "eslint src",
     "test": "mocha ./lib/test/**/*-test.js",
     "create:symlinks": "ln -s `pwd` examples/hello-world/node_modules/paperclip-loader"
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
-    "paperclip": "^17.14.21",
-    "paperclip-cli-utils": "^17.14.21",
+    "paperclip": "^18.0.3",
+    "paperclip-builder": "^18.0.3",
+    "paperclip-cli-utils": "^18.0.3",
+    "paperclip-interim": "^18.0.3",
     "resolve": "^1.15.1",
     "webpack-virtual-modules": "^0.4.1"
   },
@@ -25,6 +27,7 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
-    "mocha": "^8.0.1"
+    "mocha": "^8.0.1",
+    "typescript": "^4.2.3"
   }
 }

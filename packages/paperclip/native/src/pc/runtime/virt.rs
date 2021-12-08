@@ -173,7 +173,7 @@ impl Node {
       _ => {}
     }
   }
-  // pub fn get_source(&self) -> &ExprTextSource {
+  // pub fn get_range(&self) -> &ExprTextSource {
   //   match self {
   //     Node::Element(value) => &value.source,
   //     Node::Text(value) => &value.source,
@@ -181,7 +181,7 @@ impl Node {
   //     Node::StyleElement(value) => &value.source,
   //   }
   // }
-  pub fn get_source_id(&self) -> &String {
+  pub fn get_range_id(&self) -> &String {
     match self {
       Node::Element(value) => &value.source_id,
       Node::Text(value) => &value.source_id,

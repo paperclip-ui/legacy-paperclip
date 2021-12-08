@@ -5,7 +5,13 @@ module.exports = function(context, options) {
       // Disable svg loading in react because it's fooing with CSS. Docusaraus needs to implement
       // Rules.issuer for this, but I'm too lazy to make a PR for that.
       config.module.rules = config.module.rules.filter(rule => {
-        return String(rule.use).indexOf("@svgr/webpack?-prettier-svgo") !== 0;
+        if (
+          rule.test?.source.includes("svg") ||
+          rule.test?.source.includes("ttf")
+        ) {
+          return false;
+        }
+        return true;
       });
 
       return {

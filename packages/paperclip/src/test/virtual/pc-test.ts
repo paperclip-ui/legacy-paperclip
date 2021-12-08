@@ -102,7 +102,10 @@ describe(__filename + "#", () => {
       info: {
         kind: "EndOfFile",
         message: "End of file",
-        location: { start: 0, end: 1 }
+        range: {
+          start: { pos: 0, line: 0, column: 0 },
+          end: { pos: 0, line: 0, column: 0 }
+        }
       }
     });
   });
@@ -130,7 +133,10 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unexpected",
         message: "Unexpected token",
-        location: { start: 4, end: 5 }
+        range: {
+          start: { pos: 4, line: 1, column: 5 },
+          end: { pos: 4, line: 1, column: 5 }
+        }
       }
     });
   });
@@ -155,7 +161,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 58, end: 66 },
+      range: {
+        start: { pos: 58, line: 4, column: 9 },
+        end: { pos: 66, line: 4, column: 17 }
+      },
       message: "Unable to find component, or it's not exported."
     });
   });
@@ -181,7 +190,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 19, end: 33 },
+      range: {
+        start: { pos: 19, line: 2, column: 19 },
+        end: { pos: 33, line: 2, column: 33 }
+      },
       message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
   });
@@ -211,115 +223,6 @@ describe(__filename + "#", () => {
         `<span class="_80f4925f _pub-80f4925f">-1</span>`
       );
     });
-    xit("Displays an error if text binding is defined outside of component", async () => {
-      const graph = {
-        "/entry.pc": `
-          <a {class}></a>
-        `
-      };
-      const engine = await createMockEngine(graph);
-      let err;
-      try {
-        engine.open("/entry.pc");
-      } catch (e) {
-        err = e;
-      }
-      expect(err).to.eql({
-        kind: "Error",
-        errorKind: "Runtime",
-        uri: "/entry.pc",
-        location: { start: 12, end: 19 },
-        message: "Bindings can only be defined within components."
-      });
-    });
-    xit("Displays error for key-value binding outside of component", async () => {
-      const graph = {
-        "/entry.pc": `
-          <a a={class}></a>
-        `
-      };
-      const engine = await createMockEngine(graph);
-      let err;
-      try {
-        engine.open("/entry.pc");
-      } catch (e) {
-        err = e;
-      }
-      expect(err).to.eql({
-        kind: "Error",
-        errorKind: "Runtime",
-        uri: "/entry.pc",
-        location: { start: 14, end: 21 },
-        message: "Bindings can only be defined within components."
-      });
-    });
-
-    xit("Displays error for spread binding outside of component", async () => {
-      const graph = {
-        "/entry.pc": `
-          <a {...class}></a>
-        `
-      };
-      const engine = await createMockEngine(graph);
-      let err;
-      try {
-        engine.open("/entry.pc");
-      } catch (e) {
-        err = e;
-      }
-      expect(err).to.eql({
-        kind: "Error",
-        errorKind: "Runtime",
-        uri: "/entry.pc",
-        location: { start: 12, end: 22 },
-        message: "Bindings can only be defined within components."
-      });
-    });
-
-    xit("Displays error for text binding outside of component", async () => {
-      const graph = {
-        "/entry.pc": `
-          {a}
-        `
-      };
-      const engine = await createMockEngine(graph);
-      let err;
-      try {
-        engine.open("/entry.pc");
-      } catch (e) {
-        err = e;
-      }
-      expect(err).to.eql({
-        kind: "Error",
-        errorKind: "Runtime",
-        uri: "/entry.pc",
-        location: { start: 9, end: 12 },
-        message: "Bindings can only be defined within components."
-      });
-    });
-
-    xit("Displays error for class binding outside of component", async () => {
-      const graph = {
-        "/entry.pc": `
-          <div class:a="a">
-          </div>
-        `
-      };
-      const engine = await createMockEngine(graph);
-      let err;
-      try {
-        engine.open("/entry.pc");
-      } catch (e) {
-        err = e;
-      }
-      expect(err).to.eql({
-        kind: "Error",
-        errorKind: "Runtime",
-        uri: "/entry.pc",
-        location: { start: 14, end: 21 },
-        message: "Bindings can only be defined within components."
-      });
-    });
   });
 
   it("Engine can't reload a file if there's an error", async () => {
@@ -343,7 +246,10 @@ describe(__filename + "#", () => {
       info: {
         kind: "EndOfFile",
         message: "End of file",
-        location: { start: 0, end: 1 }
+        range: {
+          start: { pos: 0, line: 0, column: 0 },
+          end: { pos: 0, line: 0, column: 0 }
+        }
       }
     });
 
@@ -360,7 +266,10 @@ describe(__filename + "#", () => {
       info: {
         kind: "EndOfFile",
         message: "End of file",
-        location: { start: 0, end: 1 }
+        range: {
+          start: { pos: 0, line: 0, column: 0 },
+          end: { pos: 0, line: 0, column: 0 }
+        }
       }
     });
 
@@ -419,7 +328,10 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unterminated",
         message: "Unterminated slot.",
-        location: { start: 41, end: 44 }
+        range: {
+          start: { pos: 41, line: 2, column: 6 },
+          end: { pos: 44, line: 2, column: 9 }
+        }
       }
     });
 
@@ -454,7 +366,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 10, end: 18 },
+      range: {
+        start: { pos: 10, line: 2, column: 10 },
+        end: { pos: 18, line: 2, column: 18 }
+      },
       message: "Invalid number."
     });
   });
@@ -476,7 +391,7 @@ describe(__filename + "#", () => {
   it("Returns component properties", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" class:a="a" {f} {b} className="{c}">
+        <div component as="Test" class:a="a" {f} {b} class="{c}">
           {d}
           {e?}
           {f?}
@@ -623,7 +538,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 58, end: 105 },
+      range: {
+        start: { pos: 58, line: 4, column: 9 },
+        end: { pos: 105, line: 5, column: 15 }
+      },
       message: "Component name is already declared."
     });
   });
@@ -660,7 +578,10 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unterminated",
         message: "Unterminated element.",
-        location: { start: 9, end: 34 }
+        range: {
+          start: { pos: 9, line: 2, column: 9 },
+          end: { pos: 34, line: 2, column: 34 }
+        }
       }
     });
   });
@@ -688,17 +609,21 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unexpected",
         message: "Unexpected token",
-        location: { start: 14, end: 15 }
+        range: {
+          start: { pos: 14, line: 2, column: 14 },
+          end: { pos: 14, line: 2, column: 14 }
+        }
       }
     });
   });
 
-  it("Can apply a class to {className?} without needing $", async () => {
+  // we don't want this since it is _implicit_
+  xit("Can apply a class to {class?} without needing $", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className}>
+        <div component as="Test" {class}>
         </div>
-        <Test className="ok" />
+        <Test class="ok" />
       `
     };
 
@@ -710,7 +635,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Can apply a class to className={className?} without needing $`, async () => {
+  xit(`Can apply a class to className={className?} without needing $`, async () => {
     const graph = {
       "/entry.pc": `
         <div component as="Test" className={className?}>
@@ -727,7 +652,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Can apply a class to className="a {className?}" without needing $`, async () => {
+  xit(`Can apply a class to className="a {className?}" without needing $`, async () => {
     const graph = {
       "/entry.pc": `
         <div component as="Test" className="a {className?}">
@@ -751,7 +676,7 @@ describe(__filename + "#", () => {
         <module.Test className="$ok" />
       `,
       "/module.pc": `
-        <div export component as="Test" className="a {className?}">
+        <div export component as="Test" class="a {className?}">
         </div>
       `
     };
@@ -795,7 +720,7 @@ describe(__filename + "#", () => {
             color: blue;
           }
         </style>
-        <div className="its_a_match"></div>
+        <div class="its_a_match"></div>
       `
     };
 
@@ -804,35 +729,6 @@ describe(__filename + "#", () => {
     expect(buffer).to.eql(
       `<style>[class]._80f4925f_its_a_match { color:blue; }</style><div class="_80f4925f_its_a_match _pub-80f4925f_its_a_match its_a_match _80f4925f _pub-80f4925f"></div>`
     );
-  });
-
-  xit(`Errors if style block isn't defined at the root`, async () => {
-    const graph = {
-      "/entry.pc": `
-        <div>
-          <style>
-          </style>
-        </div>
-      `
-    };
-
-    const engine = await createMockEngine(graph);
-
-    let err;
-
-    try {
-      await engine.open("/entry.pc");
-      engine.getLoadedAst("/entry.pc");
-    } catch (e) {
-      err = e;
-    }
-
-    expect(err).to.eql({
-      errorKind: "Runtime",
-      uri: "/entry.pc",
-      location: { start: 25, end: 51 },
-      message: "Style blocks needs to be defined at the root."
-    });
   });
 
   // Addresses https://github.com/crcn/paperclip/issues/299
@@ -860,7 +756,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 25, end: 67 },
+      range: {
+        start: { pos: 25, line: 3, column: 11 },
+        end: { pos: 67, line: 4, column: 17 }
+      },
       message: "Components need to be defined at the root."
     });
   });
@@ -888,7 +787,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 20, end: 48 },
+      range: {
+        start: { pos: 20, line: 2, column: 20 },
+        end: { pos: 48, line: 2, column: 48 }
+      },
       message: "Components need to be defined at the root."
     });
   });
@@ -897,7 +799,7 @@ describe(__filename + "#", () => {
   it(`Displays an error if a shadow pierce import is missing`, async () => {
     const graph = {
       "/entry.pc": `
-        <div className="$tw.test">
+        <div class="$tw.test">
           
         </div>
       `
@@ -916,7 +818,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 24, end: 33 },
+      range: {
+        start: { pos: 20, line: 2, column: 20 },
+        end: { pos: 29, line: 2, column: 29 }
+      },
       message: "Reference not found."
     });
   });
@@ -950,7 +855,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 69, end: 78 },
+      range: {
+        start: { pos: 69, line: 3, column: 24 },
+        end: { pos: 78, line: 3, column: 33 }
+      },
       message: "Class name not found."
     });
   });
@@ -985,7 +893,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 69, end: 78 },
+      range: {
+        start: { pos: 69, line: 3, column: 24 },
+        end: { pos: 78, line: 3, column: 33 }
+      },
       message: "This class reference is private."
     });
   });
@@ -994,7 +905,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div className="$tw.test">
+        <div class="$tw.test">
           
         </div>
       `,
@@ -1020,7 +931,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div className=">>>tw.test">
+        <div class=">>>tw.test">
           
         </div>
       `,
@@ -1045,7 +956,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div export component as="Test" className="$tw.test">
+        <div export component as="Test" class="$tw.test">
           
         </div>
         <Test />
@@ -1075,7 +986,7 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `
         <import src="./module2.pc" as="tw" />
-        <div export component as="Test" className="$tw.test">
+        <div export component as="Test" class="$tw.test">
         </div>
       `,
       "/module2.pc": `
@@ -1100,7 +1011,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div export component as="Test" className="$tw.test checkbox">
+        <div export component as="Test" class="$tw.test checkbox">
           
         </div>
         <Test />
@@ -1400,7 +1311,7 @@ describe(__filename + "#", () => {
   it(`Can apply styles to a component`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className?}>
+        <div component as="Test" {class?}>
 
         </div>
         <Test>
@@ -1421,10 +1332,10 @@ describe(__filename + "#", () => {
   it(`Can apply styles to a component that has a class already defined`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className?}>
+        <div component as="Test" {class?}>
 
         </div>
-        <Test className="test">
+        <Test class="test">
           <style>
             background: blue;
           </style>
@@ -1442,15 +1353,15 @@ describe(__filename + "#", () => {
   it(`Can apply styles to instance of instance of component`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className?}>
+        <div component as="Test" {class?}>
 
         </div>
-        <Test component as="Test2" className="test {className?}">
+        <Test component as="Test2" class="test {class?}">
           <style>
             background: blue;
           </style>
         </Test>
-        <Test2 className="test3">
+        <Test2 class="test3">
           <style>
             background: orange;
           </style>
@@ -1618,13 +1529,13 @@ describe(__filename + "#", () => {
   it(`scoped styles can be applied to component instances`, async () => {
     const graph = {
       "/entry.pc": `
-      <span component as="Test" {className?}>
+      <span component as="Test" {class?}>
         <style>
           display: none;
         </style>
       </span>
 
-      <Test component as="Test2" {className?}>
+      <Test component as="Test2" {class?}>
         <style>
           display: block;
           .child {
@@ -1757,10 +1668,10 @@ describe(__filename + "#", () => {
       `<style>._3024ebf3._3024ebf3 { color:blue; } ._188f471f._188f471f { color:red; }</style><div class="_80f4925f _pub-80f4925f"><span class="_80f4925f _pub-80f4925f _3024ebf3"></span><div class="_80f4925f _pub-80f4925f _188f471f"></div></div>`
     );
   });
-  it(`Treats class & className the same`, async () => {
+  xit(`Treats class & className the same`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" className:a="a" class="a2">
+        <div component as="Test" class:a="a" class="a2">
         </div>
         <div className="a" />
         <div class="b" />
@@ -1848,9 +1759,9 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unexpected",
         message: "Unexpected token",
-        location: {
-          start: 5,
-          end: 6
+        range: {
+          start: { pos: 5, line: 1, column: 6 },
+          end: { pos: 5, line: 1, column: 6 }
         }
       }
     });

@@ -1,0 +1,23 @@
+{
+  "name": "paperclip-interim",
+  "version": "18.0.3",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "test": "mocha lib/test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crc32": "^0.2.2",
+    "paperclip": "^18.0.3"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.0.0",
+    "mocha": "^7.0.1",
+    "typescript": "^4.2.3"
+  },
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a"
+}

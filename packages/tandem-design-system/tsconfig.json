@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "outDir": "lib",
+    "target": "es2020",
+    "moduleResolution": "node",
+    "module": "es2022",
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules", "*-test", "lib", "index.d.ts", "test"],
+  "filesGlob": ["./src/**/*.ts"]
+}

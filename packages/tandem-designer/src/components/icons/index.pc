@@ -1,0 +1,41 @@
+<style>
+  @export {
+    .icon {
+      --size: 2em;
+      width: var(--size);
+      height: var(--size);
+      mask-size: var(--size);
+      mask-position: 50%;
+      background-color: currentColor;
+      mask-repeat: no-repeat;
+      &--dots {
+        height: calc(var(--size) / 2);
+        mask-image: url(./dots.svg);
+      }
+      &--plus {
+        --size: 1em;
+        mask-image: url(./plus.svg);
+      }
+    }
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Icon"
+  class="icon {class?}"
+  class:dots="icon--dots"
+  class:plus="icon--plus" />
+
+
+<!--
+  @frame { title: "Icons", width: 1024, height: 768, x: 167, y: 169 }
+-->
+<div>
+  <Icon dots />
+  <Icon plus />
+</div>

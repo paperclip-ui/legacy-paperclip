@@ -1,21 +1,6 @@
-import {
-  Uri,
-  window,
-  commands,
-  TextEditor,
-  Range,
-  WebviewPanel,
-  ExtensionContext,
-  ViewColumn,
-  workspace,
-  Selection,
-  env,
-  TextDocumentChangeEvent,
-  TextEdit,
-  WorkspaceEdit
-} from "vscode";
+import { window, WebviewPanel, ViewColumn } from "vscode";
 import * as path from "path";
-import { ImmutableStore, Observer } from "paperclip-common";
+import { ImmutableStore } from "paperclip-common";
 import { EventEmitter } from "events";
 import * as qs from "querystring";
 
@@ -44,6 +29,7 @@ export class LiveWindow {
   constructor(
     state: LiveWindowState,
     private _devServerPort: number,
+    private _projectId: string,
     private _panel: WebviewPanel
   ) {
     this._store = new ImmutableStore({
@@ -84,8 +70,9 @@ export class LiveWindow {
    * TODO - probably need to change to be event based instead.
    */
 
-  setDevServerPort(port: number) {
+  setDevServerInfo(port: number, projectId: string) {
     this._devServerPort = port;
+    this._projectId = projectId;
     this._render();
   }
 
@@ -172,7 +159,9 @@ export class LiveWindow {
     <body>
       <iframe id="app" src="http://localhost:${this._devServerPort}${
       state.location.pathname
-    }?${qs.stringify(state.location.query)}"></iframe>
+    }?${qs.stringify(state.location.query)}&embedded=1&projectId=${
+      this._projectId
+    }"></iframe>
     </body>
     </html>`;
   }
@@ -185,7 +174,12 @@ export class LiveWindow {
     });
   }
 
-  static newFromUri(uri: string, sticky: boolean, devServerPort: number) {
+  static newFromUri(
+    uri: string,
+    sticky: boolean,
+    devServerPort: number,
+    projectId: string
+  ) {
     const panel = window.createWebviewPanel(
       LiveWindow.TYPE,
       sticky ? "sticky preview" : `⚡️ ${path.basename(uri)}`,
@@ -198,6 +192,7 @@ export class LiveWindow {
     return new LiveWindow(
       { location: getLocationFromUri(uri), sticky },
       devServerPort,
+      projectId,
       panel
     );
   }
@@ -205,14 +200,15 @@ export class LiveWindow {
   static newFromPanel(
     panel: WebviewPanel,
     state: LiveWindowState,
-    devServerPort: number
+    devServerPort: number,
+    projectId: string
   ) {
-    return new LiveWindow(state, devServerPort, panel);
+    return new LiveWindow(state, devServerPort, projectId, panel);
   }
 }
 
 const getLocationFromUri = (uri: string): LiveWindowLocation => ({
-  pathname: "/canvas",
+  pathname: "/",
   query: {
     canvasFile: uri
   }

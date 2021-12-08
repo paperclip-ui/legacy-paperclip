@@ -1,0 +1,34 @@
+<import src="components/Pane/index.pc" as="Pane" />
+<import src="./files/index.pc" as="Files" />
+<import src="./symbols/index.pc" as="Symbols" />
+<import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
+<import src="styles/utils.pc" as="utils" />
+<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="components/Select/index.pc" as="Select" />
+<import src="./Header/index.pc" as="Header" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container">
+  <style>
+    width: 100%;
+  </style>
+  {children}
+</div>
+
+
+
+<!--
+  @frame { title: "Sidebar", width: 338, height: 416, x: 473, y: 375 }
+-->
+<ResizableContainer export component as="Preview" scrollable left>
+  <Container>
+    <Header.Preview />
+    <Pane.Container>
+      <Symbols.Preview />
+      <Files.Preview />
+    </Pane.Container>
+  </Container>
+</ResizableContainer>

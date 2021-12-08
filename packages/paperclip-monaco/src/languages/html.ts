@@ -1,4 +1,4 @@
-import { languages } from "monaco-editor-core";
+import { languages } from "monaco-editor";
 
 // https://github.com/microsoft/monaco-languages/tree/master/src/html
 export const config: languages.LanguageConfiguration = {

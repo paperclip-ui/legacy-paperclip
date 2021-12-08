@@ -1,0 +1,264 @@
+<import src="components/Pane/index.pc" as="Pane" />
+<import src="components/Tree/index.pc" as="Tree" />
+<import src="styles/utils.pc" as="utils" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="CubeIcon">
+  <style>
+    --size: 1.3em;
+    color: rgb(204, 0, 255);
+    mask-image: url(./cube.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="SocketIcon">
+  <style>
+    --size: 1.3em;
+    padding-right: 1px;
+    color: rgb(98, 255, 242);
+    mask-image: url(./socket.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="InsideIcon">
+  <style>
+    --size: 1.3em;
+    padding-right: 1px;
+    color: rgb(98, 255, 242);
+    mask-image: url(./inside.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="PlugIcon">
+  <style>
+    --size: 1em;
+    color: rgb(98, 255, 242);
+    mask-image: url(./plug.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="ShadowIcon" class:bw="bw">
+  <style>
+    --size: 0.8em;
+    padding-right: 2px;
+    color: rgb(204, 0, 255);
+    mask-image: url(./shadow.svg);
+    @include utils.mask {}
+    :self(.bw) {
+      color: inherit;
+    }
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="SquareIcon">
+  <style>
+    --size: 1.1em;
+    position: relative;
+    padding-right: 3px;
+    color: rgb(215, 255, 170);
+    mask-image: url(./square-empty-3.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="PaintIcon">
+  <style>
+    --size: 1.2em;
+    position: relative;
+    top: 1px;
+    mask-image: url(./paint-pallete.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="TextIcon">
+  <style>
+    --size: 0.9em;
+    position: relative;
+    padding-right: 2px;
+    color: rgb(215, 255, 170);
+    mask-image: url(./text-icon-2.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="DiamondIcon">
+  <style>
+    --size: 1em;
+    position: relative;
+    color: rgb(64, 255, 16);
+    padding-right: 2px;
+    mask-image: url(./diamond.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="FileInfo">
+  <!-- file name -->
+  <span>
+    <style>
+      margin-right: 8px;
+    </style>
+    {fileName}
+  </span>
+
+  <!-- file path -->
+  <span>
+    <style>
+      opacity: 0.5;
+    </style>
+    {dirPath}
+  </span>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<Pane export component as="SymbolsPane" title="Open" primary>
+  <Pane.Section>
+    <Tree.Node depth="0"
+      selected
+      open
+      leaf={<FileInfo fileName="Button.pc" dirPath="src/components" />}
+      controls={<span>&times</span>}
+      icon={<Tree.FileIcon extension="pc" />} />
+    <Tree.Node depth="0"
+      open
+      leaf="Button.pc"
+      icon={<Tree.FileIcon extension="pc" />} />
+    <Tree.Node depth="0"
+      open
+      leaf="index.pc"
+      icon={<Tree.FileIcon extension="pc" />} />
+
+
+    <!-- TODO at some point -->
+    <Tree.Node depth="0"
+      open
+      leaf="Button.pc"
+      icon={<Tree.FileIcon />}>
+      <style>
+        display: none;
+      </style>
+      <Tree.Node leaf="ListItem"
+        hasChildren
+        open
+        depth="1"
+        icon={<CubeIcon />}>
+        <Tree.Node leaf="div"
+          hasChildren
+          open
+          icon={<SquareIcon />}
+          depth="2">
+          <Tree.Node leaf="span"
+            hasChildren
+            open
+            icon={<SquareIcon />}
+            depth="3">
+            <Tree.Node leaf="label"
+              icon={<InsideIcon />}
+              depth="4" />
+          </Tree.Node>
+        </Tree.Node>
+      </Tree.Node>
+      <Tree.Node leaf="List"
+        hasChildren
+        open
+        depth="1"
+        icon={<CubeIcon />}>
+        <Tree.Node leaf="ListItem"
+          hasChildren
+          open
+          icon={<DiamondIcon />}
+          controls={<ShadowIcon bw />}
+          depth="2">
+          <Tree.Node leaf="label"
+            hasChildren
+            open
+            icon={<InsideIcon />}
+            depth="3">
+            <Tree.Node leaf="Some list item instance"
+              icon={<TextIcon />}
+              depth="4" />
+          </Tree.Node>
+          <!--Tree.Node leaf="shadow" hasChildren open icon={<ShadowIcon />} depth="3">
+            <style>
+            opacity: 0.5;
+            </style>
+            <Tree.Node leaf="div" hasChildren open  icon={<SquareIcon />} depth="4">
+            <Tree.Node leaf="span" hasChildren open icon={<SquareIcon />} depth="5">
+            <Tree.Node leaf="label"  icon={<InsideIcon />} depth="6">
+
+            </Tree.Node>
+            </Tree.Node>
+            </Tree.Node>
+            </Tree.Node-->
+        </Tree.Node>
+        <Tree.Node leaf="ListItem"
+          hasChildren
+          icon={<DiamondIcon />}
+          depth="2">
+          <Tree.Node leaf="label"
+            icon={<InsideIcon />}
+            depth="3" />
+          <!--Tree.Node leaf="shadow" hasChildren icon={<ShadowIcon />} depth="3">
+            <style>
+            opacity: 0.5;
+            </style>
+            </Tree.Node-->
+        </Tree.Node>
+      </Tree.Node>
+    </Tree.Node>
+  </Pane.Section>
+</Pane>
+
+
+<!--
+  @frame { visible: false }
+-->
+<SymbolsPane export component as="Preview" />

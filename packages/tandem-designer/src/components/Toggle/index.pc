@@ -1,0 +1,92 @@
+<style>
+  .button-group {
+    display: inline-flex;
+    border-radius: var(--border-radius-2);
+    .button {
+      overflow: hidden;
+      display: inline-block;
+      cursor: pointer;
+      font-weight: 600;
+      background: transparent;
+      padding: var(--input-padding);
+      border: none;
+      color: inherit;
+      &--hover, &:hover {
+        background: var(--background-active-1);
+      }
+      &--selected {
+        background: var(--background-selected-1);
+      }
+      &:first-child {
+        border-top-left-radius: var(--border-radius-2);
+        border-bottom-left-radius: var(--border-radius-2);
+      }
+      &:last-child {
+        border-top-right-radius: var(--border-radius-2);
+        border-bottom-right-radius: var(--border-radius-2);
+      }
+    }
+  }
+
+  .preview {
+    margin: 10px;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ButtonGroup" class="button-group">{children}</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 42, y: 31 }
+-->
+<button export
+  component
+  as="Button"
+  class="button"
+  class:selected="button--selected"
+  class:hover="button--hover">
+  {children}
+</button>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 44, y: 31 }
+-->
+<div class="preview">
+  <ButtonGroup>
+    <Button selected>a</Button>
+    <Button>b</Button>
+    <Button>c</Button>
+    <Button>d</Button>
+  </ButtonGroup>
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 64, y: 38 }
+-->
+<div class="preview">
+  <ButtonGroup>
+    <Button>a</Button>
+    <Button>b</Button>
+    <Button>c</Button>
+    <Button selected>d</Button>
+  </ButtonGroup>
+</div>
+
+
+<!--
+  @frame { title: "Button Group", width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div class="preview">
+  <ButtonGroup>
+    <Button>a</Button>
+    <Button>b</Button>
+    <Button selected>c</Button>
+    <Button>d</Button>
+  </ButtonGroup>
+</div>

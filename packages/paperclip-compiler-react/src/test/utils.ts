@@ -2,13 +2,17 @@ import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
-import { getStyleExports } from "paperclip";
+import { InterimCompiler } from "paperclip-interim";
+import { isPaperclipFile, PaperclipConfig } from "paperclip-utils";
 
 const builtin = {
   react: React
 };
 
-export const compileModules = async (graph: Record<string, string>) => {
+export const compileModules = async (
+  graph: Record<string, string>,
+  config: PaperclipConfig
+) => {
   const engine = await createEngineDelegate({
     io: {
       readFile: uri => graph[uri],
@@ -19,18 +23,16 @@ export const compileModules = async (graph: Record<string, string>) => {
     }
   });
 
+  const intermCompiler = new InterimCompiler(engine, { config });
+
   const modules = {};
 
   for (const path in graph) {
-    const result = await engine.open(path);
-    const { sheet } = result;
-    const ast = engine.getLoadedAst(path) as any;
-
-    const es6 = compile(
-      { ast, sheet, classNames: getStyleExports(result).classNames },
-      path
-    );
-
+    if (!isPaperclipFile(path)) {
+      modules[path] = () => graph[path];
+      continue;
+    }
+    const es6 = compile(intermCompiler.parseFile(path), path, config, []).code;
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,

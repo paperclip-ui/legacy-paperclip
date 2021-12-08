@@ -1,4 +1,4 @@
-import { BasicRaws, SourceLocation } from "./base-ast";
+import { BasicRaws, StringRange } from "./base-ast";
 import { Expression } from "./ast";
 
 export type Sheet = {
@@ -26,7 +26,7 @@ export enum RuleKind {
 
 type BaseRule<TKind extends RuleKind> = {
   ruleKind: TKind;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export enum SelectorKind {
@@ -52,7 +52,7 @@ export enum SelectorKind {
 
 export type BaseSelector<TKind extends SelectorKind> = {
   selectorKind: TKind;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 type GroupSelector = {
@@ -165,15 +165,15 @@ export enum StyleDeclarationKind {
 
 type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
   declarationKind: TKind;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export type KeyValueDeclaration = {
   name: string;
   value: string;
-  location: SourceLocation;
-  nameLocation: SourceLocation;
-  valueLocation: SourceLocation;
+  range: StringRange;
+  nameRange: StringRange;
+  valueRange: StringRange;
   raws: BasicRaws;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
@@ -188,12 +188,12 @@ export type Content = {
 
 export type IncludeReference = {
   parts: IncludePart[];
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export type IncludePart = {
   name: string;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export type StyleDeclaration =
@@ -203,7 +203,7 @@ export type StyleDeclaration =
   | Content;
 
 export type StyleRule = {
-  location: SourceLocation;
+  range: StringRange;
   selector: Selector;
   declarations: StyleDeclaration[];
   children: StyleRule[];
@@ -216,7 +216,7 @@ export type StyleRule = {
 pub struct KeyframeRule {
   pub key: String,
   pub declarations: Vec<Declaration>,
-  pub location: Location,
+  pub range: StringRange,
 }
 */
 
@@ -224,7 +224,7 @@ export type KeyframeRule = {
   key: string;
   raws: BasicRaws;
   declarations: StyleDeclaration[];
-  location: SourceLocation;
+  range: StringRange;
 } & BaseRule<RuleKind.Keyframe>;
 
 /*
@@ -233,14 +233,14 @@ export type KeyframeRule = {
 pub struct KeyframesRule {
   pub name: String,
   pub rules: Vec<KeyframeRule>,
-  pub location: Location,
+  pub range: StringRange,
 }*/
 
 export type KeyframesRule = {
   name: string;
   rules: KeyframeRule[];
   raws: BasicRaws;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseRule<RuleKind.Keyframes>;
 
 type ConditionShape = {
@@ -248,7 +248,7 @@ type ConditionShape = {
   conditionText: string;
   rules: ChildRule[];
   raws: BasicRaws;
-  location: SourceLocation;
+  range: StringRange;
   declarations: StyleDeclaration[];
 };
 
@@ -270,7 +270,7 @@ type CharsetRule = {
 
 type BaseInclude = {
   mixinName: IncludeReference;
-  location: SourceLocation;
+  range: StringRange;
   declarations: StyleDeclaration[];
   rules: StyleRule[];
   raws: BasicRaws;
@@ -282,18 +282,18 @@ export type MixinRule = {
   name: MixinName;
   raws: BasicRaws;
   declarations: StyleDeclaration[];
-  location: SourceLocation;
+  range: StringRange;
   rules: StyleRule[];
 } & BaseRule<RuleKind.Mixin>;
 
 export type MixinName = {
   value: string;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export type ExportRule = {
   rules: Rule[];
-  location: SourceLocation;
+  range: StringRange;
   raws: BasicRaws;
 } & BaseRule<RuleKind.Export>;
 

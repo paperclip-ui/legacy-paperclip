@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "percy": "^0.28.6",
-    "percy-paperclip": "^17.9.7"
+    "percy-paperclip": "^18.0.2"
   }
 }

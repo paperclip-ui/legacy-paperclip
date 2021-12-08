@@ -2,7 +2,7 @@ import {
   Sheet,
   LoadedData,
   memoize,
-  SourceLocation,
+  StringRange,
   traverseExpression,
   DependencyContent,
   Node,
@@ -28,7 +28,6 @@ import {
 } from "paperclip-utils";
 import { CSS_COLOR_NAME_REGEXP } from "./css-color-names";
 import * as parseColor from "color";
-const EMPTY_ARRAY = [];
 
 type Color = {
   red: number;
@@ -37,24 +36,31 @@ type Color = {
   alpha: number;
 };
 
-type ColorInfo = {
+export type ColorInfo = {
   value: Color;
-  location: SourceLocation;
+  start: number;
+  end: number;
 };
 
 type DocumentLinkInfo = {
   uri: string;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export type DefinitionInfo = {
   sourceUri: string;
-  instanceLocation: SourceLocation;
-  sourceLocation: SourceLocation;
-  sourceDefinitionLocation: SourceLocation;
+  instanceRange: StringRange;
+  sourceRange: StringRange;
+  sourceDefinitionRange: StringRange;
 };
 
-const EMPTY = {
+type CollectASTInfoResult = {
+  colors: ColorInfo[];
+  links: DocumentLinkInfo[];
+  definitions: DefinitionInfo[];
+};
+
+const EMPTY: CollectASTInfoResult = {
   colors: [],
   links: [],
   definitions: []
@@ -64,7 +70,7 @@ export const collectASTInfo = (
   entryUri: string,
   graph: DependencyGraph,
   evaluated: Record<string, LoadedData>
-) => {
+): CollectASTInfoResult => {
   if (!graph[entryUri]) {
     return EMPTY;
   }
@@ -116,7 +122,7 @@ const getDocumentLinks = (
     }
     links.push({
       uri: asts[uri].dependencyUriMaps[src.value],
-      location: src.location
+      range: src.range
     });
   }
 
@@ -144,9 +150,9 @@ const getDocumentDefinitions = (uri: string, graph: DependencyGraph) => {
     if (component) {
       definitions.push({
         sourceUri: instanceUri,
-        sourceLocation: component.location,
-        sourceDefinitionLocation: component.location,
-        instanceLocation: instance.tagNameLocation
+        sourceRange: component.range,
+        sourceDefinitionRange: component.range,
+        instanceRange: instance.tagNameRange
       });
     }
   }
@@ -346,7 +352,7 @@ const addDeclarationColors = (
     // in the string -- want to go through each one.
     modelDecl = modelDecl.replace(color, "_".repeat(color.length));
 
-    const colorStart = decl.valueLocation.start + colorIndex;
+    const colorStart = decl.valueRange.start.pos + colorIndex;
 
     try {
       const {
@@ -356,7 +362,8 @@ const addDeclarationColors = (
 
       allColors.push({
         value: { red: red / 255, green: green / 255, blue: blue / 255, alpha },
-        location: { start: colorStart, end: colorStart + color.length }
+        start: colorStart,
+        end: colorStart + color.length
       });
     } catch (e) {}
   }

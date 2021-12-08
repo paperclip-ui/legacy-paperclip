@@ -1,0 +1,113 @@
+<style>
+  .container {
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .from-outline {}
+
+  .to-outline {
+    --zoom: 1px;
+    position: absolute;
+    --padding: 0px;
+    box-shadow: 0px 0px 0px calc(var(--zoom) * 3) #F0F;
+    padding: var(--padding);
+    transform: translate(calc(-1 * var(--padding)/2), calc(-1 * var(--padding)/2));
+  }
+
+  .measuring-stick {
+    --color: #F0F;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border: 0.5px solid var(--color);
+    color: var(--color);
+    box-sizing: border-box;
+  }
+  .measuring-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    &--vertical {
+      transform: translateX(4px) translateY(-50%);
+    }
+    &--horizontal {
+      transform: translateX(-50%) translateY(4px);
+    }
+    &--horizontal&--flip {
+      transform: translateY(calc(-100% - 4px)) translateX(-50%);
+    }
+    &--vertical&--flip {
+      transform: translateY(-50%) translateX(calc(-100% - 4px));
+    }
+  }
+
+  .guide {
+    --color: #F0F;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    box-sizing: border-box;
+    border: 0.5px solid var(--color);
+    color: var(--color);
+    border-style: dashed;
+  }
+</style>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" {style?} class="container">{children}</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="FromOutline" {style} class="from-outline" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ToOutline" {style} class="to-outline" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="MeasuringStick" {style} class="measuring-stick">
+  <span class="measuring-label"
+    class:vertical="measuring-label--vertical"
+    class:horizontal="measuring-label--horizontal"
+    class:flipLabel="measuring-label--flip">
+    {distance}
+  </span>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Guide" {style} class="guide" />
+
+
+<!--
+  @frame { title: "Measurements", width: 1024, height: 768, x: 119, y: 183 }
+-->
+<div>
+  <ToOutline style="width: 100px; height: 100px;" />
+  <ToOutline style="left: 200px; top: 100px; width: 100px; height: 100px;" />
+  <MeasuringStick horizontal
+    flipLabel
+    style="top: 100px; left: 100px; width: 100px;"
+    distance="100px" />
+  <MeasuringStick vertical
+    flipLabel
+    style="top: 100px; left: 100px; width: 0px; height: 100px;"
+    distance="100px" />
+  <Guide vertical style="top: 100px; left: 50px; width: 0px; height: 100px;" />
+</div>

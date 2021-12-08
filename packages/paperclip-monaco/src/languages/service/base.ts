@@ -1,4 +1,4 @@
-import { Node, VirtualNode, SourceLocation } from "paperclip-utils";
+import { StringRange } from "paperclip-utils";
 
 export type Color = {
   red: number;
@@ -8,7 +8,8 @@ export type Color = {
 };
 
 export type ColorInfo = {
-  location: SourceLocation;
+  start: number;
+  end: number;
   color: Color;
 };
 
@@ -20,7 +21,7 @@ export type Suggestion = {
    */
   label: string;
   insertText: string;
-  location: SourceLocation;
+  range: StringRange;
 };
 export interface IPaperclipEngineInfoProvider {
   /**

@@ -1,0 +1,31 @@
+<import src="components/Pane/index.pc" as="Pane" />
+<import src="components/List/index.pc" as="List" />
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="default">
+  <Pane title="More" noMore>
+    <List>
+      <List.Item>font-family: Helvetica</List.Item>
+      <List.Item>some-obscure-prop: something</List.Item>
+    </List>
+  </Pane>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Preview">
+  <default />
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Preview />

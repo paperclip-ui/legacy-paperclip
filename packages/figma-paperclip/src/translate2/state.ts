@@ -106,7 +106,6 @@ const createAtomsFromPage2 = (
   if (hasCanvasCategory(page, options)) {
     const atom = createAtomFromCanvas(page, options);
     if (atom) {
-      console.log(JSON.stringify(atom, null, 2));
       atoms.push(atom);
     }
   } else {

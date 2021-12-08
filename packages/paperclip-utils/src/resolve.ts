@@ -74,9 +74,7 @@ const resolveModule = fs => (
   const configPathDir = path.dirname(stripFileProtocol(configUrl));
 
   const moduleFileUrl = url.pathToFileURL(
-    path.normalize(
-      path.join(configPathDir, config.sourceDirectory, moduleRelativePath)
-    )
+    path.normalize(path.join(configPathDir, config.srcDir, moduleRelativePath))
   );
 
   // FIRST look for modules in the sourceDirectory
@@ -86,13 +84,12 @@ const resolveModule = fs => (
   }
 
   // No bueno? Move onto the module directories then
-
-  if (config.moduleDirectories) {
+  if (config.moduleDirs) {
     const firstSlashIndex = moduleRelativePath.indexOf("/");
     const moduleName = moduleRelativePath.substr(0, firstSlashIndex);
     const srcPath = moduleRelativePath.substr(firstSlashIndex);
-    for (let i = 0, { length } = config.moduleDirectories; i < length; i++) {
-      const moduleDir = config.moduleDirectories[i];
+    for (let i = 0, { length } = config.moduleDirs; i < length; i++) {
+      const moduleDir = config.moduleDirs[i];
       const moduleDirectory = path.join(
         resolveModuleDirectory(fs)(configPathDir, moduleDir),
         moduleName
@@ -106,11 +103,11 @@ const resolveModule = fs => (
         );
         const sourceDir = path.join(
           path.dirname(url.fileURLToPath(moduleConfigUrl)),
-          moduleConfig.sourceDirectory
+          moduleConfig.srcDir
         );
         const outputDir = path.join(
           path.dirname(url.fileURLToPath(moduleConfigUrl)),
-          moduleConfig.outputDirectory || moduleConfig.sourceDirectory
+          moduleConfig.compilerOptions?.outDir || moduleConfig.srcDir
         );
         const actualPath = resolveOutput
           ? modulePath.replace(sourceDir, outputDir)

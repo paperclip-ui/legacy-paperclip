@@ -18,9 +18,17 @@ describe(__filename + "#", () => {
       [
         {
           uri: "/test.pc",
-          location: {
-            start: 24,
-            end: 33
+          range: {
+            start: {
+              pos: 24,
+              line: 2,
+              column: 24
+            },
+            end: {
+              pos: 33,
+              line: 2,
+              column: 33
+            }
           }
         }
       ]
@@ -34,8 +42,6 @@ describe(__filename + "#", () => {
         engine.getLoadedGraph(),
         engine.getAllLoadedData()
       );
-      // console.log(info.links);
-
       expect(info.links).to.eql(expectedLinks);
     });
   });

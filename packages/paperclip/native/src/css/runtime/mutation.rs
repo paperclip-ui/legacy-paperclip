@@ -1,6 +1,5 @@
 use super::virt::Rule;
 use crate::base::ast::ExprTextSource;
-use crate::base::ast::Location;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

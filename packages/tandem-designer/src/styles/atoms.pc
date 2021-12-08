@@ -1,0 +1,280 @@
+<style>
+  @export {
+    * {
+      box-sizing: border-box;
+    }
+
+    @mixin ease-in {
+      transition: 0.2s;
+    }
+
+    .code {
+      font-family: Roboto, Monaco, sans-serif;
+      letter-spacing: 0.1em;
+      font-size: 13px;
+    }
+
+    .font-regular {
+      font-family: Open Sans, sans-serif;
+      color: var(--font-color);
+    }
+
+    .button-reset {
+      border: none;
+      color: inherit;
+      letter-spacing: inherit;
+      background: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --text-color: #767676;
+      --text-color-night: #F0F0F0;
+      --grey-50: rgb(240, 240, 240);
+      --grey-75: rgb(240, 240, 240);
+      --grey-100: #D9D9D9;
+      --grey-200: rgb(194, 194, 194);
+      --grey-250: rgb(221, 220, 220);
+      --grey-200: rgb(194, 194, 194);
+      --grey-300: rgb(136, 136, 136);
+      --grey-400: rgb(85, 85, 85);
+      --grey-night-100: #4D4D4D;
+      --grey-night-300: #292929;
+      --grey-night-400: rgb(29, 29, 29);
+      --grey-night-500: #151515;
+      --background-50: rgb(240, 240, 240);
+      --background-100: var(--grey-100);
+      --background-200: var(--grey-200);
+      --background-300: var(--grey-300);
+      --color-blue-100: rgb(102, 163, 255);
+      --color-blue-500: rgb(51, 113, 206);
+      --shadow-100: 4px 4px 4px rgba(0, 0, 0, 0.1);
+      --border-radius-100: 4px;
+      font-family: Open Sans;
+    }
+
+
+    /*
+       https://www.figma.com/file/dOQZzseI3v7LUEwXjAKw4I/Polaris-for-Admin%3A-Colors-(Community)?node-id=2989%3A2
+    */
+    :root {
+      --font-default: Open Sans;
+      --border-color: grey;
+      --token-color: rgb(190, 190, 190);
+      --keyword-input-background: rgb(240, 240, 240);
+      --border-color: rgb(211, 211, 211);
+      --font-size: 14px;
+      --font-color: rgb(88, 88, 88);
+      --icon-color: var(--icon-color-override, rgb(155, 155, 155));
+      --hover-bg-color: rgb(129, 193, 252);
+      --hover-fg-color: white;
+      --active-bg-color: rgb(66, 164, 255);
+      --active-fg-color: white;
+      --button-background-color: rgb(182, 182, 182);
+      --background-100: rgb(247, 247, 247);
+      --background-150: rgb(241, 241, 241);
+      --background-200: rgb(224, 224, 224);
+      --background-250: rgb(209, 209, 209);
+      --border-radius-1: 2px;
+      --border-radius-2: 4px;
+    }
+
+    :root {
+      --z-index-100: 100;
+    }
+
+    :root {
+      --box-shadow-100: 0px 2px 2px 0px rgba(61, 61, 61, 0.432);
+    }
+
+    .button-base {
+      display: inline-flex;
+      align-items: center;
+      grid-column-gap: var(--spacing-3);
+      flex-direction: row;
+      color: rgb(88, 88, 88);
+      background: rgb(224, 224, 224);
+      border: 1px solid var(--border-color);
+      padding: var(--spacing-2) var(--spacing-4);
+      border-radius: var(--radius-2);
+    }
+
+
+    @mixin hover-bg {
+      background: var(--hover-bg-color);
+      color: var(--hover-fg-color);
+      --icon-color-override: var(--hover-fg-color);
+    }
+
+    @mixin active-bg {
+      background: var(--active-bg-color);
+      color: var(--active-fg-color);
+    }
+
+    @mixin button-reset {
+      border: none;
+      background: transparent;
+      padding: 0;
+    }
+
+    @mixin absolute-center {
+      transform: translate(-50%, -50%);
+      left: 50%;
+      top: 50%;
+    }
+
+    .font-default {
+      font-weight: 400;
+      font-family: var(--font-default);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    :root {
+      --text-default: black;
+      --text-subdued: black;
+      --text-disabled: black;
+      --text-critical: black;
+      --text-warning: black;
+      --text-success: black;
+      --text-highlight: black;
+      --text-on-interactive: white;
+      --text-on-primary: white;
+      --text-on-critical: white;
+    }
+
+    :root {
+      --icon-default: black;
+      --icon-subdued: black;
+      --icon-hovered: black;
+      --icon-pressed: black;
+      --icon-disabled: black;
+      --icon-critical: black;
+      --icon-warning: black;
+      --icon-success: black;
+      --icon-highlight: black;
+      --icon-on-interactive: black;
+      --icon-on-primary: black;
+      --icon-on-critical: black;
+    }
+
+    :root {
+      --interactive-default: black;
+      --interactive-hovered: black;
+      --interactive-depressed: black;
+      --interactive-disabled: black;
+      --interactive-critical: black;
+      --interactive-critical-hovered: black;
+      --interactive-critical-depresed: black;
+      --interactive-critical-disabled: black;
+    }
+
+    :root {
+      --border-default: black;
+      --border-subdued: black;
+      --border-hovered: black;
+      --border-depressed: black;
+      --border-disabled: black;
+      --border-box-subdued: black;
+      --border-critical-default: black;
+      --border-critical-subdued: black;
+      --border-critical-disabled: black;
+      --border-success-default: black;
+      --border-success-subdued: black;
+      --border-highlight-default: black;
+      --border-highlight-subdued: black;
+    }
+
+    :root {
+      --focused-default: black;
+    }
+
+    :root {
+      --spacing-1: 2px;
+      --spacing-2: 4px;
+      --spacing-3: 8px;
+      --spacing-4: 12px;
+      --spacing-5: 16px;
+      --spacing-6: 24px;
+      --spacing-7: 32px;
+      --spacing-8: 40px;
+      --spacing-9: 48px;
+      --spacing-10: 64px;
+      --spacing-11: 80px;
+      --spacing-12: 96px;
+      --spacing-13: 160px;
+    }
+
+    :root {
+      --radius-1: var(--spacing-1);
+      --radius-2: var(--spacing-2);
+      --radius-3: var(--spacing-3);
+      --raduis-4: var(--spacing-4);
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      font-family: var(--font-default);
+      font-weight: 500;
+      padding: 0;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+  }
+
+
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="Color" style="--value: {value}">
+  <style>
+    border-radius: var(--radius-3);
+    background-color: var(--value);
+    width: 50px;
+    height: 50px;
+  </style>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="Section">
+  <h4>{title}</h4>
+  <div>
+    <style>
+      display: flex;
+      grid-column-gap: var(--spacing-5);
+    </style>
+    {children}
+  </div>
+</div>
+
+<!--
+  @frame { visible: false, title: "DS", width: 1024, height: 768, x: 1306, y: -7 }
+-->
+<div>
+  <style>
+    padding: var(--spacing-5);
+  </style>
+  <Section title="Colors">
+    <Color value="var(--gray-gray-50)" />
+    <Color value="var(--gray-gray-50)" />
+    <Color value="var(--gray-gray-50)" />
+  </Section>
+</div>
+
+<div export component as="Preview" class:padded="padded">
+  <style>
+    &.padded {
+      padding: var(--spacing-4);
+    }
+  </style>
+  {children}
+</div>

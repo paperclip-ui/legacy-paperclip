@@ -76,22 +76,15 @@ export const root = {
     };
   },
   generate(
-    { sourceDirectory, overwrite, cwd }: any,
+    { sourceDirectory: srcDir, overwrite, cwd }: any,
     { [GeneratorKind.Root]: { compilerName } = { compilerName: null } }: any
   ) {
     const config: PaperclipConfig = {
-      compilerOptions: {
-        // no option here, yet
-        name: compilerName,
-        module: "es6"
-      },
-      sourceDirectory
+      srcDir
     };
 
     const files = {
-      [sourceDirectory + "/hello-paperclip.pc"]: overwrite
-        ? HELLO_WORLD_CONTENT
-        : null
+      [srcDir + "/hello-paperclip.pc"]: overwrite ? HELLO_WORLD_CONTENT : null
     };
 
     if (!fsa.existsSync(path.join(cwd, "paperclip.config.json"))) {

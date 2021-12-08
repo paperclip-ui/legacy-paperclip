@@ -1,5 +1,4 @@
 import { IPaperclipEngineInfoProvider } from "./base";
-import { SourceLocation } from "paperclip-utils";
 import * as channels from "./channel";
 import { workerAdapter } from "paperclip-common";
 

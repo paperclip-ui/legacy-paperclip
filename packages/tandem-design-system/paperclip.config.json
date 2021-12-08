@@ -1,0 +1,29 @@
+{
+  "srcDir": "./src",
+  "compilerOptions": {
+    "outDir": "./lib"
+  },
+  "lintOptions": {
+    "enforceVars": [
+      "font-family",
+      "color",
+      "background",
+      "background-color",
+      "margin",
+      "margin-left",
+      "margin-right",
+      "margin-top",
+      "margin-bottom",
+      "padding",
+      "padding-left",
+      "padding-right",
+      "padding-top",
+      "padding-bottom",
+      "border",
+      "border-left",
+      "border-right",
+      "border-top",
+      "border-bottom"
+    ]
+  }
+}

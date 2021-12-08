@@ -2,7 +2,7 @@
 // event can remain ephemeral.
 
 import { Node } from "./ast";
-import { SourceLocation } from "./base-ast";
+import { StringRange } from "./base-ast";
 import { EngineErrorKind, GraphErrorInfo } from "./errors";
 import { EvaluatedData, DiffedData, LoadedData, SheetInfo } from "./virt";
 
@@ -65,7 +65,7 @@ export type GraphErrorEvent = {
 export type RuntimeErrorEvent = {
   uri: string;
   message: string;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseEngineErrorEvent<EngineErrorKind.Runtime>;
 
 export type LoadedEvent = {

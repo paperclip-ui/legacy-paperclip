@@ -1,6 +1,12 @@
-export type SourceLocation = {
-  start: number;
-  end: number;
+export type StringPosition = {
+  pos: number;
+  line: number;
+  column: number;
+};
+
+export type StringRange = {
+  start: StringPosition;
+  end: StringPosition;
 };
 
 export type BasicRaws = {

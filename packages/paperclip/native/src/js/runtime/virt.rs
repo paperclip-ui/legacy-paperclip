@@ -35,10 +35,10 @@ impl JsValue {
       _ => false,
     }
   }
-  pub fn get_source_id(&self) -> &String {
+  pub fn get_range_id(&self) -> &String {
     match self {
       JsValue::JsUndefined(value) => &value.source_id,
-      JsValue::JsNode(value) => &value.get_source_id(),
+      JsValue::JsNode(value) => &value.get_range_id(),
       JsValue::JsBoolean(value) => &value.source_id,
       JsValue::JsNumber(value) => &value.source_id,
       JsValue::JsString(value) => &value.source_id,

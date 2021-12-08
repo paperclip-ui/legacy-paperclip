@@ -1,13 +1,11 @@
 {
   "name": "figma-paperclip",
-  "version": "17.14.21",
+  "version": "18.0.3",
   "description": "",
   "main": "index.js",
-  "bin": {
-    "figma-paperclip": "./bin/figma-paperclip"
-  },
+  "bin": "./bin/figma-paperclip",
   "scripts": {
-    "build:watch": "tsc --watch",
+    "build:watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc"
   },
   "author": "",
@@ -24,5 +22,6 @@
     "p-limit": "^3.1.0",
     "tinycolor2": "^1.4.2",
     "yargs": "^17.0.1"
-  }
+  },
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a"
 }

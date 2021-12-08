@@ -5,7 +5,7 @@ report diagnostics. All other parts of the app can use regular error handling.
 */
 
 use crate::base::ast::ExprTextSource;
-use crate::base::ast::Location;
+use crate::base::ast::Range;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -69,7 +69,7 @@ impl SyntaxDiagnosticInfo {
       message,
       DiagnosticInfo::Syntax(SyntaxDiagnosticInfo {
         code,
-        source: ExprTextSource::new(uri.to_string(), Location::new(start, end)),
+        source: ExprTextSource::new(uri.to_string(), Range::new(start, end)),
       }),
     )
   }

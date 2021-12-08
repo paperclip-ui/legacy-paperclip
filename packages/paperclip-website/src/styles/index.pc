@@ -4,12 +4,12 @@
 <import src="./button.pc" as="button" />
 <import src="./icons/icons.pc" as="icons" />
 
-<!-- You should be able to <i>see</i> what you're building in
-                    realtime, and that's what Paperclip provides - tooling to
-                    build your UIs <i>visually</i>. No more need to jump back
-                    and forth between the browser and code.
+<!--  You should be able to <i>see</i> what you're building in
+  realtime, and that's what Paperclip provides - tooling to
+  build your UIs <i>visually</i>. No more need to jump back
+  and forth between the browser and code.
 
-                    -->
+-->
 <style>
   :root {
     --row-max-width: 1800px;
@@ -32,7 +32,6 @@
     flex-shrink: 0;
     font-size: 1.7em;
     position: relative;
-    /* top: 2px; */
   }
 </style>
 
@@ -41,19 +40,22 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="Highlight" className="_highlight" 
-  className:noBreak="noBreak"
-  className:darker="darker"
-  className:bold="bold">
+<span export
+  component
+  as="Highlight"
+  class="_highlight"
+  class:noBreak="noBreak"
+  class:darker="darker"
+  class:bold="bold">
   <style>
     color: var(--color-green-neon-light);
+    font-weight: 500;
     :self(.darker) {
       color: var(--color-green-army);
     }
     :self(.bold) {
       font-weight: 600;
     }
-    font-weight: 500;
     :self(.noBreak) {
       white-space: nowrap;
     }
@@ -65,11 +67,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Home" className="_home $typography.text-default">
+<div export component as="Home" class="_home $typography.text-default">
   <style>
     background: rgb(245, 245, 245);
     line-height: 1.6em;
-    * { 
+    * {
       box-sizing: border-box;
     }
   </style>
@@ -80,13 +82,10 @@
 <!--
   @frame { visible: false }
 -->
-<layout.Container export component as="Header" className="$_header $_main">
+<layout.Container export component as="Header" class="$_header $_main">
   <style>
-    /* background: rgb(58, 60, 65); */
-    background: rgb(48, 50, 56);
-    /* background: rgb(68, 70, 77); */
-    /* color: white; */
 
+    background: rgb(48, 50, 56);
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
@@ -99,7 +98,7 @@
   <!-- navigation -->
   <layout.Row>
     <style>
-      /* padding: var(--gap-5); */
+
       padding-top: var(--gap-5);
       display: none;
     </style>
@@ -123,86 +122,73 @@
   </layout.Row>
   <layout.Row>
     <style>
-    padding-top: 140px;
+      padding-top: 140px;
     </style>
-    <div className="_blurb">
+    <div class="_blurb">
       <style>
-          width: 100%;
-          max-width: 600px;
-          margin: 0px auto;
-
-          flex-shrink:0;
-          text-align: center;
-          margin-bottom: 60px;
+        width: 100%;
+        max-width: 600px;
+        margin: 0px auto;
+        flex-shrink: 0;
+        text-align: center;
+        margin-bottom: 60px;
       </style>
-      <div className="_title">
+      <div class="_title">
         <style>
           color: rgba(255, 255, 255, 0.9);
-
-          /* filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164)); */
-          @include typography.text-secondary;
           font-size: 2em;
           line-height: 1.3em;
-          /* white-space: nowrap; */
           margin-bottom: var(--gap-5);
           font-weight: 600;
           letter-spacing: 0.04em;
+          @include typography.text-secondary {}
         </style>
         {title}
       </div>
-      <div className="_subtext">
+      <div class="_subtext">
         <style>
           color: rgba(255, 255, 255, 0.9);
-          /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
           font-weight: 500;
           letter-spacing: 0.075em;
           line-height: 1.8em;
           font-size: 1.1em;
-          /* padding-right: 20px; */
-
           ._emoji {
             color: rgba(255, 255, 255, 1);
           }
         </style>
         {description}
       </div>
-      <div className="_cta">
+      <div class="_cta">
         <style>
           margin-top: 15px;
-          :global(a) { 
+          :global(a) {
             margin-right: 15px;
             margin-top: 15px;
-            &:first-child {
-              margin-left: 0;
-            }
             @include tiny {
               width: 100%;
               box-sizing: border-box;
               margin-right: 0;
+            }
+            &:first-child {
+              margin-left: 0;
             }
           }
         </style>
         {cta}
       </div>
     </div>
-    </layout.Row>
-    <layout.Row>
-    <div className="_preview">
+  </layout.Row>
+  <layout.Row>
+    <div class="_preview">
       <style>
         position: relative;
-        /* left: calc(100% - 400px); */
         width: 100%;
-        /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
         :global(img, video) {
           border-radius: 4px;
           box-shadow: 0px 0px 10px 10px rgba(36, 36, 36, 0.281);
-          /* box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247); */
-          /* border: 1px solid rgba(99, 99, 99, 0.404); */
-
           width: 100%;
           margin: 0px auto;
-          @include mobile {      
-            /* width: 140%; */
+          @include mobile {
             transform: translate(-50%);
             position: absolute;
             left: 50%;
@@ -218,7 +204,7 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="CodePreview" className="_code-preview">
+<div component as="CodePreview" class="_code-preview">
   <style>
     width: 100%;
     height: 100%;
@@ -232,22 +218,22 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Summary" className="_summary $layout._row">
+<div export component as="Summary" class="_summary $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
-    @include layout.py-6;
+    @include layout.py-6 {}
   </style>
-  <div className="$layout._col12">
-    <div className="_title">
+  <div class="$layout._col12">
+    <div class="_title">
       <style>
-        @include typography.text-secondary;
         font-size: 1.5em;
         font-weight: 500;
         margin-bottom: var(--gap-4);
+        @include typography.text-secondary {}
       </style>
       {title}
     </div>
-    <div className="_text">
+    <div class="_text">
       <style>
         font-size: 20px;
         line-height: 1.6em;
@@ -263,7 +249,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="MainFeatures" className="_main-features $layout._row">
+<div export component as="MainFeatures" class="_main-features $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
     border-bottom: 1px solid rgb(226, 226, 226);
@@ -275,16 +261,17 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="MainFeatureItem" className="_item $layout._col $layout._col6">
+<div export
+  component
+  as="MainFeatureItem"
+  class="_item $layout._col $layout._col6">
   <style>
-    @include layout.py-6;
     display: flex;
     flex-direction: column;
-
+    @include layout.py-6 {}
     :self(:first-child) {
       border-right: 1px solid rgb(226, 226, 226);
       padding-right: 30px;
-
       @include mobile {
         padding-right: 0px;
         border-right: 0px;
@@ -301,31 +288,31 @@
       }
     }
   </style>
-  <div className="_heading">
+  <div class="_heading">
     <style>
-     display: flex;
+      display: flex;
     </style>
-    <icons.Icon name={iconName} className="$_icon">
+    <icons.Icon name={iconName} class="$_icon">
       <style>
-        @include section-icon;
+        @include section-icon {}
       </style>
     </icons.Icon>
-    <div className="_info">
+    <div class="_info">
       <style>
         display: flex;
         flex-direction: column;
       </style>
-      <div className="_title">
+      <div class="_title">
         <style>
-          @include typography.text-secondary;
           font-size: 1.2em;
           display: flex;
           font-weight: 500;
           margin-bottom: var(--gap-4);
+          @include typography.text-secondary {}
         </style>
         <span>{title}</span>
       </div>
-      <div className="_details">
+      <div class="_details">
         <style>
           margin-bottom: 2em;
           height: 80px;
@@ -334,15 +321,13 @@
       </div>
     </div>
   </div>
-  <div className="_example">
+  <div class="_example">
     <style>
       font-size: 14px;
       :global(.prism-code) {
         max-height: 400px;
       }
-      :global(.prism-code > div) {
-        /* height: 400px; */
-      }
+      :global(.prism-code > div) {}
     </style>
     {example}
   </div>
@@ -353,11 +338,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="VariousFeatures" className="_various-features $layout._row">
+<div export
+  component
+  as="VariousFeatures"
+  class="_various-features $layout._row">
   <style>
     border-top: 1px solid rgb(255, 255, 255);
     border-bottom: 1px solid rgb(226, 226, 226);
-
   </style>
   {children}
 </div>
@@ -366,13 +353,15 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="VariousFeatureItem" className="_item $layout._col $layout._col3">
+<div export
+  component
+  as="VariousFeatureItem"
+  class="_item $layout._col $layout._col3">
   <style>
     :self {
       @include layout.py-6;
       display: flex;
       margin: 0px auto;
-      /* background: blue; */
       margin-left: 10px;
       @include mobile {
         margin-left: 0;
@@ -383,25 +372,23 @@
     }
 
   </style>
-  <icons.Icon name={iconName} className="$_icon">
+  <icons.Icon name={iconName} class="$_icon">
     <style>
-      @include section-icon;
+      @include section-icon {}
     </style>
   </icons.Icon>
-  <div className="_info">
-    <div className="_title">
+  <div class="_info">
+    <div class="_title">
       <style>
-        @include typography.text-secondary;
         font-size: 18px;
         font-weight: 500;
         align-items: flex-start;
         margin-bottom: 20px;
+        @include typography.text-secondary {}
       </style>
       <span>{title}</span>
     </div>
-    <div className="_details">
-      {description}
-    </div>
+    <div class="_details">{description}</div>
   </div>
 </div>
 
@@ -409,40 +396,41 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="BigFeature" className="_big-feature $layout._section $layout._row" className:ctaText="has_cta">
+<div export
+  component
+  as="BigFeature"
+  class="_big-feature $layout._section $layout._row"
+  class:ctaText="has_cta">
   <style>
     border-bottom: 1px solid rgb(226, 226, 226);
     border-top: 1px solid rgb(255, 255, 255);
     padding-top: 80px;
     padding-bottom: 80px;
-
   </style>
-  <div className="$layout._col $layout._col3">
+  <div class="$layout._col $layout._col3">
     <style>
       display: flex;
     </style>
 
     <!-- here just for spacing -->
-    <icons.Icon name="grow" className="$_icon">
+    <icons.Icon name="grow" class="$_icon">
       <style>
-        @include section-icon;
         visibility: hidden;
+        @include section-icon {}
       </style>
     </icons.Icon>
-    <div clasName="_info">
-      <div className="_title">
+    <div class="_info">
+      <div class="_title">
         <style>
-          @include typography.text-secondary;
           font-size: 1.3em;
           margin-bottom: var(--gap-5);
           font-weight: 500;
+          @include typography.text-secondary {}
         </style>
         {title}
       </div>
-      <div className="_details">
-        {description}
-      </div>
-      <a className="_mini-cta-link" href={ctaHref?}>
+      <div class="_details">{description}</div>
+      <a class="_mini-cta-link" href={ctaHref?}>
         <style>
           display: none;
           margin-top: 10px;
@@ -450,8 +438,6 @@
           align-items: center;
           color: inherit;
           text-decoration: none;
-
-
           ._mini-cta-icon {
             font-size: 0.9em;
             margin-left: 6px;
@@ -462,11 +448,11 @@
           }
         </style>
 
-        {ctaText} <icons.Icon name="chevron-right" className="$_mini-cta-icon" />
+        {ctaText}<icons.Icon name="chevron-right" class="$_mini-cta-icon" />
       </a>
     </div>
   </div>
-  <div className="_preview $layout._col $layout._col9">
+  <div class="_preview $layout._col $layout._col9">
     <style>
       :self {
         margin-left: 15px;
@@ -489,96 +475,95 @@
   @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -94, y: -55 }
 -->
 <Home component as="Preview">
-  <Header 
-    title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
-    description={<fragment>With tooling for <Highlight>realtime previews</Highlight> & <Highlight>automatic visual regresion testing</Highlight>, you can build UIs in no time using the language you already know.</fragment>}
-    cta={<fragment>
-      <!-- <button.Anchor className="$typography.semi-bold" strong>Get started</button.Anchor>
-      <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor> -->
-      <button.Anchor className="$typography.semi-bold" strong>Sign up for early access</button.Anchor>
+  <Header title={<fragment>
+      Use plain HTML & CSS to build web applications in <Highlight noBreak>
+        record time.
+      </Highlight>
     </fragment>}
-    preview={<video src="../../static/vid/paperclip-fast-demo.mp4" autoplay loop />}
-  />
+    description={<fragment>
+      With tooling for <Highlight>realtime previews</Highlight> & <Highlight>
+        automatic visual regresion testing
+      </Highlight>, you can build UIs in no time using the language you already
+      know.
+    </fragment>}
+    cta={<fragment>
+      <!--  <button.Anchor class="$typography.semi-bold" strong>Get started</button.Anchor>
+        <button.Anchor secondary class="$typography.semi-bold">Check out on GitHub</button.Anchor>-->
+      <button.Anchor class="$typography.semi-bold" strong>
+        Sign up for early access
+      </button.Anchor>
+    </fragment>}
+    preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
+      autoplay
+      loop />} />
 
-  <Summary title="Iterate faster" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
+  <Summary title="Iterate faster"
+    text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
 
   <MainFeatures>
-    <MainFeatureItem
-      iconName="shapes"
+    <MainFeatureItem iconName="shapes"
       title="A minimalistic UI language"
       description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component."
-      example={<CodePreview />}
-    />
-    <MainFeatureItem
-      iconName="reactjs"
+      example={<CodePreview />} />
+    <MainFeatureItem iconName="reactjs"
       title="Import directly into React code"
       description="Paperclip documents compile to plain code that you can import directly into your code."
-      example={<CodePreview />}
-    />
+      example={<CodePreview />} />
   </MainFeatures>
 
-  <VariousFeatures>    
-    <VariousFeatureItem 
-      iconName="chaotic-1"
+  <VariousFeatures>
+    <VariousFeatureItem iconName="chaotic-1"
       title="No global CSS"
-      description="CSS styles are explicitly referenced within Paperclip, so you don't have to have to worry about styles leaking out."
-    /> 
-    <VariousFeatureItem 
-      iconName="link"
+      description="CSS styles are explicitly referenced within Paperclip, so you don't have to have to worry about styles leaking out." />
+    <VariousFeatureItem iconName="link"
       title="Strongly typed"
-      description="UIs compile to strongly typed code, so worry less about breaking changes."
-    />
-    <VariousFeatureItem 
-      iconName="grow"
+      description="UIs compile to strongly typed code, so worry less about breaking changes." />
+    <VariousFeatureItem iconName="grow"
       title="Works with your existing codebase"
-      description="Paperclip compliments your existing codebase, so use it as you go."
-    />
+      description="Paperclip compliments your existing codebase, so use it as you go." />
   </VariousFeatures>
-  <!-- <VariousFeatures>    
-    <VariousFeatureItem 
-      iconName="brush"
-      title="Works with third-party CSS"
-      description="Just import your "
-    /> 
-    <VariousFeatureItem 
-      iconName="link"
-      title="Strongly typed"
-      description="UIs compile to strongly typed code, so worry less about breaking changes."
+  <!--  <VariousFeatures>
+    <VariousFeatureItem
+    iconName="brush"
+    title="Works with third-party CSS"
+    description="Just import your "
     />
-    <VariousFeatureItem 
-      iconName="grow"
-      title="Incrementally adoptable"
-      description="Paperclip compliments your existing codebase, so use it as you go."
+    <VariousFeatureItem
+    iconName="link"
+    title="Strongly typed"
+    description="UIs compile to strongly typed code, so worry less about breaking changes."
     />
-  </VariousFeatures> -->
+    <VariousFeatureItem
+    iconName="grow"
+    title="Incrementally adoptable"
+    description="Paperclip compliments your existing codebase, so use it as you go."
+    />
+    </VariousFeatures>-->
 
-  <!-- <BigFeature 
+  <!--  <BigFeature
     title="Pairs well with third-party CSS"
     description="Paperclip works with your existing"
     preview={<video src="../../static/vid/grid-demo.mp4" autoplay loop />}
-  /> -->
+    />-->
 
-  <BigFeature 
-    title="See all of your UIs in one spot"
+  <BigFeature title="See all of your UIs in one spot"
     description="No more digging around for UI elements. Open the birds-eye view to see all of your application UIs, and easily find what you're looking for."
-    preview={<video src="../../static/vid/grid-demo.mp4" autoplay loop />}
-  />
-  <BigFeature 
-    title="Cross-browser testing made easy"
+    preview={<video src="../../static/vid/grid-demo.mp4" autoplay loop />} />
+  <BigFeature title="Cross-browser testing made easy"
     description="Launch any browser directly within Paperclip and design against them in realtime."
-    preview={<video src="../../static/vid/cross-browser-testing.mp4" autoplay loop />}
-  />
+    preview={<video src="../../static/vid/cross-browser-testing.mp4"
+      autoplay
+      loop />} />
 
 
-  <BigFeature 
-    title="Never miss a CSS Bug"
+  <BigFeature title="Never miss a CSS Bug"
     description="Use the visual regression tool to catch every visual state of your UI. Feel more confident about maintaining your styles."
-    preview={<video src="../../static/vid/visual-regression-testing.mp4" autoplay loop />}
-    ctaText="View the API"
-  />
+    preview={<video src="../../static/vid/visual-regression-testing.mp4"
+      autoplay
+      loop />}
+    ctaText="View the API" />
 
   <Footer />
-
 </Home>
 
 
@@ -586,31 +571,35 @@
   @frame { visible: false, width: 1024, height: 768, x: 725, y: -252 }
 -->
 <div export component as="Footer">
+  <style>
+
+    background: rgb(48, 50, 56);
+    padding: 80px;
+    text-align: center;
+    display: none;
+  </style>
+  <div>
     <style>
-
-      background: rgb(48, 50, 56);
-      padding: 80px;
-      text-align: center;
-      display: none;
-
+      max-width: 400px;
+      margin: 0px auto;
     </style>
     <div>
       <style>
-        max-width: 400px;
-        margin: 0px auto;
+        color: white;
+        font-size: 18px;
+        margin-bottom: 24px;
+        line-height: 1.6em;
       </style>
-      <div>
-        <style>
-          color: white;
-          font-size: 18px;
-          margin-bottom: 24px;
-          line-height: 1.6em;
-        </style>  
-        Paperclip is currently in closed beta, but sign up if you're interested and we'll reach out soon!
-      </div>
-      <button.Anchor className="$typography.semi-bold" strong href="https://forms.gle/WJDVJEm9siYatABcA">Sign up for early access</button.Anchor>
+      Paperclip is currently in closed beta, but sign up if you're interested and
+      we'll reach out soon!
     </div>
+    <button.Anchor class="$typography.semi-bold"
+      strong
+      href="https://forms.gle/WJDVJEm9siYatABcA">
+      Sign up for early access
+    </button.Anchor>
   </div>
+</div>
 
 
 <!--
@@ -622,4 +611,3 @@
   @frame { title: "Mobile", width: 491, height: 4817, x: 1531, y: -57 }
 -->
 <Preview />
-

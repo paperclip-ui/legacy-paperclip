@@ -1,0 +1,99 @@
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" {tagName?} {style?} {class?} {onScroll}>
+  <style>
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+    position: relative;
+  </style>
+  <div style={contentStyle}>
+    <style>
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    </style>
+    {children}
+  </div>
+  <Resizer style={resizerStyle} />
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="Resizer" {style}>
+  <style>
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+  </style>
+</div>
+
+
+
+<!--
+  @frame { visible: false, width: 472, height: 454, x: 0, y: 0 }
+-->
+<Container>
+  <style>
+    background: grey;
+    width: 400px;
+    height: 400px;
+    color: white;
+    font-family: sans-serif;
+    font-size: 24px;
+    background: blue;
+  </style>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+  <div>Child</div>
+</Container>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -42, y: 957 }
+-->
+<div>
+  <Container resizerStyle="height: 2000px;">
+    <style>
+      background: grey;
+      width: 400px;
+      height: 400px;
+      color: white;
+      font-family: sans-serif;
+      font-size: 24px;
+      background: blue;
+    </style>
+    <div>Child</div>
+    <div>Child</div>
+    <div>Child</div>
+    <div>Child</div>
+    <div>Child</div>
+    <div>Child</div>
+    <div>Child</div>
+    <div>Child</div>
+  </Container>
+</div>

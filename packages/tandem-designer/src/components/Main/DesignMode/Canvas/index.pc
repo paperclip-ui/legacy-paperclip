@@ -1,0 +1,46 @@
+<import src="./Tools/Frames/index.pc" as="Frames" />
+
+<style>
+  .canvas, .inner {
+    background: rgb(231, 231, 231);
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Canvas"
+  {style?}
+  {onMouseMove?}
+  {onScroll?}
+  {onWheelCapture?}
+  data-label="Canvas"
+  class="canvas">
+  <style>
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  </style>
+  {children}
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Inner" {style?} class="inner">{children}</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Canvas />
+
+<Canvas export component as="Preview">
+  <Frames.Preview />
+</Canvas>

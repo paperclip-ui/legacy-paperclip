@@ -13,24 +13,29 @@ Here's an example of what it might look like:
 ```javascript
 {
 
+  // directory where all of the Paperclip files live
+  "srcDir": "./src",
+
+  // paths to module directories
+  "moduleDirs": ["node_modules"],
+
   // options for the target compiler "name"
   "compilerOptions": {
 
-    // compiler that translate `*.pc` files into the target framework. 
-    "name": "paperclip-compiler-react",
-
-    // (optional) compile as es6 or commonjs module. ES6 is default.
-    "module": "es6" | "commonjs",
+    // directory where PC files should be compiled to. Defaults to srcDir
+    "outDir": "./lib",
   },
+  
+  "lintOptions": {
 
-  // (optional) directory where JS & CSS files are compiled to
-  "outputDirectory": "./lib",
+    // Flag styles that aren't used 
+    "noUnusedStyles": true,
 
-
-  // directory where all of the Paperclip files live
-  "sourceDirectory": "./src",
-
-  // paths to module directories
-  "moduleDirectories": ["node_modules"]
+    // ensure that these CSS properties are always using variables.
+    "enforceVars": [
+      "font-family",
+      "color"
+    ]
+  }
 }
 ```

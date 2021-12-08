@@ -1,30 +1,27 @@
 import { WebviewPanel, window } from "vscode";
-import {
-  BaseEvent,
-  Disposable,
-  eventHandlers,
-  Observable,
-  Observer
-} from "paperclip-common";
+import { eventHandlers, Observable, Observer } from "paperclip-common";
 import { LiveWindow, LiveWindowState } from "./live-window";
-import { HTTPServerStarted } from "paperclip-designer/lib/server/services/http-server";
-import {
-  ActionType,
-  LocationChanged
-} from "../../../../paperclip-designer/lib";
+import { DesignServerStarted } from "../language/server/events";
+// import { HTTPServerStarted } from "tandem-designer/lib/server/services/http-server";
+// import {
+//   ActionType,
+//   LocationChanged
+// } from "../../../../paperclip-designer/lib";
 
 export class LiveWindowManager implements Observer {
   readonly events: Observable;
   private _windows: LiveWindow[];
   private _devServerPort: number;
+  private _projectId: string;
   constructor() {
     this._windows = [];
     this.events = new Observable();
   }
-  _onDevServerStarted = ({ port }: HTTPServerStarted) => {
-    this._devServerPort = port;
+  _onDevServerStarted = ({ httpPort, projectId }: DesignServerStarted) => {
+    this._devServerPort = httpPort;
+    this._projectId = projectId;
     for (const window of this._windows) {
-      window.setDevServerPort(port);
+      window.setDevServerInfo(httpPort, projectId);
     }
   };
   getLength() {
@@ -39,7 +36,12 @@ export class LiveWindowManager implements Observer {
     return false;
   }
   open(uri: string, sticky: boolean) {
-    const liveWindow = LiveWindow.newFromUri(uri, sticky, this._devServerPort);
+    const liveWindow = LiveWindow.newFromUri(
+      uri,
+      sticky,
+      this._devServerPort,
+      this._projectId
+    );
     this._add(liveWindow);
   }
   private _add(window: LiveWindow) {
@@ -54,12 +56,19 @@ export class LiveWindowManager implements Observer {
         panel: WebviewPanel,
         state: LiveWindowState
       ) => {
-        this._add(LiveWindow.newFromPanel(panel, state, this._devServerPort));
+        this._add(
+          LiveWindow.newFromPanel(
+            panel,
+            state,
+            this._devServerPort,
+            this._projectId
+          )
+        );
       }
     });
   }
 
   handleEvent = eventHandlers({
-    [HTTPServerStarted.TYPE]: this._onDevServerStarted
+    [DesignServerStarted.TYPE]: this._onDevServerStarted
   });
 }

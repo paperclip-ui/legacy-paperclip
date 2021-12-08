@@ -1,0 +1,22 @@
+{
+  "name": "tandem-common",
+  "version": "18.0.3",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mime-types": "^2.1.32",
+    "node-fetch": "^2.6.1",
+    "paperclip-utils": "^18.0.3"
+  },
+  "devDependencies": {
+    "@types/redux-saga": "^0.10.5",
+    "typescript": "^4.3.5"
+  }
+}

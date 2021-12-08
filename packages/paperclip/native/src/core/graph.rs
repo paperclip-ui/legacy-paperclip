@@ -1,5 +1,5 @@
 use super::vfs::VirtualFileSystem;
-use crate::base::ast::Location;
+use crate::base::ast::Range;
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
@@ -22,7 +22,7 @@ pub enum GraphErrorInfo {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeNodeFoundError {
   pub uri: String,
-  pub location: Location,
+  pub range: Range,
   pub message: String,
 }
 
@@ -175,21 +175,21 @@ impl DependencyGraph {
           let err: GraphError = match import {
             Some((origin_uri, relative_uri)) => {
               if let Some(origin_dep) = self.dependencies.get(&origin_uri) {
-                let location = match &origin_dep.content {
+                let range = match &origin_dep.content {
                   DependencyContent::Node(node) => pc_ast::get_import_by_src(&relative_uri, node)
                     .unwrap()
-                    .open_tag_location
+                    .open_tag_range
                     .clone(),
                   DependencyContent::StyleSheet(_) => {
                     // TODO once imports are working in CSS sheets
-                    Location { start: 0, end: 0 }
+                    Range::nil()
                   }
                 };
 
                 let info = GraphErrorInfo::IncludeNotFound(IncludeNodeFoundError {
                   message: "import not found".to_string(),
                   uri: curr_uri.to_string(),
-                  location,
+                  range,
                 });
 
                 GraphError {
@@ -344,8 +344,7 @@ impl<'a> Dependency {
       } else {
         return Err(ParseError::unexpected(
           format!("Unable to resolve path: {} from {}", src, uri),
-          0,
-          0,
+          Range::nil(),
         ));
       }
     }

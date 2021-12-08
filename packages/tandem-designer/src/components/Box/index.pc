@@ -1,0 +1,9 @@
+<import src="tandem-design-system/src/atoms.pc" as="atoms" />
+<div export component as="default" {class?}>
+  <style>
+    display: flex;
+    grid-column-gap: var(--gap);
+    grid-row-gap: var(--gap);
+  </style>
+  {children}
+</div>

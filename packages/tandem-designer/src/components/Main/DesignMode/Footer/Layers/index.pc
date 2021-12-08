@@ -1,0 +1,237 @@
+<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="styles/utils.pc" as="utils" />
+
+<style>
+  :root {
+    --value-object-color: rgb(226, 84, 207);
+    --arrow-size: 20px;
+  }
+</style>
+
+<style>
+  .tag {
+    padding: var(--spacing-1);
+  }
+  .token {
+    color: rgb(150, 150, 150);
+  }
+  .control {
+    color: rgb(66, 164, 255);
+  }
+  .text {
+    color: rgb(121, 121, 121);
+  }
+  .attribute {}
+  .string {
+    color: rgb(226, 84, 207);
+  }
+</style>
+
+<div export component as="Attribute">
+  <style>
+    white-space: nowrap;
+    margin-left: var(--spacing-3);
+  </style>
+  <span class="control ">{name}</span>
+  <span class="token">=</span>
+  <span class="string">"{value}"</span>
+</div>
+
+
+<div export
+  component
+  as="Leaf"
+  {class?}
+  {onClick?}
+  class:active="active"
+  class:hover="hover"
+  class:inline="inline"
+  style="--depth: {depth}">
+  <style>
+    padding: var(--spacing-1);
+    padding-left: calc(calc(var(--spacing-5) * var(--depth)) + calc(var(--arrow-size) * 0.6));
+    user-select: none;
+    position: relative;
+    &.inline {
+      padding: 0px;
+    }
+
+    &:hover, &.hover, &.active {
+      background: rgba(66, 164, 255, 0.13);
+    }
+  </style>
+  {children}
+</div>
+
+<Leaf export
+  component
+  as="OpenTag"
+  class="tag"
+  class:noChildren="no-children"
+  {active}
+  {hover}
+  {depth}
+  {root}
+  {onClick}>
+  <style>
+    width: 100%;
+    &:within(.collapsed) {
+      display: flex;
+      align-items: center;
+    }
+  </style>
+  <div>
+    <style>
+      position: relative;
+    </style>
+    <div class="token" onClick={onExpandToggleClick}>
+      <style>
+        position: absolute;
+        left: 0;
+        cursor: pointer;
+        transform: translateX(-100%) translateY(-1px);
+        @include atoms.ease-in {}
+        &:within(.collapsed) {
+          transform: translateX(-100%) translateY(-2px) rotate(-90deg);
+        }
+        &:within(.is-void, .no-children) {
+          opacity: 0;
+          pointer-events: none;
+        }
+        @include utils.mask {
+          --size: var(--arrow-size);
+          mask-image: url("assets/chevron.svg");
+        }
+      </style>
+    </div>
+    <style>
+      display: flex;
+    </style>
+    <span class="token">&lt;</span>
+    <span class="control">{name}</span>
+
+    <span class:attributes="attributes">
+      <style>
+        display: flex;
+        flex-wrap: nowrap;
+      </style>
+      {attributes}
+
+      <span class="token">{noChildren && " />" || ">"}</span>
+    </span>
+  </div>
+  {collapsed && !isVoid && !noChildren && <fragment>
+    <ExpandButton />
+    <CloseTag inline {depth} {name} />
+  </fragment>}
+</Leaf>
+
+
+<Leaf export component as="CloseTag" {depth} class="tag" {inline?}>
+  <span class="token">&lt;/</span>
+  <span class="control">{name}</span>
+  <span class="token">&gt;</span>
+</Leaf>
+
+
+<div export component as="ExpandButton" {onClick?}>
+  <style>
+    background: rgb(228, 228, 228);
+    display: inline-block;
+    border-radius: 2px;
+    padding: 0px var(--spacing-2);
+    margin: 0px var(--spacing-2);
+    line-height: 3px;
+    letter-spacing: -1px;
+    color: grey;
+    border: 1px solid rgb(199, 199, 199);
+    height: 12px;
+  </style>
+  ...
+</div>
+
+<div export component as="Node" class="code {class?}">{children}</div>
+
+<Node export
+  component
+  as="Element"
+  class:isVoid="is-void collapsed"
+  class:collapsed="collapsed"
+  class:children="has-children">
+  <style>
+    &.collapsed {
+      display: flex;
+      align-items: center;
+    }
+  </style>
+
+  <!-- open tag -->
+  <OpenTag {active}
+    {noChildren}
+    onClick={onLeafClick}
+    {name}
+    {attributes}
+    {depth}
+    {collapsed}
+    {isVoid}
+    {onExpandToggleClick} />
+  {children}
+  <!-- close tag -->
+  {!collapsed && !isVoid && <CloseTag {depth} {name} />}
+</Node>
+
+<Node export component as="Text" class="tag text" {depth}>
+  <Leaf {active} {depth} onClick={onLeafClick}>{children}</Leaf>
+</Node>
+
+<div export component as="Container">
+  <style>
+    border-top: 2px solid rgb(233, 233, 233);
+    font-size: 14px;
+    padding: var(--spacing-3) 0px;
+    overflow: scroll;
+    height: 100%;
+  </style>
+  <div>
+    <style>
+      width: fit-content;
+      min-width: 100%;
+      height: 100%;
+    </style>
+    {children}
+  </div>
+</div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 7, y: 76 }
+-->
+<Container export component as="Preview">
+  <Element depth="1"
+    hover
+    name="div"
+    attributes={<fragment>
+      <Attribute name="class" value="element" />
+      <Attribute name="data-pc-label" value="A test label" />
+    </fragment>}>
+    <Element depth="2" name="div">
+      <Text depth="3">Some text</Text>
+    </Element>
+    <Element depth="2" name="div" collapsed />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element collapsed depth="2" name="span" noChildren />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element isVoid depth="2" name="img" collapsed active />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element depth="2" name="div" collapsed />
+    <Element depth="2" name="div" collapsed />
+    <Element isVoid depth="2" name="img" collapsed />
+  </Element>
+</Container>
+
+
+<!--
+  @frame { visible: true, width: 1024, height: 768, x: 7, y: 76 }
+-->
+
+<Preview />

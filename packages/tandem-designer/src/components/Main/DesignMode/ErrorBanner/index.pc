@@ -1,0 +1,46 @@
+<style>
+  .error-banner {
+    position: absolute;
+    bottom: 0;
+    z-index: 999;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 142, y: 144 }
+-->
+<div export component as="ErrorBanner" {onClick} class="error-banner">
+  <style>
+    cursor: pointer;
+    bottom: 0;
+    width: 100%;
+    word-break: break-word;
+    box-sizing: border-box;
+    font-family: Open Sans;
+    padding: 10px;
+    background: rgb(255, 152, 152);
+    color: rgb(138, 31, 31);
+    line-height: 1.1em;
+  </style>
+  <div>
+    <style>
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    </style>
+    Error in {filePath}
+  </div>
+  <div>
+    <style>
+      font-size: 14px;
+    </style>
+    {message}
+  </div>
+</div>
+
+
+<!--
+  @frame { title: "Error Banner" }
+-->
+<ErrorBanner filePath="some file path" message="Message" />

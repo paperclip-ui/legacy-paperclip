@@ -1,0 +1,139 @@
+<!--
+  @frame { visible: false }
+-->
+<svg as="Knob"
+  export
+  component
+  {onMouseDown}
+  {class?}
+  style="--x: {x}; --y: {y}"
+  data-id="knob-{x}-{y}">
+  <style>
+    width: var(--knob-size);
+    height: var(--knob-size);
+    position: absolute;
+    left: calc(100% * var(--x)/100);
+    top: calc(100% * var(--y)/100);
+    transform: translateY(-50%) translateX(-50%);
+  </style>
+  <rect>
+    <style>
+      width: var(--knob-size);
+      height: var(--knob-size);
+      fill: var(--background);
+      &:within([data-id="knob-0-50"], [data-id="knob-100-50"]) {
+        cursor: ew-resize;
+      }
+      &:within([data-id="knob-50-100"], [data-id="knob-50-0"]) {
+        cursor: ns-resize;
+      }
+      &:within([data-id="knob-0-100"], [data-id="knob-100-0"]) {
+        cursor: nesw-resize;
+      }
+      &:within([data-id="knob-0-0"], [data-id="knob-100-100"]) {
+        cursor: nwse-resize;
+      }
+    </style>
+  </rect>
+</svg>
+
+<!--
+  @frame { visible: false }
+-->
+<div as="Overlay"
+  export
+  component
+  {onMouseDown?}
+  {style?}
+  {onClick?}
+  class:knobs="has-knobs"
+  class="overlay">
+  <style>
+    --background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
+    --foreground: var(--vscode-button-foreground, white);
+    --knob-size: 7px;
+    --zoom: 1;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    white-space: nowrap;
+    box-shadow: inset 0px 0px 0px calc(1px / var(--zoom)) var(--background);
+  </style>
+  {knobs?}
+  <div>
+    <style>
+      color: var(--foreground);
+      font-size: 0.8em;
+      background: var(--background);
+      position: absolute;
+      top: calc(100% + 8px);
+      border-radius: 2px;
+      padding: 4px 8px;
+      left: 0px;
+      :within(.has-knobs) {}
+    </style>
+    {size}
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="PreviewBox" {style?} class="preview-box">
+  <style>
+    background: orange;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: true, title: "With Knobs", width: 299, height: 294, x: 499, y: 1487 }
+-->
+<div>
+  <PreviewBox style="left: 50px; top: 50px;">
+    <Overlay size="100 x 10"
+      knobs={<fragment>
+        <Knob x={0} y={0} />
+        <Knob x={50} y={0} />
+        <Knob x={100} y={0} />
+        <Knob x={100} y={50} />
+        <Knob x={100} y={100} />
+        <Knob x={50} y={100} />
+        <Knob x={0} y={100} />
+        <Knob x={0} y={50} />
+      </fragment>} />
+  </PreviewBox>
+</div>
+
+<!--
+  @frame { title: "Without Knobs", width: 248, height: 247, x: 501, y: 1152 }
+-->
+<div>
+  <PreviewBox style="left: 20px; top: 20px;">
+    <Overlay size="100x10" />
+  </PreviewBox>
+</div>
+
+<!--
+  @frame { title: "With Knobs", width: 332, height: 273, x: 796, y: 1152 }
+-->
+<div>
+  <PreviewBox style="left: 50px; top: 50px;">
+    <Overlay size="100 x 1000000000"
+      knobs={<fragment>
+        <Knob x={0} y={0} />
+        <Knob x={50} y={0} />
+        <Knob x={100} y={0} />
+        <Knob x={100} y={50} />
+        <Knob x={100} y={100} />
+        <Knob x={50} y={100} />
+        <Knob x={0} y={100} />
+        <Knob x={0} y={50} />
+      </fragment>} />
+  </PreviewBox>
+</div>

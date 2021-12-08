@@ -1,0 +1,77 @@
+<style>
+  .box {
+    width: 100px;
+    height: 100px;
+    background: var(--background-1);
+    position: absolute;
+    --arrow-size: 10px;
+    --arrow-half-size: calc(var(--arrow-size) / 2);
+    border-radius: var(--border-radius);
+    color: var(--color-negate-1);
+    &:before {
+      z-index: -1;
+      display: inline-block;
+      content: "";
+      width: var(--arrow-size);
+      height: var(--arrow-size);
+      background: var(--background-1);
+      transform: rotate(45deg);
+      position: absolute;
+    }
+    &--right {
+      transform: translateX(100%);
+      &:before {
+        top: calc(50% - var(--arrow-half-size));
+        left: -5px;
+      }
+    }
+    &--bottom {
+      transform: translateY(100%);
+      &:before {
+        left: calc(50% - var(--arrow-half-size));
+        top: calc(var(--arrow-half-size) * -1);
+      }
+    }
+    &--top {
+      transform: translateY(-100%);
+      &:before {
+        left: calc(50% - var(--arrow-half-size));
+        top: calc(100% + var(--arrow-half-size) * -1);
+      }
+    }
+    &--left {
+      transform: translateX(-100%);
+      &:before {
+        left: calc(100% - var(--arrow-half-size));
+        top: calc(50% - var(--arrow-half-size));
+      }
+    }
+  }
+</style>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div export
+  component
+  as="Box"
+  {style}
+  class="box"
+  class:left="box--left"
+  class:right="box--right"
+  class:top="box--top"
+  class:bottom="box--bottom">
+  {children}
+</div>
+
+
+<!--
+  @frame { title: "Tooltip" }
+-->
+<div style="position: relative; left: 100px; top: 100px">
+  <Box bottom style="top: 100px; left: 100px;">some content</Box>
+  <Box right style="top: 100px; left: 100px;" />
+  <Box top style="top: 100px; left: 100px;" />
+  <Box left style="top: 100px; left: 100px;" />
+</div>

@@ -1,0 +1,28 @@
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Header" class="header">
+  <style>
+    color: white;
+    background: var(--background-2);
+    padding: 2px 8px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--border-color);
+  </style>
+  {children}
+</div>
+
+
+
+
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 100, y: 50 }
+-->
+<div export component as="Container" class="container">
+  <style>
+    --border-color: rgb(63, 63, 63);
+  </style>
+  {children}
+</div>

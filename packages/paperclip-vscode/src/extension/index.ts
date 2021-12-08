@@ -41,7 +41,6 @@ class PaperclipExtension implements Disposable {
 
     this._languageClient = new PaperclipLanguageClient(context);
     this._events.source(this._languageClient.events);
-    this._events.observe(this._languageClient);
 
     this._windows = new LiveWindowManager();
     this._events.source(this._windows.events);
@@ -52,9 +51,9 @@ class PaperclipExtension implements Disposable {
     this._events.observe(this._documentManager);
   }
   activate() {
+    this._windows.activate();
     this._documentManager.activate();
     this._commandManager.activate();
-    this._windows.activate();
     this._languageClient.activate();
   }
   dispose() {

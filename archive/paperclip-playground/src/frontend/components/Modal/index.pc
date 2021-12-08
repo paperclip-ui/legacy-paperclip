@@ -1,0 +1,103 @@
+<import src="tandem-designer/src/components/Theme/index.pc" as="Theme" />
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Container"
+  className="v2 $Theme.font-default"
+  className:secret="secret"
+  className:noclose="noclose"
+  className:visible="visible">
+  <style>
+
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
+    opacity: 0;
+    transition: 0.3s;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    &.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+  <div onClick={onBackgroundClick}>
+    <style>
+      background: rgba(0, 0, 0, 0.404);
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      &:within(.secret) {
+        background: rgb(43, 43, 43);
+      }
+    </style>
+  </div>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Content" {className?}>
+  <style>
+    background: white;
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    border-radius: var(--border-radius);
+    padding: 14px;
+    transition: 0.2s;
+    top: 29%;
+    &:within(.visible) {
+      top: 30%;
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Header">
+  <style>
+    font-size: 24px;
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: space-between;
+    color: rgb(109, 92, 92);
+    font-weight: 300;
+    align-items: center;
+  </style>
+  {title}
+  <button onClick={onCloseButtonClick}>
+    <style>
+      background: transparent;
+      border: none;
+      font-size: inherit;
+      color: inherit;
+      cursor: pointer;
+      &:within(.secret, .noclose) {
+        display: none;
+      }
+    </style>
+    &times;
+  </button>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Container export component as="Preview" {visible}>
+  <Content>
+    <Header {title} />
+    {children}
+  </Content>
+</Container>

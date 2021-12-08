@@ -1,26 +1,39 @@
 export type CompilerOptions = {
-  name: string;
-  module?: "es6" | "commonjs";
-  [identifier: string]: any;
+  // where PC files should be compiled to. If undefined, then
+  // srcDir is used
+  outDir?: string;
+
+  // treat assets as modules
+  importAssetsAsModules?: boolean;
+
+  // embed assets until this size
+  embedAssetMaxSize?: number;
+
+  // output directory for non-PC files. If not specified, then srcDir
+  // will be used
+  assetOutDir?: string;
+
+  // prefix for assets,
+  assetPrefix?: string;
 };
 
-type LintConfig = {
+type LintOptions = {
+  // flag CSS code that is not currently used
   noUnusedStyles?: boolean;
+
+  // enforce CSS vars for these properties
   enforceVars?: string[];
-  enforcePreviews?: boolean;
 };
 
 export type PaperclipConfig = {
-  outputDirectory?: string;
+  // source directory where *.pc files live
+  srcDir: string;
 
-  // drops PC extension, so you're left with *.js instead of *.pc.js
-  dropPcExtension?: boolean;
+  // directories where modules are stored
+  moduleDirs?: string[];
 
-  sourceDirectory: string;
+  // options for the output settings
+  compilerOptions?: CompilerOptions;
 
-  compilerOptions: CompilerOptions;
-
-  moduleDirectories?: string[];
-
-  lint?: LintConfig;
+  lintOptions?: LintOptions;
 };

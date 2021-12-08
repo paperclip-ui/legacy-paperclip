@@ -7,7 +7,7 @@ pub trait BaseTokenizer<'a> {
   fn is_eof(&self) -> bool;
   fn skip(&mut self) -> Result<(), ParseError>;
   fn get_pos(&self) -> usize;
-  fn get_source(&self) -> &'a [u8];
+  fn get_range(&self) -> &'a [u8];
 }
 
 #[derive(Debug)]
@@ -26,10 +26,6 @@ pub struct Tokenizer<'a> {
   pub source: &'a [u8],
   pub pos: usize,
   pub utf16_pos: usize,
-
-  // utf-8
-  pub column: usize,
-  pub line: usize,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -105,8 +101,6 @@ impl<'a> Tokenizer<'a> {
       source: source.as_bytes(),
       pos: 0,
       utf16_pos: 0,
-      line: 0,
-      column: 0,
     }
   }
 }

@@ -6,6 +6,7 @@ const glob = require("glob");
 const {init, devStart} = require("../lib/cli");
 const {build} = require("paperclip-cli-minimal");
 const fs = require("fs");
+const {start: startWorkspace} = require("tandem-workspace/lib/server");
 
 // const argv = require("yargs")
 // .option("compiler", {
@@ -29,24 +30,25 @@ const fs = require("fs");
 // .argv;
 
 const argv = require("yargs")
-.command("build [file-pattern]", "Compiles paperclip files to target language", yargs => {
+.command("build", "Compiles paperclip files to target language", yargs => {
   yargs
   .option("watch", desc("watch for changes"))
-  .option("drop-pc-extension", desc("Drops PC extension from compiled files"))
   .option("write", desc("Write compiled file"))
-  .option("css", desc("Print CSS for stdout"))
   .option("verbose", desc("Write verbose information"))
+  .option("output", desc("output directory of files"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
-  .option("definition", desc("Write typed definition type"))
 }, argv => {
   build({
+    cwd: process.cwd(),
     config: argv.config,
     write: argv.write,
-    watch: argv.watch,
+    output: argv.output,
     css: argv.css,
+    watch: argv.watch,
     definition: argv.definition,
-    dropPcExtension: argv.dropPcExtension,
+    targets: argv.targets && argv.targets.split(",").map(v => v.trim()),
     verbose: argv.verbose,
+    dropPcExtension: argv.dropPcExtension,
     compilerName: argv.compiler,
     filePatterns: argv.filePattern
   })
@@ -62,10 +64,17 @@ const argv = require("yargs")
   .default("port", 4000)
   .default("open", true)
 }, argv => {
-  devStart({
-    port: argv.port,
-    open: argv.open,
-    cwd: process.cwd()
+  startWorkspace({
+    http: {
+      port: argv.porg
+    },
+    project: {
+      installDependencies: false
+    }
+  }).then((workspace) => {
+    workspace.start(process.cwd()).then(project => {
+      project.openBrowser();
+    });
   });
 })
 .argv;

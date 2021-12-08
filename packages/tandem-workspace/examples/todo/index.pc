@@ -1,0 +1,10 @@
+<div>
+  <style>
+    color: red;
+    font-size: 42px;
+    font-family: sans-serif;
+    padding: 32px;
+  </style>
+  Something like this or it might not work
+  <img src="./logo-outline-5.png" />
+</div>

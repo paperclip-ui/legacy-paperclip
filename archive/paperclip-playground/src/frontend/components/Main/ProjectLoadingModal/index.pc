@@ -1,0 +1,57 @@
+<div export
+  component
+  as="Modal"
+  className="v2"
+  className:visible="visible"
+  style="--percent: {percent}">
+  <style>
+    background: rgba(0, 0, 0, 0.63);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    color: white;
+    opacity: 0;
+    transition: 0.2s;
+    pointer-events: none;
+    &.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+
+  <div>
+    <style>
+      left: 50%;
+      position: absolute;
+      top: 40%;
+      font-weight: 400;
+      transform: translate(-50%, -50%);
+    </style>
+    Loading
+
+    <!-- bar -->
+    <div>
+      <style>
+        margin-top: 8px;
+        background: white;
+        height: 10px;
+        border-radius: 999px;
+        width: 200px;
+      </style>
+      <div>
+        <style>
+          background: var(--color-blue-100);
+          border-radius: 999px;
+          height: 100%;
+          width: calc(100% * var(--percent, 0));
+          transition: 2s;
+        </style>
+      </div>
+    </div>
+  </div>
+</div>
+
+<Modal export component as="Preview" {visible?} {percent} />

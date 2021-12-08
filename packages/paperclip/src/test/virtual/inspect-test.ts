@@ -161,7 +161,7 @@ describe(__filename + "#", () => {
       "Ignores :hover selector",
       {
         "/entry.pc": `
-          <div className:hover="hover">
+          <div class:hover="hover">
             <style>
               color: red;
               &:hover {
@@ -766,7 +766,7 @@ describe(__filename + "#", () => {
       "&&& and proceeding :within gets declaration value overrides correct",
       {
         "/entry.pc": `
-          <div className="test">
+          <div class="test">
             <div>
               <style>
                 &&& {
@@ -1466,7 +1466,6 @@ describe(__filename + "#", () => {
         { path, uri: "/entry.pc" },
         screenWidth
       );
-      // console.log(JSON.stringify(inspection, null, 2));
 
       expect(inspection).to.eql(result);
     });
