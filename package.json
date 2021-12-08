@@ -1,6 +1,6 @@
 {
   "name": "paperclip-workspaces",
-  "version": "1.0.1",
+  "version": "18.0.3",
   "displayName": "Paperclip",
   "description": "Paperclip tooling for VS Code",
   "private": true,
@@ -9,15 +9,11 @@
     "doc": "docs"
   },
   "engines": {
-    "yarn": "^3.1.1"
+    "yarn": "^1.22.17"
   },
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": [
-      "**/@docusaurus",
-      "**/@docusaurus/**"
     ]
   },
   "devDependencies": {
@@ -35,19 +31,17 @@
     "vscode-languageserver-protocol": "3.15.3"
   },
   "scripts": {
-    "test": "yarn workspaces foreach -vip run test",
-    "build": "yarn workspaces foreach -viA --topological-dev run build",
-    "lint": "yarn workspaces foreach -vi run lint",
-    "link:tandem": "yarn link $TANDEM_HOME/packages/designer && yarn link $TANDEM_HOME/packages/design-system",
-    "postinstall2": "yarn workspaces foreach -t run build",
+    "test": "lerna run test",
+    "build": "lerna run build",
+    "lint": "lerna run lint",
+    "link": "lerna run link",
     "clean": "find ./ -name node_modules -exec rm -rf {} \\;",
-    "publish:local": "for PKG in `ls packages`; do cd packages/$PKG; yalc publish; cd ../..; done;",
     "clean:hard": "rm -rf yarn.lock && yarn clean",
-    "build:watch": "yarn workspaces foreach -vip --jobs=unlimited run build:watch",
+    "build:watch": "lerna run build:watch --parallel",
     "publish:packages": "lerna publish from-package --yes",
-    "publish:marketplace": "yarn workspaces foreach -vipA run publish:marketplace",
-    "publish:documentation": "yarn workspaces foreach -vip run publish:documentation",
-    "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit",
+    "publish:marketplace": "lerna run publish:marketplace",
+    "publish:documentation": "lerna run publish:documentation",
+    "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit && git add packages/*/package-lock.json",
     "prepare": "husky install"
   },
   "repository": {
@@ -60,5 +54,5 @@
     "url": "https://github.com/crcn/paperclip/issues"
   },
   "homepage": "https://github.com/crcn/paperclip#readme",
-  "packageManager": "yarn@3.1.1"
+  "packageManager": "yarn@1.22.17"
 }
