@@ -90,7 +90,7 @@ function* handleRenderer(getState: AppStateSelector) {
 }
 
 function* handleCanvasMouseDown(
-  action: CanvasMouseUp,
+  action: CanvasMouseDown,
   getState: AppStateSelector
 ) {
   yield fork(handleSyncFrameToLocation);
