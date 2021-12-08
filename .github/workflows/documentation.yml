@@ -26,16 +26,16 @@ jobs:
           IdentityFile ~/.ssh/id_rsa
           EOT
       - uses: jetli/wasm-pack-action@v0.3.0
-      - run: npm install
-      - run: npm run build
+      - run: yarn install
+      - run: yarn run build
         env:
           NODE_ENV: "production"
-      - run: npm run link
+      - run: yarn run link
       - name: Release to GitHub Pages
         run: |
           git config --global user.email "craig.j.condon@gmail.com"
           git config --global user.name "crcn"
-          npm run publish:documentation
+          yarn run publish:documentation
         env:
           USE_SSH: true
           GIT_USER: crcn
