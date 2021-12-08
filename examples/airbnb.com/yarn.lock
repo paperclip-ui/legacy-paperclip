@@ -151,33 +151,23 @@
   resolved "https://registry.yarnpkg.com/@oclif/screen/-/screen-1.0.4.tgz#b740f68609dfae8aa71c3a6cab15d816407ba493"
   integrity sha512-60CHpq+eqnTxLZQ4PGHYNwUX572hgpMHGPtTWMjdTMsAvlm69lZV/4ly6O3sAYkomo4NggGcomrDpBe34rxUqw==
 
-"@percy/agent@^0.28.6":
-  version "0.28.6"
-  resolved "https://registry.yarnpkg.com/@percy/agent/-/agent-0.28.6.tgz#b220fab6ddcf63ae4e6c343108ba6955a772ce1c"
-  integrity sha512-SDAyBiUmfQMVTayjvEjQ0IJIA7Y3AoeyWn0jmUxNOMRRIJWo4lQJghfhFCgzCkhXDCm67NMN2nAQAsvXrlIdkQ==
+"@percy/client@^1.0.0-beta.64":
+  version "1.0.0-beta.71"
+  resolved "https://registry.yarnpkg.com/@percy/client/-/client-1.0.0-beta.71.tgz#e47df3ba115b4198196b7c661cb4c4e32b9feaa3"
+  integrity sha512-aOymDoLqLSd3Cwa5s3BucFvskoumcORxEszXFYrBEitotc9EyWdmbViupTOodHj+SGJmW9cdBopCo4CzG3JjGg==
   dependencies:
-    "@oclif/command" "1.5.19"
-    "@oclif/config" "^1"
-    "@oclif/plugin-help" "^2"
-    "@oclif/plugin-not-found" "^1.2"
-    axios "^0.21.1"
-    body-parser "^1.18.3"
-    colors "^1.3.2"
-    cors "^2.8.4"
-    cosmiconfig "^5.2.1"
-    cross-spawn "^7.0.2"
-    deepmerge "^4.0.0"
-    express "^4.16.3"
-    follow-redirects "1.12.1"
-    generic-pool "^3.7.1"
-    globby "^10.0.1"
-    image-size "^0.8.2"
-    js-yaml "^3.13.1"
-    percy-client "^3.2.0"
-    puppeteer "^5.3.1"
-    retry-axios "^1.0.1"
-    which "^2.0.1"
-    winston "^3.0.0"
+    "@percy/env" "1.0.0-beta.71"
+    "@percy/logger" "1.0.0-beta.71"
+
+"@percy/env@1.0.0-beta.71":
+  version "1.0.0-beta.71"
+  resolved "https://registry.yarnpkg.com/@percy/env/-/env-1.0.0-beta.71.tgz#bbe89285817f9a578c3cdfc0d1ee74c5b3d768c7"
+  integrity sha512-DPiCL2xuAdaTghziP2XtmaSMp1t3Mb0oo3yEg2HOpTjaPqu/tX9LjI+cJOs2jKf/jIwC3ris3agcafceXiGWZw==
+
+"@percy/logger@1.0.0-beta.71":
+  version "1.0.0-beta.71"
+  resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.71.tgz#03b458b1e43506c08c062f11b46aa2c9b1826fbf"
+  integrity sha512-09MgfGbvSFgvmQ1g0AkPnRwfkJvXluj7TLVlcgBsKEdo0cKfmctvXUtRBgiueqJFSb7jF+JwzE5i17bHnLy0ng==
 
 "@types/glob@^7.1.1":
   version "7.1.3"
@@ -339,11 +329,11 @@ aws4@^1.8.0:
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
 axios@^0.21.1:
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
-  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
   dependencies:
-    follow-redirects "^1.10.0"
+    follow-redirects "^1.14.0"
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -1111,10 +1101,10 @@ follow-redirects@1.12.1:
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.12.1.tgz#de54a6205311b93d60398ebc01cf7015682312b6"
   integrity sha512-tmRv0AVuR7ZyouUHLeNSiO6pqulF7dYa3s19c6t+wz9LD69/uSzdMxJ2S91nTI9U3rt/IldxpzMOFejp6f0hjg==
 
-follow-redirects@^1.10.0:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
-  integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
+follow-redirects@^1.14.0:
+  version "1.14.5"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.5.tgz#f09a5848981d3c772b5392309778523f8d85c381"
+  integrity sha512-wtphSXy7d4/OR+MvIFbCVBDzZ5520qV8XfPklSN5QtxuMUJZ+b0Wnst1e1lCDocfzuCkHqj8k0FpZqO+UIaKNA==
 
 foreachasync@^3.0.0:
   version "3.0.0"
@@ -1206,6 +1196,11 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1:
     function-bind "^1.1.1"
     has "^1.0.3"
     has-symbols "^1.0.1"
+
+get-port@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/get-port/-/get-port-5.1.1.tgz#0469ed07563479de6efb986baf053dcd7d4e3193"
+  integrity sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ==
 
 get-stream@^5.1.0:
   version "5.2.0"
@@ -1962,6 +1957,13 @@ p-limit@^2.0.0, p-limit@^2.2.0:
   dependencies:
     p-try "^2.0.0"
 
+p-limit@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
+  integrity sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==
+  dependencies:
+    yocto-queue "^0.1.0"
+
 p-locate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/p-locate/-/p-locate-3.0.0.tgz#322d69a05c0264b25997d9f40cd8a891ab0064a4"
@@ -1981,10 +1983,10 @@ p-try@^2.0.0:
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==
 
-paperclip-utils@^17.9.7:
-  version "17.9.7"
-  resolved "https://registry.yarnpkg.com/paperclip-utils/-/paperclip-utils-17.9.7.tgz#e80c3fab76fc9afc2e7e99a9a75fc1c5eddf75ca"
-  integrity sha512-EFCco7tLgWQtHhmpPstwC6Xv6ukqk+HzGiVo4FWkyBaTPBOkmi4jY4O56zp4KmvKWzI/hHWab4Z8q6FyNbQn6w==
+paperclip-utils@^18.0.2:
+  version "18.0.2"
+  resolved "https://registry.yarnpkg.com/paperclip-utils/-/paperclip-utils-18.0.2.tgz#40069c8d2607c94f351795f044ecd98e8a7217ca"
+  integrity sha512-oBfzmuffVn8msmR0ohehDD+EtOcbXcdUCCBamaqKf/jMMkwAtCvjqSxqPZ63+WZT+Ouir0MHQsW//+rqkzfYfw==
   dependencies:
     "@types/mocha" "^5.2.7"
     chai "^4.2.0"
@@ -1995,16 +1997,16 @@ paperclip-utils@^17.9.7:
     path "^0.12.7"
     url "^0.11.0"
 
-paperclip@^17.9.7:
-  version "17.9.7"
-  resolved "https://registry.yarnpkg.com/paperclip/-/paperclip-17.9.7.tgz#653942c9b57291de5a555ba0e0ae61647d3ace96"
-  integrity sha512-x/W5/Aqi4wnKds6WXSLPiufAQUrRYCmkXB2RZ7rAPfsD3jCCu5h7jode/jVbBsUYDAnoU7JuA6znUWDzLy2jVg==
+paperclip@^18.0.2:
+  version "18.0.2"
+  resolved "https://registry.yarnpkg.com/paperclip/-/paperclip-18.0.2.tgz#b84a3dbba41a5a4094feedf70490dc4bc6b2dd83"
+  integrity sha512-yJIRDJXi/PAn3EZkA5wuoMmWsiYhAuXugkgI038GikhEN8Om31BCuoALG+a4Sm0VkYkbhG2wuRf1+UcJcjlxSQ==
   dependencies:
     "@types/mocha" "^5.2.7"
     chai "^4.2.0"
     crc32 "^0.2.2"
     mocha "^7.0.1"
-    paperclip-utils "^17.9.7"
+    paperclip-utils "^18.0.2"
     url "^0.11.0"
 
 parse-json@^4.0.0:
@@ -2096,17 +2098,19 @@ percy-client@^3.2.0:
     request-promise "^4.2.2"
     walk "^2.3.14"
 
-percy-paperclip@^17.9.7:
-  version "17.9.7"
-  resolved "https://registry.yarnpkg.com/percy-paperclip/-/percy-paperclip-17.9.7.tgz#1c4bbaf7b5816d43212d9601d77b230535f4f6e2"
-  integrity sha512-ohPGj44FjO8tgXLjcPn89+LteYHJpsh3U5j3w2pplzZI95hADEUH6k0pt4vDZEitP+UQynVN7KLwjt8VS8crRQ==
+percy-paperclip@^18.0.2:
+  version "18.0.2"
+  resolved "https://registry.yarnpkg.com/percy-paperclip/-/percy-paperclip-18.0.2.tgz#d3dbc9417fce335c87f9277a5353076cabd9fc88"
+  integrity sha512-CrIA6hHW9j+QE3TovBcV8t4A+SbR1r05GwT9M63aXcVYACvXcD0+lpagZ3ztyKdGOkXhYzGcxSGzXjJx/ZrmFA==
   dependencies:
-    "@percy/agent" "^0.28.6"
+    "@percy/client" "^1.0.0-beta.64"
     chalk "^4.1.0"
+    get-port "^5.1.1"
     glob "^7.1.6"
     lodash "^4.17.19"
     mime "^2.4.6"
-    paperclip "^17.9.7"
+    p-limit "^3.1.0"
+    paperclip "^18.0.2"
     w3c-xmlhttprequest "^2.1.3"
     yargs "^15.3.1"
 
@@ -3019,3 +3023,8 @@ yauzl@^2.10.0:
   dependencies:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.1.0"
+
+yocto-queue@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
+  integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
