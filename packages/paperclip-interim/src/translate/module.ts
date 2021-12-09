@@ -1,5 +1,6 @@
 import { EngineDelegate, Node, VirtSheet } from "paperclip";
 import * as path from "path";
+import * as fs from "fs";
 
 import {
   CSSExports,
@@ -16,13 +17,28 @@ import { InterimModule, InterimImport } from "../state";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";
-import { InterimCompilerOptions } from "./options";
+import { FIO, InterimCompilerOptions } from "./options";
+
+const defaultFIO: FIO = {
+  readFile(filePath: string) {
+    return fs.readFileSync(filePath);
+  },
+  getFileSize(filePath: string) {
+    return fs.lstatSync(filePath).size;
+  }
+};
 
 export class InterimCompiler {
+  readonly options: InterimCompilerOptions;
   constructor(
     private _engine: EngineDelegate,
-    readonly options: InterimCompilerOptions
-  ) {}
+    options: InterimCompilerOptions
+  ) {
+    this.options = {
+      io: defaultFIO,
+      ...options
+    };
+  }
   parseFile(filePath: string): InterimModule {
     const { sheet, exports } = this._engine.open(filePath);
     const ast = this._engine.parseFile(filePath);
@@ -57,11 +73,19 @@ const translateinterim = (
     engine,
     options
   );
+  const components = translateComponents(
+    ast,
+    options,
+    filePath,
+    engine,
+    imports
+  );
+  const assets = getAssets(filePath, components, sheet, engine, options);
   return {
     imports,
-    components: translateComponents(ast, options, filePath, imports),
+    components,
     css: translateCSS(sheet, exports, filePath, options),
-    assets: getAssets(ast, sheet, options)
+    assets
   };
 };
 

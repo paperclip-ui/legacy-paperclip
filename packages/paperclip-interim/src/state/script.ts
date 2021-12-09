@@ -9,7 +9,7 @@ export enum InterimScriptExpressionKind {
   Group = "Group",
   Not = "Not",
   String = "String",
-  Element = "Element"
+  Element = "ScriptElement"
 }
 
 type BaseInterimScriptExpression<TKind extends InterimScriptExpressionKind> = {

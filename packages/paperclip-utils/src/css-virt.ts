@@ -4,19 +4,31 @@ export type VirtSheet = {
 
 export enum VirtRuleKind {
   Style = "Style",
-  Media = "Media"
+  Media = "Media",
+  FontFace = "FontFace"
 }
 
 export type BaseVirtRule<TKind extends VirtRuleKind> = {
   kind: TKind;
 };
 
+export type VirtDeclaration = {
+  name: string;
+  value: string;
+  sourceId: string;
+};
+
+export type VirtFontFace = {
+  style: VirtDeclaration[];
+} & BaseVirtRule<VirtRuleKind.Style>;
+
 export type VirtStyleRule = {
   selectorText: string;
-} & BaseVirtRule<VirtRuleKind.Style>;
+  style: VirtDeclaration[];
+} & BaseVirtRule<VirtRuleKind.FontFace>;
 
 export type MediaRule = {
   rules: VirtRule[];
 } & BaseVirtRule<VirtRuleKind.Media>;
 
-export type VirtRule = VirtStyleRule | MediaRule;
+export type VirtRule = VirtStyleRule | MediaRule | VirtStyleRule;

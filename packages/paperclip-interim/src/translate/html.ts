@@ -1,4 +1,4 @@
-import { Node, getParts, Element, infer } from "paperclip";
+import { Node, getParts, Element, infer, EngineDelegate } from "paperclip";
 import {
   AttributeKind,
   AttributeValue,
@@ -28,11 +28,13 @@ import {
 } from "../state";
 import { translateScript } from "./script";
 import { InterimCompilerOptions, ModuleContext } from "./options";
+import { maybeEmbed } from "./utils";
 
 export const translateComponents = (
   ast: Node,
   options: InterimCompilerOptions,
   filePath: string,
+  engine: EngineDelegate,
   imports: InterimImport[]
 ) => {
   const components = getParts(ast);
@@ -40,6 +42,7 @@ export const translateComponents = (
     filePath,
     options,
     imports,
+    engine,
     componentNames: getPartIds(ast),
     scopeIds: [
       ...getScopes(filePath),
@@ -277,6 +280,16 @@ const translateValuePart = (
         return addScopeIds(slice, context.scopeIds);
       })
       .join(" ");
+  }
+
+  if (attrName === "src") {
+    return maybeEmbed(
+      context.filePath,
+      part,
+      context.engine,
+      context.options.config.compilerOptions?.embedFileSizeLimit,
+      context.options.io
+    );
   }
 
   return part;

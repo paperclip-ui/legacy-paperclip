@@ -131,9 +131,10 @@ export const buildFile = async (
 
 const createInterimCompiler = (
   engine: EngineDelegate,
-  { config }: BaseOptions
+  { config, cwd }: BaseOptions
 ) =>
   new InterimCompiler(engine, {
+    cwd,
     config
   });
 

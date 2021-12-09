@@ -1,6 +1,6 @@
 import { Inference, ShapeInference } from "paperclip";
 import { NodeKind, StringRange } from "paperclip-utils";
-import { InterimScriptExpression } from "./script";
+import { InterimScriptExpression, InterimScriptExpressionKind } from "./script";
 
 export enum InterimNodeKind {
   Element = "Element",
@@ -92,19 +92,30 @@ export type InterimNode =
   | InterimComponent
   | InterimSlotNode;
 
-export const traverseInterimNode = (
-  node: InterimNode,
-  each: (descendent: InterimNode) => boolean
+export type InterimExpression = InterimNode | InterimScriptExpression;
+
+export const traverseInterimExpression = (
+  expr: InterimExpression,
+  each: (descendent: InterimExpression) => boolean
 ) => {
-  if (each(node) === false) {
-    return;
+  if (each(expr) === false) {
+    return false;
   }
   if (
-    node.kind === InterimNodeKind.Component ||
-    node.kind === InterimNodeKind.Element
+    expr.kind === InterimNodeKind.Component ||
+    expr.kind === InterimNodeKind.Element
   ) {
-    node.children.forEach(child => {
-      traverseInterimNode(child, each);
+    expr.children.forEach(child => {
+      traverseInterimExpression(child, each);
     });
+  } else if (expr.kind === InterimNodeKind.Slot) {
+    traverseInterimExpression(expr.script, each);
+  } else if (expr.kind === InterimScriptExpressionKind.Element) {
+    traverseInterimExpression(expr.element, each);
+  } else if (expr.kind === InterimScriptExpressionKind.Group) {
+    traverseInterimExpression(expr.inner, each);
+  } else if (expr.kind === InterimScriptExpressionKind.Conjunction) {
+    traverseInterimExpression(expr.left, each) &&
+      traverseInterimExpression(expr.right, each);
   }
 };
