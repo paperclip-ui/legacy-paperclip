@@ -1,6 +1,7 @@
 import { EngineDelegate, Node, VirtSheet } from "paperclip";
 import * as path from "path";
 import * as fs from "fs";
+import * as URL from "url";
 
 import {
   getAttributeStringValue,
@@ -18,12 +19,19 @@ import { translateComponents } from "./html";
 import { FIO, InterimCompilerOptions } from "./options";
 import { InterimModule, InterimImport } from "../state";
 
+const castAsFilePath = (filePath: string) => {
+  if (filePath.indexOf("file://") === 0) {
+    filePath = URL.fileURLToPath(filePath);
+  }
+  return filePath;
+};
+
 const defaultFIO: FIO = {
   readFile(filePath: string) {
-    return fs.readFileSync(filePath);
+    return fs.readFileSync(castAsFilePath(filePath));
   },
   getFileSize(filePath: string) {
-    return fs.lstatSync(filePath).size;
+    return fs.lstatSync(castAsFilePath(filePath)).size;
   }
 };
 

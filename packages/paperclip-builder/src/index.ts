@@ -51,9 +51,9 @@ class DirectoryBuilder {
   }
   _buildFile = async (filePath: string) => {
     try {
-      const files = await buildFile(filePath, this.engine, this.options);
-      for (const ext in files) {
-        const content = files[ext];
+      const result = await buildFile(filePath, this.engine, this.options);
+      for (const ext in result.translations) {
+        const content = result.translations[ext];
         if (content) {
           this._em.emit("file", filePath + "." + ext, content);
         }
@@ -116,7 +116,8 @@ export const buildFile = async (
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
   const targetCompilers = requireTargetCompilers(options.cwd, options.config);
-  return targetCompilers.reduce((files, compiler) => {
+
+  const translations = targetCompilers.reduce((files, compiler) => {
     return Object.assign(
       files,
       compiler.compile(
@@ -127,6 +128,11 @@ export const buildFile = async (
       )
     );
   }, {});
+
+  return {
+    translations,
+    assets: interimModule.assets
+  };
 };
 
 const createInterimCompiler = (

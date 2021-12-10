@@ -57,7 +57,7 @@ async function pcLoader(
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
-    files = await buildFile(resourceUrl, engine, {
+    const result = await buildFile(resourceUrl, engine, {
       config: {
         ...config,
         compilerOptions: {
@@ -71,6 +71,7 @@ async function pcLoader(
       },
       cwd: process.cwd()
     });
+    files = result.translations;
   } catch (e) {
     // eesh 🙈
     const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
