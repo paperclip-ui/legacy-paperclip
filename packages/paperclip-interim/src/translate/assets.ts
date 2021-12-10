@@ -5,65 +5,59 @@ import {
   VirtRule,
   VirtRuleKind,
   VirtStyleRule,
-  VirtFontFace
+  VirtFontFace,
+  Expression,
+  Node,
+  traverseExpression,
+  isAttribute,
+  AttributeKind,
+  AttributeValueKind
 } from "paperclip-utils";
 import { InterimCompilerOptions } from "./options";
-import {
-  InterimComponent,
-  InterimNodeKind,
-  traverseInterimExpression,
-  InterimAttributeValuePartKind
-} from "../state";
 import { InterimAsset } from "../state/assets";
 import { EngineDelegate } from "paperclip";
+import * as mime from "mime";
 
 export const getAssets = (
   modulePath: string,
-  components: InterimComponent[],
+  node: Node,
   sheet: VirtSheet,
   engine: EngineDelegate,
   options: InterimCompilerOptions
 ): InterimAsset[] => {
-  return collectAssetPaths(components, sheet).map(assetPath => {
+  return collectAssetPaths(node, sheet).map(assetPath => {
     const filePath = engine.resolveFile(modulePath, assetPath);
     const fileSize = options.io.getFileSize(filePath);
+
+    let content: string;
+
+    if (fileSize <= options.config.compilerOptions?.embedFileSizeLimit) {
+      content =
+        `data:${mime.getType(filePath)};base64,` +
+        options.io.readFile(filePath).toString("base64");
+    }
+    // }data:image/png;base64,
     return {
       relativePath: assetPath,
       filePath,
-      content:
-        fileSize < options.config.compilerOptions?.embedFileSizeLimit
-          ? options.io.readFile(filePath).toString("base64")
-          : null
+      content
     };
   });
 };
 
-const collectAssetPaths = (
-  components: InterimComponent[],
-  sheet: VirtSheet
-) => {
+const collectAssetPaths = (root: Node, sheet: VirtSheet) => {
   const relativeAssets = {};
 
-  components.forEach(component => {
-    traverseInterimExpression(component, node => {
+  traverseExpression(root, nested => {
+    if (isAttribute(nested)) {
       if (
-        node.kind === InterimNodeKind.Element ||
-        node.kind === InterimNodeKind.Component
+        nested.attrKind === AttributeKind.KeyValueAttribute &&
+        nested.name === "src" &&
+        nested.value.attrValueKind === AttributeValueKind.String
       ) {
-        if (node.tagName === "img" && node.attributes.src) {
-          for (const variant of node.attributes.src.variants) {
-            if (variant.variantName != null || !variant.parts?.length) {
-              continue;
-            }
-            const mainPart = variant.parts[0];
-            if (mainPart.kind === InterimAttributeValuePartKind.Static) {
-              relativeAssets[mainPart.value] = 1;
-            }
-          }
-        }
+        relativeAssets[nested.value.value] = 1;
       }
-      return true;
-    });
+    }
   });
 
   traverseVirtSheet(sheet, rule => {

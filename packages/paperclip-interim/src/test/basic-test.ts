@@ -44,7 +44,9 @@ describe(__filename + "#", () => {
       {
         embedFileSizeLimit: "embedded-svg".length
       },
-      { html: "<style></style> <img src=/a.svg></img>" }
+      {
+        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._80f4925f_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._80f4925f_b { background-image:url(/b.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=/b.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
+      }
     ]
   ].forEach(([title, graph, { embedFileSizeLimit }, expectedOutput]: any) => {
     it(title, () => {

@@ -5,6 +5,7 @@ import {
   StringifySheetOptions
 } from "paperclip-utils";
 import { InterimImport } from "..";
+import { InterimAsset } from "../state/assets";
 
 export type FIO = {
   readFile: (filePath: string) => Buffer;
@@ -20,7 +21,7 @@ export type InterimCompilerOptions = {
 export type ModuleContext = {
   filePath: string;
   engine: EngineDelegate;
-  options: InterimCompilerOptions;
+  assets: InterimAsset[];
   componentNames: string[];
   imports: InterimImport[];
   scopeIds: string[];

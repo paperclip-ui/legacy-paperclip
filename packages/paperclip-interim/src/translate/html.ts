@@ -29,19 +29,20 @@ import {
 import { translateScript } from "./script";
 import { InterimCompilerOptions, ModuleContext } from "./options";
 import { maybeEmbed } from "./utils";
+import { InterimAsset } from "../state/assets";
 
 export const translateComponents = (
   ast: Node,
-  options: InterimCompilerOptions,
   filePath: string,
   engine: EngineDelegate,
-  imports: InterimImport[]
+  imports: InterimImport[],
+  assets: InterimAsset[]
 ) => {
   const components = getParts(ast);
   const context: ModuleContext = {
     filePath,
-    options,
     imports,
+    assets,
     engine,
     componentNames: getPartIds(ast),
     scopeIds: [
@@ -283,13 +284,10 @@ const translateValuePart = (
   }
 
   if (attrName === "src") {
-    return maybeEmbed(
-      context.filePath,
-      part,
-      context.engine,
-      context.options.config.compilerOptions?.embedFileSizeLimit,
-      context.options.io
-    );
+    const asset = context.assets.find(asset => asset.relativePath === part);
+    if (asset && asset.content) {
+      return asset.content;
+    }
   }
 
   return part;

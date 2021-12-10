@@ -3,7 +3,6 @@ import * as path from "path";
 import * as fs from "fs";
 
 import {
-  CSSExports,
   getAttributeStringValue,
   getImports,
   getStyleScopeId,
@@ -13,11 +12,11 @@ import {
   PCExports,
   traverseExpression
 } from "paperclip-utils";
-import { InterimModule, InterimImport } from "../state";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";
 import { FIO, InterimCompilerOptions } from "./options";
+import { InterimModule, InterimImport } from "../state";
 
 const defaultFIO: FIO = {
   readFile(filePath: string) {
@@ -73,18 +72,18 @@ const translateinterim = (
     engine,
     options
   );
+  const assets = getAssets(filePath, ast, sheet, engine, options);
   const components = translateComponents(
     ast,
-    options,
     filePath,
     engine,
-    imports
+    imports,
+    assets
   );
-  const assets = getAssets(filePath, components, sheet, engine, options);
   return {
     imports,
     components,
-    css: translateCSS(sheet, exports, filePath, options),
+    css: translateCSS(sheet, exports, assets),
     assets
   };
 };

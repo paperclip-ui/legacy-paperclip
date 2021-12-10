@@ -5,16 +5,20 @@ import {
   VirtSheet
 } from "paperclip-utils";
 import { InterimCSS } from "../state";
+import { InterimAsset } from "../state/assets";
 import { InterimCompilerOptions } from "./options";
 
 export const translateCSS = (
   sheet: VirtSheet,
   exports: PCExports,
-  filePath: string,
-  options: InterimCompilerOptions
+  assets: InterimAsset[]
 ): InterimCSS => {
   return {
-    sheetText: stringifyCSSSheet(sheet),
+    sheetText: stringifyCSSSheet(sheet, {
+      resolveUrl(url) {
+        return assets.find(asset => asset.relativePath === url)?.content || url;
+      }
+    }),
     exports: {
       classNames: (Object as any).fromEntries(
         Object.keys(exports.style.classNames)
