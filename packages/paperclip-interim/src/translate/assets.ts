@@ -36,56 +36,82 @@ export const getAssets = (
       )
     : modulePath;
 
-  return collectAssetPaths(modulePath, node, sheet).map(originalPath => {
-    let relativeAssetPath = originalPath;
+  const { html, css } = collectAssetPaths(modulePath, node, sheet);
 
-    if (relativeAssetPath.indexOf("file") === 0) {
-      relativeAssetPath = URL.fileURLToPath(relativeAssetPath);
-      relativeAssetPath = resolvePath(modulePath, relativeAssetPath);
+  return [
+    ...html.map(mapAsset(modulePath, outModulePath, engine, options)),
+    ...css.map(
+      mapAsset(
+        modulePath,
+        options.config.compilerOptions?.mainCSSFileName
+          ? path.join(
+              options.cwd,
+              options.config.compilerOptions.assetOutDir ||
+                options.config.compilerOptions.outDir,
+              options.config.compilerOptions.mainCSSFileName
+            )
+          : outModulePath,
+        engine,
+        options
+      )
+    )
+  ];
+};
+
+const mapAsset = (
+  modulePath: string,
+  outModulePath: string,
+  engine: EngineDelegate,
+  options: InterimCompilerOptions
+) => (originalPath: string) => {
+  let relativeAssetPath = originalPath;
+
+  if (relativeAssetPath.indexOf("file") === 0) {
+    relativeAssetPath = URL.fileURLToPath(relativeAssetPath);
+    relativeAssetPath = resolvePath(modulePath, relativeAssetPath);
+  }
+
+  const filePath = engine.resolveFile(modulePath, relativeAssetPath);
+  const fileSize = options.io.getFileSize(filePath);
+
+  let moduleContent: string;
+  let outputFilePath = filePath;
+
+  if (
+    fileSize <= options.config.compilerOptions?.embedAssetMaxSize ||
+    options.config.compilerOptions?.embedAssetMaxSize === -1
+  ) {
+    moduleContent =
+      `data:${mime.getType(filePath)};base64,` +
+      options.io.readFile(filePath).toString("base64");
+  } else if (options.config.compilerOptions.assetOutDir) {
+    const srcDir = path.join(options.cwd, options.config.srcDir);
+
+    const outputDir = path.join(
+      options.cwd,
+      options.config.compilerOptions.assetOutDir
+    );
+
+    if (options.config.compilerOptions?.useAssetHashNames !== false) {
+      const buffer = options.io.readFile(filePath);
+      const md5Name = crypto
+        .createHash("md5")
+        .update(buffer)
+        .digest("hex");
+      outputFilePath = path.join(outputDir, md5Name + path.extname(filePath));
+    } else {
+      outputFilePath = path.join(outputDir, filePath.replace(srcDir, ""));
     }
 
-    const filePath = engine.resolveFile(modulePath, relativeAssetPath);
-    const fileSize = options.io.getFileSize(filePath);
+    moduleContent = resolvePath(outModulePath, outputFilePath);
+  }
 
-    let moduleContent: string;
-    let outputFilePath = filePath;
-
-    if (
-      fileSize <= options.config.compilerOptions?.embedAssetMaxSize ||
-      options.config.compilerOptions?.embedAssetMaxSize === -1
-    ) {
-      moduleContent =
-        `data:${mime.getType(filePath)};base64,` +
-        options.io.readFile(filePath).toString("base64");
-    } else if (options.config.compilerOptions.assetOutDir) {
-      const srcDir = path.join(options.cwd, options.config.srcDir);
-
-      const outputDir = path.join(
-        options.cwd,
-        options.config.compilerOptions.assetOutDir
-      );
-
-      if (options.config.compilerOptions?.useAssetHashNames !== false) {
-        const buffer = options.io.readFile(filePath);
-        const md5Name = crypto
-          .createHash("md5")
-          .update(buffer)
-          .digest("hex");
-        outputFilePath = path.join(outputDir, md5Name + path.extname(filePath));
-      } else {
-        outputFilePath = path.join(outputDir, filePath.replace(srcDir, ""));
-      }
-
-      moduleContent = resolvePath(outModulePath, outputFilePath);
-    }
-
-    return {
-      originalPath,
-      filePath,
-      outputFilePath,
-      moduleContent
-    };
-  });
+  return {
+    originalPath,
+    filePath,
+    outputFilePath,
+    moduleContent
+  };
 };
 
 const collectAssetPaths = (
@@ -93,7 +119,8 @@ const collectAssetPaths = (
   root: Node,
   sheet: VirtSheet
 ) => {
-  const relativeAssets = {};
+  const html = {};
+  const css = {};
 
   traverseExpression(root, nested => {
     if (
@@ -110,7 +137,7 @@ const collectAssetPaths = (
         nested.name === "src" &&
         nested.value.attrValueKind === AttributeValueKind.String
       ) {
-        relativeAssets[nested.value.value] = 1;
+        html[nested.value.value] = 1;
       }
     }
   });
@@ -121,13 +148,16 @@ const collectAssetPaths = (
         const parts = value.match(/url\(['"]?(.*?)['"]?\)/);
         let url = parts && parts[1];
         if (url && !url.includes("http")) {
-          relativeAssets[url] = 1;
+          css[url] = 1;
         }
       }
     }
   });
 
-  return Object.keys(relativeAssets);
+  return {
+    html: Object.keys(html),
+    css: Object.keys(css)
+  };
 };
 
 const resolvePath = (from: string, to: string) => {

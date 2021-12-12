@@ -1,12 +1,6 @@
-import {
-  CSSExports,
-  PCExports,
-  stringifyCSSSheet,
-  VirtSheet
-} from "paperclip-utils";
+import { PCExports, stringifyCSSSheet, VirtSheet } from "paperclip-utils";
 import { InterimCSS } from "../state";
 import { InterimAsset } from "../state/assets";
-import { InterimCompilerOptions } from "./options";
 
 export const translateCSS = (
   sheet: VirtSheet,

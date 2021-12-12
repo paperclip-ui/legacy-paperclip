@@ -11,7 +11,7 @@ export const stringifyCSSSheet = (
   sheet,
   options: StringifySheetOptions = {}
 ) => {
-  return sheet.rules.map(rule => stringifyCSSRule(rule, options)).join("\n");
+  return sheet.rules.map(rule => stringifyCSSRule(rule, options)).join("\n\n");
 };
 
 export const stringifyCSSRule = (rule, options: StringifySheetOptions = {}) => {
@@ -35,42 +35,42 @@ const stringifyConditionRule = (
   { name, conditionText, rules },
   options: StringifySheetOptions
 ) => {
-  return `@${name} ${conditionText} {
-    ${rules.map(style => stringifyCSSRule(style, options)).join("\n")}
-  }`;
+  return `@${name} ${conditionText} {\n${rules
+    .map(style => stringifyCSSRule(style, options))
+    .join("\n")}\n}`;
 };
 
 const stringifyKeyframesRule = (
   { name, rules },
   options: StringifySheetOptions
 ) => {
-  return `@keyframes ${name} {
-    ${rules.map(style => stringifyKeyframeRule(style, options)).join("\n")}
-  }`;
+  return `@keyframes ${name} {\n${rules
+    .map(style => stringifyKeyframeRule(style, options))
+    .join("\n")}\n}`;
 };
 
 const stringifyKeyframeRule = (
   { key, style },
   options: StringifySheetOptions
 ) => {
-  return `${key} {
-    ${style.map(style => stringifyStyle(style, options)).join("\n")}
-  }`;
+  return `${key} {\n${style
+    .map(style => stringifyStyle(style, options))
+    .join("\n")}\n}`;
 };
 
 const stringifyFontFaceRule = ({ style }, options: StringifySheetOptions) => {
-  return `@font-face {
-    ${style.map(style => stringifyStyle(style, options)).join("\n")}
-  }`;
+  return `@font-face {\n${style
+    .map(style => stringifyStyle(style, options))
+    .join("\n")}\n}`;
 };
 
 const stringifyStyleRule = (
   { selectorText, style, ...rest },
   options: StringifySheetOptions
 ) => {
-  return `${selectorText} {
-    ${style.map(style => stringifyStyle(style, options)).join("\n")}
-  }`;
+  return `${selectorText} {\n${style
+    .map(style => stringifyStyle(style, options))
+    .join("\n")}\n}`;
 };
 
 const stringifyStyle = (
@@ -107,5 +107,5 @@ const stringifyStyle = (
     }
   }
 
-  return `${name}:${value};`;
+  return `  ${name.trim()}:${value};`;
 };
