@@ -108,9 +108,8 @@ const translateImports = (
         return null;
       }
 
-      const resolvedFilePath = engine.resolveFile(
-        filePath,
-        getAttributeStringValue("src", imp)
+      const resolvedFilePath = castAsFilePath(
+        engine.resolveFile(filePath, getAttributeStringValue("src", imp))
       );
 
       const usedTagNames: any = {};

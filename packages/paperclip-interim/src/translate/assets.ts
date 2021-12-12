@@ -14,7 +14,8 @@ import {
   AttributeKind,
   AttributeValueKind,
   isNode,
-  NodeKind
+  NodeKind,
+  isPaperclipFile
 } from "paperclip-utils";
 import { InterimCompilerOptions } from "./options";
 import { InterimAsset } from "../state/assets";
@@ -72,11 +73,11 @@ const mapAsset = (
   }
 
   const filePath = engine.resolveFile(modulePath, relativeAssetPath);
-  const fileSize = options.io.getFileSize(filePath);
 
   let moduleContent: string;
   let outputFilePath = filePath;
 
+  const fileSize = options.io.getFileSize(filePath);
   if (
     fileSize <= options.config.compilerOptions?.embedAssetMaxSize ||
     options.config.compilerOptions?.embedAssetMaxSize === -1

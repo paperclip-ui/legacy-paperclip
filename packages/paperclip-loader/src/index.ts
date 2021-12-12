@@ -62,6 +62,7 @@ async function pcLoader(
         compilerOptions: {
           ...(config.compilerOptions || {}),
           importAssetsAsModules: true,
+          assetOutDir: null,
 
           // leave this stuff up to Webpack
           embedAssetMaxSize: 0,
@@ -70,7 +71,8 @@ async function pcLoader(
       },
       cwd: process.cwd()
     });
-    files = result.translations;
+    files = { ...result.translations };
+    files[".css"] = result.css;
   } catch (e) {
     // eesh 🙈
     const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
@@ -85,7 +87,7 @@ async function pcLoader(
     );
   }
 
-  const { js, ...exts } = files;
+  const { ".js": js, ...exts } = files;
 
   for (const ext in exts) {
     let filePath = resourceUrl + ext;
