@@ -31,12 +31,19 @@ export const getAssets = (
 
     let content: string;
 
-    if (fileSize <= options.config.compilerOptions?.embedFileSizeLimit) {
+    if (fileSize <= options.config.compilerOptions?.embedAssetMaxSize) {
       content =
         `data:${mime.getType(filePath)};base64,` +
         options.io.readFile(filePath).toString("base64");
+    } else if (options.config.compilerOptions.assetOutDir) {
+      const srcDir = path.join(options.cwd, options.config.srcDir);
+      const outputDir = path.join(
+        options.cwd,
+        options.config.compilerOptions.assetOutDir
+      );
+      content = path.join(outputDir, filePath.replace(srcDir, ""));
     }
-    // }data:image/png;base64,
+
     return {
       relativePath: assetPath,
       filePath,
