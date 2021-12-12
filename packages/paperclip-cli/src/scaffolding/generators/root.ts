@@ -78,7 +78,9 @@ export const root = {
       srcDir
     };
 
-    const files = {};
+    const files = {
+      [srcDir + "/hello-paperclip.pc"]: HELLO_WORLD_CONTENT
+    };
 
     if (!fsa.existsSync(path.join(cwd, "paperclip.config.json"))) {
       files["paperclip.config.json"] = JSON.stringify(config, null, 2);
@@ -88,11 +90,13 @@ export const root = {
   },
   fin({ overwrite }) {
     if (!overwrite) {
-      console.info("🎉 Successfully installed Paperclip dependencies!");
+      console.info("🎉 All set up!");
       console.info("");
       console.info(
-        chalk.yellowBright(
-          "Next, you'll need to configure your project. Instructions for that are here: \n\n" +
+        chalk.cyanBright(
+          "Next just run " +
+            chalk.underline("npx paperclip build --write") +
+            " to generate code! More docs on this can be found here: \n\n" +
             chalk.underline(`https://paperclip.dev/docs/`)
         )
       );

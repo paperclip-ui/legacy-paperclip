@@ -36,7 +36,7 @@ const argv = require("yargs")
   .option("watch", desc("watch for changes"))
   .option("write", desc("Write compiled file"))
   .option("only", desc("Target files to generate"))
-  .option("verbose", desc("Write verbose information"))
+  .option("silent", desc("silence output information"))
   .option("output", desc("output directory of files"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
 }, argv => {
@@ -49,7 +49,7 @@ const argv = require("yargs")
     watch: argv.watch,
     definition: argv.definition,
     only: argv.only && argv.only.split(",").map(v => v.trim()),
-    verbose: argv.verbose,
+    verbose: !argv.silent,
     dropPcExtension: argv.dropPcExtension,
     compilerName: argv.compiler,
     filePatterns: argv.filePattern
