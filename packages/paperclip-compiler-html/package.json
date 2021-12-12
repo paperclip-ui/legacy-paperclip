@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "18.1.0",
+  "version": "18.1.1",
   "private": true,
   "description": "HTML compiler for Paperclip",
   "main": "index.js",
@@ -18,6 +18,6 @@
     "mocha": "^8.0.1"
   },
   "dependencies": {
-    "paperclip-utils": "^18.1.0"
+    "paperclip-utils": "^18.1.1"
   }
 }

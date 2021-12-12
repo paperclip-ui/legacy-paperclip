@@ -1,6 +1,6 @@
 {
   "name": "paperclip-diff",
-  "version": "1.0.0",
+  "version": "18.1.1",
   "description": "",
   "main": "lib/index.js",
   "scripts": {},
@@ -9,8 +9,8 @@
   "dependencies": {
     "execa": "^6.0.0",
     "glob": "^7.2.0",
-    "paperclip": "^18.1.0",
-    "paperclip-utils": "^18.1.0",
+    "paperclip": "^18.1.1",
+    "paperclip-utils": "^18.1.1",
     "pixelmatch": "^5.2.1",
     "puppeteer": "^13.0.0"
   }
