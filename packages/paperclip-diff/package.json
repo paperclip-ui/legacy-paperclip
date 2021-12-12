@@ -7,5 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "pixelmatch": "^5.2.1",
+    "puppeteer": "^13.0.0"
+  }
 }
