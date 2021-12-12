@@ -10,7 +10,6 @@ import {
 } from "paperclip";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import * as path from "path";
-import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules";
 import { buildFile } from "paperclip-builder";
@@ -57,12 +56,13 @@ async function pcLoader(
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
-    files = await buildFile(resourceUrl, engine, {
+    const result = await buildFile(resourceUrl, engine, {
       config: {
         ...config,
         compilerOptions: {
           ...(config.compilerOptions || {}),
           importAssetsAsModules: true,
+          assetOutDir: null,
 
           // leave this stuff up to Webpack
           embedAssetMaxSize: 0,
@@ -71,6 +71,8 @@ async function pcLoader(
       },
       cwd: process.cwd()
     });
+    files = { ...result.translations };
+    files[".css"] = result.css;
   } catch (e) {
     // eesh 🙈
     const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
@@ -85,10 +87,10 @@ async function pcLoader(
     );
   }
 
-  const { js, ...exts } = files;
+  const { ".js": js, ...exts } = files;
 
   for (const ext in exts) {
-    let filePath = `${resourceUrl}.${ext}`;
+    let filePath = resourceUrl + ext;
 
     // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
     if (process.platform === "win32") {

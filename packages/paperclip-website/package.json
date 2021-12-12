@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "18.0.3",
+  "version": "18.1.0",
   "private": true,
   "scripts": {
     "start": "ddocusaurus clear && ocusaurus start",
@@ -34,12 +34,12 @@
   "devDependencies": {
     "@docusaurus/core": "^2.0.0-beta.9",
     "@docusaurus/plugin-google-analytics": "^2.0.0-beta.9",
-    "tandem-workspace": "^18.0.3",
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^6.5.1",
     "file-loader": "^6.2.0",
     "null-loader": "^4.0.1",
-    "paperclip-compiler-react": "^18.0.3",
-    "paperclip-loader": "^18.0.3"
+    "paperclip-compiler-react": "^18.1.0",
+    "paperclip-loader": "^18.1.0",
+    "tandem-workspace": "^18.1.0"
   }
 }

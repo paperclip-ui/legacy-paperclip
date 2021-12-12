@@ -1,7 +1,10 @@
 {
   "srcDir": "./src",
   "compilerOptions": {
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "assetOutDir": "./lib/assets",
+    "embedAssetMaxSize": 0,
+    "mainCSSFileName": "main.css"
   },
   "lintOptions": {
     "enforceVars": [

@@ -23,7 +23,18 @@ export const compileModules = async (
     }
   });
 
-  const intermCompiler = new InterimCompiler(engine, { config });
+  const intermCompiler = new InterimCompiler(engine, {
+    config,
+    cwd: "/",
+    io: {
+      readFile(filePath) {
+        return Buffer.from(graph[filePath]);
+      },
+      getFileSize(filePath) {
+        return 0;
+      }
+    }
+  });
 
   const modules = {};
 

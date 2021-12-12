@@ -1,19 +1,18 @@
 import * as resolve from "resolve";
 import { buildDirectory } from "paperclip-builder";
 import * as path from "path";
-import * as url from "url";
 import * as fs from "fs";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import { PaperclipConfig, stripFileProtocol } from "paperclip-utils";
 import { createEngineDelegate } from "paperclip";
-import { mkdirpSync } from "fs-extra";
+import { mkdirpSync, outputFile } from "fs-extra";
 
 export type BuildOptions = {
   cwd: string;
   config?: string;
   write: boolean;
   output?: string;
-  targets?: string[];
+  only?: string[];
   watch: boolean;
   compilerName?: string;
   sourceDirectory?: string;
@@ -34,18 +33,15 @@ export const build = async (options: BuildOptions) => {
   );
 
   const srcDir = path.join(options.cwd, config.srcDir);
-
   const outDir = path.join(options.cwd, config.compilerOptions!.outDir);
 
   builder
-    .onFile((filePath: string, content: string) => {
-      const ext = filePath.replace(/.*?\.pc\./, "");
+    .onFile((outFilePath: string, content: string) => {
+      const ext = outFilePath.replace(/.*?\.pc\./, "");
 
-      if (options.targets && !options.targets.includes(ext)) {
+      if (options.only && !options.only.includes(ext)) {
         return;
       }
-
-      const outFilePath = filePath.replace(srcDir, outDir);
 
       if (options.verbose) {
         console.log("Compiled %s", path.relative(options.cwd, outFilePath));

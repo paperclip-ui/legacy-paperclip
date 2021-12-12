@@ -19,10 +19,14 @@ export type BuildDirectoryOptions = BaseOptions & {
 
 class DirectoryBuilder {
   private _em: EventEmitter;
+  private _compiledInitially: boolean;
+  private _cssContents: Array<[string, string]>;
+
   constructor(
     readonly engine: EngineDelegate,
     readonly options: BuildDirectoryOptions
   ) {
+    this._cssContents = [];
     this._em = new EventEmitter();
   }
   start() {
@@ -33,10 +37,12 @@ class DirectoryBuilder {
         absolute: true
       },
       async (err, filePaths) => {
-        filePaths.map(this._buildFile);
-        if (this.options.watch) {
+        await Promise.all(filePaths.map(this._buildFile));
+        if (!this.options.watch) {
           this._em.emit("end");
         }
+        this._compiledInitially = true;
+        this._maybeEmitMainCSSFile();
       }
     );
 
@@ -51,17 +57,83 @@ class DirectoryBuilder {
   }
   _buildFile = async (filePath: string) => {
     try {
-      const files = await buildFile(filePath, this.engine, this.options);
-      for (const ext in files) {
-        const content = files[ext];
+      const result = await buildFile(filePath, this.engine, this.options);
+      for (const ext in result.translations) {
+        const content = result.translations[ext];
         if (content) {
-          this._em.emit("file", filePath + "." + ext, content);
+          let newFilePath = filePath + ext;
+          if (this.options.config.compilerOptions?.outDir) {
+            newFilePath = newFilePath.replace(
+              path.join(this.options.cwd, this.options.config.srcDir),
+              path.join(
+                this.options.cwd,
+                this.options.config.compilerOptions.outDir
+              )
+            );
+          }
+          this._em.emit("file", newFilePath, content);
         }
+      }
+
+      if (this.options.config.compilerOptions?.mainCSSFileName) {
+        this._addCSSContent(filePath, result.css);
+      } else {
+        this._em.emit("file", filePath + ".css", result.css);
+      }
+
+      for (const asset of result.assets) {
+        if (!asset.outputFilePath) {
+          continue;
+        }
+        this._em.emit(
+          "file",
+          asset.outputFilePath,
+          fs.readFileSync(asset.filePath)
+        );
       }
     } catch (e) {
       this._em.emit("error", e, filePath);
     }
   };
+  private _maybeEmitMainCSSFile() {
+    if (!this.options.config.compilerOptions?.mainCSSFileName) {
+      return;
+    }
+    const mainContent = this._cssContents.reduce(
+      (mainContent, [_filePath, content]) => {
+        mainContent.push(content);
+        return mainContent;
+      },
+      []
+    );
+
+    this._em.emit(
+      "file",
+      getMainCSSFilePath(this.options.cwd, this.options.config),
+      mainContent.join("\n")
+    );
+  }
+
+  private _addCSSContent(modulePath: string, cssContent: string) {
+    let found = false;
+    for (let i = this._cssContents.length; i--; ) {
+      if (this._cssContents[i][0] === modulePath) {
+        this._cssContents[i][1] = cssContent;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      this._cssContents.push([modulePath, cssContent]);
+    }
+
+    if (!this._compiledInitially) {
+      return;
+    }
+
+    this._maybeEmitMainCSSFile();
+  }
+
   onFile(cb: (file: string, content: string) => void) {
     this._em.on("file", cb);
     return this;
@@ -80,6 +152,7 @@ type TargetCompiler = {
   compile: (
     module: InterimModule,
     filePath: string,
+    includes: string[],
     config: PaperclipConfig,
     options: any
   ) => Record<string, string>;
@@ -100,6 +173,14 @@ function watch(cwd, filesGlob, compileFile) {
   watcher.on("change", compileFile);
 }
 
+const getMainCSSFilePath = (cwd: string, config: PaperclipConfig) => {
+  return path.join(
+    cwd,
+    config.compilerOptions.assetOutDir || config.compilerOptions.outDir,
+    config.compilerOptions.mainCSSFileName
+  );
+};
+
 /**
  * Builds from Paperclip config.
  */
@@ -113,27 +194,51 @@ export const buildFile = async (
     filePath.indexOf("file://") === 0
       ? filePath
       : URL.pathToFileURL(filePath).href;
+
+  const includes: string[] = [];
+
+  if (options.config.compilerOptions.importAssetsAsModules) {
+    if (options.config.compilerOptions.mainCSSFileName) {
+      includes.push(
+        path.resolve(
+          path.dirname(filePath),
+          getMainCSSFilePath(options.cwd, options.config)
+        )
+      );
+    } else {
+      includes.push("./" + path.basename(filePath) + ".css");
+    }
+  }
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
   const targetCompilers = requireTargetCompilers(options.cwd, options.config);
-  return targetCompilers.reduce((files, compiler) => {
+
+  const translations = targetCompilers.reduce((files, compiler) => {
     return Object.assign(
       files,
       compiler.compile(
         interimModule,
         fileUrl,
+        includes,
         options.config,
         options.config.compilerOptions
       )
     );
   }, {});
+
+  return {
+    translations,
+    css: interimModule.css.sheetText,
+    assets: interimModule.assets
+  };
 };
 
 const createInterimCompiler = (
   engine: EngineDelegate,
-  { config }: BaseOptions
+  { config, cwd }: BaseOptions
 ) =>
   new InterimCompiler(engine, {
+    cwd,
     config
   });
 

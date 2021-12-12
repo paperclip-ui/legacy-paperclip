@@ -1,8 +1,9 @@
 import { EngineDelegate, Node, VirtSheet } from "paperclip";
 import * as path from "path";
+import * as fs from "fs";
+import * as URL from "url";
 
 import {
-  CSSExports,
   getAttributeStringValue,
   getImports,
   getStyleScopeId,
@@ -12,17 +13,39 @@ import {
   PCExports,
   traverseExpression
 } from "paperclip-utils";
-import { InterimModule, InterimImport } from "../state";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";
-import { InterimCompilerOptions } from "./options";
+import { FIO, InterimCompilerOptions } from "./options";
+import { InterimModule, InterimImport } from "../state";
+
+const castAsFilePath = (filePath: string) => {
+  if (filePath.indexOf("file://") === 0) {
+    filePath = URL.fileURLToPath(filePath);
+  }
+  return filePath;
+};
+
+const defaultFIO: FIO = {
+  readFile(filePath: string) {
+    return fs.readFileSync(castAsFilePath(filePath));
+  },
+  getFileSize(filePath: string) {
+    return fs.lstatSync(castAsFilePath(filePath)).size;
+  }
+};
 
 export class InterimCompiler {
+  readonly options: InterimCompilerOptions;
   constructor(
     private _engine: EngineDelegate,
-    readonly options: InterimCompilerOptions
-  ) {}
+    options: InterimCompilerOptions
+  ) {
+    this.options = {
+      io: defaultFIO,
+      ...options
+    };
+  }
   parseFile(filePath: string): InterimModule {
     const { sheet, exports } = this._engine.open(filePath);
     const ast = this._engine.parseFile(filePath);
@@ -35,7 +58,7 @@ export class InterimCompiler {
     return translateinterim(
       ast,
       sheet,
-      filePath,
+      castAsFilePath(filePath),
       this._engine,
       exports as PCExports,
       this.options
@@ -57,11 +80,19 @@ const translateinterim = (
     engine,
     options
   );
+  const assets = getAssets(filePath, ast, sheet, engine, options);
+  const components = translateComponents(
+    ast,
+    filePath,
+    engine,
+    imports,
+    assets
+  );
   return {
     imports,
-    components: translateComponents(ast, options, filePath, imports),
-    css: translateCSS(sheet, exports, filePath, options),
-    assets: getAssets(ast, sheet, options)
+    components,
+    css: translateCSS(sheet, exports, assets),
+    assets
   };
 };
 
@@ -77,9 +108,8 @@ const translateImports = (
         return null;
       }
 
-      const resolvedFilePath = engine.resolveFile(
-        filePath,
-        getAttributeStringValue("src", imp)
+      const resolvedFilePath = castAsFilePath(
+        engine.resolveFile(filePath, getAttributeStringValue("src", imp))
       );
 
       const usedTagNames: any = {};

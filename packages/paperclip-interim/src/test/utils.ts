@@ -4,9 +4,11 @@ import {
   InterimAttributeValuePart,
   InterimAttributeValuePartKind,
   InterimComponent,
+  InterimExpression,
   InterimModule,
   InterimNode,
-  InterimNodeKind
+  InterimNodeKind,
+  InterimScriptExpressionKind
 } from "..";
 
 export const stringifyInterimModule = (module: InterimModule) => {
@@ -21,7 +23,7 @@ export const stringifyInterimModule = (module: InterimModule) => {
   return buffer.join(" ");
 };
 
-export const stringifyNode = (node: InterimNode) => {
+export const stringifyNode = (node: InterimExpression) => {
   switch (node.kind) {
     case InterimNodeKind.Element:
     case InterimNodeKind.Component: {
@@ -35,7 +37,10 @@ export const stringifyNode = (node: InterimNode) => {
       return buffer.join("");
     }
     case InterimNodeKind.Slot: {
-      return `[SLOT]`;
+      return stringifyNode(node.script);
+    }
+    case InterimScriptExpressionKind.Element: {
+      return stringifyNode(node.element);
     }
     case InterimNodeKind.Text: {
       return `[TEXT]`;
