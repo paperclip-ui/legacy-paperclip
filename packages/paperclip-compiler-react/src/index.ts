@@ -19,9 +19,9 @@ export const compile = (
   );
 
   return {
-    js: code,
-    "js.map": map.toString(),
-    "d.ts": compileDefinition(module, filePath, config),
-    css: module.css.sheetText
+    ".js": code,
+    ".js.map": map.toString(),
+    ".d.ts": compileDefinition(module, filePath, config),
+    ".css": module.css.sheetText
   };
 };

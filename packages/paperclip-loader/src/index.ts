@@ -88,7 +88,7 @@ async function pcLoader(
   const { js, ...exts } = files;
 
   for (const ext in exts) {
-    let filePath = `${resourceUrl}.${ext}`;
+    let filePath = resourceUrl + ext;
 
     // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
     if (process.platform === "win32") {

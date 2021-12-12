@@ -55,7 +55,23 @@ class DirectoryBuilder {
       for (const ext in result.translations) {
         const content = result.translations[ext];
         if (content) {
-          this._em.emit("file", filePath + "." + ext, content);
+          let newFileName = filePath + ext;
+          if (this.options.config.compilerOptions?.outDir) {
+            newFileName = newFileName.replace(
+              path.join(this.options.cwd, this.options.config.srcDir),
+              path.join(
+                this.options.cwd,
+                this.options.config.compilerOptions.outDir
+              )
+            );
+          }
+          this._em.emit("file", newFileName, content);
+        }
+      }
+
+      for (const asset of result.assets) {
+        if (!asset.content || asset.content.indexOf("data:") === 0) {
+          continue;
         }
       }
     } catch (e) {
