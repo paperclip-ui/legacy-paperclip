@@ -42,7 +42,8 @@ describe(__filename + "#", () => {
         "/e.svg": "embed2"
       },
       {
-        embedAssetMaxSize: "embedded-svg".length
+        embedAssetMaxSize: "embedded-svg".length,
+        useAssetHashNames: false
       },
       {
         html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(/b.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=/b.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
@@ -77,7 +78,8 @@ describe(__filename + "#", () => {
       },
       {
         assetOutDir: "./lib",
-        srcDir: "/src"
+        srcDir: "/src",
+        useAssetHashNames: false
       },
       {
         html: `<style>@font-face { src:url(/lib/c.svg); } [class]._a61d499e_a { background-image:url(/lib/d.svg); } [class]._a61d499e_b { background-image:url(/lib/b.svg); }</style> <img src=/lib/a.svg></img> <img src=/lib/b.svg></img> <div><img src=/lib/e.svg></img></div>`
@@ -117,14 +119,14 @@ describe(__filename + "#", () => {
         srcDir: "/src"
       },
       {
-        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(/lib/b.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=/lib/b.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
+        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
       }
     ]
   ].forEach(
     ([
       title,
       graph,
-      { embedAssetMaxSize, assetOutDir, srcDir },
+      { embedAssetMaxSize, assetOutDir, srcDir, useAssetHashNames },
       expectedOutput
     ]: any) => {
       it(title, () => {
@@ -135,7 +137,8 @@ describe(__filename + "#", () => {
             srcDir,
             compilerOptions: {
               embedAssetMaxSize,
-              assetOutDir
+              assetOutDir,
+              useAssetHashNames
             }
           },
           io: {

@@ -17,6 +17,7 @@ import { InterimCompilerOptions } from "./options";
 import { InterimAsset } from "../state/assets";
 import { EngineDelegate } from "paperclip";
 import * as mime from "mime";
+import * as crypto from "crypto";
 
 export const getAssets = (
   modulePath: string,
@@ -42,7 +43,17 @@ export const getAssets = (
         options.cwd,
         options.config.compilerOptions.assetOutDir
       );
-      content = path.join(outputDir, filePath.replace(srcDir, ""));
+
+      if (options.config.compilerOptions?.useAssetHashNames !== false) {
+        const buffer = options.io.readFile(filePath);
+        const md5Name = crypto
+          .createHash("md5")
+          .update(buffer)
+          .digest("hex");
+        content = path.join(outputDir, md5Name + path.extname(filePath));
+      } else {
+        content = path.join(outputDir, filePath.replace(srcDir, ""));
+      }
     }
 
     return {

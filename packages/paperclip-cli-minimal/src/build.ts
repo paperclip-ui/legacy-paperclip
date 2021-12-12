@@ -1,7 +1,6 @@
 import * as resolve from "resolve";
 import { buildDirectory } from "paperclip-builder";
 import * as path from "path";
-import * as url from "url";
 import * as fs from "fs";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import { PaperclipConfig, stripFileProtocol } from "paperclip-utils";
@@ -34,7 +33,6 @@ export const build = async (options: BuildOptions) => {
   );
 
   const srcDir = path.join(options.cwd, config.srcDir);
-
   const outDir = path.join(options.cwd, config.compilerOptions!.outDir);
 
   builder
