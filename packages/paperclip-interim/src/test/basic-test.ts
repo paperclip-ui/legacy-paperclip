@@ -82,7 +82,7 @@ describe(__filename + "#", () => {
         useAssetHashNames: false
       },
       {
-        html: `<style>@font-face { src:url(/lib/c.svg); } [class]._a61d499e_a { background-image:url(/lib/d.svg); } [class]._a61d499e_b { background-image:url(/lib/b.svg); }</style> <img src=/lib/a.svg></img> <img src=/lib/b.svg></img> <div><img src=/lib/e.svg></img></div>`
+        html: `<style>@font-face { src:url(../lib/c.svg); } [class]._a61d499e_a { background-image:url(../lib/d.svg); } [class]._a61d499e_b { background-image:url(../lib/b.svg); }</style> <img src=../lib/a.svg></img> <img src=../lib/b.svg></img> <div><img src=../lib/e.svg></img></div>`
       }
     ],
     ,
@@ -116,17 +116,18 @@ describe(__filename + "#", () => {
       {
         embedAssetMaxSize: "embedded-svg".length,
         assetOutDir: "./lib",
-        srcDir: "/src"
+        srcDir: "/src",
+        outDir: "/lib"
       },
       {
-        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
+        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(./86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=./86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
       }
     ]
   ].forEach(
     ([
       title,
       graph,
-      { embedAssetMaxSize, assetOutDir, srcDir, useAssetHashNames },
+      { embedAssetMaxSize, assetOutDir, srcDir, outDir, useAssetHashNames },
       expectedOutput
     ]: any) => {
       it(title, () => {
@@ -136,6 +137,7 @@ describe(__filename + "#", () => {
           config: {
             srcDir,
             compilerOptions: {
+              outDir,
               embedAssetMaxSize,
               assetOutDir,
               useAssetHashNames

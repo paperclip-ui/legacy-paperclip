@@ -26,13 +26,23 @@ export const getAssets = (
   engine: EngineDelegate,
   options: InterimCompilerOptions
 ): InterimAsset[] => {
+  const outModulePath = options.config.compilerOptions?.outDir
+    ? modulePath.replace(
+        path.join(options.cwd, options.config.srcDir),
+        path.join(options.cwd, options.config.compilerOptions.outDir)
+      )
+    : modulePath;
+
   return collectAssetPaths(node, sheet).map(assetPath => {
     const filePath = engine.resolveFile(modulePath, assetPath);
     const fileSize = options.io.getFileSize(filePath);
 
     let content: string;
 
-    if (fileSize <= options.config.compilerOptions?.embedAssetMaxSize) {
+    if (
+      fileSize <= options.config.compilerOptions?.embedAssetMaxSize ||
+      options.config.compilerOptions?.embedAssetMaxSize === -1
+    ) {
       content =
         `data:${mime.getType(filePath)};base64,` +
         options.io.readFile(filePath).toString("base64");
@@ -53,6 +63,11 @@ export const getAssets = (
         content = path.join(outputDir, md5Name + path.extname(filePath));
       } else {
         content = path.join(outputDir, filePath.replace(srcDir, ""));
+      }
+
+      content = path.relative(path.dirname(outModulePath), content);
+      if (content.charAt(0) !== ".") {
+        content = "./" + content;
       }
     }
 
