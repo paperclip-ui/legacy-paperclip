@@ -10,7 +10,6 @@ import {
 } from "paperclip";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import * as path from "path";
-import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules";
 import { buildFile } from "paperclip-builder";

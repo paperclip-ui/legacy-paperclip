@@ -36,6 +36,9 @@ export const createMockEngine = (
           return Boolean(graph[uri]);
         },
         resolveFile: (from, to) => {
+          if (to.charAt(0) === "/") {
+            return to;
+          }
           return path.join(path.dirname(from), to).replace(/\\/g, "/");
         },
         getLintConfig: () => {

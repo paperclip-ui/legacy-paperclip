@@ -37,6 +37,7 @@ export const getAssets = (
         options.io.readFile(filePath).toString("base64");
     } else if (options.config.compilerOptions.assetOutDir) {
       const srcDir = path.join(options.cwd, options.config.srcDir);
+
       const outputDir = path.join(
         options.cwd,
         options.config.compilerOptions.assetOutDir
