@@ -1,6 +1,6 @@
 {
   "name": "paperclip",
-  "version": "18.1.0",
+  "version": "18.1.1",
   "description": "A hybrid approach to design & code",
   "main": "./index.js",
   "typings": "index.d.ts",
@@ -23,7 +23,7 @@
     "build:watch": "tsc --watch & (cd native && cargo watch -i .gitignore -i \"node/*\" -s 'wasm-pack build --release --target nodejs --out-dir node')",
     "build:node": "tsc",
     "build:native": "cd native && cargo build --release",
-    "build:browser": "npm run build:esm && npm run build:wasm:browser",
+    "build:browser": "npm run build:esm && npm run build:wasm:browser && find ./native -name package.json -exec rm {} \\; &&  find ./native -name .gitignore -exec rm {} \\;",
     "build:esm": "tsc --build tsconfig.esm.json",
     "build:wasm:bundler": "cd native && wasm-pack build --release --target bundler --out-dir bundler",
     "build:wasm:browser": "cd native && wasm-pack build --release --target browser --out-dir browser",
@@ -37,7 +37,7 @@
     "chai": "^4.2.0",
     "crc32": "^0.2.2",
     "mocha": "^7.0.1",
-    "paperclip-utils": "^18.1.0",
+    "paperclip-utils": "^18.1.1",
     "url": "^0.11.0"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",

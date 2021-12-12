@@ -23,7 +23,7 @@ const CHOKIDAR_EVENT_MAP = {
 export class PaperclipResourceWatcher {
   private _em: EventEmitter;
   private _watcher: chokidar.FSWatcher;
-  constructor(readonly config: PaperclipConfig, readonly cwd: string) {
+  constructor(private _srcDir: string, readonly cwd: string) {
     this._em = new EventEmitter();
     this._init();
   }
@@ -36,7 +36,7 @@ export class PaperclipResourceWatcher {
   }
   private _init() {
     const watcher = (this._watcher = chokidar.watch(
-      paperclipResourceGlobPattern(this.config.srcDir),
+      paperclipResourceGlobPattern(this._srcDir),
       { cwd: this.cwd, ignoreInitial: true }
     ));
     watcher.on("all", (eventName, relativePath) => {

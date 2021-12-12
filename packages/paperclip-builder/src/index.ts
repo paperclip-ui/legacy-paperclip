@@ -246,12 +246,14 @@ const requireTargetCompilers = (
   cwd: string,
   config: PaperclipConfig
 ): TargetCompiler[] => {
-  const possibleDirs = cwd
+  const localDirs = cwd
     .split("/")
     .map((part, index, parts) =>
       [...parts.slice(0, index), "node_modules"].join("/")
     )
     .filter(dir => dir !== "node_modules");
+
+  const possibleDirs = [...localDirs, "/usr/local/lib/node_modules"];
 
   const compilers: Record<string, TargetCompiler> = {};
 

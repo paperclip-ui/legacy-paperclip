@@ -7,6 +7,7 @@ const {init, devStart} = require("../lib/cli");
 const {build} = require("paperclip-cli-minimal");
 const fs = require("fs");
 const {start: startWorkspace} = require("tandem-workspace/lib/server");
+const {PaperclipDiff} = require("paperclip-diff");
 
 // const argv = require("yargs")
 // .option("compiler", {
@@ -35,7 +36,7 @@ const argv = require("yargs")
   .option("watch", desc("watch for changes"))
   .option("write", desc("Write compiled file"))
   .option("only", desc("Target files to generate"))
-  .option("verbose", desc("Write verbose information"))
+  .option("silent", desc("silence output information"))
   .option("output", desc("output directory of files"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
 }, argv => {
@@ -48,7 +49,7 @@ const argv = require("yargs")
     watch: argv.watch,
     definition: argv.definition,
     only: argv.only && argv.only.split(",").map(v => v.trim()),
-    verbose: argv.verbose,
+    verbose: !argv.silent,
     dropPcExtension: argv.dropPcExtension,
     compilerName: argv.compiler,
     filePatterns: argv.filePattern
@@ -57,6 +58,22 @@ const argv = require("yargs")
 .command("init", "Initialize new paperclip project", yargs => {
 }, argv => {
   init();
+})
+.command("snapshot", "Take a snapshot of all Paperclip files in the current branch", yargs => {
+}, argv => {
+  const diff = new PaperclipDiff(process.cwd());
+  diff.start().then(() => {
+    return diff.snapshot();
+  });
+})
+.command("diff [branch]", "Detect visual changes on a different branch", yargs => {
+  yargs
+  .option("watch", desc("Watch for changes and then re-run diff"));
+}, argv => {
+  const diff = new PaperclipDiff(process.cwd());
+  diff.detectChanges(argv.name, argv.watch).then(() => {
+
+  })
 })
 .command("dev", "Starts the dev server", yargs => {
   yargs
@@ -77,8 +94,6 @@ const argv = require("yargs")
       project.openBrowser();
     });
   });
-})
-.command("diff [branch]", "diff changes against a specific branch", yargs => {}, argv => {
 })
 .argv;
 
