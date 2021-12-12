@@ -8,10 +8,49 @@
 
 <!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
 
+Paperclip is a tiny language that enables you to create presentational components for any framework. Here's what it looks like:
+
+```html
+
+<!-- this style block is scoped to the document that it's defined in -->
+<style>
+  .font-regular {
+    font-family: Inter;
+    font-size: 0.8em;
+  }
+</style>
+
+<div export component as="Message" className="font-regular">
+  {children}
+</div>
+```
+
+Paperclip modules can be imported directly into your regular code like so:
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom";
+import { Message } from "./my-module.pc";
+
+ReactDOM.render(<Message>
+  Hello Paperclip!
+</Message>, document.body);
+```
+
+## Why?
+
+Paperclip was created to be a generic approach to building a 
+
+
+With Paperclip, there's **no global CSS**, so you don't have to worry about leaky styles, or need to use patterns to safe-guard your 
+
+
+
+
 Build UIs at the speed of thought. Paperclip is a template engine that comes with tools for building presentational components in realtime, all within your existing IDE:
 
 
-![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
+<!-- ![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif) -->
 
 > This took me about 12 minutes to make start to finish.
 
@@ -40,158 +79,6 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
 
-
-## Example
-
-Here's what Paperclip's syntax looks like (from GIF above):
-
-```html
-
-<!-- @frame is like a doc-comment & attaches metadata about your elements for the designer & other visual tooling. -->
-
-<!--
-  @frame { visible: false }
--->
-<h4 export component as="FormTitle">
-  
-  <!-- Styles defined within elements are scoped, and don't need selectors -->  
-  <style>
-    margin: 0px;
-  </style>
-  {children}
-</h4>
-
-<!--
-  @frame { visible: false }
--->
-
-<!-- Note this would typically be defined in a separate file & imported into this doc -->
-<input export component as="TextInput" {placeholder?} {type}>
-  <style>
-    border: 1px solid rgb(156, 156, 156);
-    padding: 8px 16px;
-    border-radius: 2px;
-  </style>
-</input>
-
-<!--
-  @frame { visible: false }
--->
-<div export component as="FormFooter">  
-  <style>
-    display: flex;
-    justify-content: flex-end;
-  </style>
-  {children}
-</div>
-
-<!--
-  @frame { visible: false }
--->
-
-<!-- This typically wouldn't be defined here -->
-<button export component as="Button">
-  <style>
-    --button-bg-color: rgb(116, 176, 255);
-    background: var(--button-bg-color);
-    color: rgb(46, 85, 136);
-    padding: 8px 16px;
-    border-radius: 2px;
-    border: 2px solid var(--button-bg-color);
-  </style>
-  {children}
-</button>
-
-<!--
-  @frame { visible: false }
--->
-<div export component as="AuthModal">
-  <style>
-    display: grid;
-    grid-row-gap: 16px;
-    max-width: 250px;
-    margin: 0px auto;
-
-    /* rule of thirds */
-    top: 30%;
-    padding: 32px;
-    border-radius: 4px;
-    color: rgb(97, 97, 97);
-    background: rgb(238, 238, 238);
-    position: relative;
-    border: 1px solid rgb(194, 194, 194);
-  </style>
-  {children}
-</div>
-
-<!--
-  @frame { visible: false, title: "Auth / login", width: 586, height: 446, x: 3, y: 141 }
--->
-<div export component as="Preview">
-  <style>
-    font-family: sans-serif;
-    height: 100vh;
-  </style>
-  
-  {showLogin && <AuthModal>
-    <FormTitle>Log in</FormTitle>
-    <TextInput placeholder="Username" />
-    <TextInput placeholder="Password" />
-    <FormFooter>
-      <Button>Sign up</Button>
-    </FormFooter>
-  </AuthModal>}
-
-  {showSignup && <AuthModal>
-    <FormTitle>Sign up</FormTitle>
-    <TextInput placeholder="Full Name" />
-    <TextInput placeholder="Username" />
-    <TextInput placeholder="Password" />
-    <TextInput placeholder="Repeat Password" />
-    <FormFooter>
-      <Button>Sign up</Button>
-    </FormFooter>
-  </AuthModal>}
-</div>
-
-<!--
-  @frame { title: "Auth / Login", width: 501, height: 427, x: 0, y: 0 }
--->
-<Preview showLogin />
-
-<!--
-  @frame { title: "Auth / Sign Up", width: 501, height: 561, x: 581, y: 1 }
--->
-<Preview showSignup />
-```
-
-Here's how you integrate Paperclip into your code:
-
-```typescript
-import React from "react";
-import * as styles from "./auth.pc";
-import { TextInput } from "@design-system/components/TextInput";
-import { Button } from "@design-system/components/Button";
-
-export const LoginPage = () => {
-
-  const { onSubmit, usernameInputProps, passwordInputProps } = useLogin();
-  const userNameProps = useTextInput();
-
-  return <form onSubmit={onSubmit}>
-    <styles.Modal>
-      <styles.AuthModal> 
-        <styles.FormTitle>Welcome back!</styles.FormTitle>
-        <TextInput type="text" {...usernameInputProps} />
-        <TextInput type="password" {...passwordInputProps} />
-        <styles.FormFooter>
-          <Button>Log in</Button>
-        </styles.FormFooter>
-      </styles.AuthModal>
-    </styles.Modal>
-  </form>;
-};
-```
 
 ## Roadmap
 
