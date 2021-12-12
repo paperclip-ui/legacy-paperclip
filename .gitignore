@@ -25,3 +25,5 @@ paperclip-html.tmLanguage.json
 !.yarn/sdks
 !.yarn/versions
 
+.paperclip
+*.tgz

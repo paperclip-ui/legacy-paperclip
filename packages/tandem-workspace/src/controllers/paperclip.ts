@@ -85,7 +85,7 @@ export class PaperclipProject {
     if (this._watcher) {
       this._watcher.dispose();
     }
-    this._watcher = new PaperclipResourceWatcher(config, this._cwd);
+    this._watcher = new PaperclipResourceWatcher(config.srcDir, this._cwd);
     this._watcher.onChange((kind: ChangeKind, fileUrl: string) => {
       this._engine.updateVirtualFileContent(
         fileUrl,
