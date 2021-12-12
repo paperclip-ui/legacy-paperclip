@@ -6,6 +6,9 @@ export type CompilerOptions = {
   // treat assets as modules
   importAssetsAsModules?: boolean;
 
+  // main CSS file name
+  mainCSSFileName?: string;
+
   // embed assets until this size
   embedAssetMaxSize?: number;
 
@@ -15,6 +18,8 @@ export type CompilerOptions = {
 
   // prefix for assets,
   assetPrefix?: string;
+
+  useAssetHashNames?: boolean;
 };
 
 type LintOptions = {

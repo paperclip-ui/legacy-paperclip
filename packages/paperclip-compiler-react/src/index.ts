@@ -7,21 +7,14 @@ import { PaperclipConfig } from "paperclip-utils";
 export const compile = (
   module: InterimModule,
   filePath: string,
+  includes: string[],
   config: PaperclipConfig
 ) => {
-  const { code, map } = compile2Code(
-    module,
-    filePath,
-    config,
-    config.compilerOptions?.importAssetsAsModules
-      ? [`./${path.basename(filePath)}.css`]
-      : []
-  );
+  const { code, map } = compile2Code(module, filePath, config, includes);
 
   return {
     ".js": code,
     ".js.map": map.toString(),
-    ".d.ts": compileDefinition(module, filePath, config),
-    ".css": module.css.sheetText
+    ".d.ts": compileDefinition(module, filePath, config)
   };
 };
