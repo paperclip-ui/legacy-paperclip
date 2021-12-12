@@ -121,12 +121,57 @@ describe(__filename + "#", () => {
       {
         html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(./86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=./86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
       }
+    ],
+    [
+      `Can define an asset prefix`,
+      {
+        "/src/entry.pc": `
+          <style>
+            @font-face {
+              src: url(/c.svg);
+            }
+            .a {
+              background-image: url(/d.svg);
+            }
+            .b {
+              background-image: url(/b.svg);
+            }
+          </style>
+          <img export component as="Test" src="/a.svg" />
+          <img export component as="Test2" src="/b.svg" />
+          <div export component as="A">
+            {<img src="/e.svg" />}
+          </div>
+        `,
+        "/a.svg": "embedded-svg",
+        "/b.svg": "not-embedded-svg",
+        "/c.svg": "embedded",
+        "/d.svg": "embed",
+        "/e.svg": "embed2"
+      },
+      {
+        embedAssetMaxSize: "embedded-svg".length,
+        assetOutDir: "./lib",
+        srcDir: "/src",
+        outDir: "/lib",
+        assetPrefix: "http://localhost:3000/"
+      },
+      {
+        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
+      }
     ]
   ].forEach(
     ([
       title,
       graph,
-      { embedAssetMaxSize, assetOutDir, srcDir, outDir, useAssetHashNames },
+      {
+        embedAssetMaxSize,
+        assetOutDir,
+        srcDir,
+        outDir,
+        assetPrefix,
+        useAssetHashNames
+      },
       expectedOutput
     ]: any) => {
       it(title, () => {
@@ -137,6 +182,7 @@ describe(__filename + "#", () => {
             srcDir,
             compilerOptions: {
               outDir,
+              assetPrefix,
               embedAssetMaxSize,
               assetOutDir,
               useAssetHashNames

@@ -102,8 +102,13 @@ const mapAsset = (
     } else {
       outputFilePath = path.join(outputDir, filePath.replace(srcDir, ""));
     }
-
-    moduleContent = resolvePath(outModulePath, outputFilePath);
+    if (options.config.compilerOptions?.assetPrefix) {
+      moduleContent =
+        options.config.compilerOptions?.assetPrefix +
+        path.relative(options.cwd, outputFilePath);
+    } else {
+      moduleContent = resolvePath(outModulePath, outputFilePath);
+    }
   }
 
   return {
