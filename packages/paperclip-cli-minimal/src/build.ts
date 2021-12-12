@@ -36,14 +36,12 @@ export const build = async (options: BuildOptions) => {
   const outDir = path.join(options.cwd, config.compilerOptions!.outDir);
 
   builder
-    .onFile((filePath: string, content: string) => {
-      const ext = filePath.replace(/.*?\.pc\./, "");
+    .onFile((outFilePath: string, content: string) => {
+      const ext = outFilePath.replace(/.*?\.pc\./, "");
 
       if (options.targets && !options.targets.includes(ext)) {
         return;
       }
-
-      const outFilePath = filePath.replace(srcDir, outDir);
 
       if (options.verbose) {
         console.log("Compiled %s", path.relative(options.cwd, outFilePath));
