@@ -39,7 +39,9 @@ ReactDOM.render(<Message>
 
 ## Why?
 
-Paperclip was created to be a generic approach to building a 
+Paperclip was created to be a generic approach to building HTML & CSS that scales. That means:
+
+- No global CSS
 
 
 With Paperclip, there's **no global CSS**, so you don't have to worry about leaky styles, or need to use patterns to safe-guard your 
