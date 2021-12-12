@@ -143,12 +143,14 @@ const collectAssetPaths = (
   });
 
   traverseVirtSheet(sheet, rule => {
-    for (const { value } of rule.style) {
-      if (/url\(/.test(value)) {
-        const parts = value.match(/url\(['"]?(.*?)['"]?\)/);
-        let url = parts && parts[1];
-        if (url && !url.includes("http")) {
-          css[url] = 1;
+    if (rule.style) {
+      for (const { value } of rule.style) {
+        if (/url\(/.test(value)) {
+          const parts = value.match(/url\(['"]?(.*?)['"]?\)/);
+          let url = parts && parts[1];
+          if (url && !url.includes("http")) {
+            css[url] = 1;
+          }
         }
       }
     }

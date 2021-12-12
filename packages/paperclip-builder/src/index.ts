@@ -42,7 +42,7 @@ class DirectoryBuilder {
           this._em.emit("end");
         }
         this._compiledInitially = true;
-        this._emitMainCSSFile();
+        this._maybeEmitMainCSSFile();
       }
     );
 
@@ -95,7 +95,10 @@ class DirectoryBuilder {
       this._em.emit("error", e, filePath);
     }
   };
-  private _emitMainCSSFile() {
+  private _maybeEmitMainCSSFile() {
+    if (!this.options.config.compilerOptions?.mainCSSFileName) {
+      return;
+    }
     const mainContent = this._cssContents.reduce(
       (mainContent, [_filePath, content]) => {
         mainContent.push(content);
@@ -128,7 +131,7 @@ class DirectoryBuilder {
       return;
     }
 
-    this._emitMainCSSFile();
+    this._maybeEmitMainCSSFile();
   }
 
   onFile(cb: (file: string, content: string) => void) {
