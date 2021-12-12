@@ -183,7 +183,7 @@ const traverseVirtSheet = (
   const each2 = (rule: VirtRule) => {
     if (rule.kind === VirtRuleKind.Media) {
       for (const rule2 of rule.rules) {
-        each2(rule);
+        each2(rule2);
       }
     } else {
       each(rule);
