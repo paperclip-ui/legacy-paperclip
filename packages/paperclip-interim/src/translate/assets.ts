@@ -36,8 +36,15 @@ export const getAssets = (
       )
     : modulePath;
 
-  return collectAssetPaths(modulePath, node, sheet).map(assetPath => {
-    const filePath = engine.resolveFile(modulePath, assetPath);
+  return collectAssetPaths(modulePath, node, sheet).map(originalPath => {
+    let relativeAssetPath = originalPath;
+
+    if (relativeAssetPath.indexOf("file") === 0) {
+      relativeAssetPath = URL.fileURLToPath(relativeAssetPath);
+      relativeAssetPath = resolvePath(modulePath, relativeAssetPath);
+    }
+
+    const filePath = engine.resolveFile(modulePath, relativeAssetPath);
     const fileSize = options.io.getFileSize(filePath);
 
     let moduleContent: string;
@@ -73,7 +80,7 @@ export const getAssets = (
     }
 
     return {
-      relativePath: assetPath,
+      originalPath,
       filePath,
       outputFilePath,
       moduleContent
@@ -114,10 +121,6 @@ const collectAssetPaths = (
         const parts = value.match(/url\(['"]?(.*?)['"]?\)/);
         let url = parts && parts[1];
         if (url && !url.includes("http")) {
-          if (url.indexOf("file") === 0) {
-            url = URL.fileURLToPath(url);
-            url = resolvePath(modulePath, url);
-          }
           relativeAssets[url] = 1;
         }
       }

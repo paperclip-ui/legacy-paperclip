@@ -17,7 +17,7 @@ export const translateCSS = (
     sheetText: stringifyCSSSheet(sheet, {
       resolveUrl(url) {
         return (
-          assets.find(asset => asset.relativePath === url)?.moduleContent || url
+          assets.find(asset => asset.originalPath === url)?.moduleContent || url
         );
       }
     }),

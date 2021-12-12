@@ -1,5 +1,5 @@
 export type InterimAsset = {
-  relativePath: string;
+  originalPath: string;
 
   // absolute file path to the asset
   filePath: string;
