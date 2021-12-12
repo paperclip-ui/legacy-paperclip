@@ -37,15 +37,13 @@ ReactDOM.render(<Message>
 </Message>, document.body);
 ```
 
-## Why?
+### Why?
 
 Paperclip was created to be a generic approach to building durable HTML & CSS. That means:
 
-- No global CSS. With Paperclip, CSS is scoped to the document it's defined in, so you don't have to worry about
-- Confidently make HTML & CSS changes. 
-
-
-With Paperclip, there's **no global CSS**, so you don't have to worry about leaky styles, or need to use patterns to safe-guard your 
+- **No global CSS**. With Paperclip, CSS is scoped to the document it's defined in, so you don't have to worry about styles leaking out.
+- **Confidently make HTML & CSS changes**. Paperclip comes with visual regression tooling that allows you to easily track _all_ visual changes in Paperclip files, so you can feel comfortable making big change without breaking production. 
+- **Long shelf life for UIs**.
 
 
 
