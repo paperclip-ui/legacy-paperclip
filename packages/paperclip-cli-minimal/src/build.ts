@@ -5,14 +5,14 @@ import * as fs from "fs";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import { PaperclipConfig, stripFileProtocol } from "paperclip-utils";
 import { createEngineDelegate } from "paperclip";
-import { mkdirpSync } from "fs-extra";
+import { mkdirpSync, outputFile } from "fs-extra";
 
 export type BuildOptions = {
   cwd: string;
   config?: string;
   write: boolean;
   output?: string;
-  targets?: string[];
+  only?: string[];
   watch: boolean;
   compilerName?: string;
   sourceDirectory?: string;
@@ -39,7 +39,7 @@ export const build = async (options: BuildOptions) => {
     .onFile((outFilePath: string, content: string) => {
       const ext = outFilePath.replace(/.*?\.pc\./, "");
 
-      if (options.targets && !options.targets.includes(ext)) {
+      if (options.only && !options.only.includes(ext)) {
         return;
       }
 

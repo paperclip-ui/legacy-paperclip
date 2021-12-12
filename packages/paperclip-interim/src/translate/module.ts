@@ -58,7 +58,7 @@ export class InterimCompiler {
     return translateinterim(
       ast,
       sheet,
-      filePath,
+      castAsFilePath(filePath),
       this._engine,
       exports as PCExports,
       this.options

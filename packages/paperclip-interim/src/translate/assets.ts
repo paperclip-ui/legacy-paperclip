@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as URL from "url";
 import {
   VirtSheet,
   stringifyCSSSheet,
@@ -11,7 +12,9 @@ import {
   traverseExpression,
   isAttribute,
   AttributeKind,
-  AttributeValueKind
+  AttributeValueKind,
+  isNode,
+  NodeKind
 } from "paperclip-utils";
 import { InterimCompilerOptions } from "./options";
 import { InterimAsset } from "../state/assets";
@@ -33,17 +36,18 @@ export const getAssets = (
       )
     : modulePath;
 
-  return collectAssetPaths(node, sheet).map(assetPath => {
+  return collectAssetPaths(modulePath, node, sheet).map(assetPath => {
     const filePath = engine.resolveFile(modulePath, assetPath);
     const fileSize = options.io.getFileSize(filePath);
 
-    let content: string;
+    let moduleContent: string;
+    let outputFilePath = filePath;
 
     if (
       fileSize <= options.config.compilerOptions?.embedAssetMaxSize ||
       options.config.compilerOptions?.embedAssetMaxSize === -1
     ) {
-      content =
+      moduleContent =
         `data:${mime.getType(filePath)};base64,` +
         options.io.readFile(filePath).toString("base64");
     } else if (options.config.compilerOptions.assetOutDir) {
@@ -60,29 +64,39 @@ export const getAssets = (
           .createHash("md5")
           .update(buffer)
           .digest("hex");
-        content = path.join(outputDir, md5Name + path.extname(filePath));
+        outputFilePath = path.join(outputDir, md5Name + path.extname(filePath));
       } else {
-        content = path.join(outputDir, filePath.replace(srcDir, ""));
+        outputFilePath = path.join(outputDir, filePath.replace(srcDir, ""));
       }
 
-      content = path.relative(path.dirname(outModulePath), content);
-      if (content.charAt(0) !== ".") {
-        content = "./" + content;
-      }
+      moduleContent = resolvePath(outModulePath, outputFilePath);
     }
 
     return {
       relativePath: assetPath,
       filePath,
-      content
+      outputFilePath,
+      moduleContent
     };
   });
 };
 
-const collectAssetPaths = (root: Node, sheet: VirtSheet) => {
+const collectAssetPaths = (
+  modulePath: string,
+  root: Node,
+  sheet: VirtSheet
+) => {
   const relativeAssets = {};
 
   traverseExpression(root, nested => {
+    if (
+      isNode(nested) &&
+      nested.nodeKind === NodeKind.Element &&
+      nested.tagName === "import"
+    ) {
+      return false;
+    }
+
     if (isAttribute(nested)) {
       if (
         nested.attrKind === AttributeKind.KeyValueAttribute &&
@@ -98,8 +112,12 @@ const collectAssetPaths = (root: Node, sheet: VirtSheet) => {
     for (const { value } of rule.style) {
       if (/url\(/.test(value)) {
         const parts = value.match(/url\(['"]?(.*?)['"]?\)/);
-        const url = parts && parts[1];
+        let url = parts && parts[1];
         if (url && !url.includes("http")) {
+          if (url.indexOf("file") === 0) {
+            url = URL.fileURLToPath(url);
+            url = resolvePath(modulePath, url);
+          }
           relativeAssets[url] = 1;
         }
       }
@@ -107,6 +125,14 @@ const collectAssetPaths = (root: Node, sheet: VirtSheet) => {
   });
 
   return Object.keys(relativeAssets);
+};
+
+const resolvePath = (from: string, to: string) => {
+  let resolved = path.relative(path.dirname(from), to);
+  if (resolved.charAt(0) !== ".") {
+    resolved = "./" + resolved;
+  }
+  return resolved;
 };
 
 const traverseVirtSheet = (

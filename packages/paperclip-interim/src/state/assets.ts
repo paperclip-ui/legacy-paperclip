@@ -4,6 +4,8 @@ export type InterimAsset = {
   // absolute file path to the asset
   filePath: string;
 
+  outputFilePath: string;
+
   // file content if embedded
-  content?: string;
+  moduleContent?: string;
 };

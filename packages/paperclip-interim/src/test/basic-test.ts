@@ -85,7 +85,6 @@ describe(__filename + "#", () => {
         html: `<style>@font-face { src:url(../lib/c.svg); } [class]._a61d499e_a { background-image:url(../lib/d.svg); } [class]._a61d499e_b { background-image:url(../lib/b.svg); }</style> <img src=../lib/a.svg></img> <img src=../lib/b.svg></img> <div><img src=../lib/e.svg></img></div>`
       }
     ],
-    ,
     [
       `Can embed assets and emit files that exceed max size`,
       {

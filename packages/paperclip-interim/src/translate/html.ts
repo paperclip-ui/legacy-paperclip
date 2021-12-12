@@ -285,8 +285,8 @@ const translateValuePart = (
 
   if (attrName === "src") {
     const asset = context.assets.find(asset => asset.relativePath === part);
-    if (asset && asset.content) {
-      return asset.content;
+    if (asset && asset.moduleContent) {
+      return asset.moduleContent;
     }
   }
 

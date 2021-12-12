@@ -55,9 +55,9 @@ class DirectoryBuilder {
       for (const ext in result.translations) {
         const content = result.translations[ext];
         if (content) {
-          let newFileName = filePath + ext;
+          let newFilePath = filePath + ext;
           if (this.options.config.compilerOptions?.outDir) {
-            newFileName = newFileName.replace(
+            newFilePath = newFilePath.replace(
               path.join(this.options.cwd, this.options.config.srcDir),
               path.join(
                 this.options.cwd,
@@ -65,14 +65,19 @@ class DirectoryBuilder {
               )
             );
           }
-          this._em.emit("file", newFileName, content);
+          this._em.emit("file", newFilePath, content);
         }
       }
 
       for (const asset of result.assets) {
-        if (!asset.content || asset.content.indexOf("data:") === 0) {
+        if (!asset.outputFilePath) {
           continue;
         }
+        this._em.emit(
+          "file",
+          asset.outputFilePath,
+          fs.readFileSync(asset.filePath)
+        );
       }
     } catch (e) {
       this._em.emit("error", e, filePath);
