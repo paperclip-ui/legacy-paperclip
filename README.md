@@ -6,21 +6,28 @@
   <img src="assets/logo-outline-5.png" width="400">
 </div>
 
+> **Installation**: `npx paperclip init` in your project directory.
+
 <!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
 
 
-Paperclip is a tiny language that helps you write _durable_ HTML & CSS that can be used in any language. Here's what it looks like:
+Paperclip allows you to write _durable_ HTML & CSS that can be used in any language. Here's what it looks like:
 
 ```html
 
-<!-- this style block is scoped to the document that it's defined in -->
 <style>
+
+  /* This style is scoped, and only applied to this document */
   .font-regular {
     font-family: Inter;
     font-size: 0.8em;
   }
 </style>
 
+<!--  
+  You can export primitive components that can be used throughout
+  your codebase.
+-->
 <div export component as="Message" className="font-regular">
   {children}
 </div>
@@ -38,43 +45,39 @@ ReactDOM.render(<Message>
 </Message>, document.body);
 ```
 
+Paperclip is a separate layer for _just_ your HTML & CSS, and exports _primitive_ components that you can wire up with UI logic in whatever language you want. 
+
+Paperclip files compile down to plain code, and there's no runtime, so you get the performance of your target language, with the added benefits of having scalable HTML & CSS. 
+
+Currently Paperclip compiles to vanilla React code. Other compiler targets for languages such as PHP, Ruby, and Python, are currently in the works. If you'd like to contribute to this, send me a message in [Slack](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)!
+
 ### Why Paperclip?
 
-Writing scalable HTML & CSS is _hard_, and it's easy for codebases to wind up in an unmaintainable state where developers are reluctant to make any change to the UI. Paperclip was created as a way to combat this. Here's how:
+Writing bug-free HTML & CSS is _hard_, and only gets harder with larger codebases & teams, particularly because of the global nature of HTML & CSS, and lack of testability for visual changes across different browsers & device sizes. So it's easy for codebases to get into a state where HTML & CSS is completely unmaintainable (QA taking for days, developer reluctance to make any change because of unknown side-effects). Paperclip helps combat this.
 
-- **No global CSS**. With Paperclip, CSS is scoped to the document it's defined in, so you don't have to worry about styles leaking out. 
-- **Visual regression coverage**. Paperclip comes with visual regression tooling that allows you to easily track _all_ visual changes in Paperclip files, so you can feel comfortable making big change without breaking production. 
+There are existing tools out there that do similar things to Paperclip - Vue, Svelte, and styled-components all have the ability to keep styles scoped. However, Paperclip aims to be a generic solution for _all_ languages to use for additional safety around CSS.
 
-Here are some other reasons to use Paperclip:
+In addition to safety, Paperclip aims to help you build UIs more accurately, and comes with visual tools that enable you to build your UIs in _realtime_. 
 
-- **Live previews**. Paperclip comes with developer tooling that allows you to build UIs in realtime. 
-- **Use existing knowledge**. Paperclip is basically HTML & CSS with a few additional features, so you can get started using Paperclip pretty quickly. 
-- **Rich linting**. Paperclip comes with linting tools to catch issues with HTML around structure, a11y, etc.
-<!-- - **Long shelf life**. Paperclip UIs are decoupled from the rest of your codebase -- you can even re-use them with  -->
+![VS Code extension](assets/design-system.gif)
 
+> VS Code extension that you can use for Paperclip. You can also use `npx paperclip dev` to launch visual tooling.
 
+### Features
 
+- **No Global CSS**. Instead, CSS selectors are scoped to the documents they'te defined in, and their exposure to _other_ documents is explicit.
+- **Visual regression coverage**. Each Paperclip file is covered for visual regressions via Percy.
+- **Incrementally adoptable**. You can incorporate Paperclip into your existing stack
+- **Visual tooling**. Paperclip comes with UI tools that enable you to create UIs in _realtime_. 
+- **Works with existing CSS**, and even third-party libraries. Paperclip can be used to scope any CSS that you have so that you know exactly where it's being used in your application.
 
-### Getting started
+And more to come. Here's what's on the roadmap:
 
-Just run this command in your codebase:
-
-```
-npx paperclip init
-```
-
-This will set up a few files fo you and install a compiler of your choosing. Next, run:
-
-```
-npx paperclip build --write
-```
-
-To generage code that you can import into your codebase. And that's it! 
-
+- **A11y tooling** using [axe](https://www.deque.com/axe/)
 
 ### Resources
 
-- [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg) - for questions, feedback, help, or whatever! 
+- [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
 - Installation
   - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
   - [VSCode Extension](https://paperclip.dev/docs/) - Getting started with the VS Code extension.
