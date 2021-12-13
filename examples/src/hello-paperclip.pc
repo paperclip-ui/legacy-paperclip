@@ -1,0 +1,51 @@
+<!--
+
+To open the live preview, type `command + shift + p`, and select
+"Paperclip: Open Live Preview"
+
+-->
+
+<!-- Styles -->
+
+<style>
+
+  @keyframes jiggle {
+    0% {
+      transform: rotate(0deg) translate(-50%, -50%);
+    }
+    25% {
+      transform: rotate(5deg) translate(-50%, -50%);
+    }
+    50% {
+      transform: rotate(0deg) translate(-50%, -50%);
+    }
+    75% {
+      transform: rotate(-5deg) translate(-50%, -50%);
+    }
+    100% {
+      transform: rotate(0deg) translate(-50%, -50%);
+    }
+  }
+
+  .Message {
+    font-family: Papyrus;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: top left;
+    font-size: 32px;
+    animation: jiggle 0.3s infinite linear;
+  }
+</style>
+
+<!--
+  @frame { visible: false, title: "" }
+-->
+
+<div export component as="Message" class="Message">{children}!</div>
+
+<!--
+  @frame { title: "Hello Paperclip", width: 1024, height: 768, x: 206, y: 63 }
+-->
+
+<Message>Hello Paperclip!</Message>
