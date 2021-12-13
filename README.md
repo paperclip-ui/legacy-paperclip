@@ -40,7 +40,7 @@ ReactDOM.render(<Message>
 
 ### Why Paperclip?
 
-Writing scalable HTML & CSS is _hard_, and it's easy for codebases to wind up in an unmaintainable state where developers are reluctant to make any change to the UI. Paperclip was created as a way to combat this for all languages. Here's how:
+Writing scalable HTML & CSS is _hard_, and it's easy for codebases to wind up in an unmaintainable state where developers are reluctant to make any change to the UI. Paperclip was created as a way to combat this. Here's how:
 
 - **No global CSS**. With Paperclip, CSS is scoped to the document it's defined in, so you don't have to worry about styles leaking out. 
 - **Visual regression coverage**. Paperclip comes with visual regression tooling that allows you to easily track _all_ visual changes in Paperclip files, so you can feel comfortable making big change without breaking production. 
