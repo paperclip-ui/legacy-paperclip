@@ -5,7 +5,7 @@
 -->
 <div export component as="Header" {onClick?} {onMouseUp}>
   <style>
-    background: rgb(200, 17, 255);
+    background: rgb(255, 17, 17);
     padding: 32px;
   </style>
   <h1>{title}</h1>

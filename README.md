@@ -8,7 +8,8 @@
 
 <!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
 
-Paperclip is a tiny language that enables you to create presentational components for any framework. Here's what it looks like:
+
+Paperclip is a tiny language that helps you write _durable_ HTML & CSS that can be used in any language. Here's what it looks like:
 
 ```html
 
@@ -25,7 +26,7 @@ Paperclip is a tiny language that enables you to create presentational component
 </div>
 ```
 
-Paperclip modules can be imported directly into your regular code like so:
+Here an example of how you can use this HTML & CSS in a React app:
 
 ```jsx
 import React from "react";
@@ -39,28 +40,16 @@ ReactDOM.render(<Message>
 
 ### Why?
 
-Paperclip was created to be a generic approach to building durable HTML & CSS. That means:
+Writing scalable HTML & CSS is _hard_, and it's easy for codebases to wind up in an unmaintainable state where developers are reluctant to make any changes to the UI. Paperclip was created as a way to combat this.
 
-- **No global CSS**. With Paperclip, CSS is scoped to the document it's defined in, so you don't have to worry about styles leaking out.
-- **Confidently make HTML & CSS changes**. Paperclip comes with visual regression tooling that allows you to easily track _all_ visual changes in Paperclip files, so you can feel comfortable making big change without breaking production. 
-- **Long shelf life for UIs**.
+### Features
 
+- **No global CSS**. With Paperclip, CSS is scoped to the document it's defined in, so you don't have to worry about styles leaking out. 
+- **Fewer CSS bugs**. Paperclip comes with visual regression tooling that allows you to easily track _all_ visual changes in Paperclip files, so you can feel comfortable making big change without breaking production. 
+- **Use existing knowledge**. Paperclip is basically HTML & CSS with a few additional features, so you can get started using Paperclip pretty quickly. 
+- **Compile to any language you want**. Paperclip compiles down to vanilla code, and can be imported into whatever language or framework you want.
+- **Live previews**. Paperclip comes with developer tooling that allows you to build UIs in realtime. 
 
-
-
-Build UIs at the speed of thought. Paperclip is a template engine that comes with tools for building presentational components in realtime, all within your existing IDE:
-
-
-<!-- ![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif) -->
-
-> This took me about 12 minutes to make start to finish.
-
-## Features
-
-- Templates compile down to plain React code (more targets planned).
-- Scoped CSS. Write styles however you want, without worying about them leaking out.
-- [Percy](https://percy.io) integration for catching visual regressions.
-- Compatible with existing CSS libraries like Tailwind, Bulma, and Bootstrap.
 
 ## Resources
 
@@ -81,17 +70,6 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
 
 
-## Roadmap
-
-What's the future looking like for Paperclip? Here's the tentative plan:
-
-1. ✅ Prettier integration
-2. ✅ Avocode / Figma integration (Figma to design sync)
-3. 🔲 CSS & HTML linting (a11y, showing unused styles, caniuse integration)
-4. 🔲 CSS tree shaking (removing unused CSS from builds)
-5. 🔲 Visual builder (no-code like)
-6. 🔲 Multiple compiler targets: PHP, Ruby, VueJS, Svelte
-7. 🔲 IDE integrations
 
 ## Sponsors
 
