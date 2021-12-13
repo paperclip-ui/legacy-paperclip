@@ -45,11 +45,12 @@ Writing scalable HTML & CSS is _hard_, and it's easy for codebases to wind up in
 - **No global CSS**. With Paperclip, CSS is scoped to the document it's defined in, so you don't have to worry about styles leaking out. 
 - **Visual regression coverage**. Paperclip comes with visual regression tooling that allows you to easily track _all_ visual changes in Paperclip files, so you can feel comfortable making big change without breaking production. 
 
-In addition to helping with durable code, Paperclip aims to enhance developer productivity around writing HTML & CSS:
+Here are some other reasons to use Paperclip:
 
 - **Live previews**. Paperclip comes with developer tooling that allows you to build UIs in realtime. 
 - **Use existing knowledge**. Paperclip is basically HTML & CSS with a few additional features, so you can get started using Paperclip pretty quickly. 
 - **Rich linting**. Paperclip comes with linting tools to catch issues with HTML around structure, a11y, etc.
+<!-- - **Long shelf life**. Paperclip UIs are decoupled from the rest of your codebase -- you can even re-use them with  -->
 
 
 
