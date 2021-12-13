@@ -55,7 +55,7 @@ Currently Paperclip compiles to vanilla React code. Other compiler targets for l
 
 Writing bug-free HTML & CSS is _hard_, and only gets harder with larger codebases & teams, particularly because of the global nature of HTML & CSS, and lack of testability for visual changes across different browsers & device sizes. So it's easy for codebases to get into a state where HTML & CSS is completely unmaintainable (QA taking for days, developer reluctance to make any change because of unknown side-effects). Paperclip helps combat this.
 
-There are existing tools out there that do similar things to Paperclip - Vue, Svelte, and styled-components all have the ability to keep styles scoped. However, Paperclip aims to be a generic solution for _all_ languages to use for additional safety around CSS.
+There are existing tools out there that do similar things to Paperclip: Vue, Svelte, and styled-components all have the ability to keep styles scoped. However, Paperclip aims to be a generic solution for _all_ languages to use for additional safety around CSS. Paperclip also comes with many features that other tools don't have.
 
 In addition to safety, Paperclip aims to help you build UIs more accurately, and comes with visual tools that enable you to build your UIs in _realtime_. 
 
@@ -63,17 +63,26 @@ In addition to safety, Paperclip aims to help you build UIs more accurately, and
 
 > VS Code extension that you can use for Paperclip. You can also use `npx paperclip dev` to launch visual tooling.
 
+<!-- Eventually, visual tooling will evolve to a point where designers may be enabled to comfortably make UI changes themselves. -->
+
 ### Features
 
-- **No Global CSS**. Instead, CSS selectors are scoped to the documents they'te defined in, and their exposure to _other_ documents is explicit.
+- **No implicit & global CSS**. Instead, CSS selectors are scoped to the documents they'te defined in, and their exposure to _other_ documents is explicit.
 - **Visual regression coverage**. Each Paperclip file is covered for visual regressions via Percy.
 - **Incrementally adoptable**. You can incorporate Paperclip into your existing stack
 - **Visual tooling**. Paperclip comes with UI tools that enable you to create UIs in _realtime_. 
 - **Works with existing CSS**, and even third-party libraries. Paperclip can be used to scope any CSS that you have so that you know exactly where it's being used in your application.
+- **Strongly typed compile output**. PC files are compiled to strongly typed code (TypeScript for now).
 
-And more to come. Here's what's on the roadmap:
 
-- **A11y tooling** using [axe](https://www.deque.com/axe/)
+And more to come. Here's a glimpse:
+
+- **A11y tooling** using [axe](https://www.deque.com/axe/).
+- **CSS tree shaking** for CSS that you don't use in your application (especially third-party libraries).
+- **More compile targets** including Flask, Laravel, etc.
+- **Migration tooling** to help you move code over & away from Paperclip.
+<!-- - **Figma sync** that enables you to synchronize  -->
+
 
 ### Resources
 
