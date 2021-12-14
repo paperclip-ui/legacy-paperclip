@@ -39,8 +39,8 @@ function Home() {
               <>
                 Paperclip is a{" "}
                 <strong>
-                  generic approach that brings primitive components to any kind
-                  of web application.
+                  tiny language that brings scoped CSS to any kind of web
+                  application.
                 </strong>
               </>
             }
@@ -167,7 +167,7 @@ function Home() {
             />
             <styles.VariousFeatureItem
               iconName="grow"
-              title="Simple"
+              title="Just the UI"
               description="Paperclip only covers primitive components, and uses basic HTML & SASS syntax."
             />
           </styles.VariousFeatures>
