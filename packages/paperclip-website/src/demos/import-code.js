@@ -1,14 +1,7 @@
 const SOURCE = `
 import * as styles from "./styles.pc";
 
-function GroceryList() {
-
-  const groceries = [
-    "Milk 🥛", 
-    "Water 💧", 
-    "Taco seasoning 🌮"
-  ];
-
+function GroceryList({groceries}) {
   return <styles.List>
     {
       groceries.map(item => (
@@ -17,6 +10,7 @@ function GroceryList() {
     }
   </styles.List>;  
 }
+
 `.trim();
 
 export default SOURCE;

@@ -41,17 +41,6 @@ const SOURCE = `
   </style>
   {children}
 </li>
-
-<!-- 
-  Preview
--->
-
-<List>
-  <ListItem>Bagels 🥯</ListItem>
-  <ListItem>Yakitori 🍢</ListItem>
-  <ListItem>Tofurky 🦃</ListItem>
-  <ListItem>Skittles 🌈</ListItem>
-</List>
 `.trim();
 
 export default SOURCE;

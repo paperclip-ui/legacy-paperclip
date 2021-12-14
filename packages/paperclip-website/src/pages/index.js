@@ -34,7 +34,8 @@ function Home() {
             // title={<>Build web application in no time.</>}
             // title={<>Realtime visual web development.</>}
             // title={<>Rapidly build web applications at any scale</>}
-            title={<>Build web UIs at the speed of thought.</>}
+            // title={<>Build web UIs at the speed of thought.</>}
+            title={<>Durable HTML & CSS for any kind of web application.</>}
             description={
               /* 
 
@@ -45,9 +46,8 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-                Paperclip is a free and open source tool that allows you to
-                visually build presentational components for React, all within
-                your existing IDE.
+                Scoped CSS, automatic visual regression coverage, and more.
+                Paperclip generic solution for all languages
                 {/* Paperclip is a template language for presentational components that comes with a visual editor, all within your existing IDE. */}
                 {/* Paperclip is a visual editor for presentational web components, 
                 Paperclip is a tiny template language that compiles to designed for realtime visual
@@ -126,67 +126,17 @@ function Home() {
               </>
             }
             preview={
-              <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
+              <CodeBlock className="language-html" style={{ height: 500 }}>
+                {PRIMITIVE_UI_EXAMPLE}
+              </CodeBlock>
+              // <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
             }
           />
-
-          <styles.Summary
-            title="Build UIs more quickly, and precisely"
-            text={
-              <>
-                With Paperclip, you see what you're creating{" "}
-                <i>as you're typing</i>, no matter how large your project is.
-                Other features such as artboards, measuring tools, and
-                responsive testing tools are there to help you build
-                pixel-perfect UIs in no-time. Your designers will love you. ❤️
-                {/* // Paperclip just covers the <i>appearance</i> of your application, and comes with loads of features to help you do that quickly: realtime previews, artboards, measuring tools, responsive testing tools, visual */}
-                {/* // regression coverage, and more to help you build pixel-perfect UIs in no-time. Your designers will love you. ❤️ */}
-                {/* Paperclip is a template language specifically designed around visual development. This allows for a hybrid approach to building UIs
-          that's faster */}
-                {/* Nothing sucks more than waiting around for your browser to see CSS changes. With Paperclip there's none of that - just open up the live preview
-          window and start typing code. Watch as your changes appear in realtime.  */}
-                {/* Paperclip comes with loads of features such as realtime previews that update <i>as you're typing</i>, measuring tools, artboards, responsive tooling, and more that help you build
-                pixel perfect UIs in no time. Your designers will love you. ❤️ */}
-                {/* Paperclip comes with realtime previews of your UIs that update <i>as you're typing</i>, so you can iterate faster on your HTML & CSS, and ship products
-                pixel-perfect UIs in no time. Your designers will love you. ❤️ */}
-                {/* UI development is visual, and tooling should reflect that. Paperclip */}
-              </>
-            }
-          />
-
-          <styles.MainFeatures>
-            <styles.MainFeatureItem
-              iconName="shapes"
-              title="Just covers presentational components"
-              description={
-                <>
-                  Paperclip focuses purely on your application's appearance
-                  using a syntax similar to HTML & CSS. CSS is also scoped so
-                  you don't have to worry about it leaking out.
-                </>
-              }
-              example={
-                <CodeBlock className="language-html" style={{ height: 500 }}>
-                  {PRIMITIVE_UI_EXAMPLE}
-                </CodeBlock>
-              }
-            />
-            <styles.MainFeatureItem
-              iconName="reactjs"
-              title="Import directly into your React app"
-              description="Paperclip files compile down to regular, performant code that you can import directly into your React app."
-              example={
-                <CodeBlock className="language-jsx">
-                  {IMPORT_CODE_DEMO_SOURCE}
-                </CodeBlock>
-              }
-            />
-          </styles.MainFeatures>
 
           <styles.VariousFeatures>
             <styles.VariousFeatureItem
               iconName="chaotic-1"
-              title="Keeps CSS maintainable"
+              title="Scoped CSS"
               description="Paperclip comes with loads of safety features such as scoped styles, and visual regression testing, to ensure that your HTML & CSS is maintainable as your project grows."
             />
             <styles.VariousFeatureItem
@@ -211,6 +161,19 @@ function Home() {
               }
             />
           </styles.VariousFeatures>
+
+          <styles.BigFeature
+            title="Import directly into your app"
+            description={[
+              "Paperclip files compile down to regular, performant code that you can import directly into your React app."
+            ]}
+            preview={
+              <CodeBlock className="language-jsx">
+                {IMPORT_CODE_DEMO_SOURCE}
+              </CodeBlock>
+            }
+          />
+
           <styles.BigFeature
             title="Pairs well with existing CSS"
             description={[
@@ -224,41 +187,30 @@ function Home() {
               </CodeBlock>
             }
           />
-          <styles.BigFeature
-            title="Everything in one spot"
-            description={[
-              "Use the birds-eye view to see ",
-              <i>all</i>,
-              " of your components, and find exactly what you're looking for."
-            ]}
-            preview={<video src="vid/grid-demo.mp4" autoPlay loop muted />}
-          />
-          <styles.BigFeature
-            title="Cross-browser testing made easy"
-            description={[
-              "Launch ",
-              <i>any browser</i>,
-              " you want directly from Paperclip to catch those elusive CSS bugs more quickly."
-            ]}
-            preview={
-              <video src="vid/cross-browser-testing.mp4" autoPlay loop muted />
-            }
-          />
 
           <styles.BigFeature
-            title="Easy visual regression test setup"
+            title="Live editing"
             description="Paperclip comes with visual regression tooling that takes less than 10 minutes to setup and gives you nearly 100% visual regression coverage, so you can feel confident about making big style changes in your application without breaking production."
             preview={
-              <video
-                src="vid/visual-regression-testing.mp4"
-                autoPlay
-                loop
-                muted
-              />
+              <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
             }
             // ctaText="View the docs"
             // ctaHref={"https://paperclip.dev/docs/configure-percy"}
           />
+          <styles.BigFeature
+            title="Live editing"
+            description={[
+              "Paperclip enhances your existing CSS by keeping it ",
+              <i>scoped</i>,
+              ", so you have absolute control over how it's used in your app, and never have to worry about styles leaking out."
+            ]}
+            preview={
+              <CodeBlock className="language-html">
+                {THIRD_PART_CSS_EXAMPLE}
+              </CodeBlock>
+            }
+          />
+
           <styles.Footer />
         </styles.Home>
       </Layout>

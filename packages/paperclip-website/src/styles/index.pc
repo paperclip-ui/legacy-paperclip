@@ -12,7 +12,7 @@
 -->
 <style>
   :root {
-    --row-max-width: 1800px;
+    --row-max-width: 1500px;
   }
   @export {
     ._emoji {}
@@ -82,122 +82,90 @@
 <!--
   @frame { visible: false }
 -->
-<layout.Container export component as="Header" class="$_header $_main">
+<layout.Container export component as="Header">
   <style>
 
     background: rgb(48, 50, 56);
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
-    height: 1100px;
-    @include mobile {
-      height: 900px;
-    }
+    @include mobile {}
   </style>
-
-  <!-- navigation -->
-  <layout.Row>
+  <div>
     <style>
-
-      padding-top: var(--gap-5);
-      display: none;
+      max-width: var(--row-max-width);
+      margin: 0px auto;
+      padding: 32px;
     </style>
-    <div>
+    <div data-pc-label="Info">
       <style>
-        font-size: 18px;
-        font-family: Sora;
-        color: white;
+        padding-top: 140px;
         display: flex;
-        align-items: center;
-        font-weight: 600;
-      </style>
-      <img src="../../static/img/logo-dark-2.svg">
-        <style>
-          margin-right: 8px;
-          height: 32px;
-        </style>
-      </img>
-      Paperclip
-    </div>
-  </layout.Row>
-  <layout.Row>
-    <style>
-      padding-top: 140px;
-    </style>
-    <div class="_blurb">
-      <style>
-        width: 100%;
-        max-width: 600px;
-        margin: 0px auto;
-        flex-shrink: 0;
-        text-align: center;
-        margin-bottom: 60px;
-      </style>
-      <div class="_title">
-        <style>
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 2em;
-          line-height: 1.3em;
-          margin-bottom: var(--gap-5);
-          font-weight: 600;
-          letter-spacing: 0.04em;
-          @include typography.text-secondary {}
-        </style>
-        {title}
-      </div>
-      <div class="_subtext">
-        <style>
-          color: rgba(255, 255, 255, 0.9);
-          font-weight: 500;
-          letter-spacing: 0.075em;
-          line-height: 1.8em;
-          font-size: 1.1em;
-          ._emoji {
-            color: rgba(255, 255, 255, 1);
-          }
-        </style>
-        {description}
-      </div>
-      <div class="_cta">
-        <style>
-          margin-top: 15px;
-          :global(a) {
-            margin-right: 15px;
-            margin-top: 15px;
-            @include tiny {
-              width: 100%;
-              box-sizing: border-box;
-              margin-right: 0;
-            }
-            &:first-child {
-              margin-left: 0;
-            }
-          }
-        </style>
-        {cta}
-      </div>
-    </div>
-  </layout.Row>
-  <layout.Row>
-    <div class="_preview">
-      <style>
-        position: relative;
-        width: 100%;
-        :global(img, video) {
-          border-radius: 4px;
-          box-shadow: 0px 0px 10px 10px rgba(36, 36, 36, 0.281);
-          width: 100%;
-          margin: 0px auto;
-          @include mobile {
-            transform: translate(-50%);
-            position: absolute;
-            left: 50%;
-          }
+        flex-direction: row;
+        @include mobile {
+          flex-direction: column;
         }
       </style>
-      {preview}
+      <div>
+        <style>
+          margin: 0px auto;
+          text-align: center;
+          margin-bottom: 60px;
+        </style>
+        <div>
+          <style>
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.8em;
+            line-height: 1.3em;
+            margin-bottom: var(--gap-5);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            @include typography.text-secondary {}
+          </style>
+          {title}
+        </div>
+        <div>
+          <style>
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            letter-spacing: 0.075em;
+            line-height: 1.8em;
+            font-size: 1.1em;
+            ._emoji {
+              color: rgba(255, 255, 255, 1);
+            }
+          </style>
+          {description}
+        </div>
+        <div class="_cta">
+          <style>
+            margin-top: 15px;
+            :global(a) {
+              margin-right: 15px;
+              margin-top: 15px;
+              @include tiny {
+                width: 100%;
+                box-sizing: border-box;
+                margin-right: 0;
+              }
+              &:first-child {
+                margin-left: 0;
+              }
+            }
+          </style>
+          {cta}
+        </div>
+      </div>
+      <div>
+        <style>
+
+          width: 100%;
+          max-width: 600px;
+        </style>
+        {preview}
+      </div>
     </div>
-  </layout.Row>
+  </div>
 </layout.Container>
 
 
@@ -220,6 +188,7 @@
 -->
 <div export component as="Summary" class="_summary $layout._row">
   <style>
+    display: none;
     border-top: 1px solid rgb(226, 226, 226);
     @include layout.py-6 {}
   </style>
@@ -287,6 +256,61 @@
         border-left: 0;
       }
     }
+  </style>
+  <div class="_heading">
+    <style>
+      display: flex;
+    </style>
+    <icons.Icon name={iconName} class="$_icon">
+      <style>
+        @include section-icon {}
+      </style>
+    </icons.Icon>
+    <div class="_info">
+      <style>
+        display: flex;
+        flex-direction: column;
+      </style>
+      <div class="_title">
+        <style>
+          font-size: 1.2em;
+          display: flex;
+          font-weight: 500;
+          margin-bottom: var(--gap-4);
+          @include typography.text-secondary {}
+        </style>
+        <span>{title}</span>
+      </div>
+      <div class="_details">
+        <style>
+          margin-bottom: 2em;
+          height: 80px;
+        </style>
+        {description}
+      </div>
+    </div>
+  </div>
+  <div class="_example">
+    <style>
+      font-size: 14px;
+      :global(.prism-code) {
+        max-height: 400px;
+      }
+      :global(.prism-code > div) {}
+    </style>
+    {example}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="HeaderFeatureItem">
+  <style>
+    display: flex;
+    flex-direction: column;
+    @include layout.py-6 {}
   </style>
   <div class="_heading">
     <style>
@@ -472,19 +496,18 @@
 
 
 <!--
-  @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -94, y: -55 }
+  @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -93, y: -54 }
 -->
 <Home component as="Preview">
+  <!--
+    @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2462, y: -74 }
+  -->
   <Header title={<fragment>
-      Use plain HTML & CSS to build web applications in <Highlight noBreak>
-        record time.
-      </Highlight>
+      Durable HTML & CSS for any kind of web application.
     </fragment>}
     description={<fragment>
-      With tooling for <Highlight>realtime previews</Highlight> & <Highlight>
-        automatic visual regresion testing
-      </Highlight>, you can build UIs in no time using the language you already
-      know.
+      Paperclip is a tiny language that allows you to define primitive HTML &
+      CSS components for web applications at any scale.
     </fragment>}
     cta={<fragment>
       <!--  <button.Anchor class="$typography.semi-bold" strong>Get started</button.Anchor>
@@ -493,17 +516,15 @@
         Sign up for early access
       </button.Anchor>
     </fragment>}
-    preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
-      autoplay
-      loop />} />
+    preview={<CodePreview />} />
 
-  <Summary title="Iterate faster"
-    text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
+  <Summary title="Writing bug-free HTML & CSS is hard"
+    text="Paperclip is a generic solution for all languages that gives you additional " />
 
   <MainFeatures>
     <MainFeatureItem iconName="shapes"
-      title="A minimalistic UI language"
-      description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component."
+      title="Paperclip covers re-usable primitives"
+      description="Paperclip allows you to use basic HTML & CSS to define primitive components that you can re-use in your app."
       example={<CodePreview />} />
     <MainFeatureItem iconName="reactjs"
       title="Import directly into React code"
@@ -513,7 +534,7 @@
 
   <VariousFeatures>
     <VariousFeatureItem iconName="chaotic-1"
-      title="No global CSS"
+      title="Scoped CSS"
       description="CSS styles are explicitly referenced within Paperclip, so you don't have to have to worry about styles leaking out." />
     <VariousFeatureItem iconName="link"
       title="Strongly typed"
@@ -522,39 +543,12 @@
       title="Works with your existing codebase"
       description="Paperclip compliments your existing codebase, so use it as you go." />
   </VariousFeatures>
-  <!--  <VariousFeatures>
-    <VariousFeatureItem
-    iconName="brush"
-    title="Works with third-party CSS"
-    description="Just import your "
-    />
-    <VariousFeatureItem
-    iconName="link"
-    title="Strongly typed"
-    description="UIs compile to strongly typed code, so worry less about breaking changes."
-    />
-    <VariousFeatureItem
-    iconName="grow"
-    title="Incrementally adoptable"
-    description="Paperclip compliments your existing codebase, so use it as you go."
-    />
-    </VariousFeatures>-->
 
-  <!--  <BigFeature
-    title="Pairs well with third-party CSS"
-    description="Paperclip works with your existing"
-    preview={<video src="../../static/vid/grid-demo.mp4" autoplay loop />}
-    />-->
-
-  <BigFeature title="See all of your UIs in one spot"
-    description="No more digging around for UI elements. Open the birds-eye view to see all of your application UIs, and easily find what you're looking for."
-    preview={<video src="../../static/vid/grid-demo.mp4" autoplay loop />} />
-  <BigFeature title="Cross-browser testing made easy"
-    description="Launch any browser directly within Paperclip and design against them in realtime."
-    preview={<video src="../../static/vid/cross-browser-testing.mp4"
+  <BigFeature title="Live editing"
+    description="Paperclip comes with visual tools that enable to build your UIs in realtime."
+    preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
       autoplay
       loop />} />
-
 
   <BigFeature title="Never miss a CSS Bug"
     description="Use the visual regression tool to catch every visual state of your UI. Feel more confident about maintaining your styles."
@@ -603,11 +597,11 @@
 
 
 <!--
-  @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2462, y: -77 }
+  @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2462, y: -74 }
 -->
 <Preview />
 
 <!--
-  @frame { title: "Mobile", width: 491, height: 4817, x: 1531, y: -57 }
+  @frame { title: "Mobile", width: 525, height: 4817, x: 1497, y: -57 }
 -->
 <Preview />
