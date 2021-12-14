@@ -27,15 +27,26 @@ export default SOURCE;
 */
 
 const SOURCE = `
-<ol export component as="List">
+
+<!-- 
+  Scoped to this document
+-->
+<style>
+  .font-regular {
+    font-family: Open Sans;
+  }
+</style>
+
+<ol export component as="List" class="font-regular">
+
+  <!-- Scoped to this element & descendants -->
   <style>
     padding-left: 1em;
-    font-family: Open Sans;
   </style>
   {children}
 </ol>
 
-<li export component as="ListItem">
+<li export component as="ListItem" class="font-regular">
   <style>
     margin-top: 6px;
   </style>

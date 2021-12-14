@@ -1,4 +1,7 @@
 const SOURCE = `
+
+// PC files are compiled to plain code & can 
+// be imported as modules
 import * as styles from "./styles.pc";
 
 function GroceryList({groceries}) {

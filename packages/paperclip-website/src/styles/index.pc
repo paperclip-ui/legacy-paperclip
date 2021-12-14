@@ -12,7 +12,7 @@
 -->
 <style>
   :root {
-    --row-max-width: 1500px;
+    --row-max-width: 1800px;
   }
   @export {
     ._emoji {}
@@ -50,13 +50,13 @@
   <style>
     color: var(--color-green-neon-light);
     font-weight: 500;
-    :self(.darker) {
+    &.darker {
       color: var(--color-green-army);
     }
-    :self(.bold) {
+    &.bold {
       font-weight: 600;
     }
-    :self(.noBreak) {
+    &.noBreak {
       white-space: nowrap;
     }
   </style>
@@ -101,7 +101,8 @@
       <style>
         padding-top: 140px;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        grid-row-gap: 32px;
         @include mobile {
           flex-direction: column;
         }
@@ -110,12 +111,12 @@
         <style>
           margin: 0px auto;
           text-align: center;
-          margin-bottom: 60px;
+          padding: 32px 0px;
         </style>
         <div>
           <style>
             color: rgba(255, 255, 255, 0.9);
-            font-size: 1.8em;
+            font-size: 1.5em;
             line-height: 1.3em;
             margin-bottom: var(--gap-5);
             font-weight: 600;
@@ -156,18 +157,48 @@
           {cta}
         </div>
       </div>
-      <div>
-        <style>
-
-          width: 100%;
-          max-width: 600px;
-        </style>
-        {preview}
-      </div>
+      {preview}
     </div>
   </div>
 </layout.Container>
 
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div export component as="HeaderExamples">
+  <style>
+    display: flex;
+    grid-column-gap: 32px;
+    grid-row-gap: 32px;
+    align-items: center;
+    :global(& > :first-child) {
+      width: 100%;
+    }
+    :global(& > :last-child) {
+      width: 100%;
+    }
+
+    @include mobile {
+      flex-direction: column;
+    }
+
+    :global(.prism-code, ._code-preview) {
+      && {
+        height: 550px;
+      }
+    }
+  </style>
+  {left}
+  <img src="./assets/import-graphic-2.svg">
+    <style>
+      width: 100px;
+      flex: 0;
+      flex-shrink: 0;
+      @include mobile {}
+    </style>
+  </img>
+  {right}
+</div>
 
 <!--
   @frame { visible: false }
@@ -222,6 +253,7 @@
   <style>
     border-top: 1px solid rgb(226, 226, 226);
     border-bottom: 1px solid rgb(226, 226, 226);
+    display: none;
   </style>
   {children}
 </div>
@@ -382,16 +414,16 @@
   as="VariousFeatureItem"
   class="_item $layout._col $layout._col3">
   <style>
-    :self {
-      @include layout.py-6;
-      display: flex;
-      margin: 0px auto;
-      margin-left: 10px;
-      @include mobile {
-        margin-left: 0;
-      }
+
+    display: flex;
+    margin: 0px auto;
+    margin-left: 10px;
+    @include layout.py-6 {}
+    @include mobile {
+      margin-left: 0;
     }
-    :self(:first-child) {
+
+    &:first-child {
       margin-left: 0;
     }
 
@@ -478,17 +510,17 @@
   </div>
   <div class="_preview $layout._col $layout._col9">
     <style>
-      :self {
-        margin-left: 15px;
-        @include mobile {
-          margin-left: 0;
-        }
-        :global(img, video, .prism-code) {
-          border-radius: 4px;
-          width: 100%;
-          box-shadow: 0px 0px 20px 8px rgba(0, 0, 0, 0.103);
-        }
+
+      margin-left: 15px;
+      @include mobile {
+        margin-left: 0;
       }
+      :global(img, video, .prism-code) {
+        border-radius: 4px;
+        width: 100%;
+        box-shadow: 0px 0px 20px 8px rgba(0, 0, 0, 0.103);
+      }
+
     </style>
     {preview}
   </div>
@@ -500,7 +532,7 @@
 -->
 <Home component as="Preview">
   <!--
-    @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2462, y: -74 }
+    @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -93, y: -54 }
   -->
   <Header title={<fragment>
       Durable HTML & CSS for any kind of web application.
@@ -516,7 +548,8 @@
         Sign up for early access
       </button.Anchor>
     </fragment>}
-    preview={<CodePreview />} />
+    preview={<HeaderExamples left={<CodePreview />}
+      right={<CodePreview />} />} />
 
   <Summary title="Writing bug-free HTML & CSS is hard"
     text="Paperclip is a generic solution for all languages that gives you additional " />

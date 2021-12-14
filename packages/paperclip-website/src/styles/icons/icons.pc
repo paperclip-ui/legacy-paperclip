@@ -60,34 +60,34 @@
       background-size: 1em;
       background-position: 50%;
     }
-    .chaotic-1 {
+    [data-name=chaotic-1] {
       @include chaotic-1;
     }
 
-    .grow {
+    [data-name=grow] {
       @include grow;
     }
 
-    .link {
+    [data-name=link] {
       @include link;
     }
 
-    .shapes {
+    [data-name=shapes] {
       @include shapes;
     }
-    .brush {
+    [data-name=brush] {
       @include brush;
     }
-    .plug {
+    [data-name=plug] {
       @include plug;
     }
-    .reactjs {
+    [data-name=reactjs] {
       @include reactjs;
     }
-    .chevron-right {
+    [data-name=chevron-right] {
       @include chevron-right;
     }
-    .gears {
+    [data-name=gears] {
       @include gears;
     }
   }
@@ -107,7 +107,11 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 112, y: 144 }
 -->
-<div export component as="Icon" class="icon {name} {class?} {className?}" />
+<div export
+  component
+  as="Icon"
+  data-name={name}
+  class="icon {class?} {className?}" />
 
 
 

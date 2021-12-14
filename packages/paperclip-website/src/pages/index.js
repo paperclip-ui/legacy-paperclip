@@ -46,8 +46,7 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-                Scoped CSS, automatic visual regression coverage, and more.
-                Paperclip generic solution for all languages
+                Paperclip is a generic
                 {/* Paperclip is a template language for presentational components that comes with a visual editor, all within your existing IDE. */}
                 {/* Paperclip is a visual editor for presentational web components, 
                 Paperclip is a tiny template language that compiles to designed for realtime visual
@@ -126,10 +125,18 @@ function Home() {
               </>
             }
             preview={
-              <CodeBlock className="language-html" style={{ height: 500 }}>
-                {PRIMITIVE_UI_EXAMPLE}
-              </CodeBlock>
-              // <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
+              <styles.HeaderExamples
+                left={
+                  <CodeBlock className="language-html">
+                    {PRIMITIVE_UI_EXAMPLE}
+                  </CodeBlock>
+                }
+                right={
+                  <CodeBlock className="language-jsx">
+                    {IMPORT_CODE_DEMO_SOURCE}
+                  </CodeBlock>
+                }
+              ></styles.HeaderExamples>
             }
           />
 
@@ -137,20 +144,16 @@ function Home() {
             <styles.VariousFeatureItem
               iconName="chaotic-1"
               title="Scoped CSS"
-              description="Paperclip comes with loads of safety features such as scoped styles, and visual regression testing, to ensure that your HTML & CSS is maintainable as your project grows."
+              description="CSS is scoped to the file it's "
             />
             <styles.VariousFeatureItem
               iconName="link"
-              title="Live previews"
-              description={[
-                "Conveniently build UIs ",
-                <i>live</i>,
-                " alongside your code editor and see your changes appear immediately as you're typing, no matter how large your project is."
-              ]}
+              title="Strongly Typed"
+              description={["Paperclip files are strongly typed, "]}
             />
             <styles.VariousFeatureItem
               iconName="grow"
-              title="Just like CSS-in-JS"
+              title="Works with your existing codebase"
               description={
                 <>
                   {/* <a href="https://playground.paperclip.dev">Try it out!</a>{" "} */}
@@ -161,18 +164,6 @@ function Home() {
               }
             />
           </styles.VariousFeatures>
-
-          <styles.BigFeature
-            title="Import directly into your app"
-            description={[
-              "Paperclip files compile down to regular, performant code that you can import directly into your React app."
-            ]}
-            preview={
-              <CodeBlock className="language-jsx">
-                {IMPORT_CODE_DEMO_SOURCE}
-              </CodeBlock>
-            }
-          />
 
           <styles.BigFeature
             title="Pairs well with existing CSS"
@@ -198,16 +189,19 @@ function Home() {
             // ctaHref={"https://paperclip.dev/docs/configure-percy"}
           />
           <styles.BigFeature
-            title="Live editing"
+            title="Visual regression coverage"
             description={[
               "Paperclip enhances your existing CSS by keeping it ",
               <i>scoped</i>,
               ", so you have absolute control over how it's used in your app, and never have to worry about styles leaking out."
             ]}
             preview={
-              <CodeBlock className="language-html">
-                {THIRD_PART_CSS_EXAMPLE}
-              </CodeBlock>
+              <video
+                src="vid/visual-regression-testing.mp4"
+                autoPlay
+                loop
+                muted
+              />
             }
           />
 

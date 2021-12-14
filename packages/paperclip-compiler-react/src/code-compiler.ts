@@ -69,13 +69,13 @@ export const compile = (
     { line: 1, column: 1, pos: 1 },
     addBuffer([
       `import React from "react";\n`,
+      translateImports,
       writeJoin(
         includes,
         "\n",
         include => addBuffer([`import "${include}";`]),
         true
       ),
-      translateImports,
       UTILS,
       "\n\n",
       translateExportedStyles,
