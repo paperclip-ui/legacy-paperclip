@@ -14,7 +14,7 @@ The CLI tool is used primarily to compile Paperclip files into your target frame
 
 ### paperclip init
 
-Initializes Paperclip for a new or existing project. If you're starting a new project, the `init` command will all a few questions, then generate project files for you.
+Configures Paperclip with your current project & installs compilers.
 
 ### paperclip build
 

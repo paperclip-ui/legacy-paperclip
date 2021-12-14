@@ -112,14 +112,15 @@
           margin: 0px auto;
           text-align: center;
           padding: 32px 0px;
+          max-width: 700px;
         </style>
         <div>
           <style>
             color: rgba(255, 255, 255, 0.9);
             font-size: 1.5em;
-            line-height: 1.3em;
+            line-height: 1.6em;
             margin-bottom: var(--gap-5);
-            font-weight: 600;
+            font-weight: 400;
             letter-spacing: 0.04em;
             @include typography.text-secondary {}
           </style>
@@ -131,6 +132,7 @@
             font-weight: 500;
             letter-spacing: 0.075em;
             line-height: 1.8em;
+            display: none;
             font-size: 1.1em;
             ._emoji {
               color: rgba(255, 255, 255, 1);
@@ -191,9 +193,8 @@
   {left}
   <img src="./assets/import-graphic-2.svg">
     <style>
-      width: 100px;
+      height: 150px;
       flex: 0;
-      flex-shrink: 0;
       @include mobile {}
     </style>
   </img>
@@ -219,8 +220,8 @@
 -->
 <div export component as="Summary" class="_summary $layout._row">
   <style>
-    display: none;
     border-top: 1px solid rgb(226, 226, 226);
+    border-bottom: 1px solid rgb(226, 226, 226);
     @include layout.py-6 {}
   </style>
   <div class="$layout._col12">
@@ -528,14 +529,16 @@
 
 
 <!--
-  @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -93, y: -54 }
+  @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -90, y: -54 }
 -->
 <Home component as="Preview">
   <!--
-    @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -93, y: -54 }
+    @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -90, y: -54 }
   -->
   <Header title={<fragment>
-      Durable HTML & CSS for any kind of web application.
+      Paperclip is a <strong>
+        generic approach that brings scoped CSS to any kind of web application
+      </strong>
     </fragment>}
     description={<fragment>
       Paperclip is a tiny language that allows you to define primitive HTML &

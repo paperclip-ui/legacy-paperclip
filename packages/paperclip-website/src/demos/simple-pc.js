@@ -28,9 +28,7 @@ export default SOURCE;
 
 const SOURCE = `
 
-<!-- 
-  Scoped to this document
--->
+<!-- Scoped to this document -->
 <style>
   .font-regular {
     font-family: Open Sans;

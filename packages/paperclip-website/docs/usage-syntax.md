@@ -6,7 +6,7 @@ sidebar_label: Syntax
 
 ### Basics
 
-You can start writing HTML and CSS as soon as you open up a Paperclip document. Here's an example:
+You can use regular HTML & CSS in Paperclip. For example:
 
 
 ```html live height=150px
@@ -20,11 +20,11 @@ You can start writing HTML and CSS as soon as you open up a Paperclip document. 
 <div>I'm purple!</div>
 ```
 
-**Styles are scoped**, meaning that they won't leak into other documents (you can still override styles using the class reference syntax), so you're welcome to define style selectors however you want. No special naming conventions needed.
+The big difference between Paperclip and regular HTML & CSS is that CSS in Paperclip is scoped. This means that styles won't leak into other documents. 
+
+You _can_ define global CSS, but you need to be explicit about that using the [`:global()`](#global) selector. You can also override styles into other documents using [selector reference syntax](#class-reference). You can also use styles defined within another document by using the [@export](#@export) or [inject-styles](#inject-styles).
 
 ## Styling
-
-Styles in Paperclip have a bit more behavior than regular CSS.
 
 
 ### Nested rules
@@ -76,7 +76,7 @@ Nested rules eliminates some redundancy around defining style selectors.
 </div>
 ```
 
-`&` can be used to combine the _parent_ selector in nested rules like so:
+The `&` token can be used to combine the _parent_ selector in nested rules like so:
 
 ```html live height=150px
 // file: nested-combine-demo.pc
@@ -146,12 +146,15 @@ Scoped styles are recommended since they keep your styles & elements together in
 
 ### :within(ancestor-selector)
 
-`:within([ancestor-selector])` allows you to apply styles with an ancestor that has `ancestor-selector`.
+`:within([ancestor-selector])` allows you to apply styles within a parent or ancestor.
 
 ```html live height=150px
 <div class="bolder">
   <div>
     <style>
+
+      /* this style block is applied if a 
+      parent / ancestor has .bolder class */
       &:within(.bolder) {
         font-weight: 600;
       }
@@ -238,17 +241,13 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 Media queries are re-usable in Paperclip by using the following pattern:
 
 ```css
-
-/* Define a media mixin */
 @mixin desktop {
   @media screen and (max-width: 1400px) {
     @content;
   }
 }
 
-div {
-
-  /* use media mixin in any selector */
+div {w
   @include desktop {
     font-size: 24px;
   }
@@ -1043,7 +1042,7 @@ in other previews -->
 
 ### Overriding component styles
 
-You can override styles in other components assuming that a component exposes an attribute that's bound to `className`. 
+You can override styles in other components assuming that a component exposes an attribute that's bound to `class`. 
 
 **Syntax**:
 
@@ -1257,7 +1256,7 @@ Attributes allow you to define dynamic component properties. For example:
   @frame { visible: false }
 -->
 <div component as="Button" 
-  className="$styles.button {customClassName}">
+  class="$styles.button {customClassName}">
   {children}
 </div>
 
@@ -1369,7 +1368,7 @@ The variant style syntax allows you to apply classes based on component properti
 **Syntax**:
 
 ```html
-<div component as="MyComponent" className:variant-name="class-name">
+<div component as="MyComponent" class:variant-name="class-name">
 </div>
 
 <!-- Usage -->

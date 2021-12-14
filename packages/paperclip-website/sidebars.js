@@ -2,23 +2,23 @@ module.exports = {
   docs: [
     {
       type: "doc",
-      id: "introduction"
-    },
-    {
-      type: "category",
-      label: "Getting Started",
-      collapsed: false,
-      items: ["getting-started-webpack", "getting-started-new-project"]
-    },
-    {
-      type: "doc",
-      id: "visual-tooling"
+      id: "installation"
     },
     {
       type: "category",
       label: "API Reference",
       collapsed: false,
-      items: ["usage-react", "usage-syntax", "usage-cli", "configure-paperclip"]
+      items: ["usage-syntax", "usage-cli", "configure-paperclip"]
+    },
+    {
+      type: "category",
+      label: "Code Usage",
+      collapsed: false,
+      items: ["usage-react"]
+    },
+    {
+      type: "doc",
+      id: "visual-tooling"
     },
     {
       type: "category",
@@ -40,6 +40,7 @@ module.exports = {
       label: "Integrations",
       collapsed: false,
       items: [
+        "getting-started-webpack",
         "configure-typescript",
         "configure-percy",
         "configure-jest",
