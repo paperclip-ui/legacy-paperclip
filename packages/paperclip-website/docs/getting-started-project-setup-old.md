@@ -57,7 +57,7 @@ Here's a walkthrough:
 If you're using TypeScript, you can generate Typed Definitions from Paperclip files by running:
 
 ```bash
-yarn paperclip build --only=.d.ts
+yarn paperclip build --only=d.ts
 ```
 
 This will write `*.pc.d.ts` files in in the same directory as their corresponding `*.pc` file. I'd also recommend that you include `*.pc.d.ts` in your `.gitignore` file.

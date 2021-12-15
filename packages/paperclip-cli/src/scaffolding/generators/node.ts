@@ -93,10 +93,10 @@ export const node = {
         devDependencies: ["paperclip-cli", "concurrently"],
         scripts: params.useTypescript
           ? {
-              build: ["paperclip build --only=.d.ts"],
-              start: ["paperclip build --only=.d.ts --watch"],
-              "build:watch": ["paperclip build --only=.d.ts --watch"],
-              "build:definitions": ["paperclip build --only=.d.ts"]
+              build: ["paperclip build --only=d.ts"],
+              start: ["paperclip build --only=d.ts --watch"],
+              "build:watch": ["paperclip build --only=d.ts --watch"],
+              "build:definitions": ["paperclip build --only=d.ts"]
             }
           : {}
       }

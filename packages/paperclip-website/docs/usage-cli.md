@@ -40,7 +40,7 @@ paperclip build
 paperclip build --watch
 
 # Build and only emit the target files
-paperclip build --only.d.ts,.css --watch
+paperclip build --onlyd.ts,css --watch
 ```
 
 If you're using [Webpack](getting-started-webpack), then you probably don't need to run `paperclip build` since the paperclip loader handles that for you. 

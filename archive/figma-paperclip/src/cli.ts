@@ -479,7 +479,7 @@ const compilePC = async (filePath: string) => {
   await exec(`./node_modules/.bin/paperclip`, [filePath], cwd, false);
   await exec(
     `./node_modules/.bin/paperclip`,
-    [filePath, "--only=.d.ts"],
+    [filePath, "--only=d.ts"],
     cwd,
     false
   );
