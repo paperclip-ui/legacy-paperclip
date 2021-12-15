@@ -1,6 +1,6 @@
 {
   "name": "tandem-design-system",
-  "version": "18.1.3",
+  "version": "18.1.4",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "paperclip": "^18.1.3",
-    "paperclip-cli-minimal": "^18.1.3",
-    "paperclip-compiler-react": "^18.1.3"
+    "paperclip": "^18.1.4",
+    "paperclip-cli-minimal": "^18.1.4",
+    "paperclip-compiler-react": "^18.1.4"
   }
 }
