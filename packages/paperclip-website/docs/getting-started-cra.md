@@ -27,7 +27,7 @@ Next, in the same directory as `package.json`, copy this content to `paperclip.c
 
 Next, 
 
-If you're using CRA, then just run `yarn paperclip build --write` in your project directory to emit JS files. After that, you can import any component like so: 
+If you're using CRA, then just run `yarn paperclip build` in your project directory to emit JS files. After that, you can import any component like so: 
 
 ```javascript
 import * as myComponentStyles from "./my-component.pc.js";
@@ -48,7 +48,10 @@ Also, to make it easier you can include the build script in your `start` script 
 {
   "name": "my-app-name",
   "scripts": {
-    "start": "react-scripts start & paperclip build --watch --write"
+    "start": "concurrently \"react-scripts start\" \"paperclip build --watch\""
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
   }
 }
 ```

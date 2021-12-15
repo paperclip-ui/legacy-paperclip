@@ -24,7 +24,7 @@ This will walk you through the setup process that will ask you to pick a target 
 Then just run this command:
 
 ```
-npx paperclip build --write
+npx paperclip build
 ```
 
 That's it! At this point you should see a generated file that you can import directly into your application code.

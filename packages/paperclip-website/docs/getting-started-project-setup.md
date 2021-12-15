@@ -22,7 +22,7 @@ Documentation for this can be found in the [Webpack Integration](getting-started
 
 ### Create React App (CRA)
 
-If you're using CRA, then just run `yarn paperclip build --write` in your project directory to emit JS files. After that, you can import any component like so: 
+If you're using CRA, then just run `yarn paperclip build` in your project directory to emit JS files. After that, you can import any component like so: 
 
 ```javascript
 import * as myComponentStyles from "./my-component.pc.js";
@@ -43,7 +43,7 @@ Also, to make it easier you can include the build script in your `start` script 
 {
   "name": "my-app-name",
   "scripts": {
-    "start": "react-scripts start & paperclip build --watch --write"
+    "start": "react-scripts start & paperclip build --watch"
   }
 }
 ```
@@ -59,7 +59,7 @@ Here's a walkthrough:
 If you're using TypeScript, you can generate Typed Definitions from Paperclip files by running:
 
 ```bash
-yarn paperclip build --definition --write
+yarn paperclip build --only=.d.ts
 ```
 
 This will write `*.pc.d.ts` files in in the same directory as their corresponding `*.pc` file. I'd also recommend that you include `*.pc.d.ts` in your `.gitignore` file.

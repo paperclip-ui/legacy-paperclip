@@ -43,4 +43,4 @@ paperclip build --watch
 paperclip build --only.d.ts,.css --watch
 ```
 
-If you're using [Webpack](getting-started-webpack), then you probably don't need to run `paperclip build --write` since the paperclip loader handles that for you. 
+If you're using [Webpack](getting-started-webpack), then you probably don't need to run `paperclip build` since the paperclip loader handles that for you. 

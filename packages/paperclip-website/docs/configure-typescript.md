@@ -7,7 +7,7 @@ sidebar_label: TypeScript
 Paperclip UIs can compile down typed definition files that you can use in your TypeScript project. To do this, you'll need to install the [CLI tool](usage-cli.md). You'll also need a `paperclip.config.json` file.  Assuming you have both of those things, just run:
 
 ```sh
-paperclip build --definition
+paperclip build --only=.d.ts
 ```
 
 ☝🏻 This will generate `*.pc.d.ts` files. I'd recommend that you include this script in your `package.json`:
