@@ -16,9 +16,6 @@ jobs:
       - run: yarn install
       - run: yarn run build
       - run: yarn run link
-      - name: Build Pages
-        run: |
-          yarn run publish:documentation
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
