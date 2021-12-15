@@ -99,10 +99,6 @@ module.exports = {
             {
               label: "Percy",
               to: "docs/configure-percy"
-            },
-            {
-              label: "TypeScript",
-              to: "docs/configure-typescript"
             }
           ]
         },

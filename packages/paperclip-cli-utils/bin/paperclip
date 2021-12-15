@@ -1,31 +1,5 @@
 #!/usr/bin/env node
-const path = require("path");
-const resolve = require("resolve");
-const chokidar = require("chokidar");
-const glob = require("glob");
 const {build, init, devStart} = require("../lib/cli");
-const fs = require("fs");
-
-// const argv = require("yargs")
-// .option("compiler", {
-//   describe: "Language compiler target",
-// })
-// .option("write", {
-//   describe: "Write compiled file",
-// })
-// .option("config", {
-//   describe: "Config file",
-// })
-// .option("drop-pc-extension", {
-//   describe: "Drops PC extension from compiled files",
-// })
-// .option("watch", {
-// })
-// .example("$0", "Runs paperclip using paperclip.config.json in cwd")
-// .example("$0 **/*.pc --compiler=paperclip-compiler-react", "Compiles PC files to React")
-// .example("$0 path/to/file.pc --compiler=paperclip-compiler-react --definition", "Generates a Typed Definition file")
-// .example("$0 --definition --write --watch", "Writes typed definition files & re-generates them when they change")
-// .argv;
 
 const argv = require("yargs")
 .command("build [file-pattern]", "Compiles paperclip files to target language", yargs => {

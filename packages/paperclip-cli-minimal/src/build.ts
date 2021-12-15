@@ -10,7 +10,7 @@ import { mkdirpSync, outputFile } from "fs-extra";
 export type BuildOptions = {
   cwd: string;
   config?: string;
-  write: boolean;
+  print: boolean;
   output?: string;
   only?: string[];
   watch: boolean;
@@ -32,9 +32,6 @@ export const build = async (options: BuildOptions) => {
     engine
   );
 
-  const srcDir = path.join(options.cwd, config.srcDir);
-  const outDir = path.join(options.cwd, config.compilerOptions!.outDir);
-
   builder
     .onFile((outFilePath: string, content: string) => {
       const ext = outFilePath.replace(/.*?\.pc\./, "");
@@ -46,10 +43,10 @@ export const build = async (options: BuildOptions) => {
       if (options.verbose) {
         console.log("Compiled %s", path.relative(options.cwd, outFilePath));
       }
-      if (options.write) {
-        writeFileSync(outFilePath, content, options);
-      } else {
+      if (options.print) {
         console.log(content);
+      } else {
+        writeFileSync(outFilePath, content, options);
       }
     })
     .onError((error, filePath) => {

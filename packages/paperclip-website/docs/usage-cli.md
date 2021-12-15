@@ -31,19 +31,16 @@ Generates code based on your [paperclip config](configure-paperclip.md).
 ```sh
 
 # Build all Paperclip files and print to stdout
-paperclip build 
+paperclip build --print
 
 # Build Paperclip files & writes them
-paperclip build --write
+paperclip build
 
 # Starts watcher & writes them whenever they change
-paperclip build --write --watch
+paperclip build --watch
 
-# Start typed definition watcher
-paperclip build --write --definition --watch
+# Build and only emit the target files
+paperclip build --only.d.ts,.css --watch
 ```
 
 If you're using [Webpack](getting-started-webpack), then you probably don't need to run `paperclip build --write` since the paperclip loader handles that for you. 
-
-If you're using [TypeScript](configure-typescript.md), then you'll probably want to use the `paperclip build --write --definition --watch` to generate typed definition files.
-

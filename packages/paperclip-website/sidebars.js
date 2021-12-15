@@ -41,7 +41,6 @@ module.exports = {
       collapsed: false,
       items: [
         "getting-started-webpack",
-        "configure-typescript",
         "configure-percy",
         "configure-jest",
         "configure-prettier"
