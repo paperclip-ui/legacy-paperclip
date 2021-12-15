@@ -39,7 +39,7 @@ const SOURCE = `
 
   <!-- Scoped to this element & descendants -->
   <style>
-    padding-left: 1em;
+    padding-left: 32px;
   </style>
   {children}
 </ol>

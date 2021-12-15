@@ -173,6 +173,7 @@
     grid-column-gap: 32px;
     grid-row-gap: 32px;
     align-items: center;
+    position: relative;
     :global(& > :first-child) {
       width: 100%;
     }
@@ -193,6 +194,10 @@
   {left}
   <img src="./assets/import-graphic-2.svg">
     <style>
+
+
+
+
       height: 150px;
       flex: 0;
       @include mobile {}
