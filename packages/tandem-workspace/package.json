@@ -30,7 +30,6 @@
     "get-port": "^5.1.1",
     "glob": "^7.1.7",
     "paperclip": "^18.1.3",
-    "paperclip-cli": "^18.1.3",
     "paperclip-common": "^18.1.3",
     "sockjs": "^0.3.21",
     "tandem-common": "^18.1.3",
