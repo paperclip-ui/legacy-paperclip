@@ -7,5 +7,5 @@
   <Image width="16" height="16" type="image/x-icon">https://paperclip.dev/img/favicon.ico</Image>
   <Url type="text/html" method="get" template="https://paperclip.dev/search?q={searchTerms}"/>
   <Url type="application/opensearchdescription+xml" rel="self" template="https://paperclip.dev/opensearch.xml" />
-  <moz:SearchForm>https://paperclip.dev</moz:SearchForm>
+  <moz:SearchForm>https://paperclip.dev/</moz:SearchForm>
 </OpenSearchDescription>
