@@ -16,7 +16,7 @@ if (!fs.existsSync(filePath)) {
   process.exit(1);
 } else {
   const config = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  require("../lib/cli").run(config.sourceDirectory, {
+  require("../lib/cli").run(config.srcDir, {
     keepEmpty: argv.keepEmpty
   });
 }
