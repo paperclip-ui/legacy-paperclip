@@ -36,11 +36,8 @@ function Home() {
             // title={<>Build web UIs at the speed of thought.</>}
             title={
               <>
-                Paperclip is a{" "}
-                <strong>
-                  tiny language that brings scoped CSS to any kind of web
-                  application.
-                </strong>
+                Paperclip is a tiny language that brings{" "}
+                <strong>scoped CSS to any kind of web application.</strong>
               </>
             }
             description={
@@ -146,37 +143,53 @@ function Home() {
             }
           />
 
-          {/* <styles.Summary title="Keep your HTML & CSS maintainable" text="Writing maintinable HTML & CSS is hard, especially with global CSS. Paperclip is a tiny language that focuses purely on the visual aspect of your application, and provides features to help you keep " /> */}
+          {/* <styles.Summary title="Keep your HTML & CSS maintainable" text="Writing maintinable HTML & CSS is hard, especially with global CSS. Paperclip is a tiny language that focuses purely on the visual aspect of your application, and provides features to help" /> */}
+          <styles.Summary
+            title="Wrangle your HTML & CSS"
+            text="Writing maintinable HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. "
+          />
 
           <styles.VariousFeatures>
             <styles.VariousFeatureItem
-              iconName="link"
-              title="Incrementally adoptable"
+              iconName="shapes"
+              title="Just the UI"
+              description="Paperclip just covers the appearance of your application, and exposes primitive components that you can throughout your application."
+            />
+            <styles.VariousFeatureItem
+              iconName="grow"
+              title="Works with your existing codebase"
               description={
                 <>
-                  Paperclip files are compiled to plain code, and can be
-                  incrementally adoptable in your existing codebase.
+                  You can use Paperclip today for any CSS that you have.
+                  Migrating is about as simpe as copying & pasting.
                 </>
               }
             />
             <styles.VariousFeatureItem
-              iconName="chaotic-1"
-              title="Scoped CSS"
-              description="No more leaky CSS. Paperclip only applies CSS to the documents where it's defined."
-            />
-            <styles.VariousFeatureItem
-              iconName="grow"
-              title="Just the UI"
-              description="Paperclip only covers primitive components, and uses basic HTML & SASS syntax."
+              iconName="hammer"
+              title="Productivity tools"
+              description="Paperclip comes with tools such as a visual editor, linters, and visual regression tools to help you write clean HTML & CSS, and keep it that way."
             />
           </styles.VariousFeatures>
+          <styles.BigFeature
+            title="Pairs well with existing CSS"
+            description={[
+              "Paperclip enhances your existing CSS by keeping it scoped, so you have explicit control over how it's used in your app."
+            ]}
+            preview={
+              <CodeBlock className="language-html">
+                {THIRD_PART_CSS_EXAMPLE}
+              </CodeBlock>
+            }
+          />
 
           <styles.BigFeature
-            title="Spot UI bugs more easily"
+            title="Better coverage for UI bugs"
             description={
               <>
-                Paperclip files are automatically covered for bugs, so you can
-                ship UI changes more confidently.
+                Paperclip files are automatically covered for visual
+                regressions. Just set up the Percy integration and you're good
+                to go.
               </>
             }
             preview={
@@ -189,22 +202,8 @@ function Home() {
             }
           />
           <styles.BigFeature
-            title="Pairs well with existing CSS"
-            description={[
-              "Paperclip enhances your existing CSS by keeping it ",
-              <i>scoped</i>,
-              ", so you have control over how it's used in your app."
-            ]}
-            preview={
-              <CodeBlock className="language-html">
-                {THIRD_PART_CSS_EXAMPLE}
-              </CodeBlock>
-            }
-          />
-
-          <styles.BigFeature
-            title="Live editing"
-            description="Visual tooling allows you see what you're creating as you're typing. Features such as artboards, measuring tools, and responsive testing tools help you build pixel-perfect UIs in no-time."
+            title="Build UIs more quickly"
+            description="Paperclip's visual editor allows you to build your primitive components in realtime, and also comes with tools that makes it easier to build UIs more accurately."
             preview={
               <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
             }

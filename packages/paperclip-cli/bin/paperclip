@@ -7,7 +7,6 @@ const {init, devStart} = require("../lib/cli");
 const {build} = require("paperclip-cli-minimal");
 const fs = require("fs");
 const {start: startWorkspace} = require("tandem-workspace/lib/server");
-const {PaperclipDiff} = require("paperclip-diff");
 
 const argv = require("yargs")
 .command("build", "Compiles paperclip files to target language", yargs => {
@@ -38,22 +37,22 @@ const argv = require("yargs")
 }, argv => {
   init();
 })
-.command("snapshot", "Take a snapshot of all Paperclip files in the current branch", yargs => {
-}, argv => {
-  const diff = new PaperclipDiff(process.cwd());
-  diff.start().then(() => {
-    return diff.snapshot();
-  });
-})
-.command("diff [branch]", "Detect visual changes on a different branch", yargs => {
-  yargs
-  .option("watch", desc("Watch for changes and then re-run diff"));
-}, argv => {
-  const diff = new PaperclipDiff(process.cwd());
-  diff.detectChanges(argv.name, argv.watch).then(() => {
+// .command("snapshot", "Take a snapshot of all Paperclip files in the current branch", yargs => {
+// }, argv => {
+//   const diff = new PaperclipDiff(process.cwd());
+//   diff.start().then(() => {
+//     return diff.snapshot();
+//   });
+// })
+// .command("diff [branch]", "Detect visual changes on a different branch", yargs => {
+//   yargs
+//   .option("watch", desc("Watch for changes and then re-run diff"));
+// }, argv => {
+//   const diff = new PaperclipDiff(process.cwd());
+//   diff.detectChanges(argv.name, argv.watch).then(() => {
 
-  })
-})
+//   })
+// })
 .command("dev", "Starts the dev server", yargs => {
   yargs
   .option("port", desc("HTTP port to listen on"))

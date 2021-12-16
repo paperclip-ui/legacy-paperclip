@@ -12,6 +12,11 @@
       background-image: url(./chaotic-1.svg);
       background-size: 0.75em;
     }
+    @mixin hammer {
+      @include icon;
+      background-image: url(./hammer.svg);
+      background-size: 0.9em;
+    }
 
     @mixin grow {
       @include icon;
@@ -62,6 +67,9 @@
     }
     [data-name=chaotic-1] {
       @include chaotic-1;
+    }
+    [data-name=hammer] {
+      @include hammer;
     }
 
     [data-name=grow] {
@@ -120,6 +128,7 @@
 -->
 <div class="preview">
   <Icon name="chaotic-1" />
+  <Icon name="hammer" />
   <Icon name="grow" />
   <Icon name="link" />
   <Icon name="shapes" />
