@@ -1,6 +1,6 @@
 {
   "name": "figma-paperclip",
-  "version": "18.1.5",
+  "version": "18.1.6",
   "description": "",
   "main": "index.js",
   "bin": "./bin/figma-paperclip",
