@@ -95,7 +95,7 @@ export const root = {
       console.info(
         chalk.cyanBright(
           "Next just run " +
-            chalk.underline("npx paperclip build") +
+            chalk.underline("npx paperclip-cli build") +
             " to generate code! More docs on this can be found here: \n\n" +
             chalk.underline(`https://paperclip.dev/docs/`)
         )

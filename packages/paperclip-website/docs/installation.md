@@ -7,7 +7,7 @@ sidebar_label: Installation
 To get started with Paperclip, just run this command in your project directory:
 
 ```
-npx paperclip init
+npx paperclip-cli init
 ```
 
 This will walk you through the setup process that will ask you to pick a target compiler (React, PHP, etc). After that, create a new `hello-paperclip.pc` file with the following content:
@@ -24,7 +24,7 @@ This will walk you through the setup process that will ask you to pick a target 
 Then just run this command:
 
 ```
-npx paperclip build
+npx paperclip-cli build
 ```
 
 That's it! At this point you should see a generated file that you can import directly into your application code.

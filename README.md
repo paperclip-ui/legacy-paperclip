@@ -6,7 +6,7 @@
   <img src="assets/logo-outline-5.png" width="400">
 </div>
 
-> **Installation**: `npx paperclip init` in your project directory.
+> **Installation**: `npx paperclip-cli init` in your project directory.
 
 <!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
 
