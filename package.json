@@ -45,7 +45,7 @@
     "publish:packages": "lerna publish from-package --yes",
     "publish:marketplace": "lerna run publish:marketplace",
     "publish:documentation": "lerna run publish:documentation",
-    "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --no-audit",
+    "version22": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --no-audit",
     "prepare": "husky install"
   },
   "repository": {
