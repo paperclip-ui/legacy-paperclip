@@ -2,7 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "outDir": "lib",
-    "target": "es2020",
+    "target": "es5",
     "moduleResolution": "node",
     "module": "es2022",
     "declaration": true,
