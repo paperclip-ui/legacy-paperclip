@@ -9,6 +9,9 @@ tmp/
 *.pc.d.ts
 *.pc.js
 *.pc.css
+*.pc.php
+*.pc.py
+*.pc.rb
 *.vsix
 *.DS_Store
 lerna-debug.log
