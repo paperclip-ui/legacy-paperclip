@@ -12,6 +12,7 @@
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
     "paperclip": "^18.1.6",
+    "paperclip-interim": "^18.1.6",
     "source-map": "^0.7.3"
   },
   "scripts": {
