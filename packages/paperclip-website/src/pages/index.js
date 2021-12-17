@@ -23,8 +23,8 @@ function Home() {
     <div className="home">
       <Layout
         className="dograg"
-        title={`${siteConfig.title} - Rapidly build web applications at any scale.`}
-        description="Rapidly build user interfaces, all within your existing IDE."
+        title={`${siteConfig.title} - Scoped HTML & CSS for any kind of web application.`}
+        description="Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again."
       >
         <styles.Home>
           <styles.Header
