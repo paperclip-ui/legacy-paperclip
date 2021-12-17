@@ -9,7 +9,12 @@ import {
   InterimSlotNode,
   InterimScriptExpression,
   InterimScriptExpressionKind,
-  InterimText
+  InterimText,
+  InterimAttributeValuePart,
+  InterimAttributeValuePartKind,
+  DynamicAttributeValuePart,
+  ShorthandAttributeValuePart,
+  StaticAttributeValuePart
 } from "paperclip-interim";
 import * as path from "path";
 import * as URL from "url";
@@ -64,7 +69,7 @@ const writeComponents = (context: Context) => {
 
 const writeComponent = (component: InterimComponent) =>
   addBuffer([
-    `function ${component.as}($props) {`,
+    `function ${component.as}($props, $children = "") {`,
     startBlock,
     "\n",
     `return "\n`,
@@ -108,9 +113,8 @@ const writeChild = (child: InterimNode) => {
   }
 };
 
-const writeSlot = (slot: InterimSlotNode) => {
-  return writeScript(slot.script);
-};
+const writeSlot = (slot: InterimSlotNode) =>
+  addBuffer([`{`, writeScript(slot.script), `}`]);
 
 const writeText = (text: InterimText) => addBuffer([text.value]);
 
@@ -147,7 +151,8 @@ const writeScript = (script: InterimScriptExpression) => {
   }
 };
 
-const ref = (name: string) => `{$props['${name}']}`;
+const ref = (name: string) =>
+  name == "children" ? `$children` : `$props->${name}`;
 
 const writeAttributes = (element: InterimElement | InterimComponent) => (
   context: Context
@@ -164,31 +169,47 @@ const writeAttributes = (element: InterimElement | InterimComponent) => (
 const writeAttribute = (name: string, attr: InterimAttribute) =>
   addBuffer([
     `${name}={`,
-    writeJoin(attr.variants, `. " " . `, writeAttributeVariant),
+    writeJoin(attr.variants, `. " " . `, writeAttributeVariant(name)),
     "}"
   ]);
 
-const writeAttributeVariant = (variant: InterimAttributeValue) => (
-  context: Context
-) => {
+const writeAttributeVariant = (attrName: string) => (
+  variant: InterimAttributeValue
+) => (context: Context) => {
   if (variant.variantName) {
     return addBuffer([
       `(`,
       ref(variant.variantName),
-      `)`,
-      `?`,
-      writeAttributeVariantInner(variant),
-      `""`
+      ``,
+      ` ? `,
+      writeAttributeVariantInner(attrName)(variant),
+      `: "")`
     ])(context);
   } else {
-    return writeAttributeVariantInner(variant)(context);
+    return writeAttributeVariantInner(attrName)(variant)(context);
   }
-
-  return context;
 };
 
-const writeAttributeVariantInner = (variant: InterimAttributeValue) => (
-  context: Context
+const writeAttributeVariantInner = (attrName: string) => (
+  variant: InterimAttributeValue
+) => writeJoin(variant.parts, " . ", writeAttributeValuePart(attrName));
+
+const writeAttributeValuePart = (name: string) => (
+  part: InterimAttributeValuePart
 ) => {
-  return context;
+  switch (part.kind) {
+    case InterimAttributeValuePartKind.Dynamic:
+      return writeDynamicAttributeValuePart(part);
+    case InterimAttributeValuePartKind.Shorthand:
+      return writeShorthandAttributeValuePart(name);
+    case InterimAttributeValuePartKind.Static:
+      return writeStaticAttributeValuePart(part);
+  }
 };
+
+const writeDynamicAttributeValuePart = (part: DynamicAttributeValuePart) =>
+  writeScript(part.script);
+const writeShorthandAttributeValuePart = (name: string) =>
+  addBuffer([ref(name)]);
+const writeStaticAttributeValuePart = (part: StaticAttributeValuePart) =>
+  addBuffer([`"`, part.value, `"`]);
