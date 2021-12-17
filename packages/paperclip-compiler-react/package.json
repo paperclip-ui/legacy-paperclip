@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "crc32": "^0.2.2",
-    "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
     "paperclip": "^18.1.6",
+    "paperclip-compiler-utils": "^1.0.1",
     "paperclip-interim": "^18.1.6",
     "source-map": "^0.7.3"
   },

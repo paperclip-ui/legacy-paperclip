@@ -211,7 +211,10 @@ export const buildFile = async (
   }
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
-  const targetCompilers = requireTargetCompilers(options.cwd, options.config);
+  const targetCompilers = requireTargetCompilers(
+    options.cwd,
+    options.config
+  ).filter(compiler => compiler.compile != null);
 
   const translations = targetCompilers.reduce((files, compiler) => {
     return Object.assign(
@@ -221,7 +224,7 @@ export const buildFile = async (
         fileUrl,
         includes,
         options.config,
-        options.config.compilerOptions
+        options.cwd
       )
     );
   }, {});
