@@ -8,15 +8,15 @@ The CLI tool is used primarily to compile Paperclip files into your target frame
 
 ## Installation
 
-`npm install paperclip-cli --save-dev`
+`yarn add paperlip-cli --dev`
 
 ## Commands
 
-### paperclip init
+### `paperclip init`
 
 Configures Paperclip with your current project & installs compilers.
 
-### paperclip build
+### `paperclip build`
 
 Generates code based on your [paperclip config](configure-paperclip.md). 
 
@@ -25,8 +25,6 @@ Generates code based on your [paperclip config](configure-paperclip.md).
 - `write` - Option to write compiled UI files to disk. Output is otherwise printed in the console log. Currently, files are written to the same directory as the `*.pc` files, so be sure to add `*.pc.*` to your `.gitignore`.
 - `watch` - Starts the file watcher & rebuilds UIs whenever they change.
 - `definition` - Generate a typed definition file (Specific to TypeScript)
-
-**Examples**
 
 ```sh
 
@@ -40,7 +38,10 @@ paperclip build
 paperclip build --watch
 
 # Build and only emit the target files
-paperclip build --onlyd.ts,css --watch
+paperclip build --only=d.ts,css --watch
 ```
 
-If you're using [Webpack](getting-started-webpack), then you probably don't need to run `paperclip build` since the paperclip loader handles that for you. 
+### `paperclip dev`
+
+Start the [visual tooling](visual-tooling.md). 
+

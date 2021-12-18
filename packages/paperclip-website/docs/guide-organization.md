@@ -1,10 +1,10 @@
 ---
-id: guide-organization
-title: Paperclip Organization
-sidebar_label: Organization
+id: guide-previews
+title: Paperclip Previews
+sidebar_label: Previews
 ---
 
-The general structure that I'd recommend for Paperclip content is:
+Previews are a way for you to see your all of your primitive components together. Here's a basic example:
 
 ```html
 <!-- Component building blocks section. Keep them invisible -->
@@ -41,12 +41,9 @@ The general structure that I'd recommend for Paperclip content is:
 </SomeComponent>
 ```
 
+You can see these previews live by running `npx paperclip-cli dev`.
 
-Writing previews may seem a bit redundant since they'll reflect your React components - there's some duplicate code, but they are import to define for a few reasons:
-
-- Previews double up as visual regression tests if you're using the [Percy](configure-percy) integration.
-- Previews act as documentation for seeing _every_ visual state of a component.
-- Previews allow you to design your app without needing to spin up a development server.
+You can think of previews as a bit of a scratch pad for your UIs. They're nice to use when building UIs out initially since Paperclip compiles in realtime, so you're never waiting around. You can also think of previews as unit tests for your primitive components since previews defined within Paperclip are covered for visual regressions.
 
 To keep your previews more DRY, you can combine them into one master preview component. For example:
 
@@ -118,94 +115,3 @@ This way, you keep all of your visual states in one spot which makes it easier t
 
 ![onboarding](/img/preview-variants.gif)
 
-Be sure _not_ to include preview components into your React code - previews are just used for development and testing purposes. 
-
-
-# Organizing files
-
-My recommendation is to keep `PC` files alonside the React components that are using them. For example:
-
-```
-components/
-  TabNavigation.pc
-  TabNavigation.tsx
-```
-
-Another good pattern is to have a master `components.pc` file that contains _all_ of your design system elements. For example:
-
-![design system](/img/ds-preview.gif)
-
-> This is our current WIP design system at [Capital](https://captec.io)
-
-
-The benefit of having this is that you can see _everything_ in one spot. Here's what your folder structure might look like:
-
-```
-design-system/
-  components.pc
-  Button.tsx
-  TabNavigation.tsx
-  Modal.tsx
-```
-
-Then, in each of your components, just include what's needed from `components.pc`:
-
-```jsx
-import React, { useCallback, useEffect, useState } from 'react';
-import * as styles from './components.pc';
-
-export type ModalProps = {
-  visible?: boolean;
-  closable?: boolean;
-  header?: any;
-  narrow?: boolean;
-  padded?: boolean;
-  wide?: boolean;
-  children: any;
-  side?: boolean;
-  footer?: any;
-  onClose?: any;
-};
-
-export const Modal = ({
-  header,
-  side,
-  closable,
-  narrow,
-  wide,
-  children,
-  padded,
-  visible = true,
-  onClose,
-  footer,
-}: ModalProps) => {
-  const { isOpen, transitioning, onBackgroundClick } = useModal({
-    closable,
-    onClose,
-    visible,
-  });
-
-  // if closed & done transitioning, then do not render modal.
-  if (!isOpen && !transitioning) {
-    return null;
-  }
-
-  return (
-    <styles.Modal
-      side={side}
-      visible={isOpen}
-      onBackgroundClick={onBackgroundClick}
-    >
-      <styles._ModalContent
-        padded={padded}
-        wide={wide}
-        narrow={narrow}
-        footer={footer}
-      >
-        {header && <styles._ModalHeader>{header}</styles._ModalHeader>}
-        {children}
-      </styles._ModalContent>
-    </styles.Modal>
-  );
-};
-```

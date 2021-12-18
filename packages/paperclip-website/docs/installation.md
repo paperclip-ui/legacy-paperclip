@@ -10,22 +10,11 @@ To get started with Paperclip, just run this command in your project directory:
 npx paperclip-cli init
 ```
 
-This will walk you through the setup process that will ask you to pick a target compiler (React, PHP, etc). After that, create a new `hello-paperclip.pc` file with the following content:
-
-```html
-<div export component as="HelloPaperclip">
-  <style>
-    font-family: Comic Sans MS;
-  </style>
-  {children}!
-</div>
-```
-
-Then just run this command:
+This will walk you through the setup process that will ask you to pick a target compiler. After it's done running, you'll notice a few new files. Next, just run this command:
 
 ```
 npx paperclip-cli build
 ```
 
-That's it! At this point you should see a generated file that you can import directly into your application code.
+You should notice a few more generated files, **these ones can be imported directly into your codebase**. And that's it! You're ready to start using Paperclip. 
 

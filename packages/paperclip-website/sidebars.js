@@ -5,10 +5,16 @@ module.exports = {
       id: "installation"
     },
     {
-      type: "category",
-      label: "API Reference",
-      collapsed: false,
-      items: ["usage-syntax", "usage-cli", "configure-paperclip"]
+      type: "doc",
+      id: "usage-syntax"
+    },
+    {
+      type: "doc",
+      id: "configure-paperclip"
+    },
+    {
+      type: "doc",
+      id: "usage-cli"
     },
     {
       type: "category",
@@ -17,23 +23,10 @@ module.exports = {
       items: ["usage-react"]
     },
     {
-      type: "doc",
-      id: "visual-tooling"
-    },
-    {
       type: "category",
-      label: "Guides",
+      label: "Tools",
       collapsed: false,
-      items: [
-        "guide-how-to-use",
-        "guide-organization",
-        "guide-migrating-to-paperclip",
-        "guide-third-party-libraries",
-        "guide-dynamic-styles",
-        "guide-modules",
-        "guide-theming",
-        "guide-vscode"
-      ]
+      items: ["visual-tooling", "guide-vscode"]
     },
     {
       type: "category",
@@ -44,6 +37,21 @@ module.exports = {
         "configure-percy",
         "configure-jest",
         "configure-prettier"
+      ]
+    },
+    {
+      type: "category",
+      label: "Guides",
+      collapsed: false,
+      items: [
+        // "guide-how-to-use",
+        "guide-migrating-to-paperclip",
+        "guide-third-party-libraries",
+        "guide-previews",
+        // "guide-dynamic-styles",
+        // "guide-modules",
+        // "guide-theming2",
+        "guide-compilers"
       ]
     }
   ]

@@ -1,6 +1,7 @@
 <style>
   @mixin icon {
-    background-repeat: no-repeat;
+    background: currentColor;
+    mask-repeat: no-repeat;
     width: 1em;
     height: 1em;
     position: relative;
@@ -9,61 +10,61 @@
   @export {
     @mixin chaotic-1 {
       @include icon;
-      background-image: url(./chaotic-1.svg);
-      background-size: 0.75em;
+      mask-image: url(./chaotic-1.svg);
+      mask-size: 0.75em;
     }
     @mixin hammer {
       @include icon;
-      background-image: url(./hammer.svg);
-      background-size: 0.9em;
+      mask-image: url(./hammer.svg);
+      mask-size: 0.9em;
     }
 
     @mixin grow {
       @include icon;
-      background-image: url(./grow.svg);
-      background-size: 1em 1em;
+      mask-image: url(./grow.svg);
+      mask-size: 1em 1em;
       top: -2px;
     }
 
     @mixin link {
       @include icon;
-      background-image: url(./link.svg);
-      background-size: 1em 1em;
+      mask-image: url(./link.svg);
+      mask-size: 1em 1em;
       top: -2px;
     }
     @mixin shapes {
       @include icon;
-      background-image: url(./shapes.svg);
-      background-size: 1em 1em;
+      mask-image: url(./shapes.svg);
+      mask-size: 1em 1em;
       top: -2px;
     }
     @mixin plug {
       @include icon;
-      background-image: url(./plug.svg);
-      background-size: 0.8em 0.8em;
+      mask-image: url(./plug.svg);
+      mask-size: 0.8em 0.8em;
     }
     @mixin reactjs {
       @include icon;
-      background-image: url(./reactjs.svg);
-      background-size: 0.9em 0.9em;
+      mask-image: url(./reactjs.svg);
+      mask-size: 0.9em 0.9em;
     }
     @mixin chevron-right {
       @include icon;
-      background-image: url(./chevron-right.svg);
-      background-size: 0.7em 0.7em;
-      background-position: 50%;
+      mask-image: url(./chevron-right.svg);
+      mask-size: 0.7em 0.7em;
+      mask-position: 50%;
     }
     @mixin brush {
       @include icon;
-      background-image: url(./brush.svg);
-      background-size: 0.7em 0.7em;
-      background-position: 50%;
+      mask-image: url(./brush.svg);
+      mask-size: 0.7em 0.7em;
+      mask-position: 50%;
     }
     @mixin gears {
       @include icon;
-      background-image: url(./gears.svg);
-      background-size: 1em;
-      background-position: 50%;
+      mask-image: url(./gears.svg);
+      mask-size: 1em;
+      mask-position: 50%;
     }
     [data-name=chaotic-1] {
       @include chaotic-1;

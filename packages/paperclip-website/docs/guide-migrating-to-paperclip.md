@@ -17,9 +17,7 @@ You have a few options here. The easiest option is to just import CSS files dire
 </div>
 ```
 
-This requires _no_ migration effort, and allows you to maintain a boundary between your styles and Paperclip if you want to. You still have all of the benefits of Paperclip (scoped CSS, realtime visual development, visual regesssion tests).
-
-If you want to move from CSS however, it's basically just copying and pasting. For example:
+This requires _no_ migration effort, and allows you to maintain a boundary between your styles and Paperclip if you want to. If you want to move from CSS however, it's basically just copying and pasting. For example:
 
 ```css
 .container {
@@ -55,8 +53,6 @@ Just paste this like so:
   {children}
 </div>
 ```
-
-If your CSS selectors are specific to an element, then I'd recommend moving them to a `PC` file and export a component associated with that selector. If your styles are more atomic, then I'd recommend keeping them in a `CSS` file and importing that into your PC documents where they're needed.
 
 ###  Migrating from Styled Components, Emotion, etc
 
@@ -129,7 +125,7 @@ The translation to Paperclip would be this:
 </style>
 ```
 
-After migrating from Emotion / styled-components / etc, all you need to do is change your styled component imports:
+After migrating, all you need to do is change your styled component imports:
 
 ```jsx
 

@@ -16,9 +16,6 @@ Next, in the same directory as `webpack.config.js`, copy this content to `paperc
 
 ```javascript
 {
-  "compilerOptions": {
-    "name": "paperclip-compiler-react"
-  },
   "srcDir": "./src"
 }
 
@@ -75,4 +72,4 @@ module.exports = {
 
 Paperclip requires that you use [css-loader](https://webpack.js.org/loaders/css-loader/) in order to work, and either the [style-loader](https://webpack.js.org/loaders/style-loader/), or [mini-css-extract-plugin](https://webpack.js.org/plugins/mini-css-extract-plugin/) to go with that. It's also recommended that you include [url-loader](https://webpack.js.org/loaders/url-loader/) or [file-loader](https://webpack.js.org/loaders/file-loader/) in your webpack config so that you can import images, and other assets into your Paperclip files.
 
-After that, you can start using Paperclip in your project! I'd recommend installing the [visual tooling](visual-tooling) next, then checking out the [React docs](usage-react#importing-pc-files) on how to use Paperclip in your React app.
+After that, you can start using Paperclip in your Webpack project! 

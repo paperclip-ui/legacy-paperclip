@@ -359,7 +359,6 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 **Syntax**:
 
 ```html
-
 <div class="$class-name" />
 
 <div class="$imported-doc.class-name" />
@@ -392,7 +391,7 @@ You can also use class references to [override component styles](#overriding-com
 
 ### :global
 
-All style rules are, by default, scoped to the document they're defined in. This ensures that they don't leak & have unintended side-effects. However, there _are_ rare cases when you may need to define a global style rule, such as styling HTML defined outside of Paperclip that doesn't have a way to define a `class` attribute. 
+All style rules are scoped by default to the document they're defined in. This ensures that they don't leak & have unintended side-effects. However, there _are_ rare cases when you may need to define a global style rule, such as styling HTML defined outside of Paperclip that doesn't have a way to define a `class` attribute. 
 
 **Syntax**:
 
@@ -455,39 +454,7 @@ import * as ui from './Select.pc';
 
 ```
 
-<!-- TODO: styling external components guide -->
-
-<!-- TODO: how to import existing CSS guide -->
-
-### Other global styles
-
-`:root` and `:global` CSS properties are applied globally when imported. Here's an example:
-
-```html live height=150px
-// file: demo.pc
-<import src="./styles.pc" />
-
-<div class="message">
-  <style>
-    color: var(--color-red-default);
-  </style>
-  A male barber shaves all and only those men who do not shave themselves. Does he shave himself?
-</div>
-// file: styles.pc
-<style>
-  :global(:root) {
-    --color-red-default: #900;
-  }
-
-  /* Try to avoid doing this 🙅‍♂️. Use mixins or class references instead. */
-  :global(body) {
-    font-family: Kai;
-    font-size: 18px;
-  }
-</style>
-```
-
-It's okay to define `:root` variables - this is common pattern around theming. Try to avoid `:global` selectors whenever possible since they leak into other documents, and may result in unintended side-effects. If you need to use `:global` try to wrap it around a style rule that's scoped to the document. For example:
+Try to avoid `:global` selectors whenever possible since they leak into other documents, and may result in unintended side-effects. If you need to use `:global`, try to wrap it around a style rule that's scoped to the document. For example:
 
 ```css
 /* Safer to use */
@@ -584,7 +551,7 @@ Nothing here!
 </style>
 ```
 
-The `as` keyword is your access point into anything exported by the imported document, like above. 
+The import `as` keyword defines a namespace that you can use to access exported properties defined within other documents, like above.
 
 **Other examples**:
 
@@ -593,7 +560,7 @@ The `as` keyword is your access point into anything exported by the imported doc
 
 #### inject-styles
 
-The `inject-styles` props injects all of the import's public styles into the current document. For example:
+The `inject-styles` props injects all of the import's exported styles into the current document. For example:
 
 ```html
 <import src="./tailwind.css" inject-styles />
@@ -649,7 +616,7 @@ Note that `.css` files are a special case since all selectors are automatically 
 
 ## Components
 
-Components are your UI building blocks. 
+Components are your UI building blocks. Just add a `component` attribute to a root element (doesn't have a parent).
 
 **Syntax**:
 
@@ -687,93 +654,6 @@ Components are your UI building blocks.
   Hooray!
 </Message>
 ```
-
-You can define a component from _any_ root element (meaning that it's not a child of any element) by using the syntax above.  Any other element that does _not_ have a `component` attribute is rendered to the screen. Think of those as previews. 
-
-<!--Here's an example of how you can import the above component in React:
-
-```jsx
-import * as styles from "./message.pc";
-<styles.Message>
-  Hola!
-</styles.Message>
-```
-
-Note that for components to be available in application code, they _must_ have the `component` attribute.-->
-
-<!-- TODO: link to rendering previews -->
-
-### Component previews
-
-Anything that doesn't have a `component` attribute is rendered to the screen, so you can utilize that behavior to see what you're working on.  For example:
-
-```html live height=150px
-// file: buttons.pc
-<import src="./styles.pc" as="styles" />
-
-<!-- Components -->
-
-<!-- $ is a class reference -- docs below -->
-<!--
-  @frame { visible: false }
--->
-<div component as="Button" 
-  class="$styles.Button"
-  class:secondary="$styles.Button--secondary"
-  class:negate="$styles.Button--negate">
-  {children}
-</div>
-
-<!-- Previews -->
-
-<div>
-  <Button>primary</Button>
-  <Button secondary>secondary</Button>
-  <Button negate>negate</Button>
-  <Button negate secondary>negate secondary</Button>
-</div>
-
-// file: styles.pc
-
-<style>
-  :global(:root) {
-    --color-grey-primary: #999;
-    --color-red-primary: #990000;
-  }
-  @export {  
-    .Button {
-      font-family: Bradley Hand;
-      padding: 4px 10px;
-      background: var(--color-grey-primary);
-      color: white;
-      display: inline-block;
-      margin-left: 10px;
-      border-radius: 4px;
-      box-sizing: border-box;
-      border: 2px solid var(--color-grey-primary);
-      &--secondary {
-        background: transparent;
-        color: var(--color-grey-primary);
-      }
-      &--negate {
-        background: var(--color-red-primary);
-        border-color: var(--color-red-primary);
-      }
-      &--negate&--secondary {
-        background: transparent;
-        color: var(--color-red-primary);
-      }
-    }
-  }
-</style>
-```
-
-> Check out the [React Todo MVC Example](https://github.com/crcn/paperclip/blob/master/examples/react-todomvc/src/app.pc) if you're looking for a more extensive demo. 
-
-I'd recommend that you render every visual state of your UI in Paperclip since since that will enable you to set up more reliable [visual regression tests](configure-percy.md). Also note that preview elements won't affect your application size since they're not compiled, so you can write previews to your hearts content. 
-
-<!-- TODO - point to class name variants -->
-<!-- TODO - point to guide around defining previews -->
 
 ### Exporting components
 
@@ -1037,9 +917,6 @@ in other previews -->
 </style>
 ```
 
-☝🏻 This is a pattern is pretty useful - creating various `preview` components & then using them in other documents to preview your entire application UI. They're removed from your application bundle (so long as you don't use them in app code) because of [tree-shaking](https://webpack.js.org/guides/tree-shaking/).
-
-
 ### Overriding component styles
 
 You can override styles in other components assuming that a component exposes an attribute that's bound to `class`. 
@@ -1107,9 +984,9 @@ Alternatively, you can overriding your components appearance by using scoped sty
 </Message>
 ```
 
-Note that you need to provide a `class` in your component for inline style overrides to work. To see what I'm talking about, try removing the `{class?}` binding above and see what happens!
+Note that you need to provide a `class` in your component for inline style overrides to work.
 
-☝🏻 this approach keeps your overrides together, which I find a bit easier to read. The other benefit to this approach is that your code remains portable since everything's in one spot -- super nice for refactoring. 
+☝🏻 this approach keeps your overrides together, which can be a bit easier to read. The other benefit to this approach is that your code remains portable since everything's in one spot. 
 
 ### Changing the tag name
 
@@ -1242,7 +1119,7 @@ There will probably be the case where you want to define multiple areas of a com
 
 ### Attribute bindings
 
-Attributes allow you to define dynamic component properties. For example:
+You can define dynamic attributes on your elements. For example:
 
 ```html live height=150px
 // file: buttons.pc
@@ -1363,7 +1240,7 @@ export const Message: React.FC<MessageProps>;
 
 ### Variant styles
 
-The variant style syntax allows you to apply classes based on component properties - useful for creating variants.
+The variant style syntax allows you to conditionally apply styles. For example:
 
 **Syntax**:
 
@@ -1371,8 +1248,7 @@ The variant style syntax allows you to apply classes based on component properti
 <div component as="MyComponent" class:variant-name="class-name">
 </div>
 
-<!-- Usage -->
-
+<!-- defining variant-name will apply class-name style -->
 <MyComponent variant-name />
 ```
 

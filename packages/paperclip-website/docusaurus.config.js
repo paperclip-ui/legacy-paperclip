@@ -1,6 +1,7 @@
 module.exports = {
   title: "Paperclip",
-  tagline: "A language for building UIs in a flash ⚡️",
+  tagline:
+    "A tiny language that brings scoped CSS to any kind of web application.",
   url: "https://paperclip.dev",
   baseUrl: "/",
   favicon: "img/favicon.ico",
@@ -26,8 +27,7 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/",
-          activeBasePath: "docs",
+          to: "/docs/installation",
           label: "Get Started",
           position: "left"
         },
@@ -37,8 +37,8 @@ module.exports = {
           position: "left"
         },
         {
-          label: "Basics",
-          to: "/docs/guide-how-to-use",
+          label: "Visual Tools",
+          to: "/docs/visual-tooling",
           position: "left"
         },
         // {
@@ -170,7 +170,6 @@ module.exports = {
       {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: "installation",
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:
