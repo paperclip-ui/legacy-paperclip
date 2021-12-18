@@ -49,11 +49,7 @@ Paperclip is a separate layer for _just_ your HTML & CSS, and exports _primitive
 
 Paperclip files compile down to plain code, and there's no runtime, so you get the performance of your target language, with the added benefits of having scalable HTML & CSS. 
 
-Currently Paperclip compiles to vanilla React code. Other compiler targets for languages such as PHP, Ruby, and Python, are currently in the works. If you'd like to contribute to this, send me a message in [Slack](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)!
-
-### Why?
-
-Writing maintinable HTML & CSS is hard, especially with global CSS. Paperclip offers a generic way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. 
+Currently Paperclip compiles to vanilla React code. Other compiler targets for languages such as PHP, Ruby, and Python, are currently in the works. If you'd like to contribute to this, feel free to reach out!
 
 ### Features
 
@@ -82,11 +78,14 @@ And more to come. Here's a glimpse:
 - [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
 - Installation
   - [Project installation](https://paperclip.dev/docs/installation) - Basic installation of Paperclip for new and existing projects.
-  - [VSCode Extension](https://paperclip.dev/docs/guide-vscode) - Getting started with the VS Code extension.
+  - [VSCode extension](https://paperclip.dev/docs/guide-vscode) - Getting started with the VS Code extension.
   - [Webpack setup](https://paperclip.dev/docs/getting-started-webpack) - Setting up with Webpack
 - API
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
+  - [Configuration](https://paperclip.dev/docs/configure-paperclip)
+- Guides
+  - [Compilers](https://paperclip.dev/docs/guide-compilers/) - Basics in creating a compiler.
 
 
 
