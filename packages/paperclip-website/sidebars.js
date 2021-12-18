@@ -5,10 +5,20 @@ module.exports = {
       id: "installation"
     },
     {
-      type: "category",
-      label: "API Reference",
-      collapsed: false,
-      items: ["usage-syntax", "usage-cli", "configure-paperclip"]
+      type: "doc",
+      id: "usage-syntax"
+    },
+    {
+      type: "doc",
+      id: "configure-paperclip"
+    },
+    {
+      type: "doc",
+      id: "usage-cli"
+    },
+    {
+      type: "doc",
+      id: "visual-tooling"
     },
     {
       type: "category",
@@ -17,8 +27,15 @@ module.exports = {
       items: ["usage-react"]
     },
     {
-      type: "doc",
-      id: "visual-tooling"
+      type: "category",
+      label: "Integrations",
+      collapsed: false,
+      items: [
+        "getting-started-webpack",
+        "configure-percy",
+        "configure-jest",
+        "configure-prettier"
+      ]
     },
     {
       type: "category",
@@ -32,18 +49,9 @@ module.exports = {
         "guide-dynamic-styles",
         "guide-modules",
         "guide-theming",
-        "guide-vscode"
-      ]
-    },
-    {
-      type: "category",
-      label: "Integrations",
-      collapsed: false,
-      items: [
-        "getting-started-webpack",
-        "configure-percy",
-        "configure-jest",
-        "configure-prettier"
+        "guide-vscode",
+        "guide-compilers",
+        "guide-visual-tools"
       ]
     }
   ]

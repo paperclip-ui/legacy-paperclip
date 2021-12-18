@@ -157,25 +157,40 @@ function Home() {
             />
             <styles.VariousFeatureItem
               iconName="grow"
-              title="Works with your existing codebase"
+              title="Incrementally adoptable"
               description={
                 <>
-                  You can use Paperclip today for any CSS that you have.
-                  Migrating is about as simpe as copying & pasting.
+                  Paperclip can be used in your existing codebase, and it's
+                  helpful in wrangling any current CSS that you have.
                 </>
               }
             />
             <styles.VariousFeatureItem
               iconName="hammer"
               title="Productivity tools"
-              description="Paperclip comes with tools such as a visual editor, linters, and visual regression tools to help you write clean HTML & CSS, and keep it that way."
+              description="Paperclip comes with tools such as a visual editor, linter, and visual regression tool to help you write clean HTML & CSS, and keep it that way."
             />
           </styles.VariousFeatures>
+
+          <styles.BigFeature
+            title="Compiles to plain code"
+            noShadow
+            smallerPreview
+            description={[
+              "Paperclip is designed to be compile into whatever language you're using, and currently supports React out of the box. You can even build a compiler that fits your specific needs."
+            ]}
+            ctaText="Learn about compilers"
+            ctaHref="/docs/guide-translators"
+            preview={<img src="img/compile-to-many-2.png" />}
+          />
+
           <styles.BigFeature
             title="Pairs well with existing CSS"
             description={[
               "Paperclip enhances your existing CSS by keeping it scoped, so you have explicit control over how it's used in your app."
             ]}
+            ctaText="Learn how to use third-party CSS"
+            ctaHref="/docs/guide-third-party-libraries"
             preview={
               <CodeBlock className="language-html">
                 {THIRD_PART_CSS_EXAMPLE}
@@ -192,6 +207,8 @@ function Home() {
                 to go.
               </>
             }
+            ctaText="Learn how to set up Percy"
+            ctaHref="/docs/configure-percy"
             preview={
               <video
                 src="vid/visual-regression-testing.mp4"
@@ -203,7 +220,9 @@ function Home() {
           />
           <styles.BigFeature
             title="Build UIs more quickly"
-            description="Paperclip's visual editor allows you to build your primitive components in realtime, and also comes with tools that makes it easier to build UIs more accurately."
+            description="Paperclip's visual editor allows you to build your primitive components in realtime, and also comes with tools to help you build UIs more accurately."
+            ctaText="Learn about the visual tools"
+            ctaHref="/docs/guide-visual-tools"
             preview={
               <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
             }

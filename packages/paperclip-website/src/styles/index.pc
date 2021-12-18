@@ -462,6 +462,8 @@
   component
   as="BigFeature"
   class="_big-feature $layout._section $layout._row"
+  class:noShadow="no-shadow"
+  class:smallerPreview="smaller-preview"
   class:ctaText="has_cta">
   <style>
     border-bottom: 1px solid rgb(226, 226, 226);
@@ -496,9 +498,8 @@
         <style>
           display: none;
           margin-top: 10px;
-          opacity: 0.5;
           align-items: center;
-          color: inherit;
+          color: rgb(23, 170, 23);
           text-decoration: none;
           ._mini-cta-icon {
             font-size: 0.9em;
@@ -510,7 +511,14 @@
           }
         </style>
 
-        {ctaText}<icons.Icon name="chevron-right" class="$_mini-cta-icon" />
+        {ctaText}<icons.Icon name="chevron-right">
+          <style>
+            font-size: 0.9em;
+            color: inherit;
+            position: relative;
+            top: 1px;
+          </style>
+        </icons.Icon>
       </a>
     </div>
   </div>
@@ -521,10 +529,19 @@
       @include mobile {
         margin-left: 0;
       }
+      &:within(.smaller-preview) {
+        text-align: center;
+      }
       :global(img, video, .prism-code) {
         border-radius: 4px;
         width: 100%;
         box-shadow: 0px 0px 20px 8px rgba(0, 0, 0, 0.103);
+        &:within(.smaller-preview) {
+          width: auto;
+        }
+        &:within(.no-shadow) {
+          box-shadow: initial;
+        }
       }
 
     </style>
@@ -586,6 +603,7 @@
   </VariousFeatures>
 
   <BigFeature title="Live editing"
+    ctaText="learn more"
     description="Paperclip comes with visual tools that enable to build your UIs in realtime."
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
       autoplay

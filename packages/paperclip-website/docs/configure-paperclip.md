@@ -1,29 +1,40 @@
 ---
 id: configure-paperclip
 title: Configuration
-sidebar_label: paperclip.config.json
+sidebar_label: Configuring
 ---
 
-Paperclip looks for a `paperclip.config.json` file which provides information about your project, and how
-to compile your `*.pc` files. It typically lives in your project root directory alongside your `package.json` file.
-
-Here's an example of what it might look like:
-
+The `paperclip.config.json` contains information about linting rules, compiler options, and such. Here are all of the options that you can use:
 
 ```javascript
 {
 
-  // directory where all of the Paperclip files live
+  // (required) directory where all of the Paperclip files live
   "srcDir": "./src",
 
-  // paths to module directories
+  // (optional) paths to module directories
   "moduleDirs": ["node_modules"],
 
-  // options for the target compiler "name"
+  // (optional) options for the target compiler "name"
   "compilerOptions": {
 
-    // directory where PC files should be compiled to. Defaults to srcDir
+    // (optional) directory where PC files should be compiled to. Defaults to srcDir.
     "outDir": "./lib",
+    
+    // (optional) set this if you want to combine all CSS into one file
+    "mainCSSFileName": "main.css"
+
+    // (optional) embed assets directly into HTML up to this size
+    "embedAssetMaxSize": -1,
+
+    // (optional) where all of the assets are emitted to. Defaults to outDir.
+    "assetOutDir": "./lib/assets"
+
+    // prefix for all assets loaded into CSS & HTML
+    "assetPrefix": "https://my-cdn.com",    
+
+    // (optional) Use content hashes for assets when emitting to outDir. Default is true.
+    "useAssetHashNames": true,
   },
   
   "lintOptions": {
