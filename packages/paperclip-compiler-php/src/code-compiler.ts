@@ -192,7 +192,12 @@ const writeAttributeVariant = (attrName: string) => (
 
 const writeAttributeVariantInner = (attrName: string) => (
   variant: InterimAttributeValue
-) => writeJoin(variant.parts, " . ", writeAttributeValuePart(attrName));
+) => {
+  if (!variant.parts) {
+    return addBuffer([]);
+  }
+  return writeJoin(variant.parts, " . ", writeAttributeValuePart(attrName));
+};
 
 const writeAttributeValuePart = (name: string) => (
   part: InterimAttributeValuePart
