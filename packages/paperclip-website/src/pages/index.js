@@ -177,7 +177,7 @@ function Home() {
             noShadow
             smallerPreview
             description={[
-              "Paperclip is designed to be compile into whatever language you're using, and currently supports React out of the box. You can even build a compiler that fits your specific needs."
+              "Paperclip is designed to be compiled into whatever language you're using, and currently supports React out of the box. You can even build a compiler that fits your specific needs."
             ]}
             ctaText="Learn about compilers"
             ctaHref="/docs/guide-translators"
