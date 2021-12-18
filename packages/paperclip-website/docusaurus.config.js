@@ -73,6 +73,10 @@ module.exports = {
             {
               label: "Installation",
               to: "docs/getting-started-installation"
+            },
+            {
+              label: "VS Code",
+              to: "docs/guide-vscode"
             }
           ]
         },
@@ -99,6 +103,14 @@ module.exports = {
             {
               label: "Percy",
               to: "docs/configure-percy"
+            },
+            {
+              label: "Webpack",
+              to: "docs/getting-started-webpack"
+            },
+            {
+              label: "Jest",
+              to: "docs/configure-jest"
             }
           ]
         },
