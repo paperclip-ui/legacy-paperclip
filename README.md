@@ -63,7 +63,7 @@ Currently Paperclip compiles to vanilla React code. Other compiler targets for l
 
 ![VS Code extension](assets/design-system.gif)
 
-> VS Code extension that you can use for Paperclip. You can also use `npx paperclip dev` to launch visual tooling.
+> The [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) comes with syntax highlighting, code completion, and embeds the [visual tooling](https://paperclip.dev/docs/visual-tooling) that you can use to build UIs in realtime.
 
 And more to come. Here's a glimpse:
 
@@ -84,6 +84,7 @@ And more to come. Here's a glimpse:
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
   - [Configuration](https://paperclip.dev/docs/configure-paperclip)
+- [Visual tools](https://paperclip.dev/docs/visual-tooling)
 - Guides
   - [Compilers](https://paperclip.dev/docs/guide-compilers/) - Basics in creating a compiler.
 
