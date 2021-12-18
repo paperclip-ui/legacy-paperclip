@@ -23,6 +23,7 @@ After that, you should see something like this:
 
 ![Percy demo](/img/snapshot.gif)
 
+That's it! You're now set up to catch visual regressions in your UIs. 
 
 ## Setting up with GitHub actions
 
