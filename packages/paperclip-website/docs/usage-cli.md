@@ -43,5 +43,5 @@ paperclip build --only=d.ts,css --watch
 
 ### `paperclip dev`
 
-Start the visual tooling [visual tooling](visual-tooling.md). 
+Start the [visual tooling](visual-tooling.md). 
 

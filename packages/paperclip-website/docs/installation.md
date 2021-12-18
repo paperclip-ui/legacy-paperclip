@@ -16,7 +16,5 @@ This will walk you through the setup process that will ask you to pick a target 
 npx paperclip-cli build
 ```
 
-You should notice a few more generated files - these ones can be imported directly into your codebase.
-
-And that's it! You're ready to start using Paperclip. 
+You should notice a few more generated files, **these ones can be imported directly into your codebase**. And that's it! You're ready to start using Paperclip. 
 

@@ -17,14 +17,16 @@ module.exports = {
       id: "usage-cli"
     },
     {
-      type: "doc",
-      id: "visual-tooling"
-    },
-    {
       type: "category",
       label: "Code Usage",
       collapsed: false,
       items: ["usage-react"]
+    },
+    {
+      type: "category",
+      label: "Tools",
+      collapsed: false,
+      items: ["visual-tooling", "guide-vscode"]
     },
     {
       type: "category",
@@ -42,16 +44,14 @@ module.exports = {
       label: "Guides",
       collapsed: false,
       items: [
-        "guide-how-to-use",
-        "guide-organization",
+        // "guide-how-to-use",
         "guide-migrating-to-paperclip",
         "guide-third-party-libraries",
-        "guide-dynamic-styles",
-        "guide-modules",
-        "guide-theming",
-        "guide-vscode",
-        "guide-compilers",
-        "guide-visual-tools"
+        "guide-previews",
+        // "guide-dynamic-styles",
+        // "guide-modules",
+        // "guide-theming2",
+        "guide-compilers"
       ]
     }
   ]

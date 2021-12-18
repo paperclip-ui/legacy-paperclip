@@ -1,37 +1,23 @@
 ---
 id: visual-tooling
-title: Visual Tooling
-sidebar_label: Visual Tooling
+title: Visual tools
+sidebar_label: Visual Tools
 ---
 
-Paperclip comes with visual tooling that allows you to see your UI changes instantly.
-
-There are two options:
-
-1. For VS Code users, you can install the [extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode).
-1. For non-vscode users, you can install the [CLI tools](#cli-dev-server).
-
-
-### VS Code extension
-
-I highly recommend using the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) since you can launch previews directly from the IDE, and changes appear _as you type_.  
-
-
-![alt Realtime editing](/img/vscode-measure.gif)
-
-Check out the [VS Code extension guide](guide-vscode) for more info.
-
-### CLI dev server
-
-If you don't have VS Code, you can just run the CLI tool:
+Paperclip comes with visual tooling that enables you to build your UIs in realtime. The quickest way to start using the visual tools is to run:
 
 ```
 npx paperclip-cli dev
 ```
 
-This will launch Paperclip's visual tooling in the browser. Changes that are saved locally will appear immediately here. 
+In your project directory where your Paperclip files live. Here's what you should see:
 
+![demo](assets/paperclip-dev.gif)
 
-![alt Realtime editing](/img/demo-dev-server.gif)
+You can run this window in tandem with your text editor, and changes that you make will instantly appear when you save.
 
-> Note that there are some limitations to the dev server. For example, you won't be able to move frames around, and you won't be able to jump to source code via `meta + click`. That functionality is only available for the IDE extensions.
+### Tips
+
+- To **zoom**, scroll & hold down the `meta` / `ctrl` key.
+- To **measure between elements**, just select an element, then hold `meta` / `ctrl` by hovering over another element.
+
