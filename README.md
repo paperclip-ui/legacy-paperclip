@@ -53,14 +53,15 @@ Currently Paperclip compiles to vanilla React code. Other compiler targets for l
 
 ### Why?
 
-Writing maintinable HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. 
+Writing maintinable HTML & CSS is hard, especially with global CSS. Paperclip offers a generic way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. 
 
 ### Features
 
 - **No implicit & global CSS**. Instead, CSS selectors are scoped to the documents they'te defined in, and their exposure to _other_ documents is explicit.
-- **Visual regression coverage**. Each Paperclip file is covered for visual regressions via Percy.
+- **Visual regression coverage**. Each Paperclip file is covered for visual regressions via Percy. [Learn more](https://paperclip.dev/docs/configure-percy/).
 - **Incrementally adoptable**. You can incorporate Paperclip into your existing stack.
-- **Works with existing CSS**, and even third-party libraries. Paperclip can be used to scope any CSS that you have so that you know exactly where it's being used in your application.
+- **Can compile to multiple languages**. Paperclip files are designed to be compiled to multiple languages. [Learn more](https://paperclip.dev/docs/guide-compilers/).
+- **Works with existing CSS**, and even third-party libraries. Paperclip can be used to scope any CSS that you have so that you know exactly where it's being used in your application. [Learn more](https://paperclip.dev/docs/guide-third-party-libraries/).
 - **Strongly typed compile output**. PC files are compiled to strongly typed code (TypeScript for now).
 - **Visual tooling**. Paperclip comes with UI tools that enable you to create UIs in _realtime_. 
 
