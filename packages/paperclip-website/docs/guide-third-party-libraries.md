@@ -16,8 +16,7 @@ If you're using third-party CSS such as Bootstrap or Tailwind, you can just impo
 </div>
 ```
 
-The `inject-styles` attribute injects the document that the file is imported into -- it's still scoped. Other files that are imported into the doc are unaffected, which means
-that you'll need to include your third-party CSS in each document that you'd like to style. 
+The `inject-styles` attribute allows for CSS to be accessible in a document without needing to use a namespace. Keep in mind that styles are only accessible in the document where `inject-styles` is applied, so if you're looking to use CSS throughout your app, you'll need to import that CSS explicitly in every document where you'd like to use it.
 
 The [Tailwind example](https://github.com/crcn/paperclip/tree/master/examples/tailwind) is a good place to start if you're looking to do this.
 
