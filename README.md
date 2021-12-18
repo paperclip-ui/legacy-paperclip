@@ -81,10 +81,10 @@ And more to come. Here's a glimpse:
 
 - [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
 - Installation
-  - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
-  - [VSCode Extension](https://paperclip.dev/docs/) - Getting started with the VS Code extension.
-  - [Webpack setup](https://paperclip.dev/docs/configure-webpack) - Setting up with Webpack
-- Documentation
+  - [Project installation](https://paperclip.dev/docs/installation) - Basic installation of Paperclip for new and existing projects.
+  - [VSCode Extension](https://paperclip.dev/docs/guide-vscode) - Getting started with the VS Code extension.
+  - [Webpack setup](https://paperclip.dev/docs/getting-started-webpack) - Setting up with Webpack
+- API
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
 
