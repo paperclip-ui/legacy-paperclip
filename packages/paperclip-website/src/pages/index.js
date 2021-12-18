@@ -180,7 +180,7 @@ function Home() {
               "Paperclip is designed to be compiled into whatever language you're using, and currently supports React out of the box. You can even build a compiler that fits your specific needs."
             ]}
             ctaText="Learn about compilers"
-            ctaHref="/docs/guide-translators"
+            ctaHref="/docs/guide-compilers"
             preview={<img src="img/compile-to-many-2.png" />}
           />
 
@@ -222,7 +222,7 @@ function Home() {
             title="Build UIs more quickly"
             description="Paperclip's visual editor allows you to build your primitive components in realtime, and also comes with tools to help you build UIs more accurately."
             ctaText="Learn about the visual tools"
-            ctaHref="/docs/guide-visual-tools"
+            ctaHref="/docs/visual-tooling"
             preview={
               <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
             }
