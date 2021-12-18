@@ -1,0 +1,1 @@
+<div export component as="Hello"><span>{children} !</span></div>

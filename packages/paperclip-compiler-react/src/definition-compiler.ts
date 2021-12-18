@@ -1,35 +1,15 @@
+import { ShapeProperty, InferenceKind, Inference } from "paperclip";
+import { RENAME_PROPS, getPartClassName } from "./utils";
+
 import {
-  Node,
-  getAttributeStringValue,
-  getImportIds,
-  Element,
-  getLogicElement,
-  infer,
-  ShapeProperty,
-  getPartIds,
-  DEFAULT_PART_ID,
-  getVisibleChildNodes,
-  EXPORT_TAG_NAME,
-  InferenceKind,
-  getParts,
-  Annotation,
-  Inference,
-  isComponent,
-  getChildren,
-  hasAttribute,
-  NodeKind,
-  AS_ATTR_NAME
-} from "paperclip";
-import {
-  RENAME_PROPS,
-  getPartClassName,
-  createTranslateContext,
-  Context,
-  addBuffer,
   startBlock,
   endBlock,
-  writeJoin
-} from "./utils";
+  addBuffer,
+  createTranslateContext,
+  writeJoin,
+  Context
+} from "paperclip-compiler-utils";
+
 import { InterimComponent, InterimModule } from "paperclip-interim";
 import { PaperclipConfig } from "paperclip-utils";
 

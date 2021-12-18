@@ -20,23 +20,20 @@ import {
   InterimScriptExpressionKind,
   InterimScriptExpression
 } from "paperclip-interim";
+import { getElementInstanceName, writeSourceNode } from "./utils";
 import {
   arrayJoin,
-  createTranslateContext,
-  getElementInstanceName,
   startBlock,
   endBlock,
   addBuffer,
-  writeSourceNode,
+  createTranslateContext,
   writeJoin,
-  ContextWriter
-} from "./utils";
-import { Html5Entities } from "html-entities";
-import { Context } from "./utils";
-import { SourceNode } from "source-map";
-import { PaperclipConfig, ParseErrorKind } from "paperclip-utils";
+  ContextWriter,
+  Context
+} from "paperclip-compiler-utils";
 
-const entities = new Html5Entities();
+import { SourceNode } from "source-map";
+import { PaperclipConfig } from "paperclip-utils";
 
 const UTILS = `
 function castStyle(value) {
@@ -427,11 +424,7 @@ const compileShorthandAttributePart = (
 
 const compileText = (text: InterimText) =>
   addBuffer([
-    writeSourceNode(
-      text.range.start,
-      addBuffer([JSON.stringify(entities.decode(text.value))])
-    ),
-    "\n"
+    writeSourceNode(text.range.start, addBuffer([JSON.stringify(text.value)]))
   ]);
 
 const compileSlot = (slot: InterimSlotNode) => (context: Context) => {
@@ -458,7 +451,7 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
       }
     }
   })(context);
-  context = startBlock(context);
+  context = addBuffer(["\n", endBlock])(context);
 
   return context;
   // return addBuffer([endBlock, `]`])(context);

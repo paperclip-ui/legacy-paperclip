@@ -26,6 +26,7 @@ import {
   InterimText,
   InterimImport
 } from "../state";
+import * as entities from "html-entities";
 import { translateScript } from "./script";
 import { InterimCompilerOptions, ModuleContext } from "./options";
 import { maybeEmbed } from "./utils";
@@ -120,7 +121,7 @@ const getScopeClassNames = (element: Element, context: ModuleContext) => {
 
 const translateText = (text: Text): InterimText => {
   return {
-    value: text.value,
+    value: entities.decode(text.value),
     kind: InterimNodeKind.Text,
     range: text.range
   };

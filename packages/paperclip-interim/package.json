@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "crc32": "^0.2.2",
+    "html-entities": "^2.3.2",
     "mime": "^3.0.0",
     "paperclip": "^18.1.6"
   },
