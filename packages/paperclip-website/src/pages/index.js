@@ -185,9 +185,9 @@ function Home() {
           />
 
           <styles.BigFeature
-            title="Pairs well with existing CSS"
+            title="Pairs well with third-party CSS"
             description={[
-              "Paperclip enhances your existing CSS by keeping it scoped, so you have explicit control over how it's used in your app."
+              "Paperclip enhances your third-pary CSS by keeping it scoped, so you have explicit control over how it's used in your app."
             ]}
             ctaText="Learn how to use third-party CSS"
             ctaHref="/docs/guide-third-party-libraries"
