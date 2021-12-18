@@ -5,7 +5,11 @@ import * as fs from "fs";
 import { EventEmitter } from "events";
 import * as chokidar from "chokidar";
 import { EngineDelegate } from "paperclip";
-import { InterimCompiler, InterimModule } from "paperclip-interim";
+import {
+  InterimCompiler,
+  InterimModule,
+  CompileOptions
+} from "paperclip-interim";
 import { PaperclipConfig, paperclipSourceGlobPattern } from "paperclip-utils";
 
 type BaseOptions = {
@@ -149,13 +153,7 @@ class DirectoryBuilder {
 }
 
 type TargetCompiler = {
-  compile: (
-    module: InterimModule,
-    filePath: string,
-    includes: string[],
-    config: PaperclipConfig,
-    options: any
-  ) => Record<string, string>;
+  compile: (options: CompileOptions) => Record<string, string>;
 };
 
 export const buildDirectory = (
@@ -216,13 +214,13 @@ export const buildFile = async (
   const translations = targetCompilers.reduce((files, compiler) => {
     return Object.assign(
       files,
-      compiler.compile(
-        interimModule,
+      compiler.compile({
+        module: interimModule,
         fileUrl,
         includes,
-        options.config,
-        options.config.compilerOptions
-      )
+        config: options.config,
+        cwd: options.cwd
+      })
     );
   }, {});
 
