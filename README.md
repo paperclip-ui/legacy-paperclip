@@ -11,7 +11,7 @@
 <!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
 
 
-Paperclip allows you to write _durable_ HTML & CSS that can be used in any language. Here's what it looks like:
+Paperclip allows you to write _durable_ HTML & CSS that can be used in just about any codebase. Here's what it looks like:
 
 ```html
 
