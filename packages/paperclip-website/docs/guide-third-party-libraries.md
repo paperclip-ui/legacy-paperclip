@@ -39,7 +39,7 @@ you can style third-party HTML from Paperclip. Here's a simple example:
 </style>
 ```
 
-Then, in your JSX code:
+Then, in your application code:
 
 ```jsx
 import * as ui from "./Component.pc";
