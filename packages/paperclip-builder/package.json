@@ -1,6 +1,6 @@
 {
   "name": "paperclip-builder",
-  "version": "18.1.6",
+  "version": "18.2.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",
     "paperclip": "^18.1.6",
-    "paperclip-interim": "^18.1.6",
+    "paperclip-interim": "^18.2.0",
     "paperclip-utils": "^18.1.6"
   },
   "devDependencies": {
