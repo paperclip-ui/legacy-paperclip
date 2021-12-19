@@ -77,7 +77,7 @@ function Home() {
 
           <styles.Summary
             title="Keep your HTML & CSS clean"
-            text="Maintaining HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. "
+            text="Maintaining HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about accidentally styling elements again."
           />
 
           <styles.VariousFeatures>
