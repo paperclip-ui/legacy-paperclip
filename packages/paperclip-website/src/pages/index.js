@@ -146,7 +146,7 @@ function Home() {
           {/* <styles.Summary title="Keep your HTML & CSS maintainable" text="Writing maintainable HTML & CSS is hard, especially with global CSS. Paperclip is a tiny language that focuses purely on the visual aspect of your application, and provides features to help" /> */}
           <styles.Summary
             title="Keep your HTML & CSS clean"
-            text="Writing maintainable HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. "
+            text="Maintaining HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. "
           />
 
           <styles.VariousFeatures>
