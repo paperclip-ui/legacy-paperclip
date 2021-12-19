@@ -1,6 +1,7 @@
 import * as resolve from "resolve";
 import { buildDirectory } from "paperclip-builder";
 import * as path from "path";
+import * as URL from "url";
 import * as fs from "fs";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import { PaperclipConfig, stripFileProtocol } from "paperclip-utils";
@@ -50,12 +51,13 @@ export const build = async (options: BuildOptions) => {
       }
     })
     .onError((error, filePath) => {
-      if (error.range) {
+      const info = error.info || error;
+      if (info?.range) {
         console.error(
           getPrettyMessage(
-            error,
+            info,
             fs.readFileSync(stripFileProtocol(filePath), "utf8"),
-            filePath,
+            URL.pathToFileURL(filePath),
             options.cwd
           )
         );
