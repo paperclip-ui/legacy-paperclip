@@ -84,14 +84,14 @@ function Home() {
             <styles.VariousFeatureItem
               iconName="shapes"
               title="Just the UI"
-              description="Paperclip just covers the appearance of your application, and exposes primitive components that you can throughout your application."
+              description="Paperclip just covers the appearance of your application, and exposes presentational components that you can throughout your application."
             />
             <styles.VariousFeatureItem
               iconName="grow"
               title="Incrementally adoptable"
               description={
                 <>
-                  Primitive components can be used in your existing codebase, and they're
+                  Presentational components can be used in your existing codebase, and they're
                   helpful in wrangling any current CSS that you have.
                 </>
               }
