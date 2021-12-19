@@ -91,7 +91,7 @@ function Home() {
               title="Incrementally adoptable"
               description={
                 <>
-                  Paperclip can be used in your existing codebase, and it's
+                  Primitive components can be used in your existing codebase, and they're
                   helpful in wrangling any current CSS that you have.
                 </>
               }
