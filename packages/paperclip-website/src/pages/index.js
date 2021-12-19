@@ -28,79 +28,11 @@ function Home() {
       >
         <styles.Home>
           <styles.Header
-            // title={<>A hybrid approach to building web applications</>}
-            // title={<>Live previews for web development</>}
-            // title={<>Build web application in no time.</>}
-            // title={<>Realtime visual web development.</>}
-            // title={<>Rapidly build web applications at any scale</>}
-            // title={<>Build web UIs at the speed of thought.</>}
             title={
               <>
                 Paperclip is a tiny language that brings{" "}
                 <strong>scoped CSS to any kind of web application.</strong>
               </>
-            }
-            description={
-              /* 
-
-            Thoughts floating around in my head:
-
-            - no more broken window CSS - feeling confident that CSS changes won't break
-            - A kind-of type system for CSS changes
-            - More natural than the current way of building UIs
-            */
-              <>
-                {/* Paperclip is a template language for presentational components that comes with a visual editor, all within your existing IDE. */}
-                {/* Paperclip is a visual editor for presentational web components, 
-                Paperclip is a tiny template language that compiles to designed for realtime visual
-                web development, all within your existing IDE. */}
-                {/* Paperclip is a free and open source template language for
-                presentational components that comes with a designer-like
-                experience for rapidly building user interfaces, all within your
-                existing IDE. */}
-                {/* Paperclip is a free and open source tool for presentational components that brings web development closer to a designer-like experience. */}
-                {/* Paperclip is a free & open-source tool that gives you a
-                designer-like experience for creating web interfaces. */}
-                {/* out UIs faster than ever. */}
-                {/* Paperclip is a fast & intuitive open-source UI tool that works with your existing codebase. */}
-                {/* Build your web interfaces directly within your code editor.   */}
-                {/* Paperclip is a template language designed to help you build UIs more quickly & safely. */}
-                {/* See what you're building, as you're typing code.  */}
-                {/* Paperclip is a template language that's optimized for visual development, so you can build UIs in record time. */}
-                {/* Design & code at the same time. Paperclip is a template language that comes with visual tooling. */}
-                {/* Realtime previews, visual regression testing, and more. Paperclip is a template language that comes with tooling to help you build UIs more quickly & safely.  */}
-              </>
-
-              // <>
-              //   Paperclip is a simple language for building user interfaces.
-              // </>
-              // <>
-              //   With tooling such as{" "}
-              //   <styles.Highlight>realtime previews</styles.Highlight> &{" "}
-              //   <styles.Highlight>
-              //     automatic visual regresion tests
-              //   </styles.Highlight>
-              //   , you can build UIs in no time using the language you already
-              //   know.
-              // </>
-              // <>
-              //   Paperclip is a language for building user interfaces. With
-              //   features such as{" "}
-              //   <styles.Highlight>realtime previews</styles.Highlight>, and{" "}
-              //   <styles.Highlight>tools for catching CSS bugs</styles.Highlight>,
-              //   you'll be creating pixel-perfect web applications in no time.
-              // </>
-              // <>
-              //   Paperclip comes with realtime visual editing within VS Code, visual regression tools, scoped styling. Paperclipn
-              // </>
-              // <>
-              //   <styles.Highlight>Realtime previews</styles.Highlight>, <styles.Highlight>visual regression testing</styles.Highlight>, and more. Paperclip is a better way to build web applications in record time.
-              // </>
-              // <>
-              //   Paperclip is a language designed for visual UI development. No
-              //   more wasting time juggling between the browser and code.{" "}
-              //   <span className={styles.classNames["_emoji"]}>🙌</span>
-              // </>
             }
             cta={
               <>
@@ -143,7 +75,6 @@ function Home() {
             }
           />
 
-          {/* <styles.Summary title="Keep your HTML & CSS maintainable" text="Writing maintainable HTML & CSS is hard, especially with global CSS. Paperclip is a tiny language that focuses purely on the visual aspect of your application, and provides features to help" /> */}
           <styles.Summary
             title="Keep your HTML & CSS clean"
             text="Maintaining HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again. "
