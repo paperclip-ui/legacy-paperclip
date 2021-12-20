@@ -92,7 +92,7 @@ Props can be defined just like any ordinary React component. Take this template 
 <div export component as="Button" {onClick?}>
   {children}
 </div>
-``
+```
 
 In React code, we can define our `onClick` handler like so:
 
