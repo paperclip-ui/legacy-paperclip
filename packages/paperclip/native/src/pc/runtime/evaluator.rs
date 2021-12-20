@@ -1647,7 +1647,7 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
 }
 
 fn transform_style_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
-  // Fixes https://github.com/crcn/paperclip/issues/336
+  // Fixes https://github.com/paperclipui/paperclip/issues/336
   // Primitive but easy solution
   lazy_static! {
     static ref undefined_styles_re: Regex = Regex::new(r"[^\s]+:\s*undefined;?").unwrap();

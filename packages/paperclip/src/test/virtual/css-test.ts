@@ -643,7 +643,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  // Addresses https://github.com/crcn/paperclip/issues/319
+  // Addresses https://github.com/paperclipui/paperclip/issues/319
   it("shows an error if including a mixin that doesn't exist within a mixin that's exported", async () => {
     const graph = {
       "/entry.pc": `<style>
@@ -680,7 +680,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  // Addresses https://github.com/crcn/paperclip/issues/326
+  // Addresses https://github.com/paperclipui/paperclip/issues/326
   it("can have nested pseudo selectors", async () => {
     const graph = {
       "/entry.pc": `<style>
@@ -700,7 +700,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // Addresses: https://github.com/crcn/paperclip/issues/340
+  // Addresses: https://github.com/paperclipui/paperclip/issues/340
   it("Can use mixins in other style blocks defined in the same page", async () => {
     const graph = {
       "/entry.pc": `<style>
@@ -721,7 +721,7 @@ describe(__filename + "#", () => {
     expect(text).to.eql("<style>[class]._80f4925f_div { color:blue; }</style>");
   });
 
-  // Addresses https://github.com/crcn/paperclip/issues/417
+  // Addresses https://github.com/paperclipui/paperclip/issues/417
   it("properly renders global * selector", async () => {
     const graph = {
       "/entry.pc": `<style>
@@ -964,7 +964,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // Fix https://github.com/crcn/paperclip/issues/529
+  // Fix https://github.com/paperclipui/paperclip/issues/529
   it(`can use & in media query include 1`, async () => {
     const graph = {
       "/entry.pc": `
@@ -1071,7 +1071,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // fix https://github.com/crcn/paperclip/issues/535
+  // fix https://github.com/paperclipui/paperclip/issues/535
   it("multiple :not selectors work", async () => {
     const graph = {
       "/entry.pc": `<style>
@@ -1101,7 +1101,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // Fixes https://github.com/crcn/paperclip/issues/534
+  // Fixes https://github.com/paperclipui/paperclip/issues/534
   it("can add extra specificty for nested elements", async () => {
     const graph = {
       "/entry.pc": `
@@ -1128,7 +1128,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // Fixes https://github.com/crcn/paperclip/issues/534
+  // Fixes https://github.com/paperclipui/paperclip/issues/534
   it("ensures that :self selectors are given higher priority", async () => {
     const graph = {
       "/entry.pc": `
@@ -1875,7 +1875,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // fixes https://github.com/crcn/paperclip/issues/644
+  // fixes https://github.com/paperclipui/paperclip/issues/644
   it(`Can include mixins in mixins`, async () => {
     const graph = {
       "/entry.pc": `

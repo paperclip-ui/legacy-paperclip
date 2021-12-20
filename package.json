@@ -50,13 +50,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crcn/paperclip.git"
+    "url": "git+https://github.com/paperclipui/paperclip.git"
   },
   "author": "",
   "license": "",
   "bugs": {
-    "url": "https://github.com/crcn/paperclip/issues"
+    "url": "https://github.com/paperclipui/paperclip/issues"
   },
-  "homepage": "https://github.com/crcn/paperclip#readme",
+  "homepage": "https://github.com/paperclipui/paperclip#readme",
   "packageManager": "yarn@1.22.17"
 }

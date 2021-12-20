@@ -58,7 +58,7 @@ module.exports = {
         //           position: "right"
         //         },
         {
-          href: "https://github.com/crcn/paperclip",
+          href: "https://github.com/paperclipui/paperclip",
           label: "GitHub",
           position: "right"
         }
@@ -124,7 +124,7 @@ module.exports = {
               // href: "https://chat.paperclip.dev"
             },
             {
-              href: "https://github.com/crcn/paperclip",
+              href: "https://github.com/paperclipui/paperclip",
               label: "GitHub"
             },
             {
@@ -159,7 +159,7 @@ module.exports = {
         //     },
         //     {
         //       label: 'GitHub',
-        //       href: 'https://github.com/crcn/paperclip',
+        //       href: 'https://github.com/paperclipui/paperclip',
         //     },
         //   ],
         // },
@@ -185,7 +185,7 @@ module.exports = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:
-            "https://github.com/crcn/paperclip/edit/master/packages/paperclip-website/"
+            "https://github.com/paperclipui/paperclip/edit/master/packages/paperclip-website/"
         },
         // blog: {
         //   showReadingTime: true,

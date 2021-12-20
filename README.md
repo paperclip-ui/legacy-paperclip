@@ -1,4 +1,4 @@
-![Checks](https://github.com/crcn/paperclip/workflows/Checks/badge.svg?branch=master)
+![Checks](https://github.com/paperclipui/paperclip/workflows/Checks/badge.svg?branch=master)
 
 <br />
 

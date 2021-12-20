@@ -4,7 +4,7 @@ title: Setting Up Webpack
 sidebar_label: Webpack
 ---
 
-> Take a look at the [TODO MVC example](https://github.com/crcn/paperclip/tree/master/examples/react-todomvc) to see how everything is put together. 
+> Take a look at the [TODO MVC example](https://github.com/paperclipui/paperclip/tree/master/examples/react-todomvc) to see how everything is put together. 
 
 You can use Paperclip with [Webpack](https://webpack.js.org/) by installing the loader:
 

@@ -689,7 +689,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // addresses https://github.com/crcn/paperclip/issues/336
+  // addresses https://github.com/paperclipui/paperclip/issues/336
   it(`Dynamic styles are ommitted if their associated prop is undefined`, async () => {
     const graph = {
       "/entry.pc": `
@@ -711,7 +711,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // addresses https://github.com/crcn/paperclip/issues/362
+  // addresses https://github.com/paperclipui/paperclip/issues/362
   it(`Can have class names with underscores in them`, async () => {
     const graph = {
       "/entry.pc": `
@@ -731,7 +731,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // Addresses https://github.com/crcn/paperclip/issues/299
+  // Addresses https://github.com/paperclipui/paperclip/issues/299
   it(`Errors if component is not defined at the root`, async () => {
     const graph = {
       "/entry.pc": `
@@ -795,7 +795,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  // Addresses https://github.com/crcn/paperclip/issues/372
+  // Addresses https://github.com/paperclipui/paperclip/issues/372
   it(`Displays an error if a shadow pierce import is missing`, async () => {
     const graph = {
       "/entry.pc": `
@@ -826,7 +826,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  // addresses: https://github.com/crcn/paperclip/issues/389
+  // addresses: https://github.com/paperclipui/paperclip/issues/389
   it(`Displays an error if a class name is not found for shadow pierce`, async () => {
     const graph = {
       "/entry.pc": `
@@ -1398,7 +1398,7 @@ describe(__filename + "#", () => {
     ]);
   });
 
-  // fixes https://github.com/crcn/paperclip/issues/508
+  // fixes https://github.com/paperclipui/paperclip/issues/508
   it(`properly applies scoped style for nested & combo`, async () => {
     const graph = {
       "/entry.pc": `
@@ -1731,7 +1731,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  // https://github.com/crcn/paperclip/issues/708
+  // https://github.com/paperclipui/paperclip/issues/708
   it(`Re-evaluates module after error & no change`, async () => {
     const graph = {
       "/entry.pc": `<div />`

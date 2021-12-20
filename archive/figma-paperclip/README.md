@@ -35,7 +35,7 @@ figmark pull
 
 > ☝🏻Run this command whenever you want to update your designs locally.
 
-> You'll also notice `*.pc` files which React files are compiled from. To learn more about how to use PC files, you can check out the [Paperclip](https://github.com/crcn/paperclip) repository.
+> You'll also notice `*.pc` files which React files are compiled from. To learn more about how to use PC files, you can check out the [Paperclip](https://github.com/paperclipui/paperclip) repository.
 
 That's it! At this point you should have generated React files that you can import.
 
@@ -135,7 +135,7 @@ Here's what the code above looks like when loaded in a browser:
 
 ![alt figma design](./docs/assets/preview-screenshot.png)
 
-> For documentation on how to use these designs in Webpack, check out the [Paperclip](https://github.com/crcn/paperclip) repository.
+> For documentation on how to use these designs in Webpack, check out the [Paperclip](https://github.com/paperclipui/paperclip) repository.
 
 That's all there is to it! 🙌
 
@@ -143,5 +143,5 @@ That's all there is to it! 🙌
 
 - You should GIT-ignore generated design files -- treat them like dependencies.
 - Unused layers are dropped from your application bundle if you're using tree-shaking.
-- `*.pc` file documentation can be found in the [Paperclip repository](https://github.com/crcn/paperclip)
+- `*.pc` file documentation can be found in the [Paperclip repository](https://github.com/paperclipui/paperclip)
 - You can preview `*.pc` files directly using the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
