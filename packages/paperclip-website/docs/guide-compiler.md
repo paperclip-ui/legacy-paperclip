@@ -4,7 +4,7 @@ title: Compilers
 sidebar_label: Compilers
 ---
 
->  If you prefer to figure things out yourself, a few good place to start would be the [React compiler](https://github.com/crcn/paperclip/blob/master/packages/paperclip-compiler-react/src/code-compiler.ts), and [Interim module](https://github.com/crcn/paperclip/blob/master/packages/paperclip-interim/src/state/html.ts).
+>  If you prefer to figure things out yourself, a few good place to start would be the [React compiler](https://github.com/paperclipui/paperclip/blob/master/packages/paperclip-compiler-react/src/code-compiler.ts), and [Interim module](https://github.com/paperclipui/paperclip/blob/master/packages/paperclip-interim/src/state/html.ts).
 
 This is a very basic guide to getting started with compilers.
 
@@ -52,7 +52,7 @@ The `module` passed into the `compile` function is the JSON representation of th
 </div>
 ```
 
-The [InterimModule](https://github.com/crcn/paperclip/blob/master/packages/paperclip-interim/src/state/module.ts) representation of this would be something like:
+The [InterimModule](https://github.com/paperclipui/paperclip/blob/master/packages/paperclip-interim/src/state/module.ts) representation of this would be something like:
 
 ```javascript
 {

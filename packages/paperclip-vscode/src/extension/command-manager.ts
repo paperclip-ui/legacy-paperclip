@@ -31,7 +31,9 @@ export class CommandManager {
     );
 
     commands.registerCommand("paperclip.giveFeedback", () => {
-      env.openExternal(Uri.parse("https://github.com/crcn/paperclip/issues"));
+      env.openExternal(
+        Uri.parse("https://github.com/paperclipui/paperclip/issues")
+      );
     });
   }
 }

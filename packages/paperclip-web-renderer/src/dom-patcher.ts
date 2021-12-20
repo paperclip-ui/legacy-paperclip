@@ -80,7 +80,7 @@ export const patchNativeNode = (
       case ActionKind.SetText: {
         const text = (target as any) as Text;
 
-        // fixes https://github.com/crcn/paperclip/issues/609
+        // fixes https://github.com/paperclipui/paperclip/issues/609
         text.nodeValue = entities.decode(action.value.replace(/[\s\r]+/g, " "));
         break;
       }

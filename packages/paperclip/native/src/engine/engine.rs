@@ -199,7 +199,7 @@ impl Engine {
 
         // Note - this was removed to prevent the engine
         // from dispatching an Evaluated event after error which
-        // stops a flash from happening: https://github.com/crcn/paperclip/issues/604
+        // stops a flash from happening: https://github.com/paperclipui/paperclip/issues/604
         // self.evaluated_data.remove(uri);
         self.set_diagnostic_error(uri, engine_error.clone());
 

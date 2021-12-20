@@ -21,7 +21,7 @@ export const FrameContainer = memo(
     useEffect(() => {
       if (frameRef.current) {
         const iframe = document.createElement("iframe");
-        // addresses https://github.com/crcn/paperclip/issues/310
+        // addresses https://github.com/paperclipui/paperclip/issues/310
         Object.assign(iframe.style, {
           border: "none",
           background: "white",

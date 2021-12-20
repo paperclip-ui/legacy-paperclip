@@ -21,7 +21,7 @@
   "icon": "assets/logo.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crcn/paperclip.git"
+    "url": "https://github.com/paperclipui/paperclip.git"
   },
   "main": "lib/extension/index.js",
   "engines": {

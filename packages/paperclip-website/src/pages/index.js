@@ -52,7 +52,7 @@ function Home() {
               </buttonStyles.Anchor>
               <buttonStyles.Anchor
                 className={typography.classNames["semi-bold"]}
-                href="http://github.com/crcn/paperclip"
+                href="http://github.com/paperclipui/paperclip"
                 secondary
               >
                 Check out on GitHub
@@ -91,8 +91,9 @@ function Home() {
               title="Incrementally adoptable"
               description={
                 <>
-                  Presentational components can be used in your existing codebase, and they're
-                  helpful in wrangling any current CSS that you have.
+                  Presentational components can be used in your existing
+                  codebase, and they're helpful in wrangling any current CSS
+                  that you have.
                 </>
               }
             />

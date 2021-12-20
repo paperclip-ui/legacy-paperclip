@@ -101,7 +101,7 @@ export const createNativeStyleFromSheet = (
 };
 
 const createNativeTextNode = (node, factory: DOMFactory) => {
-  // fixes https://github.com/crcn/paperclip/issues/609
+  // fixes https://github.com/paperclipui/paperclip/issues/609
   return factory.createTextNode(
     entities.decode(node.value.replace(/[\s\r]+/g, " "))
   );

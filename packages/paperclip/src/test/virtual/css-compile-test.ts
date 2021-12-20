@@ -211,21 +211,21 @@ describe(__filename + "#", () => {
       true
     ],
 
-    // https://github.com/crcn/paperclip/issues/547
+    // https://github.com/paperclipui/paperclip/issues/547
     [
       `:self(.a) { &&& { color: red; &:checked { color: blue; }}}`,
       `._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a { color:red; } ._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a:checked { color:blue; }`,
       true
     ],
 
-    // https://github.com/crcn/paperclip/issues/549
+    // https://github.com/paperclipui/paperclip/issues/549
     [
       `:self:empty { color: red; }`,
       `._406d2856._406d2856._80f4925f:empty { color:red; }`,
       true
     ],
 
-    // https://github.com/crcn/paperclip/issues/548
+    // https://github.com/paperclipui/paperclip/issues/548
     [
       `:self > * { color: red; }`,
       `._406d2856._406d2856 > ._80f4925f { color:red; }`,
@@ -234,28 +234,28 @@ describe(__filename + "#", () => {
     [`:root { color: red; }`, `._80f4925f { color:red; }`, false],
     [`:global(:root) { color: red; }`, `:root { color:red; }`, false],
 
-    // https://github.com/crcn/paperclip/issues/573
+    // https://github.com/paperclipui/paperclip/issues/573
     [
       `:self(.variant) { @media screen and (max-width: 400px) { color: red; }}`,
       `@media screen and (max-width: 400px) { ._406d2856._406d2856._80f4925f_variant { color:red; } }`,
       true
     ],
 
-    // https://github.com/crcn/paperclip/issues/607#issuecomment-758309798
+    // https://github.com/paperclipui/paperclip/issues/607#issuecomment-758309798
     [
       `div { :within(.a) { color: red }}`,
       `[class]._80f4925f_a div._80f4925f ._80f4925f { color:red ; }`,
       false
     ],
 
-    // https://github.com/crcn/paperclip/issues/607#issuecomment-758309798
+    // https://github.com/paperclipui/paperclip/issues/607#issuecomment-758309798
     [
       `:within(.a) { color: red }`,
       `[class]._80f4925f_a ._406d2856 ._80f4925f { color:red ; }`,
       true
     ],
 
-    // https://github.com/crcn/paperclip/issues/721
+    // https://github.com/paperclipui/paperclip/issues/721
     [
       `&:within(.variant) { transform: translateX(100%); &:within(.visible) { transform: translateX(0%); } }`,
       `[class]._80f4925f_variant ._406d2856._406d2856 { transform:translateX(100%); } [class]._80f4925f_variant[class]._80f4925f_visible ._406d2856._406d2856 { transform:translateX(0%); }`,
