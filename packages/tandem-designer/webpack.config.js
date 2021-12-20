@@ -31,7 +31,9 @@ module.exports = {
 
   plugins: [
     new MiniCssExtractPlugin({
-      filename: devMode ? "[name].css" : "[name]-[contenthash].css",
+      filename: devMode
+        ? "[name]-[contenthash].css"
+        : "[name]-[contenthash].css",
       chunkFilename: devMode ? "[id].css" : "[id]-[contenthash].css"
     }),
     new HtmlWebpackPlugin({

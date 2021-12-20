@@ -53,6 +53,16 @@
   </style>
 </div>
 
+<div export component as="Panes">
+  <style>
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: scroll;
+  </style>
+  {children}
+</div>
+
 <!--
   @frame { visible: false }
 -->
@@ -458,13 +468,12 @@
 <!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
-<Pane.Container export component as="Preview" class="font-regular">
+<Pane.Container export component as="Preview" class="$font-regular">
   <Tabs>
     <Tab active>Rules</Tab>
     <Tab>Computed</Tab>
   </Tabs>
   {showComputed && <fragment>
-    <Header input={<FilterInput />} />
     <ComputedStyles>
       <ComputedProperty collapsed
         name="display"
@@ -492,77 +501,79 @@
 
   {!showComputed && <fragment>
     <Header input={<FilterInput />} />
-    <Pane title="Element styles">
-      <StyleRule fileName="styles.pc"
-        boldSelector
-        selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
-        properties={<fragment>
-          <StyleRuleProperty name="background-color"
-            value={<StyleRulePropertyValue>
-              <Expression>
-                var(--page-background-color, var(--gray-gray-90))
-              </Expression>
-            </StyleRulePropertyValue>} />
-          <StyleRuleProperty boldName
-            disabled
-            name="font-family"
-            value={<StyleRulePropertyValue>
-              <KeywordPart value="sans-serif" />
-            </StyleRulePropertyValue>} />
-          <StyleRuleProperty name="box-shadow"
-            value={<StyleRulePropertyValue>
-              <UnitPart value="2px" />
-              <UnitPart value="0px" />
-              <UnitPart value="0px" />
-              <ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
-            </StyleRulePropertyValue>} />
-          <StyleRuleProperty name="box-shadow"
-            value={<StyleRulePropertyValue>
-              <Expression>2px 0px rgba(0, 0, 0, 0.2)</Expression>
-            </StyleRulePropertyValue>} />
-        </fragment>} />
+    <Panes>
+      <Pane title="Element styles">
+        <StyleRule fileName="styles.pc"
+          boldSelector
+          selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
+          properties={<fragment>
+            <StyleRuleProperty name="background-color"
+              value={<StyleRulePropertyValue>
+                <Expression>
+                  var(--page-background-color, var(--gray-gray-90))
+                </Expression>
+              </StyleRulePropertyValue>} />
+            <StyleRuleProperty boldName
+              disabled
+              name="font-family"
+              value={<StyleRulePropertyValue>
+                <KeywordPart value="sans-serif" />
+              </StyleRulePropertyValue>} />
+            <StyleRuleProperty name="box-shadow"
+              value={<StyleRulePropertyValue>
+                <UnitPart value="2px" />
+                <UnitPart value="0px" />
+                <UnitPart value="0px" />
+                <ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
+              </StyleRulePropertyValue>} />
+            <StyleRuleProperty name="box-shadow"
+              value={<StyleRulePropertyValue>
+                <Expression>2px 0px rgba(0, 0, 0, 0.2)</Expression>
+              </StyleRulePropertyValue>} />
+          </fragment>} />
 
-      <StyleRule isGlobal
-        fileName="atoms.pc"
-        media="media screen and (max-width: 500px)"
-        selector="#test"
-        properties={<fragment>
-          <StyleRuleProperty boldValue
-            name="background-color"
-            value={<StyleRulePropertyValue>
-              <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
-            </StyleRulePropertyValue>} />
-          <StyleRuleProperty name="another-background"
-            value={<StyleRulePropertyValue>
-              <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
-            </StyleRulePropertyValue>} /><StyleRuleProperty name="box-shadow"
-            value={<StyleRulePropertyValue>
-              <Expression>
-                0px 2px 1px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(66, 71, 76,
-                0.45)
-              </Expression>
-            </StyleRulePropertyValue>} />
-        </fragment>} />
+        <StyleRule isGlobal
+          fileName="atoms.pc"
+          media="media screen and (max-width: 500px)"
+          selector="#test"
+          properties={<fragment>
+            <StyleRuleProperty boldValue
+              name="background-color"
+              value={<StyleRulePropertyValue>
+                <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+              </StyleRulePropertyValue>} />
+            <StyleRuleProperty name="another-background"
+              value={<StyleRulePropertyValue>
+                <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+              </StyleRulePropertyValue>} /><StyleRuleProperty name="box-shadow"
+              value={<StyleRulePropertyValue>
+                <Expression>
+                  0px 2px 1px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(66, 71, 76,
+                  0.45)
+                </Expression>
+              </StyleRulePropertyValue>} />
+          </fragment>} />
 
-      <StyleRule fileName="atoms.pc"
-        selector="element"
-        media="screen"
-        mediaActive
-        global
-        properties={<fragment>
-          <StyleRuleProperty name="color"
-            value={<StyleRulePropertyValue>
-              <Expression>inherit</Expression>
-            </StyleRulePropertyValue>} />
-        </fragment>} />
-    </Pane>
-    <Pane title="Inherited styles">
-      <StyleRule fileName="atoms.pc"
-        selector={<fragment>
-          <ScopedElementSelector name="element" />
-          <ScopedElementSelector name="element" />.test
-        </fragment>} />
-    </Pane>
+        <StyleRule fileName="atoms.pc"
+          selector="element"
+          media="screen"
+          mediaActive
+          global
+          properties={<fragment>
+            <StyleRuleProperty name="color"
+              value={<StyleRulePropertyValue>
+                <Expression>inherit</Expression>
+              </StyleRulePropertyValue>} />
+          </fragment>} />
+      </Pane>
+      <Pane title="Inherited styles">
+        <StyleRule fileName="atoms.pc"
+          selector={<fragment>
+            <ScopedElementSelector name="element" />
+            <ScopedElementSelector name="element" />.test
+          </fragment>} />
+      </Pane>
+    </Panes>
   </fragment>}
 </Pane.Container>
 

@@ -21,7 +21,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100%;
+    height: 100vh;
   </style>
   {children}
 </div>
@@ -172,7 +172,7 @@
 <Preview showCanvas v2 showComputed />
 
 <!--
-  @frame { title: "Center / Canvas", width: 1266, height: 958, x: 2734, y: 734 }
+  @frame { title: "Center / Canvas", width: 1266, height: 821, x: 2734, y: 729 }
 -->
 <Preview showCanvas v2 />
 

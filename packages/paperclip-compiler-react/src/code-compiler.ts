@@ -458,7 +458,7 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
       }
     }
   })(context);
-  context = startBlock(context);
+  context = addBuffer(["\n", endBlock])(context);
 
   return context;
   // return addBuffer([endBlock, `]`])(context);

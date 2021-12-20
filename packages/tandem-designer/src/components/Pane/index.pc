@@ -19,7 +19,11 @@
   <style>
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    &.scrollable {
+      overflow: hidden;
+    }
+
+
     &.flex {
       flex: 1;
     }
@@ -34,6 +38,7 @@
   </div>
   <div>
     <style>
+      overflow: scroll;
       &:within(.scrollable) {
         overflow: scroll;
       }
@@ -58,7 +63,7 @@
   <style>
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: scroll;
     flex: 1;
   </style>
   {children}

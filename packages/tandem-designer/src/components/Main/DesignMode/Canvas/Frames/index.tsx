@@ -30,7 +30,6 @@ import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
 import { debounce } from "lodash";
 import { AppState, isExpanded } from "../../../../../state";
-import produce from "immer";
 import { ImmutableStore } from "paperclip-common";
 import { UrlResolver } from "paperclip-web-renderer/lib/native-renderer";
 

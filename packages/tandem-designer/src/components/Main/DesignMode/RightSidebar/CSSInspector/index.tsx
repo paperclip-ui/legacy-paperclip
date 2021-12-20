@@ -32,34 +32,36 @@ export const Inspector2 = React.memo(() => {
     <>
       <PaneContainer>
         <Header onFilterChange={setFilterText} />
-        <Pane title="Element styles">
-          {inspection.styleRules
-            .filter(rule => !rule.inherited && filterRule(rule, filter))
-            .map(rule => {
-              return (
-                <StyleRule
-                  dispatch={dispatch}
-                  filter={filter}
-                  key={rule.sourceId}
-                  info={rule}
-                />
-              );
-            })}
-        </Pane>
-        <Pane title="Inherited styles">
-          {inspection.styleRules
-            .filter(rule => rule.inherited && filterRule(rule, filter))
-            .map(rule => {
-              return (
-                <StyleRule
-                  dispatch={dispatch}
-                  filter={filter}
-                  key={rule.sourceId}
-                  info={rule}
-                />
-              );
-            })}
-        </Pane>
+        <styles.Panes>
+          <Pane title="Element styles">
+            {inspection.styleRules
+              .filter(rule => !rule.inherited && filterRule(rule, filter))
+              .map(rule => {
+                return (
+                  <StyleRule
+                    dispatch={dispatch}
+                    filter={filter}
+                    key={rule.sourceId}
+                    info={rule}
+                  />
+                );
+              })}
+          </Pane>
+          <Pane title="Inherited styles">
+            {inspection.styleRules
+              .filter(rule => rule.inherited && filterRule(rule, filter))
+              .map(rule => {
+                return (
+                  <StyleRule
+                    dispatch={dispatch}
+                    filter={filter}
+                    key={rule.sourceId}
+                    info={rule}
+                  />
+                );
+              })}
+          </Pane>
+        </styles.Panes>
       </PaneContainer>
     </>
   );
