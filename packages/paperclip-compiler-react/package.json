@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-react",
-  "version": "18.2.2",
+  "version": "18.2.3",
   "description": "React compiler for Paperclip",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -11,8 +11,8 @@
     "crc32": "^0.2.2",
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
-    "paperclip": "^18.1.6",
-    "paperclip-interim": "^18.2.0",
+    "paperclip": "^18.2.3",
+    "paperclip-interim": "^18.2.3",
     "source-map": "^0.7.3"
   },
   "scripts": {
