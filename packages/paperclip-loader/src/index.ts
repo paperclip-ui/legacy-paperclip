@@ -11,7 +11,7 @@ import {
 import { getPrettyMessage } from "paperclip-cli-utils";
 import * as path from "path";
 import * as loaderUtils from "loader-utils";
-import VirtualModules from "webpack-virtual-modules";
+import VirtualModules from "webpack-virtual-modules-fix-refresh";
 import { buildFile } from "paperclip-builder";
 
 let _engine: EngineDelegate;
