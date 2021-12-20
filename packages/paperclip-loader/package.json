@@ -21,7 +21,7 @@
     "paperclip-cli-utils": "^18.2.3",
     "paperclip-interim": "^18.2.3",
     "resolve": "^1.15.1",
-    "webpack-virtual-modules-fix-refresh": "^0.4.5"
+    "webpack-virtual-modules-fix-refresh": "^0.4.6"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.6.1",
