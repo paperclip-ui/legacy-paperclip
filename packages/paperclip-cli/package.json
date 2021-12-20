@@ -28,7 +28,6 @@
     "paperclip": "^18.2.3",
     "paperclip-cli-minimal": "^18.2.3",
     "paperclip-cli-utils": "^18.2.3",
-    "paperclip-diff": "^18.2.3",
     "paperclip-utils": "^18.1.6",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
