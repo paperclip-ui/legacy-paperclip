@@ -38,6 +38,10 @@ async function pcLoader(
   this.cacheable();
   const callback = this.async();
 
+  const ops = { ...loaderUtils.getOptions(this) };
+
+  console.log(ops);
+
   const { configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
 
@@ -98,9 +102,10 @@ async function pcLoader(
     }
 
     const fileUrl = url.fileURLToPath(filePath);
+    // console.log(fileUrl);
     virtualModules.writeModule(fileUrl, exts[ext]);
   }
-
+  0;
   callback(null, js);
 }
 
@@ -119,6 +124,16 @@ module.exports = function(source: string) {
 
 const activatePlugin = (plugin, compiler) => {
   const { inputFileSystem, name, context, hooks } = compiler;
+
+  // console.log(hooks);
+
+  // https://github.com/sysgears/webpack-virtual-modules/issues/86
+  // compiler.buildQueue.hooks.beforeAdd.tapAsync(name, (module, cb) => {
+  //   console.log(module.resource);
+  //   console.log("ADDD");
+  //   cb();
+  // });
+
   plugin.apply({
     inputFileSystem,
     name,

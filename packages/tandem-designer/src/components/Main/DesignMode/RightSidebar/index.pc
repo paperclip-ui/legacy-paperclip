@@ -7,7 +7,6 @@
 <ResizableContainer right fixedSize scrollable export component as="Preview">
   <style>
     min-width: 100px;
-    max-width: 300px;
   </style>
   <Inspector.Preview {showComputed?} />
 </ResizableContainer>
