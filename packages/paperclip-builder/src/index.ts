@@ -247,7 +247,7 @@ const requireTargetCompilers = (
   const localDirs = cwd
     .split("/")
     .map((part, index, parts) =>
-      [...parts.slice(0, index), "node_modules"].join("/")
+      [...parts.slice(0, index + 1), "node_modules"].join("/")
     )
     .filter(dir => dir !== "node_modules");
 
