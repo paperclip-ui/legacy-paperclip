@@ -40,8 +40,6 @@ async function pcLoader(
 
   const ops = { ...loaderUtils.getOptions(this) };
 
-  console.log(ops);
-
   const { configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
 
