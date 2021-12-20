@@ -13623,10 +13623,10 @@ webpack-sources@^3.2.2:
   resolved "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.2.2.tgz"
   integrity sha512-cp5qdmHnu5T8wRg2G3vZZHoJPN14aqQ89SyQ11NpGH5zEMDCclt49rzo+MaRazk7/UeILhAI+/sEtcM+7Fr0nw==
 
-webpack-virtual-modules-fix-refresh@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/webpack-virtual-modules-fix-refresh/-/webpack-virtual-modules-fix-refresh-0.4.4.tgz#d41d888f244327aed616d4d54deed35f1d83c75d"
-  integrity sha512-3XWKcdk2/xX54rbLo+VrFwlNHDArMV4dRTIcDDUcnlkY813KzmZUdbBqK36xt3QqEnRfYLp7+G+lntHTDQQNnw==
+webpack-virtual-modules-fix-refresh@^0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/webpack-virtual-modules-fix-refresh/-/webpack-virtual-modules-fix-refresh-0.4.5.tgz#994ca0c2034ebe08c6412b1e59969b53c89b78f7"
+  integrity sha512-s9r0yx3Wjj/EyUjZ8UMIKTN86zO0PvyQjeQcvQkDb4nX3xeoSkrldsYanBJ0ufZXlffrrPyuI+NWQBCFf9ZkkQ==
 
 webpack-virtual-modules@^0.4.3:
   version "0.4.3"
