@@ -131,11 +131,15 @@ export class Repository {
       this._logger.info(e.message);
     }
 
-    const { stdout } = await execa(`git`, [`branch`], {
-      cwd: this.localDirectory
-    });
+    try {
+      const { stdout } = await execa(`git`, [`branch`], {
+        cwd: this.localDirectory
+      });
 
-    return stdout.replace(/\*?[^\S\r\n]/g, "").split("\n");
+      return stdout.replace(/\*?[^\S\r\n]/g, "").split("\n");
+    } catch (e) {
+      return [];
+    }
   }
 
   /**
