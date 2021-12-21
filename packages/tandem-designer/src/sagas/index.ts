@@ -46,8 +46,6 @@ export default function* mainSaga(
     yield call(handleCanvasMouseDown, action, getState);
   });
 
-  yield fork(handleRPC);
-
   // wait for client to be loaded to initialize anything so that
   // events properly get sent (like LOCATION_CHANGED)
   yield fork(handleKeyCommands, mount);
@@ -59,28 +57,7 @@ export default function* mainSaga(
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
   yield fork(handleAppFocus);
-}
-
-function handleSock(onMessage, onClient) {
-  if (!/^http/.test(location.protocol)) {
-    return;
-  }
-  const client = new SockJSClient(
-    location.protocol + "//" + location.host + "/rt"
-  );
-
-  client.onopen = () => {
-    onClient(sockAdapter(client));
-  };
-
-  client.onmessage = message => {
-    const ev = JSON.parse(message.data);
-    onMessage(ev);
-  };
-
-  return () => {
-    client.close();
-  };
+  yield fork(handleRPC);
 }
 
 function* handleRenderer(getState: AppStateSelector) {

@@ -180,6 +180,7 @@ class Connection {
     if (!project) {
       this._logger.info(`Project ID does not exist`);
       return {
+        showFullEditor: this._options.showFullEditor,
         branchInfo: {
           branchable: false,
           branches: [],
@@ -192,6 +193,7 @@ class Connection {
     this._handleEngineEvents();
 
     return {
+      showFullEditor: this._options.showFullEditor,
       branchInfo: {
         branches: await project.repository.getBranches(),
         branchable: project.isBranchable(),
