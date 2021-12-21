@@ -22,7 +22,8 @@ export const Toolbar = () => {
   } = state;
   const expanded = isExpanded(state.designer);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
-  const showingBirdsEye = state.designer.ui.query.showAll;
+  const showingBirdsEye =
+    state.designer.ui.query.showAll || !state.designer.ui.query.canvasFile;
   const [showZoomInput, setShowZoomInput] = useState<boolean>();
   const { embedded, canvasFile } = state.designer.ui.query;
   const showFullEditor = state.designer.workspace?.showFullEditor && !embedded;

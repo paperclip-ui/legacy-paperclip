@@ -18,7 +18,7 @@ export const DesignMode = () => {
 
   let content;
 
-  if (state.designer.ui.query.showAll) {
+  if (state.designer.ui.query.showAll || !state.designer.ui.query.canvasFile) {
     content = <Birdseye />;
   } else {
     if (isMediaFile(canvasFile)) {
