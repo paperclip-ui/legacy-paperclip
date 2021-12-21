@@ -19,6 +19,10 @@ export type Options = {
   standalone?: boolean;
   showFullEditor?: boolean;
 
+  // Canvas file to open if none are present. Used particularly
+  // for codespaces
+  canvasFile?: string;
+
   // branch of project
   branch?: string;
   project?: ProjectOptions;
