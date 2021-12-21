@@ -62,19 +62,21 @@ class DirectoryBuilder {
   _buildFile = async (filePath: string) => {
     try {
       const result = await buildFile(filePath, this.engine, this.options);
+
+      let outFilePath = this.options.config.compilerOptions?.outDir
+        ? filePath.replace(
+            path.join(this.options.cwd, this.options.config.srcDir),
+            path.join(
+              this.options.cwd,
+              this.options.config.compilerOptions.outDir
+            )
+          )
+        : filePath;
+
       for (const ext in result.translations) {
         const content = result.translations[ext];
         if (content) {
-          let newFilePath = filePath + ext;
-          if (this.options.config.compilerOptions?.outDir) {
-            newFilePath = newFilePath.replace(
-              path.join(this.options.cwd, this.options.config.srcDir),
-              path.join(
-                this.options.cwd,
-                this.options.config.compilerOptions.outDir
-              )
-            );
-          }
+          let newFilePath = outFilePath + ext;
           this._em.emit("file", newFilePath, content);
         }
       }
@@ -82,7 +84,7 @@ class DirectoryBuilder {
       if (this.options.config.compilerOptions?.mainCSSFileName) {
         this._addCSSContent(filePath, result.css);
       } else {
-        this._em.emit("file", filePath + ".css", result.css);
+        this._em.emit("file", outFilePath + ".css", result.css);
       }
 
       for (const asset of result.assets) {
@@ -174,7 +176,9 @@ function watch(cwd, filesGlob, compileFile) {
 const getMainCSSFilePath = (cwd: string, config: PaperclipConfig) => {
   return path.join(
     cwd,
-    config.compilerOptions.assetOutDir || config.compilerOptions.outDir,
+    config.compilerOptions.assetOutDir ||
+      config.compilerOptions.outDir ||
+      config.srcDir,
     config.compilerOptions.mainCSSFileName
   );
 };

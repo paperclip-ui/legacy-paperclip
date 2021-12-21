@@ -1,4 +1,5 @@
 {
+  "compilerOptions": { "outDir": "./lib" },
   "srcDir": "./src",
   "moduleDirs": ["../../node_modules", "../..", "node_modules"]
 }
