@@ -121,27 +121,25 @@ module.exports = function(source: string) {
 };
 
 const activatePlugin = (plugin, compiler) => {
-  const { inputFileSystem, name, context, hooks } = compiler;
-
-  // console.log(hooks);
-
-  // https://github.com/sysgears/webpack-virtual-modules/issues/86
-  // compiler.buildQueue.hooks.beforeAdd.tapAsync(name, (module, cb) => {
-  //   console.log(module.resource);
-  //   console.log("ADDD");
-  //   cb();
-  // });
-
-  plugin.apply({
-    inputFileSystem,
-    name,
-    context,
-    hooks: {
-      ...hooks,
-      afterResolvers: makeImmediateCallbackHook(hooks.afterResolvers),
-      afterEnvironment: makeImmediateCallbackHook(hooks.afterEnvironment)
-    }
-  });
+  // need to monkeypatch to ensure that certain hooks get called immediately.
+  plugin.apply(
+    new Proxy(compiler, {
+      get(target, key) {
+        if (key === "hooks") {
+          return {
+            ...target[key],
+            afterResolvers: makeImmediateCallbackHook(
+              target[key].afterResolvers
+            ),
+            afterEnvironment: makeImmediateCallbackHook(
+              target[key].afterEnvironment
+            )
+          };
+        }
+        return target[key];
+      }
+    })
+  );
   return plugin;
 };
 
