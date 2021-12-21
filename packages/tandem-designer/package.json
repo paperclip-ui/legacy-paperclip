@@ -1,6 +1,6 @@
 {
   "name": "tandem-designer",
-  "version": "18.2.6",
+  "version": "18.2.7",
   "description": "Visual designer for Paperclip files",
   "main": "lib/index.js",
   "scripts": {
