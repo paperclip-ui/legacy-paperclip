@@ -1,0 +1,4 @@
+{
+  "srcDir": "./src",
+  "moduleDirs": ["./node_modules"]
+}

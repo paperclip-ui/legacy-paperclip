@@ -1,0 +1,17 @@
+{
+  "name": "basics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "paperclip designer",
+    "build": "paperclip build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "paperclip": "18.2.3",
+    "paperclip-cli": "18.2.11",
+    "paperclip-compiler-react": "^18.2.3"
+  },
+  "keywords": []
+}
