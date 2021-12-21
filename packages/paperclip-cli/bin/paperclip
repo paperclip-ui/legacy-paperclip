@@ -56,14 +56,15 @@ const argv = require("yargs")
 .command("dev", "Starts the dev server", yargs => {
   yargs
   .option("port", desc("HTTP port to listen on"))
-  .option("open", desc("Open HTTP server on start"))
+  .option("file", desc("File to open initiall"))
   .default("port", 4000)
   .default("open", true)
 }, argv => {
   startWorkspace({
     http: {
-      port: argv.porg
+      port: argv.port
     },
+    openFile: argv.file,
     project: {
       installDependencies: false
     }
