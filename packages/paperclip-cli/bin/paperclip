@@ -6,6 +6,7 @@ const glob = require("glob");
 const {init, devStart} = require("../lib/cli");
 const {build} = require("paperclip-cli-minimal");
 const fs = require("fs");
+const  URL = require("url");
 const {start: startWorkspace} = require("tandem-workspace/lib/server");
 
 const argv = require("yargs")
@@ -40,14 +41,14 @@ const argv = require("yargs")
 .command("designer", "Starts the designer server", yargs => {
   yargs
   .option("port", desc("HTTP port to listen on"))
-  .option("open", desc("Open HTTP server on start"))
-  .default("port", 4000)
+  .option("canvasFile", desc("File to open initiall"))
   .default("open", true)
 }, argv => {
   startWorkspace({
     http: {
-      port: argv.porg
+      port: argv.port
     },
+    canvasFile: argv.canvasFile && URL.pathToFileURL(path.join(process.cwd(), argv.canvasFile)),
     project: {
       installDependencies: false
     },

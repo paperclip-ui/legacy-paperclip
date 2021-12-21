@@ -181,6 +181,7 @@ class Connection {
       this._logger.info(`Project ID does not exist`);
       return {
         showFullEditor: this._options.showFullEditor,
+        canvasFile: this._options.canvasFile,
         branchInfo: {
           branchable: false,
           branches: [],
@@ -194,6 +195,7 @@ class Connection {
 
     return {
       showFullEditor: this._options.showFullEditor,
+      canvasFile: this._options.canvasFile,
       branchInfo: {
         branches: await project.repository.getBranches(),
         branchable: project.isBranchable(),

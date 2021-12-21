@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "18.2.10",
+  "version": "18.2.12",
   "private": true,
   "scripts": {
     "start": "docusaurus clear && docusaurus start",
@@ -38,8 +38,8 @@
     "css-loader": "^6.5.1",
     "file-loader": "^6.2.0",
     "null-loader": "^4.0.1",
-    "paperclip-compiler-react": "^18.2.3",
-    "paperclip-loader": "^18.2.6",
-    "tandem-workspace": "^18.2.10"
+    "paperclip-compiler-react": "^18.2.12",
+    "paperclip-loader": "^18.2.12",
+    "tandem-workspace": "^18.2.12"
   }
 }

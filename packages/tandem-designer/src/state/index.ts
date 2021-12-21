@@ -121,6 +121,7 @@ export type BranchInfo = {
 };
 
 export type WorkspaceState = {
+  canvasFile?: string;
   showFullEditor?: boolean;
   localResourceRoots: string[];
   branchInfo: BranchInfo;

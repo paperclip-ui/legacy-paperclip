@@ -79,6 +79,7 @@ export function* handleRPC() {
   let _client: Connection = new Connection();
   yield fork(handleServerOptions, _client);
   yield fork(handleProject, _client);
+  yield fork(handleCanvasRedirect);
 }
 
 function* handleServerOptions(client: Connection) {
@@ -159,7 +160,7 @@ function* handleProjectDirectory(
 ) {
   // TODO - needs to be take state instead
   yield takeLatest(ActionType.SERVER_OPTIONS_LOADED, function*({
-    payload: { localResourceRoots }
+    payload: { localResourceRoots, canvasFile }
   }: ServerOptionsLoaded) {
     yield call(
       loadProjectDirectory,
@@ -486,3 +487,14 @@ const handleCodeChanged = (
       value
     });
   };
+
+function* handleCanvasRedirect() {
+  yield takeLatest(ActionType.SERVER_OPTIONS_LOADED, function*({
+    payload: { canvasFile }
+  }: ServerOptionsLoaded) {
+    const state: AppState = yield select();
+    if (!state.designer.ui.query.canvasFile && canvasFile) {
+      yield put(redirectRequest({ query: { canvasFile } }));
+    }
+  });
+}
