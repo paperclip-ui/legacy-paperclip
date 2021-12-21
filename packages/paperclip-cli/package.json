@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "18.2.5",
+  "version": "18.2.6",
   "description": "Command line tools for Paperclip",
   "main": "lib/cli.js",
   "bin": {
@@ -31,7 +31,7 @@
     "paperclip-utils": "^18.1.6",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
-    "tandem-workspace": "^18.2.5",
+    "tandem-workspace": "^18.2.6",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
