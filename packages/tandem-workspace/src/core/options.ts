@@ -16,6 +16,9 @@ export type Options = {
     port: number;
   };
 
+  standalone?: boolean;
+  showFullEditor?: boolean;
+
   // branch of project
   branch?: string;
   project?: ProjectOptions;

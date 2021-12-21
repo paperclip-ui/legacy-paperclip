@@ -51,7 +51,13 @@ export class Workspace {
   }
 
   getProjectById(id: string) {
-    return this._projects[id];
+    return this._projects[
+      id
+        ? id
+        : !this._options.showFullEditor
+        ? Object.keys(this._projects)[0]
+        : null
+    ];
   }
 }
 

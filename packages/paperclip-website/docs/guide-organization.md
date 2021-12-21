@@ -41,7 +41,7 @@ Previews are a way for you to see your all of your primitive components together
 </SomeComponent>
 ```
 
-You can see these previews live by running `npx paperclip-cli dev`.
+You can see these previews live by running `npx paperclip-cli designer`.
 
 You can think of previews as a bit of a scratch pad for your UIs. They're nice to use when building UIs out initially since Paperclip compiles in realtime, so you're never waiting around. You can also think of previews as unit tests for your primitive components since previews defined within Paperclip are covered for visual regressions.
 

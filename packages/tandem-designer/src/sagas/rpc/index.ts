@@ -7,7 +7,8 @@ import {
   select,
   cancel,
   takeEvery,
-  throttle
+  throttle,
+  delay
 } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 
@@ -82,8 +83,14 @@ export function* handleRPC() {
 
 function* handleServerOptions(client: Connection) {
   const hello = helloChannel(client);
+
+  ///oof... need to delay so that query state is populated. What a hack!
+  yield delay(100);
+
   yield takeState(
-    (state: AppState) => state.designer.ui.query.projectId,
+    (state: AppState) => {
+      return state.designer.ui.query.projectId;
+    },
     loadServerOptions,
     [ActionType.LOCATION_CHANGED],
     [hello]
@@ -241,6 +248,7 @@ function* handleClientComunication(client) {
     const state: AppState = yield select();
     if (
       (!state.designer.ui.query.canvasFile ||
+        state.designer.ui.query.showAll ||
         location.pathname.indexOf("/all") === 0) &&
       !state.designer.loadedBirdseyeInitially
     ) {

@@ -8,10 +8,13 @@ import { LeftSidebar } from "./LeftSidebar";
 
 export const MainBase = () => {
   const { state } = useAppStore();
+  const showFullEditor =
+    state.designer.workspace?.showFullEditor &&
+    !state.designer.ui.query.embedded;
   return (
     <styles.Container>
-      {!state.designer.ui.query.embedded && <LeftSidebar />}
-      {!state.designer.ui.query.embedded && <CodeMode />}
+      {showFullEditor && <LeftSidebar />}
+      {showFullEditor && <CodeMode />}
       <DesignMode />
     </styles.Container>
   );

@@ -14,11 +14,12 @@ export function takeState(
   args: any[] = []
 ) {
   let currentState;
+  let firstRun = true;
 
   function* run() {
     const cstate = yield select(getState);
-
-    if (cstate !== currentState) {
+    if (cstate !== currentState || firstRun) {
+      firstRun = false;
       yield call(fn, cstate, ...args);
     }
 

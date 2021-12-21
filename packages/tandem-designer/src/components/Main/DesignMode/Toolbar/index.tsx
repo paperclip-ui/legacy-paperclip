@@ -22,9 +22,11 @@ export const Toolbar = () => {
   } = state;
   const expanded = isExpanded(state.designer);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
-  const showingBirdsEye = state.designer.ui.query.showAll;
+  const showingBirdsEye =
+    state.designer.ui.query.showAll || !state.designer.ui.query.canvasFile;
   const [showZoomInput, setShowZoomInput] = useState<boolean>();
   const { embedded, canvasFile } = state.designer.ui.query;
+  const showFullEditor = state.designer.workspace?.showFullEditor && !embedded;
 
   const onMinusClick = () => {
     dispatch(zoomOutButtonClicked(null));
@@ -104,7 +106,7 @@ export const Toolbar = () => {
             <styles.Tab active={showingBirdsEye} onClick={onGridButtonClick}>
               <styles.GridButton />
             </styles.Tab>
-            {embedded && sharable && !WIN_ENV && (
+            {showFullEditor && sharable && !WIN_ENV && (
               <styles.Tab
                 active={showEnvironmentPopup}
                 onClick={onPopOutButtonClicked}
@@ -116,7 +118,7 @@ export const Toolbar = () => {
         }
         title={
           <>
-            {(!embedded || showingBirdsEye) &&
+            {(!showFullEditor || showingBirdsEye) &&
               (showingBirdsEye ? "Project Frames" : relativePath)}
           </>
         }
