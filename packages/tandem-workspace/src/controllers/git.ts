@@ -146,9 +146,13 @@ export class Repository {
    */
 
   async getCurrentBranch() {
-    const { stdout } = await execa(`git`, [`branch`, `--show-current`], {
-      cwd: this.localDirectory
-    });
-    return stdout.trim();
+    try {
+      const { stdout } = await execa(`git`, [`branch`, `--show-current`], {
+        cwd: this.localDirectory
+      });
+      return stdout.trim();
+    } catch (e) {
+      return null;
+    }
   }
 }
