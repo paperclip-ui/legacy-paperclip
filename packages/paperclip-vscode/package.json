@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "18.2.9",
+  "version": "18.2.10",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "preview": true,
@@ -176,7 +176,7 @@
     "paperclip-utils": "^18.1.6",
     "paperclip-web-renderer": "^18.2.3",
     "tandem-designer": "^18.2.8",
-    "tandem-workspace": "^18.2.9",
+    "tandem-workspace": "^18.2.10",
     "vscode-languageclient": "6.0.1",
     "vscode-languageserver": "6.0.1",
     "vscode-languageserver-protocol": "3.15.3",
