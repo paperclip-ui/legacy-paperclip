@@ -248,6 +248,7 @@ function* handleClientComunication(client) {
     const state: AppState = yield select();
     if (
       (!state.designer.ui.query.canvasFile ||
+        state.designer.ui.query.showAll ||
         location.pathname.indexOf("/all") === 0) &&
       !state.designer.loadedBirdseyeInitially
     ) {
