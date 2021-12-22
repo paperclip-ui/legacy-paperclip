@@ -14,7 +14,9 @@ import {
 import {
   PaperclipConfig,
   getPaperclipConfigIncludes,
-  isPaperclipResourceFile
+  isPaperclipResourceFile,
+  isCSSFile,
+  isPaperclipFile
 } from "paperclip-utils";
 
 type BaseOptions = {
@@ -43,7 +45,6 @@ class DirectoryBuilder {
       this.options.config,
       this.options.cwd
     );
-    console.log(sources);
 
     const filePaths = flatten(sources.map(inc => glob.sync(inc)));
 
@@ -222,18 +223,22 @@ export const buildFile = async (
   const interimModule = interimCompiler.parseFile(fileUrl);
   const targetCompilers = requireTargetCompilers(options.cwd, options.config);
 
-  const translations = targetCompilers.reduce((files, compiler) => {
-    return Object.assign(
-      files,
-      compiler.compile({
-        module: interimModule,
-        fileUrl,
-        includes,
-        config: options.config,
-        cwd: options.cwd
-      })
-    );
-  }, {});
+  let translations: Record<string, string> = {};
+
+  if (isPaperclipFile(filePath)) {
+    translations = targetCompilers.reduce((files, compiler) => {
+      return Object.assign(
+        files,
+        compiler.compile({
+          module: interimModule,
+          fileUrl,
+          includes,
+          config: options.config,
+          cwd: options.cwd
+        })
+      );
+    }, {});
+  }
 
   return {
     translations,

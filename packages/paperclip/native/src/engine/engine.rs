@@ -12,6 +12,8 @@ use crate::css::runtime::evaluator::evaluate as evaluate_css;
 use crate::css::runtime::mutation as css_mutation;
 use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
+use crate::css::ast as css_ast;
+use crate::css::parser::parse as parse_css;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
@@ -98,8 +100,24 @@ pub struct EvalOptions {
   part: Option<String>,
 }
 
+#[derive(Debug, PartialEq, Serialize)]
+#[serde(tag = "moduleKind")]
+pub enum Module {
+  PC(pc_ast::Node),
+  CSS(css_ast::Sheet)
+}
+
 type EngineEventListener = dyn Fn(&EngineEvent);
 type GetLintConfigResolverFn = dyn Fn(&String) -> Option<LintOptions>;
+
+
+fn parse_content(content: &String, uri: &String) -> Result<Module, ParseError> {
+  Result::Ok(if uri.ends_with(".css") {
+    Module::CSS(parse_css(content, generate_seed())?)
+  } else {
+    Module::PC(parse_pc(content, uri.as_str(), generate_seed().as_str())?)
+  })
+}
 
 pub struct Engine {
   listeners: Vec<Box<EngineEventListener>>,
@@ -294,17 +312,18 @@ impl Engine {
       .or(Some(existing_diagnostics))
   }
 
-  pub async fn parse_file(&mut self, uri: &String) -> Result<pc_ast::Node, ParseError> {
+  pub async fn parse_file(&mut self, uri: &String) -> Result<Module, ParseError> {
     let content = self.vfs.reload(uri).await.unwrap();
-    parse_pc(content, uri, generate_seed().as_str())
+    // parse_pc(content, uri, generate_seed().as_str())
+    parse_content(content, uri)
   }
 
   pub async fn parse_content(
     &mut self,
     content: &String,
     uri: &String,
-  ) -> Result<pc_ast::Node, ParseError> {
-    parse_pc(content, uri.as_str(), generate_seed().as_str())
+  ) -> Result<Module, ParseError> {
+    parse_content(content, uri)
   }
 
   // Called when files are deleted

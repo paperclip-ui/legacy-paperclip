@@ -26,3 +26,4 @@ export * from "./errors";
 export * from "./diagnostics";
 export * from "./tree";
 export * from "./style-inspection";
+export * from "./module-ast";

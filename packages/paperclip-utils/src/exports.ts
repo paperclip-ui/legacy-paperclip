@@ -43,3 +43,7 @@ export type KeyframesExport = {
   public: boolean;
   source: any;
 };
+
+export const isCSSExports = (exports: any): exports is CSSExports => {
+  return exports.mixins != null;
+};

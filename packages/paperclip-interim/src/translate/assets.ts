@@ -25,7 +25,7 @@ import * as crypto from "crypto";
 
 export const getAssets = (
   modulePath: string,
-  node: Node,
+  node: Node | null,
   sheet: VirtSheet,
   engine: EngineDelegate,
   options: InterimCompilerOptions
@@ -37,7 +37,7 @@ export const getAssets = (
       )
     : modulePath;
 
-  const { html, css } = collectAssetPaths(modulePath, node, sheet);
+  const { html, css } = collectAssetPaths(node, sheet);
 
   return [
     ...html.map(mapAsset(modulePath, outModulePath, engine, options)),
@@ -120,33 +120,31 @@ const mapAsset = (
   };
 };
 
-const collectAssetPaths = (
-  modulePath: string,
-  root: Node,
-  sheet: VirtSheet
-) => {
+const collectAssetPaths = (root: Node | null, sheet: VirtSheet) => {
   const html = {};
   const css = {};
 
-  traverseExpression(root, nested => {
-    if (
-      isNode(nested) &&
-      nested.nodeKind === NodeKind.Element &&
-      nested.tagName === "import"
-    ) {
-      return false;
-    }
-
-    if (isAttribute(nested)) {
+  if (root) {
+    traverseExpression(root, nested => {
       if (
-        nested.attrKind === AttributeKind.KeyValueAttribute &&
-        nested.name === "src" &&
-        nested.value.attrValueKind === AttributeValueKind.String
+        isNode(nested) &&
+        nested.nodeKind === NodeKind.Element &&
+        nested.tagName === "import"
       ) {
-        html[nested.value.value] = 1;
+        return false;
       }
-    }
-  });
+
+      if (isAttribute(nested)) {
+        if (
+          nested.attrKind === AttributeKind.KeyValueAttribute &&
+          nested.name === "src" &&
+          nested.value.attrValueKind === AttributeValueKind.String
+        ) {
+          html[nested.value.value] = 1;
+        }
+      }
+    });
+  }
 
   traverseVirtSheet(sheet, rule => {
     if (rule.style) {

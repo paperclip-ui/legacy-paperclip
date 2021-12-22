@@ -1,10 +1,15 @@
-import { PCExports, stringifyCSSSheet, VirtSheet } from "paperclip-utils";
+import {
+  CSSExports,
+  PCExports,
+  stringifyCSSSheet,
+  VirtSheet
+} from "paperclip-utils";
 import { InterimCSS } from "../state";
 import { InterimAsset } from "../state/assets";
 
 export const translateCSS = (
   sheet: VirtSheet,
-  exports: PCExports,
+  exports: CSSExports,
   assets: InterimAsset[]
 ): InterimCSS => {
   return {
@@ -17,12 +22,12 @@ export const translateCSS = (
     }),
     exports: {
       classNames: (Object as any).fromEntries(
-        Object.keys(exports.style.classNames)
+        Object.keys(exports.classNames)
           .filter(className => {
-            return exports.style.classNames[className].public;
+            return exports.classNames[className].public;
           })
           .map(className => {
-            return [className, exports.style.classNames[className].scopedName];
+            return [className, exports.classNames[className].scopedName];
           })
       )
     }

@@ -22,12 +22,19 @@ import {
   INJECT_STYLES_TAG_NAME,
   NodeStyleInspection,
   VirtNodeSource,
-  Dependency
+  Dependency,
+  Module
 } from "paperclip-utils";
 import { noop } from "./utils";
 
 export type FileContent = {
   [identifier: string]: string;
+};
+
+export type ErrorResult = { error: any };
+
+export const isErrorResult = (data: any): data is ErrorResult => {
+  return data.error != null;
 };
 
 export type EngineIO = {
@@ -181,7 +188,7 @@ export class EngineDelegate {
       }
     }
   };
-  parseFile(uri: string) {
+  parseFile(uri: string): Module | ErrorResult {
     return mapResult(this._native.parse_file(uri));
   }
   lint(uri: string): Diagnostic[] {
@@ -201,7 +208,7 @@ export class EngineDelegate {
       ))
     );
   }
-  parseContent(content: string, uri: string) {
+  parseContent(content: string, uri: string): Module | ErrorResult {
     return this._tryCatch(() =>
       mapResult(this._native.parse_content(content, uri))
     );
