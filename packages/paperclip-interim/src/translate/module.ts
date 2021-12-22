@@ -55,7 +55,7 @@ export class InterimCompiler {
     if (sheet.error) {
       throw sheet.error;
     }
-    return translateinterim(
+    return translateInterim(
       ast,
       sheet,
       castAsFilePath(filePath),
@@ -66,7 +66,7 @@ export class InterimCompiler {
   }
 }
 
-const translateinterim = (
+const translateInterim = (
   ast: Node,
   sheet: VirtSheet,
   filePath: string,
@@ -111,7 +111,10 @@ const translateImports = (
       const src = getAttributeStringValue("src", imp);
 
       // do not include css
-      if (/\.css$/.test(src)) {
+      if (
+        /\.css$/.test(src) &&
+        !options.config.compilerOptions.importAssetsAsModules
+      ) {
         return null;
       }
 

@@ -199,6 +199,23 @@ describe(__filename + "#", () => {
       {
         html: `<import src=/a.pc as=test  /><style></style>`
       }
+    ],
+    [
+      `Includes CSS imports if importAssetsAsModules is true`,
+      {
+        "/src/entry.pc": `
+          <import src="/a.pc" as="test" />
+          <import src="/a.css" inject-styles />
+        `,
+        "/a.pc": "<div></div>",
+        "/a.css": ".a { }"
+      },
+      {
+        importAssetsAsModules: true
+      },
+      {
+        html: `<import src=/a.pc as=test  /><import src=/a.css as=undefined  /><style></style>`
+      }
     ]
   ].forEach(
     ([
@@ -210,7 +227,8 @@ describe(__filename + "#", () => {
         srcDir,
         outDir,
         assetPrefix,
-        useAssetHashNames
+        useAssetHashNames,
+        importAssetsAsModules
       },
       expectedOutput
     ]: any) => {
@@ -222,6 +240,7 @@ describe(__filename + "#", () => {
             srcDir,
             compilerOptions: {
               outDir,
+              importAssetsAsModules,
               assetPrefix,
               embedAssetMaxSize,
               assetOutDir,

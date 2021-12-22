@@ -12,6 +12,7 @@
     "paperclip": "^18.2.13",
     "paperclip-utils": "^18.1.6",
     "pixelmatch": "^5.2.1",
-    "puppeteer": "^13.0.0"
+    "puppeteer": "^13.0.0",
+    "yargs": "^17.3.0"
   }
 }
