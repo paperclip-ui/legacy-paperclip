@@ -16,7 +16,9 @@ import {
   getPaperclipConfigIncludes,
   isPaperclipResourceFile,
   isCSSFile,
-  isPaperclipFile
+  getOutputFile,
+  isPaperclipFile,
+  getScopedCSSFilePath
 } from "paperclip-utils";
 
 type BaseOptions = {
@@ -71,15 +73,11 @@ class DirectoryBuilder {
     try {
       const result = await buildFile(filePath, this.engine, this.options);
 
-      let outFilePath = this.options.config.compilerOptions?.outDir
-        ? filePath.replace(
-            path.join(this.options.cwd, this.options.config.srcDir),
-            path.join(
-              this.options.cwd,
-              this.options.config.compilerOptions.outDir
-            )
-          )
-        : filePath;
+      const outFilePath = getOutputFile(
+        filePath,
+        this.options.config,
+        this.options.cwd
+      );
 
       for (const ext in result.translations) {
         const content = result.translations[ext];
@@ -92,7 +90,11 @@ class DirectoryBuilder {
       if (this.options.config.compilerOptions?.mainCSSFileName) {
         this._addCSSContent(filePath, result.css);
       } else {
-        this._em.emit("file", outFilePath + ".css", result.css);
+        if (isCSSFile(outFilePath)) {
+          this._em.emit("file", getScopedCSSFilePath(outFilePath), result.css);
+        } else {
+          this._em.emit("file", outFilePath + ".css", result.css);
+        }
       }
 
       for (const asset of result.assets) {
@@ -205,20 +207,6 @@ export const buildFile = async (
       ? filePath
       : URL.pathToFileURL(filePath).href;
 
-  const includes: string[] = [];
-
-  if (options.config.compilerOptions.importAssetsAsModules) {
-    if (options.config.compilerOptions.mainCSSFileName) {
-      includes.push(
-        path.resolve(
-          path.dirname(filePath),
-          getMainCSSFilePath(options.cwd, options.config)
-        )
-      );
-    } else {
-      includes.push("./" + path.basename(filePath) + ".css");
-    }
-  }
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
   const targetCompilers = requireTargetCompilers(options.cwd, options.config);
@@ -226,6 +214,20 @@ export const buildFile = async (
   let translations: Record<string, string> = {};
 
   if (isPaperclipFile(filePath)) {
+    const includes: string[] = [];
+
+    if (options.config.compilerOptions.importAssetsAsModules) {
+      if (options.config.compilerOptions.mainCSSFileName) {
+        includes.push(
+          path.resolve(
+            path.dirname(filePath),
+            getMainCSSFilePath(options.cwd, options.config)
+          )
+        );
+      } else {
+        includes.push("./" + path.basename(filePath) + ".css");
+      }
+    }
     translations = targetCompilers.reduce((files, compiler) => {
       return Object.assign(
         files,

@@ -13,7 +13,7 @@ import {
   PCExports,
   isCSSFile,
   Module,
-  getScopedCSSFileName,
+  getScopedCSSFilePath,
   traverseExpression,
   ModuleKind,
   CSSExports,
@@ -130,7 +130,7 @@ const translateImports = (
       let resolvedFilePath = castAsFilePath(engine.resolveFile(filePath, src));
 
       if (isCSSFile(resolvedFilePath)) {
-        resolvedFilePath = getScopedCSSFileName(resolvedFilePath);
+        resolvedFilePath = getScopedCSSFilePath(resolvedFilePath);
       }
 
       const usedTagNames: any = {};

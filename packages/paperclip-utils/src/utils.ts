@@ -18,5 +18,5 @@ export const isPaperclipResourceFile = (filePath: string) =>
   (isCSSFile(filePath) || isPaperclipFile(filePath)) &&
   !isGeneratedPaperclipFile(filePath);
 export const isCSSFile = (filePath: string) => /\.css$/.test(filePath);
-export const getScopedCSSFileName = (filePath: string) =>
+export const getScopedCSSFilePath = (filePath: string) =>
   filePath.replace(/\.css$/, ".scoped.css");

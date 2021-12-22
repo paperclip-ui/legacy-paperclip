@@ -1,3 +1,9 @@
 lib/
 dist/
-styles/
+
+*.scoped.css
+src/styles/
+
+
+
+
