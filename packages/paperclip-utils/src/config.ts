@@ -45,7 +45,7 @@ export type PaperclipConfig = {
 
   lintOptions?: LintOptions;
 
-  include?: string[];
+  // include?: string[];
 };
 
 export const getPaperclipConfigIncludes = (
@@ -56,9 +56,9 @@ export const getPaperclipConfigIncludes = (
     return [paperclipResourceGlobPattern(path.join(cwd, config.srcDir))];
   }
 
-  if (config.include) {
-    return config.include.map(inc => path.join(cwd, inc));
-  }
+  // if (config.include) {
+  //   return config.include.map(inc => path.join(cwd, inc));
+  // }
 
   return [path.join(paperclipResourceGlobPattern(cwd))];
 };
