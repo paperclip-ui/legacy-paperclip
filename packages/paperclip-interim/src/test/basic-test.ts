@@ -214,7 +214,7 @@ describe(__filename + "#", () => {
         importAssetsAsModules: true
       },
       {
-        html: `<import src=/a.pc as=test  /><import src=/a.css as=undefined  /><style></style>`
+        html: `<import src=/a.pc as=test  /><import src=/a.scoped.css as=undefined  /><style></style>`
       }
     ]
   ].forEach(

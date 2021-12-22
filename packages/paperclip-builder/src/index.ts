@@ -5,12 +5,17 @@ import * as fs from "fs";
 import { EventEmitter } from "events";
 import * as chokidar from "chokidar";
 import { EngineDelegate } from "paperclip";
+import { flatten } from "lodash";
 import {
   InterimCompiler,
   InterimModule,
   CompileOptions
 } from "paperclip-interim";
-import { PaperclipConfig, paperclipSourceGlobPattern } from "paperclip-utils";
+import {
+  PaperclipConfig,
+  getPaperclipConfigIncludes,
+  isPaperclipResourceFile
+} from "paperclip-utils";
 
 type BaseOptions = {
   config: PaperclipConfig;
@@ -33,33 +38,35 @@ class DirectoryBuilder {
     this._cssContents = [];
     this._em = new EventEmitter();
   }
-  start() {
-    glob(
-      paperclipSourceGlobPattern(this.options.config.srcDir),
-      {
-        cwd: this.options.cwd,
-        absolute: true
-      },
-      async (err, filePaths) => {
-        await Promise.all(filePaths.map(this._buildFile));
-        if (!this.options.watch) {
-          this._em.emit("end");
-        }
-        this._compiledInitially = true;
-        this._maybeEmitMainCSSFile();
-      }
+  async start() {
+    const sources = getPaperclipConfigIncludes(
+      this.options.config,
+      this.options.cwd
     );
+    console.log(sources);
+
+    const filePaths = flatten(sources.map(inc => glob.sync(inc)));
+
+    await Promise.all(filePaths.map(this._buildFile));
+    if (!this.options.watch) {
+      this._em.emit("end");
+    }
+    this._compiledInitially = true;
+    this._maybeEmitMainCSSFile();
 
     if (this.options.watch) {
-      watch(
-        this.options.cwd,
-        paperclipSourceGlobPattern(this.options.config.srcDir),
-        this._buildFile
+      sources.forEach(source =>
+        watch(this.options.cwd, source, this._buildFile)
       );
+    } else {
+      this._em.emit("end");
     }
     return this;
   }
   _buildFile = async (filePath: string) => {
+    if (!isPaperclipResourceFile(filePath)) {
+      return;
+    }
     try {
       const result = await buildFile(filePath, this.engine, this.options);
 

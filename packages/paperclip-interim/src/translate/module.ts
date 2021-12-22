@@ -11,6 +11,8 @@ import {
   isNode,
   NodeKind,
   PCExports,
+  isCSSFile,
+  getScopedCSSFileName,
   traverseExpression
 } from "paperclip-utils";
 import { getAssets } from "./assets";
@@ -112,15 +114,17 @@ const translateImports = (
 
       // do not include css
       if (
-        /\.css$/.test(src) &&
+        isCSSFile(src) &&
         !options.config.compilerOptions.importAssetsAsModules
       ) {
         return null;
       }
 
-      const resolvedFilePath = castAsFilePath(
-        engine.resolveFile(filePath, src)
-      );
+      let resolvedFilePath = castAsFilePath(engine.resolveFile(filePath, src));
+
+      if (isCSSFile(resolvedFilePath)) {
+        resolvedFilePath = getScopedCSSFileName(resolvedFilePath);
+      }
 
       const usedTagNames: any = {};
 

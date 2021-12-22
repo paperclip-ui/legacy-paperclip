@@ -3,6 +3,6 @@
     "outDir": "lib",
     "mainCSSFileName": "main.css"
   },
-  "srcDir": "./src",
+  "include": ["./src/**/*.pc", "./styles/**/*.css"],
   "moduleDirs": ["./node_modules"]
 }
