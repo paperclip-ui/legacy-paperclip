@@ -108,8 +108,15 @@ const translateImports = (
         return null;
       }
 
+      const src = getAttributeStringValue("src", imp);
+
+      // do not include css
+      if (/\.css$/.test(src)) {
+        return null;
+      }
+
       const resolvedFilePath = castAsFilePath(
-        engine.resolveFile(filePath, getAttributeStringValue("src", imp))
+        engine.resolveFile(filePath, src)
       );
 
       const usedTagNames: any = {};

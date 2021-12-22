@@ -1,0 +1,19 @@
+{
+  "name": "tailwind",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn build:pc && yarn build:css",
+    "build:watch": "concurrently \"yarn build:pc --watch\" \"yarn build:css --watch\"",
+    "build:pc": "paperclip build",
+    "build:css": "tailwindcss -i ./src/tailwind.scss -o ./lib/tailwind.css"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^6.5.1",
+    "paperclip": "^18.2.13",
+    "paperclip-cli": "^18.2.13",
+    "tailwindcss": "^3.0.7"
+  }
+}

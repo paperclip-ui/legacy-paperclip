@@ -159,6 +159,46 @@ describe(__filename + "#", () => {
       {
         html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
       }
+    ],
+    [
+      `Includes PC imports`,
+      {
+        "/src/entry.pc": `
+          <import src="/a.pc" as="test" />
+        `,
+        "/a.pc": "<div></div>"
+      },
+      {
+        embedAssetMaxSize: "embedded-svg".length,
+        assetOutDir: "./lib",
+        srcDir: "/src",
+        outDir: "/lib",
+        assetPrefix: "http://localhost:3000/"
+      },
+      {
+        html: `<import src=/a.pc as=test  /><style></style>`
+      }
+    ],
+    [
+      `Omits css imports`,
+      {
+        "/src/entry.pc": `
+          <import src="/a.pc" as="test" />
+          <import src="/a.css" inject-styles />
+        `,
+        "/a.pc": "<div></div>",
+        "/a.css": ".a { }"
+      },
+      {
+        embedAssetMaxSize: "embedded-svg".length,
+        assetOutDir: "./lib",
+        srcDir: "/src",
+        outDir: "/lib",
+        assetPrefix: "http://localhost:3000/"
+      },
+      {
+        html: `<import src=/a.pc as=test  /><style></style>`
+      }
     ]
   ].forEach(
     ([

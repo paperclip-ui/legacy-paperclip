@@ -1,0 +1,3 @@
+<import src="../lib/tailwind.css" />
+
+<div export component as="Test" class="my-10" />

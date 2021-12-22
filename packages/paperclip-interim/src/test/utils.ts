@@ -13,7 +13,9 @@ import {
 
 export const stringifyInterimModule = (module: InterimModule) => {
   const buffer = [
-    `<style>${module.css.sheetText
+    `${module.imports
+      .map(imp => `<import src=${imp.filePath} as=${imp.namespace}  />`)
+      .join("")}<style>${module.css.sheetText
       .replace(/[\n\r\t]/g, " ")
       .replace(/\s+/g, " ")}</style>`
   ];
