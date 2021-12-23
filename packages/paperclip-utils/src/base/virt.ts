@@ -1,4 +1,4 @@
-import { StringRange } from "./base-ast";
+import { StringRange } from "./ast";
 
 export type ExprTextSource = {
   uri: string;

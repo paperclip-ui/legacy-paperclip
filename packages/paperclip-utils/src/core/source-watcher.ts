@@ -4,7 +4,7 @@ import * as url from "url";
 import { EventEmitter } from "events";
 import { PaperclipConfig } from "./config";
 import { paperclipResourceGlobPattern } from "./utils";
-import { isGeneratedPaperclipFile } from ".";
+import { isGeneratedPaperclipFile } from "..";
 
 export enum ChangeKind {
   Removed,

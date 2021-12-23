@@ -1,4 +1,4 @@
-import { memoize } from "./memo";
+import { memoize } from "../core/memo";
 import { nodePathToAry } from "./virt";
 
 // core tree utils

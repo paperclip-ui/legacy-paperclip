@@ -1,10 +1,11 @@
-import { CSSExports, PCExports } from "./exports";
-import { DependencyContent } from "./graph";
-import { VirtJsObject } from "./js-virt";
-import { memoize } from "./memo";
+import { CSSExports } from "../css/exports";
+import { PCExports } from "./exports";
+import { DependencyContent } from "../core/graph";
+import { VirtJsObject } from "../script/virt";
+import { memoize } from "../core/memo";
 import { getNodeAncestors, getNodePath } from "./tree";
 import { Mutation } from "./virt-mtuation";
-import { CSSMutation } from "./css-mutation";
+import { CSSMutation } from "../css/virt-mutation";
 
 export enum VirtualNodeKind {
   Element = "Element",

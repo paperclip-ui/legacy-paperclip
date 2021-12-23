@@ -1,5 +1,5 @@
 import * as path from "path";
-import { getScopedCSSFilePath, isCSSFile } from ".";
+import { getScopedCSSFilePath, isCSSFile } from "..";
 import { paperclipResourceGlobPattern } from "./utils";
 
 export type CompilerOptions = {

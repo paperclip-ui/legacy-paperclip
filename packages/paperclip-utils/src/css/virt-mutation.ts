@@ -1,4 +1,4 @@
-import { VirtRule } from "./css-virt";
+import { VirtRule } from "./virt";
 
 /*
 

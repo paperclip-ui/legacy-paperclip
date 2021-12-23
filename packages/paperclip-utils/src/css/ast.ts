@@ -1,5 +1,5 @@
-import { BasicRaws, StringRange } from "./base-ast";
-import { Expression } from "./ast";
+import { BasicRaws, StringRange } from "../base/ast";
+import { Expression } from "../html/ast";
 
 export type Sheet = {
   rules: Rule[];

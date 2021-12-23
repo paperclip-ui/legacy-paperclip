@@ -1,5 +1,5 @@
-import { Sheet } from "./css-ast";
-import { Node } from "./ast";
+import { Sheet } from "../css/ast";
+import { Node } from "../html/ast";
 
 export enum ModuleKind {
   CSS = "CSS",

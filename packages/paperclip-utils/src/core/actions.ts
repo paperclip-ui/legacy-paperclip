@@ -1,7 +1,7 @@
-import { Node } from "./ast";
+import { Node } from "../html/ast";
 import { EngineDelegateEvent } from "./events";
 import { DependencyContent } from "./graph";
-import { LoadedData } from "./virt";
+import { LoadedData } from "../html/virt";
 
 export enum BasicPaperclipActionType {
   AST_REQUESTED = "AST_REQUESTED",

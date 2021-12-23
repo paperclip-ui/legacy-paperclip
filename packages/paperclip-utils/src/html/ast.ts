@@ -3,7 +3,7 @@ import {
   JsExpressionKind,
   Reference,
   traverseJSExpression
-} from "./js-ast";
+} from "../script/ast";
 import {
   Sheet,
   traverseSheet,
@@ -11,19 +11,19 @@ import {
   RuleKind,
   isRule,
   StyleExpression
-} from "./css-ast";
-import { BasicRaws, StringRange } from "./base-ast";
+} from "../css/ast";
+import { BasicRaws, StringRange } from "../base/ast";
 import { flattenTreeNode, getNodePath, getTreeNodeMap } from "./tree";
 import * as crc32 from "crc32";
-import { resolveImportFile } from "./resolve";
+import { resolveImportFile } from "../core/resolve";
 import * as path from "path";
 import {
   LOGIC_TAG_NAME,
   DEFAULT_PART_ID,
   AS_ATTR_NAME,
   PREVIEW_ATTR_NAME
-} from "./constants";
-import { memoize } from "./memo";
+} from "../core/constants";
+import { memoize } from "../core/memo";
 
 export enum NodeKind {
   Fragment = "Fragment",

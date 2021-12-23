@@ -19,8 +19,8 @@ import {
   EngineDelegateEvent,
   EngineDelegateEventKind,
   EvaluatedEvent
-} from "./events";
-import { patchCSSSheet } from "./virt-css-patcher";
+} from "../core/events";
+import { patchCSSSheet } from "../css/patcher";
 
 export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
   for (const mutation of mutations) {

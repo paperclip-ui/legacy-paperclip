@@ -1,5 +1,5 @@
-import { ExprTextSource } from "./base-virt";
-import { VirtJsObject } from "./js-virt";
+import { ExprTextSource } from "../base/virt";
+import { VirtJsObject } from "../script/virt";
 import { VirtualElementSourceInfo, VirtualNode } from "./virt";
 
 export enum ActionKind {

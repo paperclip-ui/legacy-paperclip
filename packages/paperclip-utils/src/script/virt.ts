@@ -1,5 +1,5 @@
-import { ExprTextSource } from "./base-virt";
-import { memoize } from "./memo";
+import { ExprTextSource } from "../base/virt";
+import { memoize } from "../core/memo";
 
 export enum VirtJsObjectKind {
   JsObject = "JsObject",
