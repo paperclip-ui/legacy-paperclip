@@ -1,4 +1,4 @@
-import { stringifyCSSSheet } from "./stringify-sheet";
+import { stringifyCSSSheet } from "../css/stringify-sheet";
 import { VirtualNode } from "./virt";
 import { Html5Entities } from "html-entities";
 

@@ -3,10 +3,8 @@ import * as path from "path";
 import * as url from "url";
 import { EventEmitter } from "events";
 import { PaperclipConfig } from "./config";
-import {
-  paperclipResourceGlobPattern,
-  paperclipSourceGlobPattern
-} from "./utils";
+import { paperclipResourceGlobPattern } from "./utils";
+import { isGeneratedPaperclipFile } from "..";
 
 export enum ChangeKind {
   Removed,
@@ -40,10 +38,14 @@ export class PaperclipResourceWatcher {
       { cwd: this.cwd, ignoreInitial: true }
     ));
     watcher.on("all", (eventName, relativePath) => {
+      if (isGeneratedPaperclipFile(relativePath)) {
+        return;
+      }
       const filePath =
         relativePath.charAt(0) !== "/"
           ? path.join(this.cwd, relativePath)
           : relativePath;
+
       const changeKind = CHOKIDAR_EVENT_MAP[eventName];
       if (changeKind) {
         this._em.emit("change", changeKind, url.pathToFileURL(filePath).href);

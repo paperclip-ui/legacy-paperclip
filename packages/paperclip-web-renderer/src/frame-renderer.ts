@@ -407,6 +407,12 @@ export class FramesRenderer {
               patchVirtNode(this.getState().preview, event.data.mutations)
             );
           }
+        } else if (event.data.kind === DiffedDataKind.CSS) {
+          if (!this._dependencies.includes(event.uri)) {
+            break;
+          }
+
+          this._framesProxy.applyStylePatches(event.data.mutations, event.uri);
         }
         break;
       }

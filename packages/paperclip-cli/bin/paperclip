@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 const path = require("path");
-const resolve = require("resolve");
-const chokidar = require("chokidar");
-const glob = require("glob");
-const {init, devStart} = require("../lib/cli");
+const {init} = require("../lib/cli");
 const {build} = require("paperclip-cli-minimal");
 const fs = require("fs");
 const  URL = require("url");

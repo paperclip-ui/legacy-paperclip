@@ -4,6 +4,7 @@ use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetSelectorText {
+  #[serde(rename = "selectorText")]
   pub selector_text: String,
 }
 

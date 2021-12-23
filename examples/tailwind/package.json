@@ -4,10 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "yarn build:pc && yarn build:css",
+    "build": "yarn build:css && yarn build:pc",
     "build:watch": "concurrently \"yarn build:pc --watch\" \"yarn build:css --watch\"",
     "build:pc": "paperclip build",
-    "build:css": "tailwindcss -i ./src/tailwind.scss -o ./lib/tailwind.css"
+    "build:css": "tailwindcss -i ./src/tailwind.scss -o ./src/styles/tailwind.css"
   },
   "dependencies": {},
   "devDependencies": {

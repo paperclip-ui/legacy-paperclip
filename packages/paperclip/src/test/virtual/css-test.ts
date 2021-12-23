@@ -1915,4 +1915,40 @@ describe(__filename + "#", () => {
       `<style>._ae63497a._ae63497a { display:flex; } @media screen and (max-width: 500px) { ._ae63497a._ae63497a { width:100%; } }</style><div class="_80f4925f _pub-80f4925f _ae63497a"></div>`
     );
   });
+
+  it(`patches CSS files`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="/test.css" inject-styles />
+        <div />
+      `,
+      "/test.css": `
+        div {
+          color: red;
+        }
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>div._pub-b8a55827 { color:red; }</style><div class="_80f4925f _pub-80f4925f _pub-b8a55827"></div>`
+    );
+
+    engine.updateVirtualFileContent(
+      "/test.css",
+      `
+      div {
+        color: blue;
+      }
+    `
+    );
+
+    const result2 = engine.getLoadedData("/entry.pc");
+
+    expect(stringifyLoadResult(result2)).to.eql(
+      `<style>div._pub-b8a55827 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _pub-b8a55827"></div>`
+    );
+  });
 });

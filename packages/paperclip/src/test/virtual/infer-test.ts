@@ -1,5 +1,5 @@
 import { createEngineDelegate } from "../../node";
-import { infer } from "../../core";
+import { infer, PCModule } from "../../core";
 import { expect } from "chai";
 
 describe(__filename + "#", async () => {
@@ -287,7 +287,7 @@ describe(__filename + "#", async () => {
   for (const [source, inference] of cases) {
     it(`can infer ${source}`, async () => {
       const ast = await engine.parseContent(String(source), "");
-      expect(infer(ast)).to.eql(inference);
+      expect(infer(ast as PCModule)).to.eql(inference);
     });
   }
 });

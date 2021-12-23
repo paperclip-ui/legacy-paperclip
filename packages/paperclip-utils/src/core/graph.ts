@@ -1,5 +1,5 @@
-import { Node } from "./ast";
-import { Sheet } from "./css-ast";
+import { Node } from "../html/ast";
+import { Sheet } from "../css/ast";
 
 export enum DependencyContentKind {
   Node = "Node",

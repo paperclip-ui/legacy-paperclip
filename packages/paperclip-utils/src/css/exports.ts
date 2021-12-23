@@ -5,22 +5,6 @@ export type CSSExports = {
   keyframes: Record<string, KeyframesExport>;
 };
 
-export type PCExports = {
-  components: Record<string, ComponentExport>;
-  style: CSSExports;
-};
-
-export type ComponentProperty = {
-  name: string;
-  optional: boolean;
-};
-
-export type ComponentExport = {
-  name: string;
-  properties: Record<string, ComponentProperty>;
-  public: boolean;
-};
-
 export type ClassNameExport = {
   name: string;
   scopedName: string;
@@ -42,4 +26,8 @@ export type KeyframesExport = {
   name: string;
   public: boolean;
   source: any;
+};
+
+export const isCSSExports = (exports: any): exports is CSSExports => {
+  return exports.mixins != null;
 };

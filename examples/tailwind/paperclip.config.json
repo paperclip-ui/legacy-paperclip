@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "lib",
-    "mainCSSFileName": "main.css"
+    "importAssetsAsModules": true
   },
   "srcDir": "./src",
   "moduleDirs": ["./node_modules"]

@@ -1,4 +1,4 @@
-import { StringRange } from "./base-ast";
+import { StringRange } from "../base/ast";
 
 export enum ParseErrorKind {
   EndOfFile = "EndOfFile",

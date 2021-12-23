@@ -1,10 +1,10 @@
 // TODO  - move all non-specific event stuff to payload, or data prop so that
 // event can remain ephemeral.
 
-import { Node } from "./ast";
-import { StringRange } from "./base-ast";
+import { Node } from "../html/ast";
+import { StringRange } from "../base/ast";
 import { EngineErrorKind, GraphErrorInfo } from "./errors";
-import { EvaluatedData, DiffedData, LoadedData, SheetInfo } from "./virt";
+import { EvaluatedData, DiffedData, LoadedData, SheetInfo } from "../html/virt";
 
 export enum EngineDelegateEventKind {
   Loading = "Loading",

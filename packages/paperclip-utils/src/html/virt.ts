@@ -1,9 +1,11 @@
-import { CSSExports, PCExports } from "./exports";
-import { DependencyContent } from "./graph";
-import { VirtJsObject } from "./js-virt";
-import { memoize } from "./memo";
+import { CSSExports } from "../css/exports";
+import { PCExports } from "./exports";
+import { DependencyContent } from "../core/graph";
+import { VirtJsObject } from "../script/virt";
+import { memoize } from "../core/memo";
 import { getNodeAncestors, getNodePath } from "./tree";
 import { Mutation } from "./virt-mtuation";
+import { CSSMutation } from "../css/virt-mutation";
 
 export enum VirtualNodeKind {
   Element = "Element",
@@ -69,13 +71,15 @@ export type BaseDiffedData<TKind = DiffedDataKind> = {
   kind: TKind;
 };
 
-export type DiffedCSSData = BaseDiffedData<DiffedDataKind.CSS>;
+export type DiffedCSSData = {
+  exports: CSSExports;
+  mutations: CSSMutation[];
+} & BaseDiffedData<DiffedDataKind.CSS>;
 
 export type DiffedPCData = {
   allImportedSheetUris: string[];
   dependencies: Record<string, string>;
-  // TODO - needs to be sheetMutations
-  sheetMutations: any[];
+  sheetMutations: CSSMutation[];
   mutations: Mutation[];
   exports: PCExports;
 } & BaseDiffedData<DiffedDataKind.PC>;

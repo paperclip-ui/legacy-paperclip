@@ -1,3 +1,6 @@
+import * as path from "path";
+import { paperclipResourceGlobPattern } from "./utils";
+
 export type CompilerOptions = {
   // where PC files should be compiled to. If undefined, then
   // srcDir is used
@@ -41,4 +44,36 @@ export type PaperclipConfig = {
   compilerOptions?: CompilerOptions;
 
   lintOptions?: LintOptions;
+
+  // include?: string[];
+};
+
+export const getPaperclipConfigIncludes = (
+  config: PaperclipConfig,
+  cwd: string
+) => {
+  if (config.srcDir) {
+    return [paperclipResourceGlobPattern(path.join(cwd, config.srcDir))];
+  }
+
+  // if (config.include) {
+  //   return config.include.map(inc => path.join(cwd, inc));
+  // }
+
+  return [path.join(paperclipResourceGlobPattern(cwd))];
+};
+
+export const getOutputFile = (
+  filePath: string,
+  config: PaperclipConfig,
+  cwd: string
+) => {
+  const outFilePath = config.compilerOptions?.outDir
+    ? filePath.replace(
+        path.join(cwd, config.srcDir),
+        path.join(cwd, config.compilerOptions.outDir)
+      )
+    : filePath;
+
+  return outFilePath;
 };

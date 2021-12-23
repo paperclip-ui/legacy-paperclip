@@ -1,4 +1,4 @@
-import { ExprSource, ExprTextSource } from "./base-virt";
+import { ExprSource, ExprTextSource } from "../base/virt";
 import { EngineError } from "./errors";
 
 export enum LintWarningKind {}

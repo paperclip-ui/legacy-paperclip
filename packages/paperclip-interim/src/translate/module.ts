@@ -1,4 +1,4 @@
-import { EngineDelegate, Node, VirtSheet } from "paperclip";
+import { EngineDelegate, Node, VirtSheet, isErrorResult } from "paperclip";
 import * as path from "path";
 import * as fs from "fs";
 import * as URL from "url";
@@ -11,13 +11,20 @@ import {
   isNode,
   NodeKind,
   PCExports,
-  traverseExpression
+  isCSSFile,
+  Module,
+  getScopedCSSFilePath,
+  traverseExpression,
+  ModuleKind,
+  CSSExports,
+  isCSSExports
 } from "paperclip-utils";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";
 import { FIO, InterimCompilerOptions } from "./options";
-import { InterimModule, InterimImport } from "../state";
+import { InterimModule, InterimImport, InterimComponent } from "../state";
+import { InterimAsset } from "../state/assets";
 
 const castAsFilePath = (filePath: string) => {
   if (filePath.indexOf("file://") === 0) {
@@ -49,49 +56,51 @@ export class InterimCompiler {
   parseFile(filePath: string): InterimModule {
     const { sheet, exports } = this._engine.open(filePath);
     const ast = this._engine.parseFile(filePath);
-    if (ast.error) {
+    if (isErrorResult(ast)) {
       throw ast.error;
     }
     if (sheet.error) {
       throw sheet.error;
     }
-    return translateinterim(
+    return translateInterim(
       ast,
       sheet,
       castAsFilePath(filePath),
       this._engine,
-      exports as PCExports,
+      exports,
       this.options
     );
   }
 }
 
-const translateinterim = (
-  ast: Node,
+const translateInterim = (
+  ast: Module,
   sheet: VirtSheet,
   filePath: string,
   engine: EngineDelegate,
-  exports: PCExports,
+  exports: PCExports | CSSExports,
   options: InterimCompilerOptions
 ): InterimModule => {
-  const imports: InterimImport[] = translateImports(
-    ast,
-    filePath,
-    engine,
-    options
-  );
-  const assets = getAssets(filePath, ast, sheet, engine, options);
-  const components = translateComponents(
-    ast,
-    filePath,
-    engine,
-    imports,
-    assets
-  );
+  let components: InterimComponent[] = [];
+  let imports: InterimImport[] = [];
+  let assets: InterimAsset[] = [];
+
+  if (ast.moduleKind === ModuleKind.PC) {
+    imports = translateImports(ast, filePath, engine, options);
+    assets = getAssets(filePath, ast, sheet, engine, options);
+    components = translateComponents(ast, filePath, engine, imports, assets);
+  } else {
+    assets = getAssets(filePath, null, sheet, engine, options);
+  }
+
   return {
     imports,
     components,
-    css: translateCSS(sheet, exports, assets),
+    css: translateCSS(
+      sheet,
+      isCSSExports(exports) ? exports : exports.style,
+      assets
+    ),
     assets
   };
 };
@@ -111,13 +120,18 @@ const translateImports = (
       const src = getAttributeStringValue("src", imp);
 
       // do not include css
-      if (/\.css$/.test(src)) {
+      if (
+        isCSSFile(src) &&
+        !options.config.compilerOptions.importAssetsAsModules
+      ) {
         return null;
       }
 
-      const resolvedFilePath = castAsFilePath(
-        engine.resolveFile(filePath, src)
-      );
+      let resolvedFilePath = castAsFilePath(engine.resolveFile(filePath, src));
+
+      if (isCSSFile(resolvedFilePath)) {
+        resolvedFilePath = getScopedCSSFilePath(resolvedFilePath);
+      }
 
       const usedTagNames: any = {};
 

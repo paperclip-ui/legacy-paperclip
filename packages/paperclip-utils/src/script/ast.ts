@@ -1,5 +1,5 @@
-import { Node, traverseExpression } from "./ast";
-import { StringRange } from "./base-ast";
+import { Node, traverseExpression } from "../html/ast";
+import { StringRange } from "../base/ast";
 
 export enum JsExpressionKind {
   Node = "Node",

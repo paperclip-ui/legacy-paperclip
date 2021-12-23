@@ -5,12 +5,21 @@ import * as fs from "fs";
 import { EventEmitter } from "events";
 import * as chokidar from "chokidar";
 import { EngineDelegate } from "paperclip";
+import { flatten } from "lodash";
 import {
   InterimCompiler,
   InterimModule,
   CompileOptions
 } from "paperclip-interim";
-import { PaperclipConfig, paperclipSourceGlobPattern } from "paperclip-utils";
+import {
+  PaperclipConfig,
+  getPaperclipConfigIncludes,
+  isPaperclipResourceFile,
+  isCSSFile,
+  getOutputFile,
+  isPaperclipFile,
+  getScopedCSSFilePath
+} from "paperclip-utils";
 
 type BaseOptions = {
   config: PaperclipConfig;
@@ -33,45 +42,42 @@ class DirectoryBuilder {
     this._cssContents = [];
     this._em = new EventEmitter();
   }
-  start() {
-    glob(
-      paperclipSourceGlobPattern(this.options.config.srcDir),
-      {
-        cwd: this.options.cwd,
-        absolute: true
-      },
-      async (err, filePaths) => {
-        await Promise.all(filePaths.map(this._buildFile));
-        if (!this.options.watch) {
-          this._em.emit("end");
-        }
-        this._compiledInitially = true;
-        this._maybeEmitMainCSSFile();
-      }
+  async start() {
+    const sources = getPaperclipConfigIncludes(
+      this.options.config,
+      this.options.cwd
     );
 
+    const filePaths = flatten(sources.map(inc => glob.sync(inc)));
+
+    await Promise.all(filePaths.map(this._buildFile));
+    if (!this.options.watch) {
+      this._em.emit("end");
+    }
+    this._compiledInitially = true;
+    this._maybeEmitMainCSSFile();
+
     if (this.options.watch) {
-      watch(
-        this.options.cwd,
-        paperclipSourceGlobPattern(this.options.config.srcDir),
-        this._buildFile
+      sources.forEach(source =>
+        watch(this.options.cwd, source, this._buildFile)
       );
+    } else {
+      this._em.emit("end");
     }
     return this;
   }
   _buildFile = async (filePath: string) => {
+    if (!isPaperclipResourceFile(filePath)) {
+      return;
+    }
     try {
       const result = await buildFile(filePath, this.engine, this.options);
 
-      let outFilePath = this.options.config.compilerOptions?.outDir
-        ? filePath.replace(
-            path.join(this.options.cwd, this.options.config.srcDir),
-            path.join(
-              this.options.cwd,
-              this.options.config.compilerOptions.outDir
-            )
-          )
-        : filePath;
+      const outFilePath = getOutputFile(
+        filePath,
+        this.options.config,
+        this.options.cwd
+      );
 
       for (const ext in result.translations) {
         const content = result.translations[ext];
@@ -84,7 +90,11 @@ class DirectoryBuilder {
       if (this.options.config.compilerOptions?.mainCSSFileName) {
         this._addCSSContent(filePath, result.css);
       } else {
-        this._em.emit("file", outFilePath + ".css", result.css);
+        if (isCSSFile(outFilePath)) {
+          this._em.emit("file", getScopedCSSFilePath(outFilePath), result.css);
+        } else {
+          this._em.emit("file", outFilePath + ".css", result.css);
+        }
       }
 
       for (const asset of result.assets) {
@@ -197,36 +207,40 @@ export const buildFile = async (
       ? filePath
       : URL.pathToFileURL(filePath).href;
 
-  const includes: string[] = [];
-
-  if (options.config.compilerOptions.importAssetsAsModules) {
-    if (options.config.compilerOptions.mainCSSFileName) {
-      includes.push(
-        path.resolve(
-          path.dirname(filePath),
-          getMainCSSFilePath(options.cwd, options.config)
-        )
-      );
-    } else {
-      includes.push("./" + path.basename(filePath) + ".css");
-    }
-  }
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
   const targetCompilers = requireTargetCompilers(options.cwd, options.config);
 
-  const translations = targetCompilers.reduce((files, compiler) => {
-    return Object.assign(
-      files,
-      compiler.compile({
-        module: interimModule,
-        fileUrl,
-        includes,
-        config: options.config,
-        cwd: options.cwd
-      })
-    );
-  }, {});
+  let translations: Record<string, string> = {};
+
+  if (isPaperclipFile(filePath)) {
+    const includes: string[] = [];
+
+    if (options.config.compilerOptions.importAssetsAsModules) {
+      if (options.config.compilerOptions.mainCSSFileName) {
+        includes.push(
+          path.resolve(
+            path.dirname(filePath),
+            getMainCSSFilePath(options.cwd, options.config)
+          )
+        );
+      } else {
+        includes.push("./" + path.basename(filePath) + ".css");
+      }
+    }
+    translations = targetCompilers.reduce((files, compiler) => {
+      return Object.assign(
+        files,
+        compiler.compile({
+          module: interimModule,
+          fileUrl,
+          includes,
+          config: options.config,
+          cwd: options.cwd
+        })
+      );
+    }, {});
+  }
 
   return {
     translations,

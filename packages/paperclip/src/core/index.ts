@@ -6,5 +6,7 @@ export {
   EngineMode,
   keepEngineInSyncWithFileSystem2,
   EngineOptions,
-  getEngineImports
+  getEngineImports,
+  isErrorResult,
+  ErrorResult
 } from "./delegate";
