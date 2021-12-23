@@ -216,8 +216,8 @@ const updatePrimary = (
         ...allData,
         [event.uri]: {
           ...existingCSSData,
-          exports: existingCSSData.exports,
-          sheet: existingCSSData.sheet
+          exports: event.data.exports,
+          sheet: patchCSSSheet(existingCSSData.sheet, event.data.mutations)
         }
       };
     }

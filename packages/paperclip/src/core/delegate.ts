@@ -23,7 +23,12 @@ import {
   NodeStyleInspection,
   VirtNodeSource,
   Dependency,
-  Module
+  Module,
+  DiffedEvent,
+  EvaluatedPCData,
+  LoadedPCData,
+  LoadedCSSData,
+  DiffedCSSData
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -140,54 +145,63 @@ export class EngineDelegate {
         existingData.kind === EvaluatedDataKind.PC &&
         newData.kind === EvaluatedDataKind.PC
       ) {
-        const removedSheetUris: string[] = [];
-        const diffData = event.data as DiffedPCData;
-
-        for (const { uri } of existingData.importedSheets) {
-          if (!newData.allImportedSheetUris.includes(uri)) {
-            removedSheetUris.push(uri);
-          }
-        }
-
-        const addedSheets: SheetInfo[] = [];
-
-        for (
-          let i = 0, { length } = diffData.allImportedSheetUris;
-          i < length;
-          i++
-        ) {
-          const depUri = diffData.allImportedSheetUris[i];
-          // Note that we only do this if the sheet is already rendered -- engine
-          // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
-          // has been added, including the actual sheet object.
-          if (
-            !existingData.allImportedSheetUris.includes(depUri) &&
-            this._rendered[depUri]
-          ) {
-            addedSheets.push({
-              uri: depUri,
-              index: i,
-              sheet: this._rendered[depUri].sheet
-            });
-          }
-        }
-
-        if (addedSheets.length || removedSheetUris.length) {
-          this._dispatch({
-            uri: event.uri,
-            kind: EngineDelegateEventKind.ChangedSheets,
-            data: {
-              // TODO - don't do this - instead include newSheetUris and
-              // allow renderer to fetch these sheets
-              newSheets: addedSheets,
-              removedSheetUris: removedSheetUris,
-              allImportedSheetUris: diffData.allImportedSheetUris
-            }
-          });
-        }
+        this._handlePCDiff(event, existingData, newData);
       }
     }
   };
+
+  private _handlePCDiff = (
+    event: DiffedEvent,
+    existingData: LoadedPCData,
+    newData: LoadedPCData
+  ) => {
+    const removedSheetUris: string[] = [];
+    const diffData = event.data as DiffedPCData;
+
+    for (const { uri } of existingData.importedSheets) {
+      if (!newData.allImportedSheetUris.includes(uri)) {
+        removedSheetUris.push(uri);
+      }
+    }
+
+    const addedSheets: SheetInfo[] = [];
+
+    for (
+      let i = 0, { length } = diffData.allImportedSheetUris;
+      i < length;
+      i++
+    ) {
+      const depUri = diffData.allImportedSheetUris[i];
+      // Note that we only do this if the sheet is already rendered -- engine
+      // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
+      // has been added, including the actual sheet object.
+      if (
+        !existingData.allImportedSheetUris.includes(depUri) &&
+        this._rendered[depUri]
+      ) {
+        addedSheets.push({
+          uri: depUri,
+          index: i,
+          sheet: this._rendered[depUri].sheet
+        });
+      }
+    }
+
+    if (addedSheets.length || removedSheetUris.length) {
+      this._dispatch({
+        uri: event.uri,
+        kind: EngineDelegateEventKind.ChangedSheets,
+        data: {
+          // TODO - don't do this - instead include newSheetUris and
+          // allow renderer to fetch these sheets
+          newSheets: addedSheets,
+          removedSheetUris: removedSheetUris,
+          allImportedSheetUris: diffData.allImportedSheetUris
+        }
+      });
+    }
+  };
+
   parseFile(uri: string): Module | ErrorResult {
     return mapResult(this._native.parse_file(uri));
   }

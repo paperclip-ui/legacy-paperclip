@@ -18,6 +18,7 @@ use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
+use crate::css::runtime::export as css_export;
 use crate::pc::runtime::inspect_node_styles::{
   inspect_node_styles, InspectionOptions, NodeInspectionInfo,
 };
@@ -64,14 +65,8 @@ pub struct DiffedPCData<'a> {
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedCSSData<'a> {
-  // TODO - needs to be sheetMutations
-  pub sheet: Option<css_virt::CSSSheet>,
-  pub dependents: &'a Vec<String>,
-  pub imports: &'a BTreeMap<String, pc_export::Exports>,
-  pub exports: &'a pc_export::Exports,
-
-  // TODO - needs to be domMutations
-  pub mutations: Vec<pc_mutation::Mutation>,
+  pub exports: &'a css_export::Exports,
+  pub mutations: Vec<css_mutation::Mutation>,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -495,9 +490,15 @@ impl Engine {
         }
         DependencyEvalInfo::CSS(existing_details) => {
           if let DependencyEvalInfo::CSS(new_details) = &data {
-            let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
-            if sheet_mutations.len() > 0 {
-              // TODO - do me
+            let mutations = diff_css(&existing_details.sheet, &new_details.sheet);
+            if mutations.len() > 0 {
+              self.dispatch(EngineEvent::Diffed(DiffedEvent {
+                uri: uri.clone(),
+                data: DiffedData::CSS(DiffedCSSData {
+                  exports: &new_details.exports,
+                  mutations,
+                }),
+              }));
             }
           }
         }

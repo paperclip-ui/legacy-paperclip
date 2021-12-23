@@ -7,109 +7,96 @@ describe(__filename, () => {
   [
     [
       "Can render changes from two different fiefiles",
-      [
-        {
-          "entry.pc": `A`
-        },
-        "a"
-      ],
+
+      {
+        "entry.pc": `A`
+      },
       [
         {
           "entry.pc": `B`
         },
-        "a"
+        `<div></div><div><style></style></div><div>B</div>`
       ]
     ],
     [
       "Properly replaces style rules",
-      [
-        {
-          "entry.pc": `<style>.a {color: red;  } </style>a`
-        },
-        "g"
-      ],
+
+      {
+        "entry.pc": `<style>.a {color: red;  } </style>a`
+      },
       [
         {
           "entry.pc": `<style>.b {color: red;  } </style>a`
         },
-        "a"
+        `<div></div><div><style>[class]._17bc3462_b {color: red;} </style></div><div>a</div>`
       ]
     ],
     [
       "Properly removes style rules",
-      [
-        {
-          "entry.pc": `<style>.a {color: red;  } .b {color: red; } </style>a`
-        },
-        "f"
-      ],
+      {
+        "entry.pc": `<style>.a {color: red;  } .b {color: red; } </style>a`
+      },
       [
         {
           "entry.pc": `<style>.a { color: red; } </style>a`
         },
-        "b"
+        `<div></div><div><style>[class]._17bc3462_a {color: red;} </style></div><div>a</div>`
       ]
     ],
     [
       "Inserts new rules",
-      [
-        {
-          "entry.pc": `<style>.a { color: red; } </style>a`
-        },
-        "f"
-      ],
+
+      {
+        "entry.pc": `<style>.a { color: red; } </style>a`
+      },
       [
         {
           "entry.pc": `<style>.a { color: red; } .b { color: blue; } </style>a`
         },
-        "a"
+        `<div></div><div><style>[class]._17bc3462_a {color: red;} [class]._17bc3462_b {color: blue;} </style></div><div>a</div>`
       ]
     ],
     [
       "Updates CSS from module",
-      [
-        {
-          "entry.pc": `<import src="./module.pc" as="module" /><module.Test />`,
-          "module.pc": `<div export component as="Test"><style>color: before;</style></div>`
-        },
-        "f"
-      ],
+
+      {
+        "entry.pc": `<import src="./module.pc" as="module" /><module.Test />`,
+        "module.pc": `<div export component as="Test"><style>color: before;</style></div>`
+      },
       [
         {
           "module.pc": `<div export component as="Test"><style>color: after;</style></div>`
         },
-        "a"
+        `<div><style>._247a0971._247a0971 {color: after;} </style></div><div><style></style></div><div><div class="_4b63e839 _pub-4b63e839 _247a0971"></div></div>`
       ]
     ],
     [
       "Updates CSS from module _module_",
-      [
-        {
-          "entry.pc": `<import src="./a.pc" as="module" /><module.Test />`,
-          "a.pc": `<import src="./b.pc" as="module" />
+
+      {
+        "entry.pc": `<import src="./a.pc" as="module" /><module.Test />`,
+        "a.pc": `<import src="./b.pc" as="module" />
           <module.Test export component as="Test">
             <style>color: red;</style>
           </module.Test>`,
-          "b.pc": `<div export component as="Test">
+        "b.pc": `<div export component as="Test">
           <style>background: green;</style>
         </div>`
-        },
-        "b"
-      ],
+      },
       [
         {
           "b.pc": `<div export component as="Test">
           <style>background: orange;</style>
         </div>`
         },
-        "v"
+        `<div><style>._c9d94700._c9d94700 {background: orange;} </style><style>[class]._ad6960d3 {color: red;} </style></div><div><style></style></div><div><div class="_3d48f61e _pub-3d48f61e _c9d94700"></div></div>`
       ]
     ],
     [
       "Can add new frams & still maintain styles",
-      [
-        {
-          "entry.pc": `
+
+      {
+        "entry.pc": `
           <div>
             <style>
               color: red;
@@ -117,9 +104,7 @@ describe(__filename, () => {
             Test
           </div>
         `
-        },
-        "a"
-      ],
+      },
       [
         {
           "entry.pc": `
@@ -137,19 +122,17 @@ describe(__filename, () => {
           </div>
         `
         },
-        "a"
+        `<div></div><div><style>._b085ea3c._b085ea3c {color: blue;} ._c782daaa._c782daaa {color: red;} </style></div><div><div class="_17bc3462 _pub-17bc3462 _b085ea3c"> Test A </div></div><div></div><div><style>._b085ea3c._b085ea3c {color: blue;} ._c782daaa._c782daaa {color: red;} </style></div><div><div class="_17bc3462 _pub-17bc3462 _c782daaa"> Test B </div></div>`
       ]
     ],
     [
       "Properly patches between",
-      [
-        {
-          "entry.pc": `
+
+      {
+        "entry.pc": `
           <span />
         `
-        },
-        "a"
-      ],
+      },
       [
         {
           "entry.pc": `
@@ -160,7 +143,7 @@ describe(__filename, () => {
           </style>
         `
         },
-        "a"
+        ""
       ],
 
       [
@@ -169,21 +152,18 @@ describe(__filename, () => {
           <span />
         `
         },
-        "d"
+        `<div></div><div><style></style></div><div><span class="_17bc3462 _pub-17bc3462"></span></div>`
       ]
     ],
     [
       "Maintains frame with previous sibling is hidden",
-      [
-        {
-          "entry.pc": `
+      {
+        "entry.pc": `
           <a />
           <b />
           <c />
         `
-        },
-        "a"
-      ],
+      },
       [
         {
           "entry.pc": `
@@ -195,14 +175,14 @@ describe(__filename, () => {
           <c />
         `
         },
-        "d"
+        `<div></div><div><style></style></div><div><a class="_17bc3462 _pub-17bc3462"></a></div><div></div><div><style></style></div><div><b class="_17bc3462 _pub-17bc3462"></b></div><div></div><div><style></style></div><div><c class="_17bc3462 _pub-17bc3462"></c></div>`
       ]
     ],
     [
       "Can handle charset",
-      [
-        {
-          "entry.pc": `
+
+      {
+        "entry.pc": `
           <style>
             @charset "utf-8";
             div {
@@ -210,9 +190,7 @@ describe(__filename, () => {
             }
           </style>
         `
-        },
-        "d"
-      ],
+      },
       [
         {
           "entry.pc": `
@@ -223,44 +201,40 @@ describe(__filename, () => {
           </style>
         `
         },
-        "a"
+        ""
       ]
     ],
     [
       "Can handle charset",
-      [
-        {
-          "entry.pc": `
+
+      {
+        "entry.pc": `
           <div data />
         `
-        },
-        "a"
-      ],
+      },
       [
         {
           "entry.pc": `
           <div data-l />
         `
         },
-        "a"
+        `<div></div><div><style></style></div><div><div class="_17bc3462 _pub-17bc3462"></div></div>`
       ]
     ],
     [
       "Can handle CSS file changes",
-      [
-        {
-          "entry.pc": `
+
+      {
+        "entry.pc": `
           <import src="./test.css" inject-styles />
           <div data />
         `,
-          "test.css": `
+        "test.css": `
           div {
             color: red;
           }
         `
-        },
-        "a"
-      ],
+      },
       [
         {
           "entry.pc": `
@@ -273,7 +247,7 @@ describe(__filename, () => {
           }
         `
         },
-        "a"
+        `<div><style>div._pub-2fedfe1a {color: blue;} </style></div><div><style></style></div><div><div class="_17bc3462 _pub-17bc3462 _pub-2fedfe1a"></div></div>`
       ]
     ]
   ].forEach(([title, initial, ...changes]: any) => {
@@ -294,10 +268,7 @@ describe(__filename, () => {
           (await engine.open("entry.pc")) as LoadedPCData
         );
 
-        expect(baseline).to.eql(expectationSanityCheck);
-
-        console.log(combineFrameHTML(renderer));
-        // console.log(renderer.getState().frames[0]._importedStylesContainer);
+        expect(combineFrameHTML(baseline)).to.eql(expectationSanityCheck);
         const html = combineFrameHTML(renderer);
         expect(html).to.eql(combineFrameHTML(baseline));
       }
