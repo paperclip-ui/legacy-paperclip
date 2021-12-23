@@ -1,6 +1,28 @@
-<import src="./styles/tailwind.css" inject-styles />
+<import src="./tailwind.css" inject-styles />
+
+<!--
+  @frame { width: 1024, height: 768, x: 1107, y: 5 }
+-->
+<div>Text</div>
+
 
 <!--
   @frame { width: 1024, height: 768, x: 0, y: 2 }
 -->
-<div class="my-10">tailwindow</div>
+<figure class="md:flex bg-gray-100 rounded-xl p-8 md:p-0 dark:bg-gray-800 text-red-100">
+  <div class="pt-6 md:p-8 text-center md:text-left space-y-4">
+    <blockquote>
+      <p class="text-lg font-medium">
+        “Tailwind CSS is the only framework that I've seen scale on large teams.
+        It’s easy to customize, adapts to any design, and the build size is
+        tiny.”
+      </p>
+    </blockquote>
+    <figcaption class="font-medium">
+      <div class="text-sky-500 dark:text-sky-400">Sarah Dayan</div>
+      <div class="text-gray-700 dark:text-gray-500">
+        Staff Engineer, Algolia
+      </div>
+    </figcaption>
+  </div>
+</figure>
