@@ -25,10 +25,7 @@ import {
   Dependency,
   Module,
   DiffedEvent,
-  EvaluatedPCData,
-  LoadedPCData,
-  LoadedCSSData,
-  DiffedCSSData
+  LoadedPCData
 } from "paperclip-utils";
 import { noop } from "./utils";
 

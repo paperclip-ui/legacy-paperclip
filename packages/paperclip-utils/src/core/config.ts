@@ -1,5 +1,4 @@
 import * as path from "path";
-import { getScopedCSSFilePath, isCSSFile } from "..";
 import { paperclipResourceGlobPattern } from "./utils";
 
 export type CompilerOptions = {
@@ -69,7 +68,7 @@ export const getOutputFile = (
   config: PaperclipConfig,
   cwd: string
 ) => {
-  let outFilePath = config.compilerOptions?.outDir
+  const outFilePath = config.compilerOptions?.outDir
     ? filePath.replace(
         path.join(cwd, config.srcDir),
         path.join(cwd, config.compilerOptions.outDir)
