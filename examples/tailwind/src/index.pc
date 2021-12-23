@@ -3,4 +3,4 @@
 <!--
   @frame { width: 1024, height: 768, x: 0, y: 2 }
 -->
-<div class="my-10 py-10">tailwindow</div>
+<div class="my-10">tailwindow</div>

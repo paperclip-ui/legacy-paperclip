@@ -493,7 +493,14 @@ impl Engine {
             }
           }
         }
-        DependencyEvalInfo::CSS(pc_info) => {}
+        DependencyEvalInfo::CSS(existing_details) => {
+          if let DependencyEvalInfo::CSS(new_details) = &data {
+            let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
+            if sheet_mutations.len() > 0 {
+              // TODO - do me
+            }
+          }
+        }
       }
     } else {
       self.dispatch(EngineEvent::Evaluated(EvaluatedEvent {
