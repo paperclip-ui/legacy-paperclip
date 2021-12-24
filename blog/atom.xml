@@ -9,7 +9,7 @@
     <icon>https://paperclip.dev/img/favicon.ico</icon>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>
-        <id>Welcome</id>
+        <id>/2019/05/30/welcome</id>
         <link href="https://paperclip.dev/blog/2019/05/30/welcome"/>
         <updated>2019-05-30T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Blog features are powered by the blog plugin. Simply add files to the blog directory. It supports tags as well!]]></summary>
@@ -21,7 +21,7 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[Hello]]></title>
-        <id>Hello</id>
+        <id>/2019/05/29/hello-world</id>
         <link href="https://paperclip.dev/blog/2019/05/29/hello-world"/>
         <updated>2019-05-29T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Welcome to this blog. This blog is created with Docusaurus 2 alpha.]]></summary>
@@ -33,7 +33,7 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[Hola]]></title>
-        <id>Hola</id>
+        <id>/2019/05/28/hola</id>
         <link href="https://paperclip.dev/blog/2019/05/28/hola"/>
         <updated>2019-05-28T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet]]></summary>
