@@ -156,6 +156,8 @@ import * as groceryListStyles from "./CustomGroceryList.pc";
 
 ## Demo
 
+This is a basic example that uses React, and Webpack. Source code can be found here: https://github.com/paperclipui/paperclip/tree/master/examples/react-basic.
+
 
 <iframe src="https://codesandbox.io/embed/github/paperclipui/paperclip/tree/master/examples/react-basic?fontsize=14&hidenavigation=1&module=%2Fsrc%2FGroceryList.tsx&theme=dark"
      style={{width:"100%", height:500, border:0, borderRadius: 4, overflow:"hidden"}}
