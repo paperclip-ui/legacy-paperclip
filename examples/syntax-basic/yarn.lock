@@ -1971,38 +1971,38 @@ paperclip-autocomplete@^18.1.6:
   resolved "https://registry.yarnpkg.com/paperclip-autocomplete/-/paperclip-autocomplete-18.1.6.tgz#1f5b6db421c2218f08a3c98090f167d332a33c27"
   integrity sha512-aQCKzY7TTNIMQE6poywvJ1t2hu6UQVt7945dUPnwmwSx6Kis/PId9ieo/MI7CCoauDr6MCB2tv6dlOyHqSEj4A==
 
-paperclip-builder@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-builder/-/paperclip-builder-18.2.3.tgz#b66d9fdb936bcf30298b5c63c2278f44a8aaacad"
-  integrity sha512-oekoA+XJG7oowWYLGKpLNAMOnfVYmnXJHzuFaWEDhWI/WCTbfcEpho5AqnKriC4VpFMlk0TYGEI9vvQ5ncc9gQ==
+paperclip-builder@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-builder/-/paperclip-builder-18.2.14.tgz#d0f641fe07330a4d7a2032085acde9a71eecd572"
+  integrity sha512-1rfSf2pHm/FTypmeqgVkvrKx3Swj7folxP34QdPP3YLfYiecpujBD1K+Fudqk5VK1rrtLxfNsgxapvfCqbxXVg==
   dependencies:
     chokidar "^3.5.2"
     crc32 "^0.2.2"
     fs-extra "^10.0.0"
     glob "^7.2.0"
-    paperclip "^18.2.3"
-    paperclip-interim "^18.2.3"
-    paperclip-utils "^18.1.6"
+    paperclip "^18.2.14"
+    paperclip-interim "^18.2.14"
+    paperclip-utils "^18.2.14"
 
-paperclip-cli-minimal@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-cli-minimal/-/paperclip-cli-minimal-18.2.3.tgz#769604f670ad3a59fc4266225359b3f4b071e85e"
-  integrity sha512-bRbz+Ntiwr627GO/ouoD+/RK70x/uGobuxsJPnBHTgrmQ0tBGNr5QhUPGkf/90fyD51KbbyhjPrxYfCUBs2o4Q==
+paperclip-cli-minimal@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-cli-minimal/-/paperclip-cli-minimal-18.2.14.tgz#a958245ae5564ee5dfd2c2457832d38e5b828df5"
+  integrity sha512-Nm2ro7QObXoIy4G/j+Re3mZ0aNfPdl25R9VB6eCc2oSrlwd5Y01hu49bvCTvd+Q6U+JBxIcbBfRR3Vqf7CsGfQ==
   dependencies:
     chokidar "^3.3.1"
     fs-extra "^9.0.1"
     glob "^7.1.6"
-    paperclip "^18.2.3"
-    paperclip-builder "^18.2.3"
-    paperclip-cli-utils "^18.2.3"
-    paperclip-utils "^18.1.6"
+    paperclip "^18.2.14"
+    paperclip-builder "^18.2.14"
+    paperclip-cli-utils "^18.2.14"
+    paperclip-utils "^18.2.14"
     resolve "^1.15.1"
     yargs "^15.1.0"
 
-paperclip-cli-utils@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-cli-utils/-/paperclip-cli-utils-18.2.3.tgz#077f22ce58d9c3e5debcf2d95dd6da88f45641bf"
-  integrity sha512-dz/3Hf6Aw4Wk+Eo9OUV33S5xpLoFqUdNva1J1d9H0nn9rXWz5I0lLH8ljNCYRqj1AHQRWhtXICDifJit3TMQqQ==
+paperclip-cli-utils@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-cli-utils/-/paperclip-cli-utils-18.2.14.tgz#ca5cc7c18d1643a443610b2786696660f3515eca"
+  integrity sha512-3UCfQxkr76x29OGgg26ERtYAdzDtSMeJqEIL38W00Y9z//j5qQ4YzXVPAoRyMOlUjbtLvGiTvIsMis39HRMKWw==
   dependencies:
     "@types/inquirer" "^6.5.0"
     "@types/shelljs" "^0.8.8"
@@ -2012,16 +2012,16 @@ paperclip-cli-utils@^18.2.3:
     fs-extra "^9.0.1"
     glob "^7.1.6"
     inquirer "^7.3.0"
-    paperclip "^18.2.3"
-    paperclip-utils "^18.1.6"
+    paperclip "^18.2.14"
+    paperclip-utils "^18.2.14"
     resolve "^1.15.1"
     shelljs "^0.8.4"
     yargs "^15.1.0"
 
-paperclip-cli@18.2.11:
-  version "18.2.11"
-  resolved "https://registry.yarnpkg.com/paperclip-cli/-/paperclip-cli-18.2.11.tgz#55cb8ba03ab0abe3d26b2caeaaf42c206d1bb80d"
-  integrity sha512-cxNry0Mpy3pZ+5JRuQH4tk34qQ0GqykZ00s0vSi2t0eG1adgt+ifTztDAJGTjyBBQIAqPJu2+cTEtMviBERiBA==
+paperclip-cli@18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-cli/-/paperclip-cli-18.2.14.tgz#1c1d5a000457c245fbbbff76f58c31164af3cc25"
+  integrity sha512-zYkfpfK1JLwm1s/xluw7tWcrQxv47tQuXaDAQWp0dgpa/VnCTV3FXcUQ/O3iimL/bniHwF2MVVDJApXwY3UM+Q==
   dependencies:
     "@types/inquirer" "^6.5.0"
     "@types/shelljs" "^0.8.8"
@@ -2032,13 +2032,13 @@ paperclip-cli@18.2.11:
     glob "^7.1.6"
     inquirer "^7.3.0"
     lodash "^4.17.19"
-    paperclip "^18.2.3"
-    paperclip-cli-minimal "^18.2.3"
-    paperclip-cli-utils "^18.2.3"
-    paperclip-utils "^18.1.6"
+    paperclip "^18.2.14"
+    paperclip-cli-minimal "^18.2.14"
+    paperclip-cli-utils "^18.2.14"
+    paperclip-utils "^18.2.14"
     resolve "^1.15.1"
     shelljs "^0.8.4"
-    tandem-workspace "^18.2.10"
+    tandem-workspace "^18.2.14"
     yargs "^15.1.0"
 
 paperclip-common@^18.1.6:
@@ -2048,58 +2048,59 @@ paperclip-common@^18.1.6:
   dependencies:
     immer "^9.0.5"
 
-paperclip-compiler-react@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-compiler-react/-/paperclip-compiler-react-18.2.3.tgz#822580f12c205291a9268a47d25c0f781f5d10b8"
-  integrity sha512-x7fS6I2BJMnpaqmeBzlpR9WG5E9TKI6AZE4C9+mBy7HIh7WCbWCZADLxQcuVjVmEiFHaXPwt4acKN1mbFPNCEA==
+paperclip-compiler-react@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-compiler-react/-/paperclip-compiler-react-18.2.14.tgz#ba7bcfa5645009566a4267c179b216788537bb7b"
+  integrity sha512-OEc+V8GzCcq6dmZTNgY106GGlSSoX19+XEnXec/t93kwwUWzlZ7VCFedn6Ap88VsMS6av7jCFoYA3bh+5+3tBg==
   dependencies:
     crc32 "^0.2.2"
     html-entities "^1.2.1"
     lodash "^4.17.15"
-    paperclip "^18.2.3"
-    paperclip-interim "^18.2.3"
+    paperclip "^18.2.14"
+    paperclip-interim "^18.2.14"
     source-map "^0.7.3"
 
-paperclip-interim@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-interim/-/paperclip-interim-18.2.3.tgz#4ab33d97a54c030c5a76c78bac3d07cfcf2bed56"
-  integrity sha512-oBcjgumZHqwlANyXvpcKHM0JLC4LllypIs6uprDsXT9dkXqVV0ZoO+SKt/b7dNGtCimXG1ZKQsZMUZ+jl7hKvg==
+paperclip-interim@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-interim/-/paperclip-interim-18.2.14.tgz#d7c469b3af7b1d037a84504f5b06394220675ba3"
+  integrity sha512-lU+0pHTpMwKfb2EO/AOtFE6dSnnj5qpEnDLbhzTlcxHGD9cQ1Xf9yiQm/Ns+GDKzxecHKjpr1Lua/XdwWDrXJw==
   dependencies:
     crc32 "^0.2.2"
     mime "^3.0.0"
-    paperclip "^18.2.3"
+    paperclip "^18.2.14"
+    paperclip-utils "^18.2.14"
 
-paperclip-language-service@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-language-service/-/paperclip-language-service-18.2.3.tgz#198327c2d8b210ce34fa538a6c8d25ae6a3c0dc5"
-  integrity sha512-f4VFxvawXR6BrhRG5XZ5JkQUInyllu+IcTKV2GPrzG9SfjyOsdBs90xfkTKn22HsnMXua+I97kN+qyqTDi58uA==
+paperclip-language-service@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-language-service/-/paperclip-language-service-18.2.14.tgz#eb5e8463e331f14de5ee746854117ef7d0480a93"
+  integrity sha512-SS7KAPV9JLKkrNYnJHsyL110h2mew7wRjw7bsmyp2bEYYA6anm+2zoQkxvaczULX8hlURwyihv6Rc4BSPsYIsg==
   dependencies:
     color "^4.0.0"
-    paperclip "^18.2.3"
+    paperclip "^18.2.14"
     paperclip-test-utils "^18.1.6"
-    paperclip-utils "^18.1.6"
+    paperclip-utils "^18.2.14"
     typescript "^4.2.3"
 
-paperclip-monaco@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-monaco/-/paperclip-monaco-18.2.3.tgz#7dd2b7c69e42d11b7832a563af258755c4e263e0"
-  integrity sha512-gNDNwHGeCPvGpEFkkjUS/1fcc6gAoDWkWbgH1IPTaktcKHOdb6HRmdPS+7PqqRXTahR0sugQeiLhDOmncF/kGw==
+paperclip-monaco@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-monaco/-/paperclip-monaco-18.2.14.tgz#82a8871a7812a8a73758f211d5055b50772a563e"
+  integrity sha512-dSgESB7ITHnZdlJ4W+CaqGxGXnGUUfKj/QPHx2XPaU8aYlz/EkxblUi7BRZPOm2acWjICemZfk2EfPQQ147oAw==
   dependencies:
     color "^3.1.3"
     monaco-editor "^0.28.1"
-    paperclip "^18.2.3"
+    paperclip "^18.2.14"
     paperclip-autocomplete "^18.1.6"
     paperclip-common "^18.1.6"
-    paperclip-language-service "^18.2.3"
-    paperclip-utils "^18.1.6"
+    paperclip-language-service "^18.2.14"
+    paperclip-utils "^18.2.14"
 
-paperclip-source-writer@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-source-writer/-/paperclip-source-writer-18.2.3.tgz#a8cd6f3dc9f22d01500f9ad7a51055038eb30258"
-  integrity sha512-JJngCFGcUelOBBtzwbAdirMdMed521UPDIxQnkvLWMoDgRX+1PA9397tPitwdOCMXCqZSqW1dDXaT7yBi4hwjA==
+paperclip-source-writer@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-source-writer/-/paperclip-source-writer-18.2.14.tgz#1b0f085832bc11c1bdfe227d48e3e3adbd956f33"
+  integrity sha512-OILHA4Fse/DU0H4x1OadnAuBYeGf2wp+UCunnMCZpfUK8FSgbXD2j4O8YGTORNbZntdLNbulsQRvyOeubp43xA==
   dependencies:
-    paperclip "^18.2.3"
-    paperclip-utils "^18.1.6"
+    paperclip "^18.2.14"
+    paperclip-utils "^18.2.14"
 
 paperclip-test-utils@^18.1.6:
   version "18.1.6"
@@ -2109,10 +2110,10 @@ paperclip-test-utils@^18.1.6:
     cssom "^0.5.0"
     lodash "^4.17.21"
 
-paperclip-utils@^18.1.6:
-  version "18.1.6"
-  resolved "https://registry.yarnpkg.com/paperclip-utils/-/paperclip-utils-18.1.6.tgz#29ae08b9780abe6751149012505f32f4981087ad"
-  integrity sha512-XViT1FZCCTXyyhrOAW7cG+1b6Qg0xk49NsHMA/N1PvtB2qVWowyviI/OD7dTdHBYbqdoQu4vuEwfVrX9PaUybA==
+paperclip-utils@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-utils/-/paperclip-utils-18.2.14.tgz#9f2312d36170a9a68a3f9329b19a6a516a139fce"
+  integrity sha512-nvdiIWmhiyW5iqECeFzkw3BQDZ4im2mQIQEfgpgFGlMzL3hzYt/FUVq5HQT3VLLy5nr1ETlaIKo/mRcFGhEfDQ==
   dependencies:
     "@types/mocha" "^5.2.7"
     chai "^4.2.0"
@@ -2123,27 +2124,27 @@ paperclip-utils@^18.1.6:
     path "^0.12.7"
     url "^0.11.0"
 
-paperclip-web-renderer@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip-web-renderer/-/paperclip-web-renderer-18.2.3.tgz#b0d799c5f7eeb53ef3579ad30eac45846a8075da"
-  integrity sha512-ko3C1tlX5MnHvrClLEHM/9x/BcBmd9PvqStDQK+TUJK9l5wcKzDjbFXmKmtznuuHWAEiUrAtVOGj/4mJGydYTQ==
+paperclip-web-renderer@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip-web-renderer/-/paperclip-web-renderer-18.2.14.tgz#67d6fb37e975600eaede2237fe37e841dc8b1345"
+  integrity sha512-sv5njhzL1jPVZToi0IguTCNx6Y8dzPA/knKX/kSE4OfLSQLKK7067/AVKxJrdVolntFMShkugbQCpNQj/EHmiA==
   dependencies:
     events "^3.2.0"
     html-entities "^1.2.1"
     immer "^9.0.5"
     paperclip-common "^18.1.6"
-    paperclip-utils "^18.1.6"
+    paperclip-utils "^18.2.14"
 
-paperclip@18.2.3, paperclip@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/paperclip/-/paperclip-18.2.3.tgz#9e903d2eb2af7b23abe76bea40c8293e04928d3b"
-  integrity sha512-x4w7qLozGZYU7YtjhfIRrV2TBFD8RiH4gfchjAzi970bDDhzYTwGHgsxcuoBbczm94RKAEb+s8bDeCg2pHxhSA==
+paperclip@18.2.14, paperclip@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/paperclip/-/paperclip-18.2.14.tgz#e414f17dacd518c10918e4b0d7aad455ef99e747"
+  integrity sha512-Qe674LZq3reUWKhBJJQGCiKmlOoAe0AioYXk2D3TLoKszZzVkSf6Ovza49PmorQgx2w2UomaifXspzV/2HKoiA==
   dependencies:
     "@types/mocha" "^5.2.7"
     chai "^4.2.0"
     crc32 "^0.2.2"
     mocha "^7.0.1"
-    paperclip-utils "^18.1.6"
+    paperclip-utils "^18.2.14"
     url "^0.11.0"
 
 parse-json@^4.0.0:
@@ -2822,25 +2823,25 @@ supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-tandem-common@^18.1.6:
-  version "18.1.6"
-  resolved "https://registry.yarnpkg.com/tandem-common/-/tandem-common-18.1.6.tgz#97d4f22c879b9b490b9f9b014526a2acb18b698a"
-  integrity sha512-twETzhp10kb2l/RvdX5zT7/Sta3eCrFkXwiIW9Lq6kSUJXwpppcMhmOxV6RK6qvD86dXZz/dO6op1mbVdC+bwg==
+tandem-common@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/tandem-common/-/tandem-common-18.2.14.tgz#e23710af65e669212e07bf140b4903133a50de5a"
+  integrity sha512-xsNPeUOVA2aZuX6UdedoGjfABZDHFWtM3LaGF299jrmjOVERdxkE3Rsy+V1XDHPltEJqCdEExVCWKg1M+GAf2Q==
   dependencies:
     express "^4.17.1"
     mime-types "^2.1.32"
     node-fetch "^2.6.1"
-    paperclip-utils "^18.1.6"
+    paperclip-utils "^18.2.14"
 
-tandem-design-system@^18.2.3:
-  version "18.2.3"
-  resolved "https://registry.yarnpkg.com/tandem-design-system/-/tandem-design-system-18.2.3.tgz#2f6b2aaeb6476f4608476e75814c396f5db5d758"
-  integrity sha512-nx2UqEd3dfY5HCyynVQidAVzVgi6776FnX7LIbfCI7JZwBxBPMdGTyTlXQ83OGDiV8R6zlrMIY0BmecLSCUS5Q==
+tandem-design-system@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/tandem-design-system/-/tandem-design-system-18.2.14.tgz#7fd52fd70b0ea2adc3fd46a0d25a548975a00a09"
+  integrity sha512-t+TMjaE+VFol2WILicFmHahBAxUE83fo92Jj3PHkZiEzaUcWV6zNBixcfA0ubcIjvZ5DOu8zPlhii0X/sGajgA==
 
-tandem-designer@^18.2.8:
-  version "18.2.8"
-  resolved "https://registry.yarnpkg.com/tandem-designer/-/tandem-designer-18.2.8.tgz#0b31dbf1f286b11ffb3b8a018af28743ba6ec531"
-  integrity sha512-RhRyn7nDNOhsyvUITEgVVLhL2bAbQB8LFSuLz+t0yBN4Limq7XXHQgivPTj7C4PDTGrEQy5vOlGvYFB6dGRf0A==
+tandem-designer@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/tandem-designer/-/tandem-designer-18.2.14.tgz#65d5b2000cf7a864103ec1ef18786910fc206cf6"
+  integrity sha512-XRr2yAjkZC3rWfwqKVob9g9OQhTWdlk1X16ZMsZp40BnczSmGL2pnvToDRJR+aYVKWg+6QC8MdcgRJntA058kA==
   dependencies:
     "@monaco-editor/loader" "^1.2.0"
     automerge "^0.14.2"
@@ -2859,12 +2860,12 @@ tandem-designer@^18.2.8:
     mousetrap "^1.6.5"
     ngrok "^3.4.0"
     os-browserify "^0.3.0"
-    paperclip "^18.2.3"
+    paperclip "^18.2.14"
     paperclip-common "^18.1.6"
-    paperclip-monaco "^18.2.3"
-    paperclip-source-writer "^18.2.3"
-    paperclip-utils "^18.1.6"
-    paperclip-web-renderer "^18.2.3"
+    paperclip-monaco "^18.2.14"
+    paperclip-source-writer "^18.2.14"
+    paperclip-utils "^18.2.14"
+    paperclip-web-renderer "^18.2.14"
     path "^0.12.7"
     process "^0.11.10"
     react "^17.0.2"
@@ -2874,24 +2875,24 @@ tandem-designer@^18.2.8:
     redux-saga "^1.1.3"
     sockjs "^0.3.21"
     sockjs-client "^1.5.0"
-    tandem-common "^18.1.6"
-    tandem-design-system "^18.2.3"
+    tandem-common "^18.2.14"
+    tandem-design-system "^18.2.14"
 
-tandem-workspace@^18.2.10:
-  version "18.2.10"
-  resolved "https://registry.yarnpkg.com/tandem-workspace/-/tandem-workspace-18.2.10.tgz#42bcef5355fbd79f6ae9225473facdcf4f66eb9c"
-  integrity sha512-QFQxEVHyagM8zxS7Dgo8ymOEXnkRedw3Fz5anJhuF0KhxlkShb5DDdsvZqLaiaal2nZnLWV+2U0brj30loZrug==
+tandem-workspace@^18.2.14:
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/tandem-workspace/-/tandem-workspace-18.2.14.tgz#b78cfeee31ff6aa5cefca0a672d7f7397e7c0214"
+  integrity sha512-OGTDpxkLuGqup92gcuWzKrRx/LUIwwRC5dDu5G02JG89G6mk+S58jwqLppKIwYt2/Q2sMBDFw2DGoVmLTeQUXg==
   dependencies:
     buffer "^6.0.3"
     execa "^5.1.1"
     fs-extra "^10.0.0"
     get-port "^5.1.1"
     glob "^7.1.7"
-    paperclip "^18.2.3"
+    paperclip "^18.2.14"
     paperclip-common "^18.1.6"
     sockjs "^0.3.21"
-    tandem-common "^18.1.6"
-    tandem-designer "^18.2.8"
+    tandem-common "^18.2.14"
+    tandem-designer "^18.2.14"
 
 temp-fs@^0.9.9:
   version "0.9.9"

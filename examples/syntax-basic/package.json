@@ -10,9 +10,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "paperclip": "18.2.3",
-    "paperclip-cli": "18.2.11",
-    "paperclip-compiler-react": "^18.2.3"
+    "paperclip": "18.2.14",
+    "paperclip-cli": "18.2.14",
+    "paperclip-compiler-react": "^18.2.14"
   },
   "keywords": []
 }
