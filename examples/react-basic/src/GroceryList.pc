@@ -1,0 +1,57 @@
+<import src="./breakpoints.pc" as="breakpoints" />
+
+<!-- Scoped to this document -->
+<style>
+  .font-regular {
+    font-family: sans-serif;
+    @include breakpoints.mobile {
+      font-size: 32px;
+    }
+    @include breakpoints.desktop {
+      font-size: 14px;
+    }
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<ol export component as="List" class="font-regular">
+  <!-- Scoped to this element & descendants -->
+  <style>
+    padding-left: 32px;
+  </style>
+  {children}
+</ol>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<li export component as="ListItem" class="font-regular">
+  <style>
+    margin-top: 6px;
+  </style>
+  {children}
+</li>
+
+
+<!--
+  @frame { title: "Grocery List / Mobile", width: 320, height: 355, x: -6, y: 910 }
+  @desc "Preview where you can test mobile slices of this file."
+-->
+<List>
+  <ListItem>Milk</ListItem>
+  <ListItem>Eggs</ListItem>
+  <ListItem>Ham</ListItem>
+</List>
+
+<!--
+  @desc "Preview where you can test desktop slices of this file."
+  @frame { title: "Grocery List / Desktop", width: 1023, height: 768, x: -19, y: 0 }
+-->
+<List>
+  <ListItem>Milk</ListItem>
+  <ListItem>Eggs</ListItem>
+  <ListItem>Ham</ListItem>
+</List>

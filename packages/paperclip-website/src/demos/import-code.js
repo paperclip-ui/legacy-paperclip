@@ -8,7 +8,7 @@ function GroceryList({groceries}) {
   return <styles.List>
     {
       groceries.map(item => (
-        <styles.ListItem>{item}</styles.ListItem>;
+        <styles.ListItem>{item}</styles.ListItem>
       ))
     }
   </styles.List>;  
