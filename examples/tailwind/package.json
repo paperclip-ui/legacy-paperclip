@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "concurrently \"yarn build:css --watch\" \"paperclip designer --canvas-file=./src/index.pc\"",
+    "start": "yarn build:css && concurrently \"yarn build:css --watch\" \"paperclip designer --canvas-file=./src/index.pc\"",
     "build": "yarn build:css && yarn build:pc",
     "build:watch": "concurrently \"yarn build:pc --watch\" \"yarn build:css --watch\"",
     "build:pc": "paperclip build",
