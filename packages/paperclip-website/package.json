@@ -32,8 +32,8 @@
     ]
   },
   "devDependencies": {
-    "@docusaurus/core": "^2.0.0-beta.9",
-    "@docusaurus/plugin-google-analytics": "^2.0.0-beta.9",
+    "@docusaurus/core": "^2.0.0-beta.14",
+    "@docusaurus/plugin-google-analytics": "^2.0.0-beta.14",
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^6.5.1",
     "file-loader": "^6.2.0",
