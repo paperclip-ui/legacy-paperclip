@@ -90,10 +90,10 @@ And more to come. Here's what's next:
   - [React / basic](./examples/react-basic)
   - [Tailwind](./examples/React-basic)
 
-
+<!-- 
 
 ## Sponsors
 
 ![index](https://user-images.githubusercontent.com/757408/105444620-254d8d80-5ca9-11eb-97c8-9c0fd66408d4.png)
 
-
+ -->
