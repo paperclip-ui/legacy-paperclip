@@ -14,8 +14,8 @@
   "dependencies": {},
   "devDependencies": {
     "concurrently": "^6.5.1",
-    "paperclip": "^18.2.13",
-    "paperclip-cli": "^18.2.13",
+    "paperclip": "^18.2.14",
+    "paperclip-cli": "^18.2.14",
     "tailwindcss": "^3.0.7"
   }
 }
