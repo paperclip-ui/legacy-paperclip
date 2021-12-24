@@ -1,12 +1,12 @@
 <style>
   @export {
     @mixin mobile {
-      @media screen and (max-width: 400px) {
+      @media screen and (max-width: 600px) {
         @content;
       }
     }
     @mixin desktop {
-      @media screen and (min-width: 400px) {
+      @media screen and (min-width: 600px) {
         @content;
       }
     }

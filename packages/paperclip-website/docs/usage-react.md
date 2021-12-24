@@ -101,3 +101,54 @@ import * as styles from "./button.pc";
 
 <styles.Button onClick={handleClick} />
 ```
+
+## Theming
+
+You can easily theme React components by exposing `styles` as a prop on your component. For example:
+
+```tsx
+import * as defaultStyles from "./GroceryList.pc";
+
+export type GroceryListProps = {
+  styles?: Partial<typeof defaultStyles>,
+  items: string[]
+};
+
+export function GroceryList({ items, styles: styleOverrides = {} }: GroceryListProps) {
+  const styles = {...defaultStyles, ...styleOverrides};
+  
+  return (
+    <styles.List>
+      {items.map(item => (
+        <styles.ListItem>{item}</styles.ListItem>
+      ))}
+    </styles.List>
+  );
+}
+```
+
+Then, to override these styles, just override the base styles like so:
+
+```html
+<import src="./GroceryList.pc" as="GroceryList" />
+
+<GroceryList.ListItem export component as="ListItem">
+  <style>
+    color: blue;
+  </style>
+  {children}
+</GroceryList.ListItem>
+```
+
+All that's left is to set these styles on a JSX component:
+
+```jsx
+
+// Main JSX component
+import { GroceryList } from "./GroceryList";
+
+// Custom styles to define
+import * as groceryListStyles from "./CustomGroceryList.pc";
+
+<GroceryList items={["Milk", "Eggs", "Ham"]} styles={groceryListStyles} />
+```

@@ -1,0 +1,13 @@
+<import src="./GroceryList.pc" as="GroceryList" />
+
+<GroceryList.ListItem export component as="ListItem">
+  <style>
+    color: blue;
+  </style>
+  {children}
+</GroceryList.ListItem>
+
+
+<GroceryList.List>
+  <ListItem>Something</ListItem>
+</GroceryList.List>

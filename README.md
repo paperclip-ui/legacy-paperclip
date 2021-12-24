@@ -87,7 +87,7 @@ And more to come. Here's what's next:
   - [Compilers](https://paperclip.dev/docs/guide-compilers/) - Basics in creating a compiler.
 - Examples
   - [Syntax / basic](./examples/syntax-basic)
-  - [React / basic](./examples/React-basic)
+  - [React / basic](./examples/react-basic)
   - [Tailwind](./examples/React-basic)
 
 

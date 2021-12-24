@@ -17,7 +17,7 @@
 <!--
   @frame { visible: false }
 -->
-<ol export component as="List" class="font-regular">
+<ol export component as="List" class="font-regular {class?}">
   <!-- Scoped to this element & descendants -->
   <style>
     padding-left: 32px;
@@ -28,7 +28,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
 -->
-<li export component as="ListItem" class="font-regular">
+<li export component as="ListItem" class="font-regular {class?}">
   <style>
     margin-top: 6px;
   </style>
