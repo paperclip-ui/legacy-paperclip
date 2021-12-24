@@ -27,7 +27,6 @@
     "mime-types": "^2.1.28",
     "monaco-editor": "^0.28.1",
     "mousetrap": "^1.6.5",
-    "ngrok": "^3.4.0",
     "os-browserify": "^0.3.0",
     "paperclip": "^18.2.14",
     "paperclip-common": "^18.1.6",
