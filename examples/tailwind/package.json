@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "start": "concurrently \"yarn build:css --watch\" \"paperclip designer --canvas-file=./src/index.pc\"",
     "build": "yarn build:css && yarn build:pc",

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
+  "private": true,
   "scripts": {
     "start": "paperclip designer",
     "build": "paperclip build"
