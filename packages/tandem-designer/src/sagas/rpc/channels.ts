@@ -13,7 +13,7 @@ import {
   revealNodeSourceByIdChannel,
   revealNodeSourceChannel
 } from "../../rpc/channels";
-import { Connection } from "./connection";
+import { IConnection } from "./connection";
 
 export class Channels {
   readonly hello: ReturnType<typeof helloChannel>;
@@ -32,7 +32,7 @@ export class Channels {
   readonly events: ReturnType<typeof eventsChannel>;
   readonly editCode: ReturnType<typeof editCodeChannel>;
 
-  constructor(connection: Connection) {
+  constructor(connection: IConnection) {
     this.hello = helloChannel(connection);
     this.inspectNodeStyle = inspectNodeStyleChannel(connection);
     this.revealNodeSource = revealNodeSourceChannel(connection);

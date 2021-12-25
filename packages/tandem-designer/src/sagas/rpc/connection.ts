@@ -1,7 +1,14 @@
 import SockJSClient from "sockjs-client";
 import { EventEmitter } from "events";
 
-export class Connection {
+export interface IConnection {
+  send(messsage: any): Promise<void>;
+  onMessage(listener: (message: any) => void): () => void;
+  onOpen(listener: () => void): () => void;
+  dispose(): void;
+}
+
+export class SockConnection implements IConnection {
   private _client: WebSocket;
   private _events: EventEmitter = new EventEmitter();
   private _open: Promise<any>;

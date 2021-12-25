@@ -1,4 +1,4 @@
-import { EngineDelegate, EngineOptions } from "./src";
+import { EngineDelegate, EngineOptions } from "./src/core";
 
 export function loadEngineDelegate(
   options: EngineOptions,

@@ -4,11 +4,13 @@ import createSagaMiddleware from "redux-saga";
 import { Provider } from "react-redux";
 
 import defaultReducer from "../../reducers";
-import defaultSaga from "../../sagas";
+import { mainSaga } from "../../sagas";
 import { INITIAL_STATE } from "../../state";
-import { rpcEngine } from "../../engines/rpc";
+import { HandleRPCOptions } from "../../sagas/rpc";
 
-export const withAppStore = (Child: React.FC) => {
+export const withAppStore = (Child: React.FC) => (
+  options: HandleRPCOptions
+) => {
   let _inited = false;
   let _store;
 
@@ -26,7 +28,7 @@ export const withAppStore = (Child: React.FC) => {
     );
 
     // DEPRECATED
-    sagaMiddleware.run(defaultSaga, document.body, state => state);
+    sagaMiddleware.run(mainSaga, document.body, state => state, options);
   };
 
   return props => {

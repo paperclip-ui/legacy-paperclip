@@ -12,7 +12,7 @@ import {
 } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 
-import { Channel, sockAdapter } from "paperclip-common";
+import { Channel } from "paperclip-common";
 import {
   fileLoaded,
   StyleRuleFileNameClicked,
@@ -26,7 +26,6 @@ import {
   NodeBreadcrumbClicked,
   redirectRequest,
   CodeChanged,
-  clientConnected,
   ActionType,
   commitRequestStateChanged,
   BranchChanged,
@@ -72,17 +71,25 @@ import {
 } from "paperclip-utils";
 import { PCMutation, PCMutationActionKind } from "paperclip-source-writer";
 import path from "path";
-import { Connection } from "./connection";
+import { IConnection, SockConnection } from "./connection";
 import { request, takeState } from "../utils";
 
-export function* handleRPC() {
-  let _client: Connection = new Connection();
+export type HandleRPCOptions = {
+  createConnection?: () => IConnection;
+};
+
+const createDefaultConnection = () => new SockConnection();
+
+export function* handleRPC({
+  createConnection = createDefaultConnection
+}: HandleRPCOptions) {
+  let _client: IConnection = createConnection();
   yield fork(handleServerOptions, _client);
   yield fork(handleProject, _client);
   yield fork(handleCanvasRedirect);
 }
 
-function* handleServerOptions(client: Connection) {
+function* handleServerOptions(client: IConnection) {
   const hello = helloChannel(client);
 
   ///oof... need to delay so that query state is populated. What a hack!
@@ -106,7 +113,7 @@ function* loadServerOptions(
   yield put(serverOptionsLoaded(options));
 }
 
-function* handleProject(client: Connection) {
+function* handleProject(client: IConnection) {
   const loadDirectory = loadDirectoryChannel(client);
   const events = eventsChannel(client);
   const commitChanges = commitChangesChannel(client);

@@ -30,14 +30,14 @@ import { AppState, SyncLocationMode } from "../state";
 import { handleCanvas } from "./canvas";
 import history from "../dom-history";
 import { omit } from "lodash";
-import { sockAdapter } from "paperclip-common";
-import { handleRPC } from "./rpc";
+import { handleRPC, HandleRPCOptions } from "./rpc";
 
 export type AppStateSelector = (state) => AppState;
 
-export default function* mainSaga(
+export function* mainSaga(
   mount: HTMLElement,
-  getState: AppStateSelector
+  getState: AppStateSelector,
+  options: HandleRPCOptions
 ) {
   yield fork(handleRenderer, getState);
   yield takeEvery(ActionType.CANVAS_MOUSE_DOWN, function*(
@@ -57,7 +57,7 @@ export default function* mainSaga(
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
   yield fork(handleAppFocus);
-  yield fork(handleRPC);
+  yield fork(handleRPC, options);
 }
 
 function* handleRenderer(getState: AppStateSelector) {

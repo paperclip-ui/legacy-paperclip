@@ -20,4 +20,4 @@ export const MainBase = () => {
   );
 };
 
-export const Main = withAppStore(MainBase);
+export const createMain = withAppStore(MainBase);
