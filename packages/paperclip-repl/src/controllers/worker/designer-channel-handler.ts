@@ -1,23 +1,56 @@
-import { EngineDelegate, isPaperclipFile } from "paperclip";
+import { EngineDelegate } from "paperclip";
+import { isPaperclipFile, engineDelegateChanged } from "paperclip-utils";
+import * as path from "path";
 import { Channels } from "tandem-designer/src/sagas/rpc/channels";
+import { FSItemKind } from "tandem-designer/src/state";
+import { REPLChannels } from "../channels";
 
 export class DesignerChannelHandler {
   private _engine: EngineDelegate;
   private _ready: Promise<void>;
   private _resolveReady: () => void;
-  constructor(private _channels: Channels) {
+  constructor(
+    private _channels: Channels,
+    private _replChannels: REPLChannels
+  ) {
     this._channels.getAllScreens.listen(this._getAllScreens);
     this._channels.hello.listen(this._hello);
     this._channels.openFile.listen(this._openFile);
+    this._channels.loadDirectory.listen(this._loadDirectory);
+    this._channels.editCode.listen(this._editCode);
     this._ready = new Promise(resolve => (this._resolveReady = resolve));
   }
   init(engine: EngineDelegate) {
     this._engine = engine;
+    this._engine.onEvent(event => {
+      this._channels.events.call(engineDelegateChanged(event));
+    });
     this._resolveReady();
   }
+  private _loadDirectory = async ({ path }) => {
+    const files = await this._replChannels.getFiles.call(null);
+
+    return {
+      name: "/",
+      kind: FSItemKind.DIRECTORY,
+      absolutePath: "/",
+      url: "/",
+      children: Object.keys(files).map(filePath => {
+        return {
+          name: filePath.split("/").pop(),
+          absolutePath: filePath,
+          kind: FSItemKind.FILE,
+          url: filePath
+        };
+      })
+    };
+  };
+  private _editCode = ({ uri, value }) => {
+    console.log(uri);
+    this._engine.updateVirtualFileContent(uri, value);
+  };
   private _openFile = async ({ uri }) => {
     await this._ready;
-    console.log("OPEN");
     if (isPaperclipFile(uri)) {
       return {
         uri,
@@ -42,7 +75,7 @@ export class DesignerChannelHandler {
     return {
       canvasFile: "entry.pc",
       showFullEditor: true,
-      localResourceRoots: "/",
+      localResourceRoots: ["/"],
       branchInfo: null
     };
   };

@@ -1,10 +1,10 @@
 import { EngineIO } from "paperclip/src/core/delegate";
 import * as path from "path";
-import { Channels } from "../channels";
+import { REPLChannels } from "../channels";
 
 export class ReplEngineIO implements EngineIO {
   private _files: Record<string, string>;
-  constructor(private _channels: Channels) {}
+  constructor(private _channels: REPLChannels) {}
   async init() {
     this._files = await this._channels.getFiles.call(null);
   }

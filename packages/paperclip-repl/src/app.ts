@@ -1,5 +1,5 @@
 import { ChannelHandler } from "./controllers/channel-handler";
-import { Channels } from "./controllers/channels";
+import { REPLChannels } from "./controllers/channels";
 import { DesignerController } from "./controllers/designer";
 import { ParentController } from "./controllers/parent";
 
@@ -12,7 +12,7 @@ export class App {
   constructor(private _options: Options) {}
   init() {
     const workerParent = new ParentController(this._options);
-    const channels = new Channels(workerParent.getWorkerConnection());
+    const channels = new REPLChannels(workerParent.getWorkerConnection());
     new ChannelHandler(channels, this._options);
     new DesignerController(workerParent).init();
   }
