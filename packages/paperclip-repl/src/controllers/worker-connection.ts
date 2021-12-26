@@ -4,7 +4,9 @@ import { EventEmitter } from "events";
 export class WindowConnection implements IConnection {
   private _em: EventEmitter = new EventEmitter();
   constructor(private _worker: Worker | Window) {
-    _worker.onmessage = message => this._em.emit("message", message.data);
+    _worker.onmessage = message => {
+      this._em.emit("message", message.data);
+    };
   }
   async send(message: any): Promise<void> {
     this._worker.postMessage(message);

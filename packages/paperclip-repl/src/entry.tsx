@@ -1,3 +1,10 @@
 import { App } from "./app";
 
-new App().init();
+new App({
+  files: {
+    "entry.pc": `
+      Hello World
+    `
+  },
+  entry: `entry.pc`
+}).init();

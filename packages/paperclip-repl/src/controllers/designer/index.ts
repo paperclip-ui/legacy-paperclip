@@ -4,9 +4,8 @@ import { ParentController } from "../parent";
 export class DesignerController {
   constructor(private _workerParent: ParentController) {}
   init() {
-    initDesigner({ createConnection: this._createConnection });
+    initDesigner({
+      createConnection: () => this._workerParent.getWorkerConnection()
+    });
   }
-  private _createConnection = () => {
-    return this._workerParent.getWindowConnection();
-  };
 }

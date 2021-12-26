@@ -1,10 +1,10 @@
 import * as path from "path";
-import * as url from "url";
 import {
   findPCConfigUrl,
   PaperclipConfig,
   PC_CONFIG_FILE_NAME
 } from "paperclip-utils";
+import { fileURLToPath, pathToFileURL } from "paperclip-utils/lib/core/url";
 import * as fs from "fs";
 
 // TODO - move to paperclip-utils as soon as we have a glob library that can handle virtual file systems
@@ -12,7 +12,7 @@ const findResourcesFromConfig = (
   get: (config: PaperclipConfig, options: any) => string[]
 ) => fs => (fromUri: string, relative?: boolean) => {
   // symlinks may fudge module resolution, so we need to find the real path
-  const fromPath = fs.realpathSync(new url.URL(fromUri));
+  const fromPath = fs.realpathSync(new URL(fromUri));
   const fromPathDirname = path.dirname(fromPath);
   const configUrl = findPCConfigUrl(fs)(fromUri);
 
@@ -23,12 +23,12 @@ const findResourcesFromConfig = (
     return [];
   }
 
-  const configUri = new url.URL(configUrl);
+  const configUri = new URL(configUrl);
   const config: PaperclipConfig = JSON.parse(
     fs.readFileSync(configUri, "utf8")
   );
 
-  return get(config, path.dirname(url.fileURLToPath(configUri)))
+  return get(config, path.dirname(fileURLToPath(configUri)))
     .filter(pathname => pathname !== fromPath)
     .map(pathname => {
       if (relative) {
@@ -52,7 +52,7 @@ const findResourcesFromConfig = (
         return relativePath;
       }
 
-      return url.pathToFileURL(pathname).href;
+      return pathToFileURL(pathname).href;
     })
     .map(filePath => {
       return filePath.replace(/\\/g, "/");
@@ -178,7 +178,7 @@ const getModulePath = (
   fullPath: string,
   fromDir?: string
 ) => {
-  const configDir = path.dirname(url.fileURLToPath(configUri));
+  const configDir = path.dirname(fileURLToPath(configUri));
 
   const moduleDirectory = path.join(configDir, config.srcDir) + "/";
 

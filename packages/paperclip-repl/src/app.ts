@@ -1,10 +1,19 @@
+import { ChannelHandler } from "./controllers/channel-handler";
+import { Channels } from "./controllers/channels";
 import { DesignerController } from "./controllers/designer";
 import { ParentController } from "./controllers/parent";
 
+export type Options = {
+  files: Record<string, string>;
+  entry: string;
+};
+
 export class App {
-  constructor() {}
+  constructor(private _options: Options) {}
   init() {
-    const workerParent = new ParentController();
+    const workerParent = new ParentController(this._options);
+    const channels = new Channels(workerParent.getWorkerConnection());
+    new ChannelHandler(channels, this._options);
     new DesignerController(workerParent).init();
   }
 }

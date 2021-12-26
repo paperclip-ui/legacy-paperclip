@@ -1,7 +1,7 @@
 // 🙈
 
 import * as fs from "fs";
-import * as url from "url";
+import { fileURLToPath } from "paperclip-utils/lib/core/url";
 import {
   EngineDelegateEvent,
   updateAllLoadedData,
@@ -326,7 +326,7 @@ export const keepEngineInSyncWithFileSystem2 = (
     if (kind === ChangeKind.Changed) {
       engine.updateVirtualFileContent(
         uri,
-        fs.readFileSync(new url.URL(uri), "utf8")
+        fs.readFileSync(fileURLToPath(uri), "utf8")
       );
     } else if (kind === ChangeKind.Removed) {
       engine.purgeUnlinkedFiles();

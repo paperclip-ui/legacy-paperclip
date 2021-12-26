@@ -12,13 +12,19 @@ export const Header = () => {
   const branchInfo = useSelector(getBranchInfo);
   const branches = branchInfo?.branches || [];
 
+  if (!branchInfo) {
+    return null;
+  }
+
   return (
     <styles.Header>
       {/* <BranchSelect /> */}
-      <Commit />
-      <styles.CurrentBranchLabel>
-        Current branch: {branchInfo?.currentBranch}
-      </styles.CurrentBranchLabel>
+      {branchInfo && <Commit />}
+      {branchInfo && (
+        <styles.CurrentBranchLabel>
+          Current branch: {branchInfo?.currentBranch}
+        </styles.CurrentBranchLabel>
+      )}
       {/* <NewBranch /> */}
     </styles.Header>
   );

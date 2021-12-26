@@ -13,6 +13,7 @@
   "dependencies": {
     "paperclip": "^18.2.14",
     "paperclip-cli": "^18.2.14",
+    "paperclip-common": "^18.1.6",
     "paperclip-compiler-react": "^18.2.14",
     "paperclip-loader": "^18.2.14",
     "react": "^17.0.2",

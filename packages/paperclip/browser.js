@@ -15,7 +15,7 @@ export const loadEngineDelegate = async (options, onCrash) => {
       getLintConfig,
       options.mode || EngineMode.MultiFrame
     ),
-    readFile,
+    options.io,
     onCrash ||
       function(e) {
         console.error(e);
