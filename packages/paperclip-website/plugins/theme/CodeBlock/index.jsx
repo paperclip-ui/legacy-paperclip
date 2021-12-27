@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { App as REPLApp } from "paperclip-repl/src/app";
 
 import CodeBlock from "@theme-init/CodeBlock";
-import usePrismTheme from "@theme/hooks/usePrismTheme";
 
 // const Editor = createComponentClass({ React, useState, useEffect, useRef });
 
@@ -9,7 +9,7 @@ export default props => {
   // const prismTheme = usePrismTheme();
 
   // turned off for now until playground hooked up to this repo
-  if (props.live && false) {
+  if (props.live) {
     return (
       <LiveEditor expanded={props.expanded !== "false"} height={props.height}>
         {props.children}
@@ -42,23 +42,33 @@ const LiveEditor = ({ children, height, expanded }) => {
   useEffect(() => loadPlayground().then(() => setPlaygroundLoaded(true)), []);
 
   useEffect(() => {
-    if (
-      !mountRef.current ||
-      typeof window === "undefined" ||
-      !playgroundLoaded
-    ) {
+    console.log("LIVE");
+    if (!mountRef.current || typeof window === "undefined") {
       return;
     }
 
-    mountRef.current.appendChild(
-      window["createPaperclipPlayground"]({
-        compact: true,
-        documents: graph,
-        activeFrameIndex: expanded !== false ? 0 : undefined,
-        height: height,
-        slim: true
-      })
+    const app = new REPLApp(
+      {
+        files: graph,
+        entry: Object.keys(graph)[0]
+      },
+      mountRef.current
     );
+
+    app.init();
+    // import("paperclip-repl/src/app").then((module) => {
+    //   console.log(module);
+    // });
+
+    // mountRef.current.appendChild(
+    //   window["createPaperclipPlayground"]({
+    //     compact: true,
+    //     documents: graph,
+    //     activeFrameIndex: expanded !== false ? 0 : undefined,
+    //     height: height,
+    //     slim: true
+    //   })
+    // );
   }, [playgroundLoaded, mountRef.current]);
 
   return <div ref={mountRef}></div>;

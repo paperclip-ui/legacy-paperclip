@@ -418,7 +418,6 @@ export const reduceDesigner = (
     case ActionType.SERVER_OPTIONS_LOADED: {
       return produce(designer, newDesigner => {
         newDesigner.workspace = action.payload;
-        console.log(action.payload);
       });
     }
     case ActionType.FILE_LOADED: {
@@ -805,8 +804,6 @@ const handleDoubleClick = (
     ),
     isExpanded(designer) ? getActiveFrameIndex(designer) : null
   )?.nodePath;
-
-  console.log(nodePath);
 
   designer = produce(designer, newDesigner => {
     newDesigner.canvasClickTimestamp = action.payload.timestamp;

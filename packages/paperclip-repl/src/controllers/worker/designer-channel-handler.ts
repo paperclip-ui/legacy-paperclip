@@ -1,6 +1,10 @@
 import { EngineDelegate } from "paperclip";
-import { isPaperclipFile, engineDelegateChanged } from "paperclip-utils";
-import * as path from "path";
+import { PCMutation, PCSourceWriter } from "paperclip-source-writer";
+import {
+  isPaperclipFile,
+  engineDelegateChanged,
+  VirtNodeSource
+} from "paperclip-utils";
 import { Channels } from "tandem-designer/src/sagas/rpc/channels";
 import { FSItemKind } from "tandem-designer/src/state";
 import { REPLChannels } from "../channels";
@@ -18,6 +22,9 @@ export class DesignerChannelHandler {
     this._channels.openFile.listen(this._openFile);
     this._channels.loadDirectory.listen(this._loadDirectory);
     this._channels.editCode.listen(this._editCode);
+    this._channels.editPCSource.listen(this._editPCSource);
+    this._channels.inspectNodeStyle.listen(this._inspectNodeStyles);
+    this._channels.loadVirtualNodeSources.listen(this._loadVirtualNodeSources);
     this._ready = new Promise(resolve => (this._resolveReady = resolve));
   }
   init(engine: EngineDelegate) {
@@ -27,6 +34,25 @@ export class DesignerChannelHandler {
     });
     this._resolveReady();
   }
+  private _loadVirtualNodeSources = (sources: VirtNodeSource[]) => {
+    return sources.map(info => {
+      return {
+        virtualNodePath: info.path,
+        source: this._engine.getVirtualNodeSourceInfo(info.path, info.uri)
+      };
+    });
+  };
+
+  private _inspectNodeStyles = async (sources: VirtNodeSource[]) => {
+    return sources.map(source => [
+      source,
+      this._engine.inspectNodeStyles(source, 0)
+    ]);
+  };
+  private _editPCSource = async (mutations: PCMutation[]) => {
+    const writer = new PCSourceWriter(this._engine);
+    const changes = writer.apply(mutations);
+  };
   private _loadDirectory = async ({ path }) => {
     const files = await this._replChannels.getFiles.call(null);
 
@@ -46,7 +72,6 @@ export class DesignerChannelHandler {
     };
   };
   private _editCode = ({ uri, value }) => {
-    console.log(uri);
     this._engine.updateVirtualFileContent(uri, value);
   };
   private _openFile = async ({ uri }) => {

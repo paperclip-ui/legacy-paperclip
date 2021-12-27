@@ -25,9 +25,7 @@ export class REPLWorker {
     this._io = new ReplEngineIO(this._replChannels);
     await this._io.init();
     this._paperclip = new PaperclipController(this._designerChannels, this._io);
-    console.log("OK");
     const engine = await this._paperclip.init();
-    console.log("ONFDFSD");
     this._channelHandler.init(engine);
   }
 }

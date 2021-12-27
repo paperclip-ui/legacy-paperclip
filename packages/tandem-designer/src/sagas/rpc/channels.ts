@@ -24,7 +24,7 @@ export class Channels {
   readonly loadDirectory: ReturnType<typeof loadDirectoryChannel>;
   readonly openFile: ReturnType<typeof openFileChannel>;
   readonly commitChanges: ReturnType<typeof commitChangesChannel>;
-  readonly loadVirtualNdoeSources: ReturnType<
+  readonly loadVirtualNodeSources: ReturnType<
     typeof loadVirtualNodeSourcesChannel
   >;
   readonly revealNodeSourceById: ReturnType<typeof revealNodeSourceByIdChannel>;
@@ -41,7 +41,7 @@ export class Channels {
     this.loadDirectory = loadDirectoryChannel(connection);
     this.commitChanges = commitChangesChannel(connection);
     this.openFile = openFileChannel(connection);
-    this.loadVirtualNdoeSources = loadVirtualNodeSourcesChannel(connection);
+    this.loadVirtualNodeSources = loadVirtualNodeSourcesChannel(connection);
     this.revealNodeSourceById = revealNodeSourceByIdChannel(connection);
     this.editPCSource = editPCSourceChannel(connection);
     this.events = eventsChannel(connection);

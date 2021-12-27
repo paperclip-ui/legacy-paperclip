@@ -9,7 +9,12 @@ module.exports = function(context, options) {
       return path.resolve(__dirname, "./theme");
     },
     configureWebpack(config, isServer) {
-      const plugins = [];
+      const plugins = [
+        new webpack.ProvidePlugin({
+          process: "process/browser",
+          Buffer: ["buffer", "Buffer"]
+        })
+      ];
 
       if (isServer) {
         plugins.push(
@@ -20,7 +25,12 @@ module.exports = function(context, options) {
         );
       }
 
+      console.log(config.resolve);
+
       return {
+        experiments: {
+          asyncWebAssembly: true
+        },
         module: {
           rules: [
             {
@@ -28,6 +38,15 @@ module.exports = function(context, options) {
               loader: "null-loader"
             }
           ]
+        },
+        externals: {
+          chokidar: "[]",
+          fs: "[]"
+        },
+        resolve: {
+          alias: {
+            os: "os-browserify/browser"
+          }
         },
         plugins
       };

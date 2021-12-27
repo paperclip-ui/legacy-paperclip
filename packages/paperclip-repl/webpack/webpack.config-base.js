@@ -4,15 +4,12 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-module.exports = {
-  mode: "development",
-  entry: "./src/entry.tsx",
+const BASE_DIR = path.resolve(__dirname, "..");
 
-  output: {
-    filename: "[name]-[contenthash].js",
-    path: path.resolve(__dirname, "dist"),
-    publicPath: "/"
-  },
+exports.BASE_DIR = BASE_DIR;
+
+exports.config = {
+  mode: "development",
   experiments: {
     asyncWebAssembly: true
   },
@@ -21,7 +18,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       publicPath: "/",
       title: "React Demo",
-      template: path.resolve(__dirname, "src", "index.html")
+      template: path.resolve(BASE_DIR, "src", "index.html")
     }),
     new webpack.ProvidePlugin({
       process: "process/browser",
@@ -50,15 +47,15 @@ module.exports = {
       {
         test: /\.(ts|tsx)?$/,
         loader: "ts-loader",
-        include: [path.resolve(__dirname, "src"), path.resolve("..")],
+        include: [path.resolve(BASE_DIR, "src"), path.resolve("..")],
         exclude: []
       },
       {
         test: /\.pc$/,
         loader: "paperclip-loader",
-        include: [path.resolve(__dirname, "src"), path.resolve("..")],
+        include: [path.resolve(BASE_DIR, "src"), path.resolve("..")],
         options: {
-          config: require("./paperclip.config.json")
+          config: require("../paperclip.config.json")
         }
       },
       {

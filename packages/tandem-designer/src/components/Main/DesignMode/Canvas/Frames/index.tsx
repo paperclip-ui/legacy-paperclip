@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useState } from "react";
 import {
-  Frame,
+  Frame as Frame2,
   FramesRenderer,
   FramesRendererState,
   getFrameBounds,
@@ -166,7 +166,7 @@ class FrameController {
 
 type FrameInfo = {
   preview: any;
-  frames: Frame[];
+  frames: Frame2[];
 };
 
 type MultiFrameControllerState = {
@@ -416,7 +416,7 @@ export const useFrames = ({
 };
 
 type FrameProps = {
-  frame: Frame;
+  frame: Frame2;
   expanded: boolean;
   preview: VirtualText | VirtualElement;
   onLoad: () => void;

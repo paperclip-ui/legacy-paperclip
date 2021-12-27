@@ -1,10 +1,16 @@
 import { App } from "./app";
 
-new App({
-  files: {
-    "entry.pc": `
+new App(
+  {
+    files: {
+      "entry.pc": `
       Hello World
+    `,
+      "module.pc": `
+      Something
     `
+    },
+    entry: `entry.pc`
   },
-  entry: `entry.pc`
-}).init();
+  document.getElementById("app")
+).init();

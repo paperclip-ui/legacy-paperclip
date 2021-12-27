@@ -1,11 +1,12 @@
 {
   "name": "paperclip-repl",
-  "version": "1.0.0",
+  "version": "18.2.14",
   "description": "",
-  "main": "index.js",
+  "main": "esm/main.js",
   "scripts": {
-    "build": "yarn build:definition && webpack",
-    "build:watch": "concurrently \"yarn build:definition\" \"webpack serve\"",
+    "build": "yarn build:definition && yarn build:webpack",
+    "build:webpack": "webpack -c webpack/webpack.config.js",
+    "build:watch": "concurrently \"yarn build:definition\" \"yarn build:webpack\"",
     "build:definition": "paperclip build --only=d.ts"
   },
   "author": "",

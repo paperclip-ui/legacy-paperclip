@@ -9,11 +9,11 @@ export type Options = {
 };
 
 export class App {
-  constructor(private _options: Options) {}
+  constructor(private _options: Options, private _mount: HTMLElement) {}
   init() {
     const workerParent = new ParentController(this._options);
     const channels = new REPLChannels(workerParent.getWorkerConnection());
     new ChannelHandler(channels, this._options);
-    new DesignerController(workerParent).init();
+    new DesignerController(workerParent, this._mount).init();
   }
 }

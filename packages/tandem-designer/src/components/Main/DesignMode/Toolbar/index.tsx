@@ -13,7 +13,10 @@ import {
 import { useTextInput } from "tandem-design-system";
 import { isExpanded } from "../../../../state";
 
-const WIN_ENV = /^win/i.test(String(window?.navigator?.platform));
+const WIN_ENV =
+  typeof window !== "undefined"
+    ? /^win/i.test(String(window?.navigator?.platform))
+    : null;
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();

@@ -413,7 +413,6 @@ function* handleClientComunication(client) {
   function* maybeLoadCanvasFile() {
     const state: AppState = yield select();
     const currUri = state.designer.ui.query.canvasFile;
-    console.log(currUri, _previousFileUri);
     if (state.designer.projectDirectory && currUri !== _previousFileUri) {
       _previousFileUri = currUri;
       if (currUri) {
