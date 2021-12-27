@@ -428,7 +428,6 @@ export const reduceDesigner = (
           newDesigner.pcFileDataVersion++;
         });
       }
-
       designer = maybeCenterCanvas(designer);
       designer = pruneDeletedNodes(designer);
       return designer;

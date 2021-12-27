@@ -1,10 +1,4 @@
-import {
-  AppState,
-  APP_LOCATIONS,
-  matchesLocationPath,
-  Project,
-  ProjectFile
-} from "../state";
+import { AppState } from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
 import history from "tandem-designer/src/dom-history";
 import * as vea from "tandem-designer/src/actions";
@@ -12,18 +6,15 @@ import {
   AccountConnected,
   ActionType,
   DeleteProjectConfirmed,
-  FilesDropped,
   getProjectsRequestChanged,
   loggedOut,
   NewProjectEntered,
   ProjectRenamed,
-  rawFileUploaded,
   savedProject,
   sessionRequestStateChanged,
   shareProjectRequestStateChanged
 } from "../actions";
 import * as api from "../api";
-import { mapValues, matchesProperty } from "lodash";
 import { request } from "./utils";
 import { isPaperclipFile } from "paperclip-utils";
 

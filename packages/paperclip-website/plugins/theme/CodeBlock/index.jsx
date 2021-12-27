@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { App as REPLApp } from "paperclip-repl/src/app";
+// import { App as REPLApp } from "paperclip-repl/src/app";
 
 import CodeBlock from "@theme-init/CodeBlock";
 
@@ -46,29 +46,29 @@ const LiveEditor = ({ children, height, expanded }) => {
       return;
     }
 
-    const app = new module.App(
-      {
-        files: graph,
-        entry: Object.keys(graph)[0]
-      },
-      mountRef.current
-    );
+    // const app = new module.App(
+    //   {
+    //     files: graph,
+    //     entry: Object.keys(graph)[0]
+    //   },
+    //   mountRef.current
+    // );
 
-    app.init();
+    // app.init();
 
-    // import("paperclip-repl/src/app").then(module => {
-    //   console.log(module);
+    console.log(graph);
 
-    //   const app = new module.App(
-    //     {
-    //       files: graph,
-    //       entry: Object.keys(graph)[0]
-    //     },
-    //     mountRef.current
-    //   );
+    import("paperclip-repl/src/app").then(module => {
+      const app = new module.App(
+        {
+          files: graph,
+          entry: Object.keys(graph)[0]
+        },
+        mountRef.current
+      );
 
-    //   app.init();
-    // });
+      app.init();
+    });
     // import("paperclip-repl/src/app").then((module) => {
     //   console.log(module);
     // });

@@ -52,10 +52,6 @@ module.exports = function(context, options) {
             }
           ]
         },
-        externals: {
-          chokidar: "{}",
-          fs: "{}"
-        },
         resolve: {
           alias: {
             os: "os-browserify/browser"

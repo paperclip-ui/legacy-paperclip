@@ -4,13 +4,18 @@ import createSagaMiddleware from "redux-saga";
 import { Provider } from "react-redux";
 
 import defaultReducer from "../../reducers";
-import { mainSaga } from "../../sagas";
-import { INITIAL_STATE } from "../../state";
-import { HandleRPCOptions } from "../../sagas/rpc";
+import { mainSaga, MainSagaOptions } from "../../sagas";
+import { AppState, INITIAL_STATE } from "../../state";
+import produce from "immer";
 
-export const withAppStore = (Child: React.FC) => (
-  options: HandleRPCOptions
-) => {
+export type WithAppStoreOptions = {
+  showLaunchExternalButton?: boolean;
+} & MainSagaOptions;
+
+export const withAppStore = (Child: React.FC) => ({
+  showLaunchExternalButton,
+  ...options
+}: WithAppStoreOptions) => {
   let _inited = false;
   let _store;
 
@@ -19,11 +24,18 @@ export const withAppStore = (Child: React.FC) => (
       return;
     }
 
+    let state: AppState = INITIAL_STATE;
+    state = produce(state, newState => {
+      if (showLaunchExternalButton != null) {
+        newState.designer.sharable = showLaunchExternalButton;
+      }
+    });
+
     _inited = true;
     const sagaMiddleware = createSagaMiddleware();
     _store = createStore(
       defaultReducer,
-      INITIAL_STATE,
+      state,
       applyMiddleware(sagaMiddleware)
     );
 

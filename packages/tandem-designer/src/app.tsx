@@ -1,16 +1,18 @@
 import React from "react";
 import * as ReactDOM from "react-dom";
 import { createMain } from "./components/Main";
-import { HandleRPCOptions } from "./sagas/rpc";
+import { createBrowserHistory } from "history";
+import { WithAppStoreOptions } from "./hocs";
 
 export type InitOptions = {
   mount?: HTMLElement;
-} & HandleRPCOptions;
+} & Partial<WithAppStoreOptions>;
 
 export const init = ({
   mount = document.getElementById("div"),
+  history = createBrowserHistory(),
   ...rest
 }: InitOptions = {}) => {
-  const Main = createMain(rest);
+  const Main = createMain({ history, ...rest });
   ReactDOM.render(<Main />, mount);
 };

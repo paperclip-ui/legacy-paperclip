@@ -5,6 +5,7 @@ import {
   globalSaveKeyPress,
   codeChanged
 } from "../../../actions";
+import loadMonaco from "@monaco-editor/loader";
 
 // Can't import, otherwise the react monaco editor breaks :(
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
@@ -149,41 +150,39 @@ const Editor = ({
     }
 
     // need async import so that designer can run in node
-    import("@monaco-editor/loader").then(loadMonaco => {
-      return loadMonaco.default.init().then(monaco => {
-        setMonaco(monaco);
+    loadMonaco.init().then(monaco => {
+      setMonaco(monaco);
 
-        // might exist if switching between pages - models are global so we need to dispose.
-        const model = monaco.editor.getModel(monaco.Uri.parse(uri));
-        if (model) {
-          model.dispose();
-        }
+      // might exist if switching between pages - models are global so we need to dispose.
+      const model = monaco.editor.getModel(monaco.Uri.parse(uri));
+      if (model) {
+        model.dispose();
+      }
 
-        activatePaperclipExtension(monaco as any, { getCurrentUri: null });
+      activatePaperclipExtension(monaco as any, { getCurrentUri: null });
 
-        const editor = monaco.editor.create(editorRef.current, {
-          language: "paperclip",
-          tabSize: 2,
-          automaticLayout: true,
-          insertSpaces: true,
-          model: monaco.editor.createModel(
-            value || "",
-            undefined,
-            monaco.Uri.parse(uri)
-          )
-        });
-
-        monaco.editor.setTheme("vs-dark");
-        setEditor(editor);
-
-        editor.onDidChangeModelContent(() => {
-          onChange(editor.getValue());
-        });
-
-        onMount(editor, monaco);
-
-        setLoading(false);
+      const editor = monaco.editor.create(editorRef.current, {
+        language: "paperclip",
+        tabSize: 2,
+        automaticLayout: true,
+        insertSpaces: true,
+        model: monaco.editor.createModel(
+          value || "",
+          undefined,
+          monaco.Uri.parse(uri)
+        )
       });
+
+      monaco.editor.setTheme("vs-dark");
+      setEditor(editor);
+
+      editor.onDidChangeModelContent(() => {
+        onChange(editor.getValue());
+      });
+
+      onMount(editor, monaco);
+
+      setLoading(false);
     });
     return () => {};
   }, []);

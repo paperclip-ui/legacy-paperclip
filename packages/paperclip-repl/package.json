@@ -6,12 +6,13 @@
   "scripts": {
     "build": "yarn build:definition && yarn build:webpack",
     "build:webpack": "webpack -c webpack/webpack.config.js",
-    "build:watch": "concurrently \"yarn build:definition\" \"yarn build:webpack\"",
-    "build:definition": "paperclip build --only=d.ts"
+    "build:watch": "concurrently \"yarn build:definition\" \"webpack serve -c webpack/webpack.config-web.js\"",
+    "build:definition": "paperclip build --only=d.ts --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "history": "4.9.0",
     "paperclip": "^18.2.14",
     "paperclip-cli": "^18.2.14",
     "paperclip-common": "^18.1.6",

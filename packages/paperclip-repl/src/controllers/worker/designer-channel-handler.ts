@@ -76,29 +76,25 @@ export class DesignerChannelHandler {
   };
   private _openFile = async ({ uri }) => {
     await this._ready;
+
     if (isPaperclipFile(uri)) {
+      const data = this._engine.open(uri);
       return {
         uri,
-        data: this._engine.open(uri),
+        data,
         document: this._engine.getVirtualContent(uri)
       };
     }
   };
   private _getAllScreens = async () => {
     await this._ready;
+    const files = await this._replChannels.getFiles.call(null);
+    console.log(files, this._engine.getAllLoadedData());
     return this._engine.getAllLoadedData();
   };
   private _hello = async () => {
     await this._ready;
-
     const canvasFile = await this._replChannels.getMainFile.call(null);
-    /*
-
-  canvasFile?: string;
-  showFullEditor?: boolean;
-  localResourceRoots: string[];
-  branchInfo: BranchInfo;
-    */
     return {
       canvasFile,
       showFullEditor: true,

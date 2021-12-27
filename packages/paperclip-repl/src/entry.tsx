@@ -3,14 +3,14 @@ import { App } from "./app";
 new App(
   {
     files: {
-      "entry.pc": `
+      "file:///entry.pc": `
       Hello World
     `,
-      "module.pc": `
+      "file:///module.pc": `
       Something
     `
     },
-    entry: `entry.pc`
+    entry: `file:///entry.pc`
   },
   document.getElementById("app")
 ).init();
