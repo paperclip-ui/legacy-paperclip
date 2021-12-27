@@ -1,7 +1,4 @@
 // 🙈
-
-import * as fs from "fs";
-import { fileURLToPath } from "paperclip-utils/lib/core/url";
 import {
   EngineDelegateEvent,
   updateAllLoadedData,
@@ -9,8 +6,6 @@ import {
   DependencyContent,
   SheetInfo,
   LoadedData,
-  PaperclipResourceWatcher,
-  ChangeKind,
   EvaluatedDataKind,
   DiffedPCData,
   getImportById,
@@ -317,22 +312,6 @@ export class EngineDelegate {
     }
   };
 }
-
-export const keepEngineInSyncWithFileSystem2 = (
-  watcher: PaperclipResourceWatcher,
-  engine: EngineDelegate
-) => {
-  return watcher.onChange((kind, uri) => {
-    if (kind === ChangeKind.Changed) {
-      engine.updateVirtualFileContent(
-        uri,
-        fs.readFileSync(fileURLToPath(uri), "utf8")
-      );
-    } else if (kind === ChangeKind.Removed) {
-      engine.purgeUnlinkedFiles();
-    }
-  });
-};
 
 export type LoadedDataDetails = {
   src?: string;

@@ -37,11 +37,6 @@ exports.config = {
     }
   },
 
-  externals: {
-    chokidar: "{}",
-    fs: "{}"
-  },
-
   module: {
     rules: [
       {

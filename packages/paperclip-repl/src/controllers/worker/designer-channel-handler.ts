@@ -90,6 +90,8 @@ export class DesignerChannelHandler {
   };
   private _hello = async () => {
     await this._ready;
+
+    const canvasFile = await this._replChannels.getMainFile.call(null);
     /*
 
   canvasFile?: string;
@@ -98,7 +100,7 @@ export class DesignerChannelHandler {
   branchInfo: BranchInfo;
     */
     return {
-      canvasFile: "entry.pc",
+      canvasFile,
       showFullEditor: true,
       localResourceRoots: ["/"],
       branchInfo: null

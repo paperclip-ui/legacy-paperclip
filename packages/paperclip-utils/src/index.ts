@@ -17,7 +17,6 @@ export * from "./html/stringify-virt-node";
 export * from "./css/virt";
 export * from "./html/patcher";
 export * from "./core/utils";
-export * from "./core/source-watcher";
 export * from "./css/patcher";
 export * from "./core/memo";
 export * from "./base/virt";

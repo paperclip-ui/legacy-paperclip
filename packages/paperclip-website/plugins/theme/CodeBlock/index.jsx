@@ -42,12 +42,11 @@ const LiveEditor = ({ children, height, expanded }) => {
   useEffect(() => loadPlayground().then(() => setPlaygroundLoaded(true)), []);
 
   useEffect(() => {
-    console.log("LIVE");
     if (!mountRef.current || typeof window === "undefined") {
       return;
     }
 
-    const app = new REPLApp(
+    const app = new module.App(
       {
         files: graph,
         entry: Object.keys(graph)[0]
@@ -56,6 +55,20 @@ const LiveEditor = ({ children, height, expanded }) => {
     );
 
     app.init();
+
+    // import("paperclip-repl/src/app").then(module => {
+    //   console.log(module);
+
+    //   const app = new module.App(
+    //     {
+    //       files: graph,
+    //       entry: Object.keys(graph)[0]
+    //     },
+    //     mountRef.current
+    //   );
+
+    //   app.init();
+    // });
     // import("paperclip-repl/src/app").then((module) => {
     //   console.log(module);
     // });

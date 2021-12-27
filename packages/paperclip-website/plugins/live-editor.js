@@ -10,6 +10,21 @@ module.exports = function(context, options) {
     },
     configureWebpack(config, isServer) {
       const plugins = [
+        // new CopyPlugin({
+        //   patterns: [
+        //     {
+        //       from: path.resolve(
+        //         __dirname,
+        //         "../../paperclip-repl/dist"
+        //       ),
+        //       to: ".",
+        //       globOptions: {
+        //         ignore: ["**/index.html"]
+        //       }
+        //     }
+        //   ]
+        // }),
+
         new webpack.ProvidePlugin({
           process: "process/browser",
           Buffer: ["buffer", "Buffer"]
@@ -25,8 +40,6 @@ module.exports = function(context, options) {
         );
       }
 
-      console.log(config.resolve);
-
       return {
         experiments: {
           asyncWebAssembly: true
@@ -40,12 +53,14 @@ module.exports = function(context, options) {
           ]
         },
         externals: {
-          chokidar: "[]",
-          fs: "[]"
+          chokidar: "{}",
+          fs: "{}"
         },
         resolve: {
           alias: {
             os: "os-browserify/browser"
+            // chokidar: "empty-module",
+            // fs: "empty-module"
           }
         },
         plugins

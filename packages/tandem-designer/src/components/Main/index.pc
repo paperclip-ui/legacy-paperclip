@@ -20,8 +20,9 @@ TODOS:
     display: flex;
     flex-direction: row;
     align-content: stretch;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
   </style>
   {children}
 </div>
@@ -30,7 +31,13 @@ TODOS:
 <!--
   @frame { visible: false }
 -->
-<Container export component as="Preview">
+<Container export component as="Preview" class:fullSize="full-size">
+  <style>
+    &.full-size {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
   {showLeftSidebar && <LeftSidebar.Preview />}
   {codeMode && <CodeMode.Preview />}
   {designer? && <DesignMode.Preview v2
@@ -44,35 +51,50 @@ TODOS:
 <!--
   @frame { title: "Grid View / Large", width: 1864, height: 1050, x: 2345, y: -86 }
 -->
-<Preview designer showGrid showLeftSidebar />
+<Preview designer showGrid showLeftSidebar fullSize />
 
 <!--
   @frame { title: "Grid View / Large", width: 999, height: 737, x: 1219, y: -93 }
 -->
-<Preview designer showGrid showEnvPopup />
+<Preview designer showGrid showEnvPopup fullSize />
 
 <!--
   @frame { title: "Grid View / Small", width: 377, height: 737, x: -18, y: -104 }
 -->
-<Preview dark designer showGrid />
+<Preview dark designer showGrid fullSize />
 
 <!--
   @frame { title: " Grid View / Medium", width: 686, height: 737, x: 441, y: -107 }
 -->
-<Preview dark designer showGrid />
+<Preview dark designer showGrid fullSize />
 
 
 <!--
   @frame { title: "Code Mode / Desktop", width: 1867, height: 1084, x: 2345, y: 1257 }
 -->
-<Preview dark codeMode designer showGrid />
+<Preview dark codeMode designer showGrid fullSize />
 
 <!--
   @frame { title: "Code Mode / Big", width: 3364, height: 1685, x: 2339, y: 2677 }
 -->
-<Preview dark codeMode designer showGrid />
+<Preview dark codeMode designer showGrid fullSize />
 
 <!--
-  @frame { title: "Canvas with file nav", width: 2001, height: 1255, x: -66, y: 917 }
+  @frame { title: "Canvas with file nav", width: 1905, height: 1246, x: -66, y: 917 }
 -->
-<Preview showLeftSidebar codeMode={false} designer v2 showCanvas />
+<Preview showLeftSidebar codeMode={false} designer v2 showCanvas fullSize />
+
+
+<!--
+  @frame { title: "Constrained canvas", width: 1917, height: 1262, x: -53, y: 2761 }
+-->
+
+<div>
+  <div>
+    <style>
+      width: 1000px;
+      height: 500px;
+    </style>
+    <Preview showLeftSidebar codeMode={false} designer v2 showCanvas />
+  </div>
+</div>
