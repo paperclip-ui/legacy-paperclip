@@ -9,7 +9,7 @@ sidebar_label: Syntax
 You can use regular HTML & CSS in Paperclip. For example:
 
 
-```html live height=150px
+```html live height=300px
 <style>
   div {
     color: purple;
@@ -17,7 +17,7 @@ You can use regular HTML & CSS in Paperclip. For example:
     font-family: papyrus;
   }
 </style>
-<div>I'm purple!</div>
+<div>I'm purple!!</div>
 ```
 
 The big difference between Paperclip and regular HTML & CSS is that CSS in Paperclip is scoped. This means that styles won't leak into other documents. 
@@ -50,7 +50,7 @@ Nested rules eliminates some redundancy around defining style selectors.
 **Example**:
 
 
-```html live height=150px
+```html live height=300px
 // file: nested-style-demo.pc
 <style>
   .container {
@@ -78,7 +78,7 @@ Nested rules eliminates some redundancy around defining style selectors.
 
 The `&` token can be used to combine the _parent_ selector in nested rules like so:
 
-```html live height=150px
+```html live height=300px
 // file: nested-combine-demo.pc
 <style>
   .button {
@@ -120,7 +120,7 @@ div {
 
 Style blocks that are the defined within elements are _scoped_ to that element. For example:
 
-```html live height=150px
+```html live height=300px
 <div>
   <div>
     <style>
@@ -145,7 +145,7 @@ Scoped styles are recommended since they keep your styles & elements together in
 
 `:within([ancestor-selector])` allows you to apply styles within a parent or ancestor.
 
-```html live height=150px
+```html live height=300px
 <div class="bolder">
   <div>
     <style>
@@ -200,7 +200,7 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 
  **Example**:
 
-```html live height=150px
+```html live height=300px
 // file: mixin-demo.pc
 <style>
   :global(:root) {
@@ -275,7 +275,7 @@ The `@export` rule allows you to export styles to other documents, as well as ap
 
 **Example**:
 
-```html live  height=150px
+```html live  height=300px
 // file: main.pc
 <import src="./styles.pc" as="styles" />
 
@@ -363,7 +363,7 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 
 **Example**:
 
-```html live height=150px
+```html live height=300px
 // file: main.pc
 <import src="./atoms.pc" as="atoms" />
 
@@ -481,7 +481,7 @@ You can import [styles](#styling) & [components](#components) from other files.
 
 **Example**:
 
-```html live height=150px
+```html live height=300px
 // file: main.pc
 <import src="./pane.pc" as="pane" />
 <import src="./atoms.pc" as="atoms" />
@@ -630,7 +630,7 @@ Components are your UI building blocks. Just add a `component` attribute to a ro
 
 **Example**:
 
-```html live height=150px
+```html live height=300px
 
 <!-- class and class can be used interchangeably -->
 <!--
@@ -926,7 +926,7 @@ attributeBoundToClassName="$class-name"
 
 **Example**:
 
-```html live height=150px
+```html live height=300px
 // file: style-override-demo.pc
 <import as="Message" src="./message.pc" />
 <style>
@@ -1035,7 +1035,7 @@ Bindings allow you to define dynamic behavior in components.
 
 **Example**:
 
-```html live height=150px
+```html live height=300px
 
 <!--
   @frame { visible: false }
@@ -1118,7 +1118,7 @@ There will probably be the case where you want to define multiple areas of a com
 
 You can define dynamic attributes on your elements. For example:
 
-```html live height=150px
+```html live height=600px
 // file: buttons.pc
 <import src="./typography.pc" as="typography" />
 <import src="./styles.pc" as="styles" />
