@@ -51,7 +51,7 @@ export class DesignerChannelHandler {
   };
   private _editPCSource = async (mutations: PCMutation[]) => {
     const writer = new PCSourceWriter(this._engine);
-    const changes = writer.apply(mutations);
+    return writer.apply(mutations);
   };
   private _loadDirectory = async ({ path }) => {
     const files = await this._replChannels.getFiles.call(null);

@@ -4,7 +4,7 @@ import {
   publicActionCreator,
   BaseRequestStateChanged
 } from "./base";
-import { PCMutation } from "paperclip-source-writer";
+import { ContentChange, PCMutation } from "paperclip-source-writer";
 import {
   VirtualNode,
   BasicPaperclipAction,
@@ -38,6 +38,7 @@ export enum ActionType {
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
   CODE_CHANGED = "CODE_CHANGED",
+  SOURCES_EDITED = "SOURCES_EDITED",
   NEW_FILE_NAME_ENTERED = "NEW_FILE_NAME_ENTERED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
@@ -240,7 +241,17 @@ export type CodeChanged = BaseAction<
   ActionType.CODE_CHANGED,
   { value: string }
 >;
+
 export const codeChanged = actionCreator<CodeChanged>(ActionType.CODE_CHANGED);
+
+export type SourcesEdited = BaseAction<
+  ActionType.SOURCES_EDITED,
+  Record<string, ContentChange[]>
+>;
+
+export const sourcesEdited = actionCreator<SourcesEdited>(
+  ActionType.SOURCES_EDITED
+);
 
 export type FileLoaded = BaseAction<
   ActionType.FILE_LOADED,
@@ -751,6 +762,7 @@ export type InstanceAction =
   | BirdseyeTopFilterBlurred
   | BranchChanged
   | ResizerMoved
+  | SourcesEdited
   | GridHotkeyPressed
   | RendererChanged
   | CanvasPanned

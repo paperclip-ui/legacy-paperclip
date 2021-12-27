@@ -1,5 +1,5 @@
 import { remoteChannel } from "tandem-common/lib/rpc";
-import { PCMutation } from "paperclip-source-writer";
+import { ContentChange, PCMutation } from "paperclip-source-writer";
 import {
   NodeStyleInspection,
   VirtNodeSource,
@@ -24,9 +24,10 @@ export const revealNodeSourceByIdChannel = remoteChannel<string, void>(
   "revealNodeSourceByIdChannel"
 );
 
-export const editPCSourceChannel = remoteChannel<PCMutation[], void>(
-  "editPCSourceChannel"
-);
+export const editPCSourceChannel = remoteChannel<
+  PCMutation[],
+  Record<string, ContentChange[]>
+>("editPCSourceChannel");
 
 export const editCodeChannel = remoteChannel<
   { uri: string; value: string },

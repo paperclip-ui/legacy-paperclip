@@ -355,6 +355,9 @@ export const reduceDesigner = (
         newDesigner.currentEngineEvents[action.payload.id] = undefined;
       });
     }
+    case ActionType.SYNC_PANELS_CLICKED: {
+      return selectNode(null, false, false, designer);
+    }
     case ActionType.COMMIT_REQUEST_STATE_CHANGED: {
       return produce(designer, newDesigner => {
         newDesigner.commitProjectStatus = action.payload.result;

@@ -18,6 +18,7 @@ import {
   StyleRuleFileNameClicked,
   SyncPanelsClicked,
   dirLoaded,
+  sourcesEdited,
   allPCContentLoaded,
   globalBackspaceKeySent,
   FileItemClicked,
@@ -458,7 +459,7 @@ function* handleClientComunication(client) {
       const state: AppState = yield select();
 
       yield call(
-        editPCSource.call,
+        editPCSource2,
         state.designer.selectedNodePaths
           .map((info, i) => {
             const frame = getFrameFromIndex(Number(info), state.designer);
@@ -479,12 +480,17 @@ function* handleClientComunication(client) {
     }
   );
 
+  function* editPCSource2(mutations: PCMutation[]) {
+    const changes = yield call(editPCSource.call, mutations);
+    yield put(sourcesEdited(changes));
+  }
+
   yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
     const state: AppState = yield select();
 
     if (state.designer.selectedNodePaths.length) {
       yield call(
-        editPCSource.call,
+        editPCSource2,
         state.designer.selectedNodePaths
           .map((v, index) => {
             // may not exist if source is not returned in time for this edit
