@@ -137,6 +137,7 @@ export type DesignerState = {
   ui: UIState;
   readonly: boolean;
   sharable: boolean;
+  useCodeMirror: boolean;
   birdseyeFilter?: string;
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
@@ -221,6 +222,7 @@ export const INITIAL_STATE: AppState = {
     documents: {}
   },
   designer: {
+    useCodeMirror: false,
     readonly: false,
     pcFileDataVersion: 0,
     selectedNodeSources: [],
