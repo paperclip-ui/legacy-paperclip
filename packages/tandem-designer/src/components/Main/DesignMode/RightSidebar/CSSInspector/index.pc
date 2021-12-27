@@ -145,7 +145,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleRuleProperty" class:disabled="disabled">
+<div export
+  component
+  as="StyleRuleProperty"
+  class="code"
+  class:disabled="disabled">
   <style>
     display: flex;
     grid-column-gap: var(--spacing-3);
@@ -170,16 +174,19 @@
   <div class:boldName="bold-name">
     <style>
       white-space: nowrap;
+      display: inline;
       &.bold-name {
         font-weight: 600;
       }
     </style>
-    <span class="decl-name code">{name}</span>
+    <span class="decl-name">{name}</span>
     <span class="token">:</span>
   </div>
-  <div class="decl-value code" class:boldValue="bold-value">
+  <div class="decl-value" class:boldValue="bold-value">
     <style>
       flex: 1;
+      display: flex;
+      align-items: center;
       &.bold-value {
         font-weight: 600;
       }

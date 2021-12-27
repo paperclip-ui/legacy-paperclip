@@ -4,6 +4,35 @@
 
 
 <style>
+
+
+  :global(:root) {
+    --text-color: #767676;
+    --text-color-night: #F0F0F0;
+    --grey-50: rgb(240, 240, 240);
+    --grey-75: rgb(240, 240, 240);
+    --grey-100: #D9D9D9;
+    --grey-200: rgb(194, 194, 194);
+    --grey-250: rgb(221, 220, 220);
+    --grey-200: rgb(194, 194, 194);
+    --grey-300: rgb(136, 136, 136);
+    --grey-400: rgb(85, 85, 85);
+    --grey-night-100: #4D4D4D;
+    --grey-night-300: #292929;
+    --grey-night-400: rgb(29, 29, 29);
+    --grey-night-500: #151515;
+    --background-50: rgb(240, 240, 240);
+    --background-100: var(--grey-100);
+    --background-200: var(--grey-200);
+    --background-300: var(--grey-300);
+    --color-blue-100: rgb(102, 163, 255);
+    --color-blue-500: rgb(51, 113, 206);
+    --shadow-100: 4px 4px 4px rgba(0, 0, 0, 0.1);
+    --border-radius-100: 4px;
+    font-family: Open Sans;
+  }
+
+
   @export {
     * {
       box-sizing: border-box;
@@ -32,33 +61,6 @@
       margin: 0;
       padding: 0;
     }
-
-    :root {
-      --text-color: #767676;
-      --text-color-night: #F0F0F0;
-      --grey-50: rgb(240, 240, 240);
-      --grey-75: rgb(240, 240, 240);
-      --grey-100: #D9D9D9;
-      --grey-200: rgb(194, 194, 194);
-      --grey-250: rgb(221, 220, 220);
-      --grey-200: rgb(194, 194, 194);
-      --grey-300: rgb(136, 136, 136);
-      --grey-400: rgb(85, 85, 85);
-      --grey-night-100: #4D4D4D;
-      --grey-night-300: #292929;
-      --grey-night-400: rgb(29, 29, 29);
-      --grey-night-500: #151515;
-      --background-50: rgb(240, 240, 240);
-      --background-100: var(--grey-100);
-      --background-200: var(--grey-200);
-      --background-300: var(--grey-300);
-      --color-blue-100: rgb(102, 163, 255);
-      --color-blue-500: rgb(51, 113, 206);
-      --shadow-100: 4px 4px 4px rgba(0, 0, 0, 0.1);
-      --border-radius-100: 4px;
-      font-family: Open Sans;
-    }
-
 
     /*
        https://www.figma.com/file/dOQZzseI3v7LUEwXjAKw4I/Polaris-for-Admin%3A-Colors-(Community)?node-id=2989%3A2
