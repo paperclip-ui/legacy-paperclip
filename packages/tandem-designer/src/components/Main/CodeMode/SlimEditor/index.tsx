@@ -26,7 +26,6 @@ export const SlimEditor = ({ value, onChange, theme }: SlimEditorProps) => {
 
   useEffect(() => {
     if (internalValue !== value) {
-      console.log("REPL");
       setInternalValue(value);
     }
   }, [value]);

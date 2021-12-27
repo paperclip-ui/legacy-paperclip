@@ -1,9 +1,8 @@
 import React, { memo, useMemo, useRef, useState } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
-import * as path from "path";
-import TextInput from "tandem-designer/src/components/TextInput/index.pc";
-import { useTextInput } from "tandem-designer/src/components/TextInput";
+import TextInput from "tandem-design-system/src/TextInput.pc";
+import { useTextInput } from "tandem-design-system/src/TextInput";
 import { useSelect } from "tandem-designer/src/components/Select";
 
 import {
@@ -14,9 +13,8 @@ import {
   removeFileClicked,
   syncPanelsClicked
 } from "../../../../actions";
-import { redirectRequest } from "tandem-designer/src/actions";
 import { isPaperclipFile } from "paperclip-utils";
-import { canUpload, getNewFilePath } from "../../../../state";
+import { canUpload, FSItemKind, getNewFilePath } from "../../../../state";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
@@ -25,7 +23,22 @@ export const Toolbar = () => {
   const onAddFile = e => {
     setShowNewFileInput(true);
   };
-  const select = useSelect();
+
+  const relativePath = stripRoot(state.designer.currentCodeFile || "");
+
+  const allFileUris = useMemo(
+    () =>
+      state.designer.projectDirectory?.children
+        .filter(child => child.kind === FSItemKind.FILE)
+        .map(child => {
+          return child.absolutePath;
+        }) || [],
+    [state.designer.projectDirectory]
+  );
+
+  const select = useSelect({
+    value: relativePath
+  });
 
   const onFileItemClick = uri => {
     select.close();
@@ -33,13 +46,13 @@ export const Toolbar = () => {
   };
 
   const onRemoveClick = uri => {
-    if (state.currentProject?.data?.mainFilePath == uri) {
-      return alert(`You can't delete the main file`);
-    }
+    // if (state.currentProject?.data?.mainFilePath == uri) {
+    //   return alert(`You can't delete the main file`);
+    // }
 
     if (
       isPaperclipFile(uri) &&
-      Object.keys(state.shared.documents).filter(isPaperclipFile).length === 1
+      allFileUris.filter(isPaperclipFile).length === 1
     ) {
       return alert(`You must have at least one Paperclip file`);
     }
@@ -51,11 +64,6 @@ export const Toolbar = () => {
     setNewFileName(null);
     setShowNewFileInput(false);
   };
-
-  const relativePath = stripRoot(state.currentCodeFilePath);
-  const allFileUris = useMemo(() => Object.keys(state.shared.documents), [
-    state.shared.documents
-  ]);
 
   const { inputProps: newFileInputProps } = useTextInput({
     value: newFileName,
@@ -82,9 +90,9 @@ export const Toolbar = () => {
   };
   const onRenamed = (uri: string, newName: string) => {
     // for now
-    if (state.currentProject?.data?.mainFilePath == uri) {
-      return alert(`You can't rename the main file`);
-    }
+    // if (state.currentProject?.data?.mainFilePath == uri) {
+    //   return alert(`You can't rename the main file`);
+    // }
     const newUri = getNewFilePath(newName, uri);
 
     if (fileExists(newUri, allFileUris)) {
@@ -137,7 +145,7 @@ export const Toolbar = () => {
                 )}
               </styles.FileMenuItems>
 
-              <styles.MenuFooter>
+              {/* <styles.MenuFooter>
                 <styles.AddDocumentButton page onClick={onAddFile}>
                   Create new page
                 </styles.AddDocumentButton>
@@ -148,12 +156,13 @@ export const Toolbar = () => {
                 >
                   Upload file
                 </styles.AddDocumentButton>
-              </styles.MenuFooter>
+              </styles.MenuFooter> */}
             </styles.FileMenu>
           )
         }
       />
-      {state.currentCodeFilePath !== state.designer.ui.query.canvasFile && (
+      {state.designer.currentCodeFile !==
+        state.designer.ui.query.canvasFile && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
     </styles.Topbar>
@@ -176,7 +185,9 @@ const FileMenuItem = memo(
       select: true
     }).inputProps;
 
-    const select = useSelect();
+    const select = useSelect({
+      value: stripRoot(uri)
+    });
     const onRenameClick = () => {
       setRenaming(true);
       select.close();
@@ -198,23 +209,24 @@ const FileMenuItem = memo(
         onClick={() => {
           onFileItemClick(uri);
         }}
-        moreSelect={
-          <styles.MoreFileSelect
-            onClick={select.onClick}
-            onBlur={select.onBlur}
-            menu={
-              select.menuVisible && (
-                <styles.MoreFileMenu
-                  style={select.menuStyle}
-                  onRemoveClick={() => onRemoveClick(uri)}
-                  onRenameClick={onRenameClick}
-                />
-              )
-            }
-          >
-            <styles.MoreFileButton onClick={select.onButtonClick} />
-          </styles.MoreFileSelect>
-        }
+        moreSelect={null}
+        // moreSelect={
+        //   <styles.MoreFileSelect
+        //     onClick={select.onClick}
+        //     onBlur={select.onBlur}
+        //     menu={
+        //       select.menuVisible && (
+        //         <styles.MoreFileMenu
+        //           style={select.menuStyle}
+        //           onRemoveClick={() => onRemoveClick(uri)}
+        //           onRenameClick={onRenameClick}
+        //         />
+        //       )
+        //     }
+        //   >
+        //     <styles.MoreFileButton onClick={select.onButtonClick} />
+        //   </styles.MoreFileSelect>
+        // }
       >
         {renaming ? (
           <TextInput

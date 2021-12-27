@@ -11,11 +11,15 @@ import produce from "immer";
 export type WithAppStoreOptions = {
   showLaunchExternalButton?: boolean;
   useLiteEditor?: boolean;
+  showCodeToolbar?: boolean;
+  showLeftSidebar?: boolean;
 } & MainSagaOptions;
 
 export const withAppStore = (Child: React.FC) => ({
   showLaunchExternalButton,
   useLiteEditor,
+  showCodeToolbar,
+  showLeftSidebar,
   ...options
 }: WithAppStoreOptions) => {
   let _inited = false;
@@ -33,6 +37,12 @@ export const withAppStore = (Child: React.FC) => ({
       }
       if (useLiteEditor != null) {
         newState.designer.useLiteEditor = useLiteEditor;
+      }
+      if (showCodeToolbar != null) {
+        newState.designer.showCodeToolbar = showCodeToolbar;
+      }
+      if (showLeftSidebar != null) {
+        newState.designer.showLeftSidebar = showLeftSidebar;
       }
     });
 

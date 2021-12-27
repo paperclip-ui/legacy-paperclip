@@ -26,7 +26,7 @@ export const sharedReducer = (state: AppState, action: Action) => {
     case ActionType.CODE_CHANGED: {
       return updateShared(state, {
         documents: produce(state.shared.documents, documents => {
-          documents[state.designer.ui.query.canvasFile] = action.payload.value;
+          documents[state.designer.currentCodeFile] = action.payload.value;
         })
       });
     }

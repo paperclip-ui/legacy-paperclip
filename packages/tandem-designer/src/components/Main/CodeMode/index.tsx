@@ -6,10 +6,11 @@ import { MonacoEditor } from "./MonacoEditor";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { isPlainTextFile } from "tandem-common/lib/mime";
 import { SlimEditor } from "./SlimEditor";
+import { Toolbar } from "./Toolbar";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
-  const currentCodeFilePath = state.designer.ui.query.canvasFile;
+  const currentCodeFilePath = state.designer.currentCodeFile;
   const { useLiteEditor } = state.designer;
   const highlightLocation = null;
 
@@ -20,7 +21,7 @@ export const CodeMode = () => {
   };
 
   // code & uri need to be set at the exact same time so that editor instance
-  const [[code, uri], setCode] = useState<[string, string]>([null, null]);
+  const [[code, uri], setCode] = useState<[string, string]>(["", ""]);
   const docContent = state.shared.documents[currentCodeFilePath];
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export const CodeMode = () => {
   }
   return (
     <styles.Container>
-      {/* <Toolbar /> */}
+      {state.designer.showCodeToolbar && <Toolbar />}
       {content}
     </styles.Container>
   );

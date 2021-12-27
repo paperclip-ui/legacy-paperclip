@@ -6,8 +6,8 @@
   "scripts": {
     "build": "yarn build:definition && yarn build:webpack",
     "build:webpack": "webpack -c webpack/webpack.config.js",
-    "build:watch": "concurrently \"yarn build:definition\" \"webpack serve -c webpack/webpack.config-web.js\"",
-    "build:definition": "paperclip build --only=d.ts --watch"
+    "build:watch": "concurrently \"yarn build:definition --watch\" \"webpack serve -c webpack/webpack.config-web.js\"",
+    "build:definition": "paperclip build --only=d.ts"
   },
   "author": "",
   "license": "ISC",

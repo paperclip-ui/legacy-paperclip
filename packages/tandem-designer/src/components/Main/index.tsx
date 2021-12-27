@@ -11,9 +11,11 @@ export const MainBase = () => {
   const showFullEditor =
     state.designer.workspace?.showFullEditor &&
     !state.designer.ui.query.embedded;
+
+  const showLeftSidebar = state.designer.showLeftSidebar;
   return (
     <styles.Container>
-      {showFullEditor && <LeftSidebar />}
+      {showFullEditor && showLeftSidebar !== false && <LeftSidebar />}
       {showFullEditor && <CodeMode />}
       <DesignMode />
     </styles.Container>

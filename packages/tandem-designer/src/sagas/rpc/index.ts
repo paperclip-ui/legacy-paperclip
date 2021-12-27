@@ -16,9 +16,11 @@ import { Channel } from "paperclip-common";
 import {
   fileLoaded,
   StyleRuleFileNameClicked,
+  SyncPanelsClicked,
   dirLoaded,
   allPCContentLoaded,
   globalBackspaceKeySent,
+  FileItemClicked,
   fileOpened,
   FSItemClicked,
   CanvasMouseDown,
@@ -238,6 +240,15 @@ function* handleClientComunication(client) {
     }
   });
 
+  yield takeEvery([ActionType.SYNC_PANELS_CLICKED], function*(
+    action: SyncPanelsClicked
+  ) {
+    const state: AppState = yield select();
+    yield put(
+      redirectRequest({ query: { canvasFile: state.designer.currentCodeFile } })
+    );
+  });
+
   yield takeEvery(
     [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
     function*() {
@@ -398,6 +409,12 @@ function* handleClientComunication(client) {
     maybeLoadCanvasFile
   );
 
+  yield takeEvery([ActionType.FILE_ITEM_CLICKED], function*(
+    action: FileItemClicked
+  ) {
+    yield call(loadFile, action.payload.uri);
+  });
+
   // application may have been loaded in an error state, so evaluated data
   // won't be loaded in this case. When that happens, we need to reload the current
   // canvas file
@@ -418,11 +435,15 @@ function* handleClientComunication(client) {
       if (currUri) {
         yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
         yield call(loadNested, currUri);
-        const result = yield call(openFile.call, { uri: currUri });
-        if (result) {
-          yield put(fileLoaded(result));
-        }
+        yield call(loadFile, currUri);
       }
+    }
+  }
+
+  function* loadFile(uri: string) {
+    const result = yield call(openFile.call, { uri });
+    if (result) {
+      yield put(fileLoaded(result));
     }
   }
 
@@ -491,7 +512,7 @@ const handleCodeChanged = (
   function*({ payload: { value } }: CodeChanged) {
     const state: AppState = yield select();
     yield call(editCode.call, {
-      uri: state.designer.ui.query.canvasFile,
+      uri: state.designer.currentCodeFile,
       value
     });
   };

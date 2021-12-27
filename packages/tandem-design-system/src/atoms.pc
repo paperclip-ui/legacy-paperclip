@@ -17,14 +17,15 @@
     --grey-200: rgb(194, 194, 194);
     --grey-300: rgb(136, 136, 136);
     --grey-400: rgb(85, 85, 85);
-    --grey-night-100: #4D4D4D;
-    --grey-night-300: #292929;
+    --grey-night-100: rgb(89, 91, 105);
+    --grey-night-300: rgb(64, 66, 77);
     --grey-night-400: rgb(29, 29, 29);
     --grey-night-500: #151515;
     --background-50: rgb(240, 240, 240);
     --background-100: var(--grey-100);
     --background-200: var(--grey-200);
     --background-300: var(--grey-300);
+    --color-blue-50: rgb(151, 189, 245);
     --color-blue-100: rgb(102, 163, 255);
     --color-blue-500: rgb(51, 113, 206);
     --shadow-100: 4px 4px 4px rgba(0, 0, 0, 0.1);

@@ -12,6 +12,9 @@ new App(
       </module.Test>
     `,
       "file:///module.pc": dedent`
+      <!-- 
+        @frame { visible: false }
+      -->
       <div export component as="Test">
         <style>
           color: red;

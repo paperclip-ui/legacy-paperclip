@@ -1,4 +1,5 @@
 <import src="tandem-design-system/src/atoms.pc" inject-styles />
+<import src="./Toolbar/index.pc" as="Toolbar" />
 <!--
   @frame { visible: false }
 -->
@@ -62,7 +63,7 @@
   @frame { visible: false, title: "CodeMode", width: 1024, height: 768, x: 1309, y: 171 }
 -->
 <Container export component as="Preview" {slim?}>
-  <Toolbar.Preview {showFileMenu?} />
+  {showSlimNav && <Toolbar.Preview {showFileMenu?} {showFileMenu?} />}
   {!cantEdit && <Content>
     <!--  <img src="./code-screenshot.png">
       <style>

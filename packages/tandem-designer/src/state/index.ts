@@ -1,6 +1,6 @@
 import produce from "immer";
 import { isEqual, omit, omitBy, pick, pickBy } from "lodash";
-import Automerge from "automerge";
+import mime from "mime-types";
 import {
   computeVirtJSObject,
   ExprSource,
@@ -35,6 +35,37 @@ import {
 } from "./geom";
 import * as os from "os";
 import { Result } from "./result";
+
+// 2 MB
+export const MAX_FILE_SIZE = 2 * 1000 * 1000;
+
+export const EDITABLE_MIME_TYPES = ["text/plain", "image/svg+xml", "text/css"];
+
+const ALT_MIME_TYPES = [
+  "application/vnd.ms-fontobject", // .eot
+  "font/ttf",
+  "font/woff",
+  "font/woff2",
+  "application/font-woff",
+  "application/font-ttf",
+  "application/font-woff2"
+];
+
+const MEDIA_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/svg+xml",
+  "video/quicktime",
+  "video/mp4"
+];
+const PREVIEW_MIME_TYPES = [...MEDIA_MIME_TYPES, "text/plain", "image/svg+xml"];
+
+const ACCEPTED_MIME_TYPES = [
+  ...ALT_MIME_TYPES,
+  ...MEDIA_MIME_TYPES,
+  ...EDITABLE_MIME_TYPES
+];
 
 export const DEFAULT_FRAME_BOX = {
   width: 1024,
@@ -136,6 +167,7 @@ export type DesignerState = {
   canvasClickTimestamp?: number;
   ui: UIState;
   readonly: boolean;
+  currentCodeFile?: string;
   sharable: boolean;
   useLiteEditor: boolean;
   birdseyeFilter?: string;
@@ -145,6 +177,8 @@ export type DesignerState = {
   commitProjectStatus?: Result<undefined>;
   currentError?: EngineErrorEvent;
   showBirdseye?: boolean;
+  showCodeToolbar?: boolean;
+  showLeftSidebar?: boolean;
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
   resizerMoving?: boolean;
@@ -507,6 +541,27 @@ export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
   return preview ? getPreviewFrameBoxes(preview).filter(Boolean) : [];
 };
 
+export const getNewFilePath = (name: string, previousNameOrExt: string) => {
+  const ext = previousNameOrExt
+    ? previousNameOrExt.split(".").pop()
+    : name.includes(".")
+    ? name.split(".").pop()
+    : "pc";
+
+  return cleanupPath(name.replace(/\.\w+$/, "") + "." + ext);
+};
+export const canUpload = (files: FileList) => {
+  return Array.from(files).every(file => {
+    if (file.size > MAX_FILE_SIZE) {
+      return false;
+    }
+
+    return ACCEPTED_MIME_TYPES.includes(
+      file.type || String(mime.lookup(file.name))
+    );
+  });
+};
+
 const getAllFrameBounds = (designer: DesignerState) => {
   return mergeBoxes(getCurrentPreviewFrameBoxes(designer));
 };
@@ -618,6 +673,10 @@ export const centerEditorCanvas = (
   });
 
   return designer;
+};
+export const cleanupPath = (path: string) => {
+  // just rel directory - no root defined
+  return path.replace(/\w+:\/\//, "").replace(/\/+/, "/");
 };
 
 export const getActivePCData = (designer: DesignerState) =>

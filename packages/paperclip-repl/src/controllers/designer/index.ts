@@ -13,6 +13,8 @@ export class DesignerController {
       history: createMemoryHistory(),
       showLaunchExternalButton: false,
       useLiteEditor: true,
+      showCodeToolbar: true,
+      showLeftSidebar: false,
       createConnection: () => this._workerParent.getWorkerConnection()
     });
   }

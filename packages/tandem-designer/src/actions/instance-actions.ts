@@ -28,14 +28,17 @@ import {
 
 export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
+  REMOVE_FILE_CLICKED = "REMOVE_FILE_CLICKED",
   LOCATION_CHANGED = "LOCATION_CHANGED",
+  FILE_RENAMED = "FILE_RENAMED",
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
   REDIRECT_REQUESTED = "REDIRECT_REQUESTED",
   ZOOM_IN_KEY_PRESSED = "ZOOM_IN_KEY_PRESSED",
+  FILE_ITEM_CLICKED = "FILE_ITEM_CLICKED",
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
   CODE_CHANGED = "CODE_CHANGED",
-
+  NEW_FILE_NAME_ENTERED = "NEW_FILE_NAME_ENTERED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
@@ -56,6 +59,7 @@ export enum ActionType {
   POPOUT_BUTTON_CLICKED = "POPOUT_BUTTON_CLICKED",
   POPOUT_WINDOW_REQUESTED = "POPOUT_WINDOW_REQUESTED",
   PASTED = "PASTED",
+  SYNC_PANELS_CLICKED = "SYNC_PANELS_CLICKED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
   ZOOM_INPUT_CHANGED = "ZOOM_INPUT_CHANGED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
@@ -96,6 +100,7 @@ export enum ActionType {
   PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
   SERVER_OPTIONS_LOADED = "SERVER_OPTIONS_LOADED",
 
+  FILES_DROPPED = "FILES_DROPPED",
   ACTION_HANDLED = "ACTION_HANDLED",
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
@@ -306,6 +311,8 @@ export type SetBranchRequestStateChanged = BaseRequestStateChanged<
   { branchName: string }
 >;
 
+export type SyncPanelsClicked = BaseAction<ActionType.SYNC_PANELS_CLICKED>;
+
 export type CommitRequestStateChanged = BaseRequestStateChanged<
   ActionType.COMMIT_REQUEST_STATE_CHANGED,
   undefined
@@ -399,6 +406,21 @@ export type CanvasPanned = BaseAction<
     size: Size;
   }
 >;
+
+export type FileRenamed = BaseAction<
+  ActionType.FILE_RENAMED,
+  { uri: string; newUri: string }
+>;
+export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, FileList>;
+
+export type NewFileNameEntered = BaseAction<
+  ActionType.NEW_FILE_NAME_ENTERED,
+  { uri: string }
+>;
+export type RemoveFileClicked = BaseAction<
+  ActionType.REMOVE_FILE_CLICKED,
+  { uri: string }
+>;
 export type CanvasPanStart = BaseAction<ActionType.CANVAS_PAN_START>;
 export type CanvasPanEnd = BaseAction<ActionType.CANVAS_PAN_END>;
 export type CanvasResized = BaseAction<ActionType.CANVAS_RESIZED, Size>;
@@ -411,6 +433,11 @@ export type EngineErrored = BaseAction<
 export type ErrorBannerClicked = BaseAction<
   ActionType.ERROR_BANNER_CLICKED,
   EngineErrorEvent
+>;
+
+export type FileItemClicked = BaseAction<
+  ActionType.FILE_ITEM_CLICKED,
+  { uri: string }
 >;
 
 export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
@@ -520,6 +547,10 @@ export const locationChanged = publicActionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
 );
 
+export const fileItemClicked = actionCreator<FileItemClicked>(
+  ActionType.FILE_ITEM_CLICKED
+);
+
 export const virtualStyleDeclarationValueChanged = actionCreator<
   VirtualStyleDeclarationValueChanged
 >(ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED);
@@ -602,6 +633,19 @@ export const globalEscapeKeyPressed = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
 >(ActionType.GLOBAL_ESCAPE_KEY_PRESSED);
 
+export const fileRenamed = actionCreator<FileRenamed>(ActionType.FILE_RENAMED);
+
+export const filesDropped = actionCreator<FilesDropped>(
+  ActionType.FILES_DROPPED
+);
+
+export const newFileNameEntered = actionCreator<NewFileNameEntered>(
+  ActionType.NEW_FILE_NAME_ENTERED
+);
+
+export const removeFileClicked = actionCreator<RemoveFileClicked>(
+  ActionType.REMOVE_FILE_CLICKED
+);
 export const globalBackspaceKeyPressed = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
 >(ActionType.GLOBAL_BACKSPACE_KEY_PRESSED);
@@ -623,6 +667,9 @@ export const globalZKeyDown = actionCreator<KeyComboPressed<ActionType>>(
 );
 export const popoutButtonClicked = actionCreator<PopoutButtonClicked>(
   ActionType.POPOUT_BUTTON_CLICKED
+);
+export const syncPanelsClicked = actionCreator<SyncPanelsClicked>(
+  ActionType.SYNC_PANELS_CLICKED
 );
 export const clientConnected = actionCreator<ClientConnected>(
   ActionType.CLIENT_CONNECTED
@@ -731,6 +778,12 @@ export type InstanceAction =
   | ExpandFrameButtonClicked
   | BasicPaperclipAction
   | ZoomInButtonClicked
+  | FileItemClicked
+  | FileRenamed
+  | FilesDropped
+  | NewFileNameEntered
+  | RemoveFileClicked
+  | SyncPanelsClicked
   | ActionHandled
   | StyleRuleFileNameClicked
   | LayerExpandToggleClicked

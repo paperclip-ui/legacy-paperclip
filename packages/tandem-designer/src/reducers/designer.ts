@@ -415,16 +415,22 @@ export const reduceDesigner = (
     case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
       return minimizeWindow(designer);
     }
+    case ActionType.FILE_ITEM_CLICKED: {
+      return produce(designer, newDesigner => {
+        newDesigner.currentCodeFile = action.payload.uri;
+      });
+    }
     case ActionType.SERVER_OPTIONS_LOADED: {
       return produce(designer, newDesigner => {
         newDesigner.workspace = action.payload;
+        newDesigner.currentCodeFile = action.payload.canvasFile;
       });
     }
     case ActionType.FILE_LOADED: {
       if (isPaperclipFile(action.payload.uri)) {
         designer = produce(designer, newDesigner => {
-          newDesigner.allLoadedPCFileData[designer.ui.query.canvasFile] = action
-            .payload.data as LoadedPCData;
+          newDesigner.allLoadedPCFileData[action.payload.uri] = action.payload
+            .data as LoadedPCData;
           newDesigner.pcFileDataVersion++;
         });
       }
