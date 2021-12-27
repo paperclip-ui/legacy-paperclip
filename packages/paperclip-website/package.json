@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "18.2.14",
+  "version": "18.2.15",
   "private": true,
   "scripts": {
     "start": "docusaurus clear && docusaurus start",
@@ -17,7 +17,7 @@
     "clsx": "^1.1.1",
     "dedent": "^0.7.0",
     "empty-module": "^0.0.2",
-    "paperclip-repl": "18.2.14",
+    "paperclip-repl": "^18.2.15",
     "process": "^0.11.10",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
@@ -41,8 +41,8 @@
     "css-loader": "^6.5.1",
     "file-loader": "^6.2.0",
     "null-loader": "^4.0.1",
-    "paperclip-compiler-react": "^18.2.14",
-    "paperclip-loader": "^18.2.14",
-    "tandem-workspace": "^18.2.14"
+    "paperclip-compiler-react": "^18.2.15",
+    "paperclip-loader": "^18.2.15",
+    "tandem-workspace": "^18.2.15"
   }
 }

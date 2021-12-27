@@ -1,6 +1,6 @@
 {
   "name": "paperclip-repl",
-  "version": "18.2.14",
+  "version": "18.2.15",
   "description": "",
   "main": "esm/main.js",
   "scripts": {
@@ -13,17 +13,17 @@
   "license": "ISC",
   "dependencies": {
     "history": "4.9.0",
-    "paperclip": "^18.2.14",
-    "paperclip-cli": "^18.2.14",
+    "paperclip": "^18.2.15",
+    "paperclip-cli": "^18.2.15",
     "paperclip-common": "^18.1.6",
-    "paperclip-compiler-react": "^18.2.14",
-    "paperclip-loader": "^18.2.14",
+    "paperclip-compiler-react": "^18.2.15",
+    "paperclip-loader": "^18.2.15",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
     "redux-saga": "^1.1.3",
-    "tandem-designer": "^18.2.14"
+    "tandem-designer": "^18.2.15"
   },
   "devDependencies": {
     "concurrently": "^6.5.1",
