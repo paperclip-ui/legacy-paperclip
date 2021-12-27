@@ -10,7 +10,10 @@ const BREADCRUMB_HEIGHT = 32;
 
 export const Footer = React.memo(() => {
   const state: AppState = useSelector(identity);
-  if (state.designer.ui.query.expanded) {
+  if (
+    state.designer.ui.query.expanded ||
+    state.designer.showInspectorPanels === false
+  ) {
     return null;
   }
 

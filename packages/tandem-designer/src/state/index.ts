@@ -179,6 +179,7 @@ export type DesignerState = {
   showBirdseye?: boolean;
   showCodeToolbar?: boolean;
   showLeftSidebar?: boolean;
+  showInspectorPanels?: boolean;
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
   resizerMoving?: boolean;

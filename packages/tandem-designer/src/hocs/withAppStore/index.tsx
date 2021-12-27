@@ -13,6 +13,8 @@ export type WithAppStoreOptions = {
   useLiteEditor?: boolean;
   showCodeToolbar?: boolean;
   showLeftSidebar?: boolean;
+  showInspectorPanels?: boolean;
+  activeFrame?: number;
 } & MainSagaOptions;
 
 export const withAppStore = (Child: React.FC) => ({
@@ -20,6 +22,8 @@ export const withAppStore = (Child: React.FC) => ({
   useLiteEditor,
   showCodeToolbar,
   showLeftSidebar,
+  showInspectorPanels,
+  activeFrame,
   ...options
 }: WithAppStoreOptions) => {
   let _inited = false;
@@ -43,6 +47,14 @@ export const withAppStore = (Child: React.FC) => ({
       }
       if (showLeftSidebar != null) {
         newState.designer.showLeftSidebar = showLeftSidebar;
+      }
+      if (showInspectorPanels != null) {
+        newState.designer.showInspectorPanels = showInspectorPanels;
+      }
+
+      if (activeFrame != null) {
+        newState.designer.ui.query.frame = activeFrame;
+        newState.designer.ui.query.expanded = true;
       }
     });
 

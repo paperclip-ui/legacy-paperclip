@@ -15,6 +15,8 @@ export class DesignerController {
       useLiteEditor: true,
       showCodeToolbar: true,
       showLeftSidebar: false,
+      showInspectorPanels: false,
+      activeFrame: 0,
       createConnection: () => this._workerParent.getWorkerConnection()
     });
   }
