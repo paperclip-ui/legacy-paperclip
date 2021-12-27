@@ -10,12 +10,12 @@ import produce from "immer";
 
 export type WithAppStoreOptions = {
   showLaunchExternalButton?: boolean;
-  useCodeMirror?: boolean;
+  useLiteEditor?: boolean;
 } & MainSagaOptions;
 
 export const withAppStore = (Child: React.FC) => ({
   showLaunchExternalButton,
-  useCodeMirror,
+  useLiteEditor,
   ...options
 }: WithAppStoreOptions) => {
   let _inited = false;
@@ -31,8 +31,8 @@ export const withAppStore = (Child: React.FC) => ({
       if (showLaunchExternalButton != null) {
         newState.designer.sharable = showLaunchExternalButton;
       }
-      if (useCodeMirror != null) {
-        newState.designer.useCodeMirror = useCodeMirror;
+      if (useLiteEditor != null) {
+        newState.designer.useLiteEditor = useLiteEditor;
       }
     });
 

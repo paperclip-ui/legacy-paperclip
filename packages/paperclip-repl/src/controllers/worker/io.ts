@@ -1,4 +1,5 @@
 import { EngineIO } from "paperclip/src/core/delegate";
+import { fileURLToPath, pathToFileURL } from "paperclip-utils/lib/core/url";
 import * as path from "path";
 import { REPLChannels } from "../channels";
 
@@ -12,7 +13,9 @@ export class ReplEngineIO implements EngineIO {
     return this._files[filePath];
   };
   resolveFile = (fromPath: string, toPath: string) => {
-    return path.join(path.dirname(fromPath), toPath);
+    return pathToFileURL(
+      path.join(fileURLToPath(path.dirname(fromPath)), toPath)
+    ).href;
   };
   fileExists = (filePath: string) => {
     return this._files[filePath] != null;

@@ -6,6 +6,9 @@ export const fileURLToPath = url => {
 };
 
 export const pathToFileURL = filePath => {
+  if (filePath.charAt(0) !== "/") {
+    filePath = "/" + filePath;
+  }
   return {
     href: `file://${filePath}`
   };

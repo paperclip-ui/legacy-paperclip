@@ -12,6 +12,7 @@ export class DesignerController {
       mount: this._mount,
       history: createMemoryHistory(),
       showLaunchExternalButton: false,
+      useLiteEditor: true,
       createConnection: () => this._workerParent.getWorkerConnection()
     });
   }

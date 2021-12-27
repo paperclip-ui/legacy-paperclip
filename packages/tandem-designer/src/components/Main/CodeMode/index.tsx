@@ -5,10 +5,12 @@ import * as styles from "./index.pc";
 import { MonacoEditor } from "./MonacoEditor";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { isPlainTextFile } from "tandem-common/lib/mime";
+import { SlimEditor } from "./SlimEditor";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
   const currentCodeFilePath = state.designer.ui.query.canvasFile;
+  const { useLiteEditor } = state.designer;
   const highlightLocation = null;
 
   let content;
@@ -34,16 +36,24 @@ export const CodeMode = () => {
   }, [docContent, currentCodeFilePath]);
 
   if (isPlainTextFile(currentCodeFilePath)) {
-    content = (
-      <styles.Content>
-        <MonacoEditor
-          uri={uri}
-          value={code}
-          highlightLocation={highlightLocation}
-          onChange={onChange}
-        />
-      </styles.Content>
-    );
+    if (useLiteEditor) {
+      content = (
+        <styles.Content slim>
+          <SlimEditor value={code} onChange={onChange} />
+        </styles.Content>
+      );
+    } else {
+      content = (
+        <styles.Content>
+          <MonacoEditor
+            uri={uri}
+            value={code}
+            highlightLocation={highlightLocation}
+            onChange={onChange}
+          />
+        </styles.Content>
+      );
+    }
   } else {
     content = <styles.CantEditScreen />;
   }
