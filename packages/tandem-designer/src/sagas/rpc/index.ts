@@ -442,9 +442,13 @@ function* handleClientComunication(client) {
   }
 
   function* loadFile(uri: string) {
-    const result = yield call(openFile.call, { uri });
-    if (result) {
-      yield put(fileLoaded(result));
+    try {
+      const result = yield call(openFile.call, { uri });
+      if (result) {
+        yield put(fileLoaded(result));
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 

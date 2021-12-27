@@ -165,6 +165,7 @@ export type VirtualNodeSourceInfo = {
 export type DesignerState = {
   syncLocationMode?: number;
   canvasClickTimestamp?: number;
+  showCodeEditorOnStartup?: boolean;
   ui: UIState;
   readonly: boolean;
   currentCodeFile?: string;
@@ -179,6 +180,7 @@ export type DesignerState = {
   showBirdseye?: boolean;
   showCodeToolbar?: boolean;
   showLeftSidebar?: boolean;
+  rounded?: boolean;
   showInspectorPanels?: boolean;
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;

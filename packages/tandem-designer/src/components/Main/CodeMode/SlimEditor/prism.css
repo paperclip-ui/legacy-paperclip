@@ -2,3 +2,7 @@
   caret-color: white;
   outline: none;
 }
+
+.prism-code.prism-code {
+  padding: 0px;
+}

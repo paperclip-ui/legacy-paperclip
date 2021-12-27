@@ -34,7 +34,7 @@ const loadPlayground = () => {
   );
 };
 
-const LiveEditor = ({ children, height, expanded }) => {
+const LiveEditor = ({ children, height = 400, expanded }) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
   const [playgroundLoaded, setPlaygroundLoaded] = useState();
@@ -46,6 +46,11 @@ const LiveEditor = ({ children, height, expanded }) => {
       return;
     }
 
+    Object.assign(mountRef.current.style, {
+      height,
+      margin: "16px 0px"
+    });
+
     // const app = new module.App(
     //   {
     //     files: graph,
@@ -55,8 +60,6 @@ const LiveEditor = ({ children, height, expanded }) => {
     // );
 
     // app.init();
-
-    console.log(graph);
 
     import("paperclip-repl/src/app").then(module => {
       const app = new module.App(

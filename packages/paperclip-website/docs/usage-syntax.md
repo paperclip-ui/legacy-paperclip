@@ -129,12 +129,9 @@ Style blocks that are the defined within elements are _scoped_ to that element. 
         color: blue;
       }
     </style>
-  
-    I'm red text!
-  
+    I'm red text!  
     <span>I'm blue text!</span>
   </div>
-  
   I'm black text
 </div>
 ```
@@ -573,7 +570,7 @@ The `inject-styles` props injects all of the import's exported styles into the c
 This is particularly useful for third-party CSS since `inject-styles` includes _all_ CSS selectors (class, ID, element, etc) into the current scope. Note that injected styles are only applied to the current document, so if you're importing components from another file, those components won't be styled. For example:
 
 
-```html live
+```html
 <import src="./tailwind.css" inject-styles />
 <import src="./some-module.pc" as="module" />
 
@@ -1254,7 +1251,7 @@ The variant style syntax allows you to conditionally apply styles. For example:
 
 **Example**:
 
-```html live height=200px
+```html live height=500px
 
 <!--
   @frame { visible: false }
@@ -1307,7 +1304,7 @@ The variant style syntax allows you to conditionally apply styles. For example:
 
 Fragments are useful if you want to render a collection of elements. For example:
 
-```html live height=200px
+```html live height=400px
 <!--
   @frame { visible: false }
 -->

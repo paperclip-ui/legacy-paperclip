@@ -65,6 +65,7 @@
     flex-shrink: 0;
     border-top-right-radius: var(--designer-mode-top-right-radius);
     border-top-left-radius: var(--designer-mode-top-left-radius);
+    border-top-right-radius: var(--editor-border-radius);
   </style>
   <div>
     <style>

@@ -16,7 +16,9 @@ export class DesignerController {
       showCodeToolbar: true,
       showLeftSidebar: false,
       showInspectorPanels: false,
+      showCodeEditorOnStartup: true,
       activeFrame: 0,
+      rounded: true,
       createConnection: () => this._workerParent.getWorkerConnection()
     });
   }

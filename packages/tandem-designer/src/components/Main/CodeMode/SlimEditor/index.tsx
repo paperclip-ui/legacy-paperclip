@@ -5,10 +5,15 @@ import "prismjs/components/prism-clike";
 import "prismjs/components/prism-css";
 import "prismjs/components/prism-markup";
 
+declare const Prism;
+
+if (typeof Prism !== "undefined") {
+  Prism.manual = true;
+}
+
 import SimpleEditor from "react-simple-code-editor";
 
 // import "prismjs/components/prism-clike";
-// import "prismjs/components/prism-javascript";
 import "./prism.css";
 
 type SlimEditorProps = {
@@ -42,7 +47,8 @@ export const SlimEditor = ({ value, onChange, theme }: SlimEditorProps) => {
           'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
         fontSize: 15.2,
         letterSpacing: "0.06em",
-        ...baseTheme
+        ...baseTheme,
+        overflow: "scroll"
       }}
       preClassName="language-html"
       onValueChange={onChangeInternal}

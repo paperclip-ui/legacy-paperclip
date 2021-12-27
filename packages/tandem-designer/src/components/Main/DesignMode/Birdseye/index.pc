@@ -159,6 +159,7 @@
     width: 100%;
     z-index: 1024;
     background: white;
+    border-bottom-right-radius: var(--editor-border-radius);
   </style>
   {children}
 </div>

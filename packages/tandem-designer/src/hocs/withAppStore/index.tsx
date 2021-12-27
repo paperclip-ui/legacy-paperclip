@@ -14,7 +14,9 @@ export type WithAppStoreOptions = {
   showCodeToolbar?: boolean;
   showLeftSidebar?: boolean;
   showInspectorPanels?: boolean;
+  rounded?: boolean;
   activeFrame?: number;
+  showCodeEditorOnStartup?: boolean;
 } & MainSagaOptions;
 
 export const withAppStore = (Child: React.FC) => ({
@@ -23,7 +25,9 @@ export const withAppStore = (Child: React.FC) => ({
   showCodeToolbar,
   showLeftSidebar,
   showInspectorPanels,
+  showCodeEditorOnStartup,
   activeFrame,
+  rounded,
   ...options
 }: WithAppStoreOptions) => {
   let _inited = false;
@@ -55,6 +59,13 @@ export const withAppStore = (Child: React.FC) => ({
       if (activeFrame != null) {
         newState.designer.ui.query.frame = activeFrame;
         newState.designer.ui.query.expanded = true;
+      }
+
+      if (rounded != null) {
+        newState.designer.rounded = rounded;
+      }
+      if (showCodeEditorOnStartup != null) {
+        newState.designer.showCodeEditorOnStartup = showCodeEditorOnStartup;
       }
     });
 

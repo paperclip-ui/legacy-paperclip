@@ -89,7 +89,6 @@ export class DesignerChannelHandler {
   private _getAllScreens = async () => {
     await this._ready;
     const files = await this._replChannels.getFiles.call(null);
-    console.log(files, this._engine.getAllLoadedData());
     return this._engine.getAllLoadedData();
   };
   private _hello = async () => {

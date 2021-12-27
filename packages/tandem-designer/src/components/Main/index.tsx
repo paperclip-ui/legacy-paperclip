@@ -9,12 +9,13 @@ import { LeftSidebar } from "./LeftSidebar";
 export const MainBase = () => {
   const { state } = useAppStore();
   const showFullEditor =
-    state.designer.workspace?.showFullEditor &&
-    !state.designer.ui.query.embedded;
+    (state.designer.workspace?.showFullEditor &&
+      !state.designer.ui.query.embedded) ||
+    state.designer.showCodeEditorOnStartup;
 
-  const showLeftSidebar = state.designer.showLeftSidebar;
+  const { rounded, showLeftSidebar } = state.designer;
   return (
-    <styles.Container>
+    <styles.Container rounded={rounded} showLeftSidebar={showLeftSidebar}>
       {showFullEditor && showLeftSidebar !== false && <LeftSidebar />}
       {showFullEditor && <CodeMode />}
       <DesignMode />
