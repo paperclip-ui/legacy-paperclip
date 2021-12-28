@@ -244,12 +244,66 @@ Media queries are re-usable in Paperclip by using the following pattern:
   }
 }
 
-div {w
+div {
   @include desktop {
     font-size: 24px;
   }
 }
 ```
+
+**Example**:
+
+```html live height=500px
+// file: main.pc
+<import src="./breakpoints.pc" as="breakpoints" />
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="App">
+  <style>
+    font-family: sans-serif;
+    @include breakpoints.desktop {
+      font-size: 18px;
+    }
+    @include breakpoints.mobile {
+      font-size: 72px;
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { title: "App / Desktop", width: 1050, height: 421, x: 89, y: -295 }
+-->
+<App>
+  I'm some content
+</App>
+
+<!--
+  @frame { title: "App / Mobile", width: 326, height: 507, x: 102, y: 261 }
+-->
+<App>
+  I'm some content
+</App>
+
+// file: breakpoints.pc
+<style>
+  @export {
+    @mixin desktop {
+      @media screen and (max-width: 1400px) {
+        @content;
+      }
+    }
+    @mixin mobile {
+      @media screen and (max-width: 400px) {
+        @content;
+      }
+    }
+  }
+</style>
+```
+
 
 ### @export
 

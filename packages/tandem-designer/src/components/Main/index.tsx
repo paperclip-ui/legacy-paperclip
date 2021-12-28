@@ -13,11 +13,12 @@ export const MainBase = () => {
       !state.designer.ui.query.embedded) ||
     state.designer.showCodeEditorOnStartup;
 
-  const { rounded, showLeftSidebar } = state.designer;
+  const { rounded, showLeftSidebar, floatingPreview } = state.designer;
   return (
     <styles.Container
       rounded={rounded}
       showLeftSidebar={showLeftSidebar}
+      floatingPreview={floatingPreview}
       style={{
         "--code-editor-width": state.designer.codeEditorWidth
       }}

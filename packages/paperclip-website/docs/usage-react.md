@@ -32,27 +32,31 @@ export default () => {
 ☝🏻 This example uses the following Paperclip UI file:
 
 ```html live
-<style>
-   .container {
-     font-family: Helvetica;
-     cursor: pointer;
-   }
-   .current-count {
-     font-weight: 400;
-   }
-</style>
 
-<!-- Components -->
-
-<div export component as="Container" class="container">
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container">
+  <style>
+    font-family: Helvetica;
+    cursor: pointer;
+  </style>
   Current count: {children}
 </div>
-<div export component as="CurrentCount" class="current-count">
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="CurrentCount">
+  <style>
+    font-weight: 600;
+  </style>
   {children}
-</div>
+</span>
 
-<!-- Previews -->
-
+<!--
+  @frame { title: "Demo" }
+-->
 <Container>
   <CurrentCount>
     50

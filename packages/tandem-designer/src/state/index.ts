@@ -166,6 +166,7 @@ export type DesignerState = {
   syncLocationMode?: number;
   canvasClickTimestamp?: number;
   showCodeEditorOnStartup?: boolean;
+  floatingPreview?: boolean;
   ui: UIState;
   readonly: boolean;
   currentCodeFile?: string;

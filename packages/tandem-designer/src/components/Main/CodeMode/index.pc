@@ -12,7 +12,13 @@
     border-top-left-radius: var(--editor-border-radius);
     border-bottom-left-radius: var(--editor-border-radius);
     background: rgb(40, 44, 52);
-    mini-height: 300px;
+    min-height: 300px;
+    &:within(:global(.floating-preview)) {
+      width: 100%;
+      height: 100%;
+      border-top-right-radius: var(--editor-border-radius);
+      border-bottom-right-radius: var(--editor-border-radius);
+    }
     &:within(:global(.show-left-sidebar)) {
       border-top-left-radius: 0px;
       border-bottom-left-radius: 0px;
@@ -68,7 +74,7 @@
 <!--
   @frame { visible: false, title: "CodeMode", width: 1024, height: 768, x: 1309, y: 171 }
 -->
-<Container export component as="Preview" {slim?}>
+<Container export component as="Preview" {slim?} {float?}>
   {showSlimNav && <Toolbar.Preview {showFileMenu?} {showFileMenu?} />}
   {!cantEdit && <Content>
     <!--  <img src="./code-screenshot.png">

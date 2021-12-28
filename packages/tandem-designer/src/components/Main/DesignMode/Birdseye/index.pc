@@ -22,6 +22,7 @@
     width: calc(var(--width-percent) - var(--cell-margin) * 2);
     box-sizing: border-box;
     height: 150px;
+    min-width: 150px;
     padding: 14px;
     transition: 0.2s;
     border-radius: var(--border-radius-100);
@@ -160,7 +161,12 @@
     z-index: 1024;
     background: white;
     border-bottom-right-radius: var(--editor-border-radius);
+    &:within(:global(.floating-preview)) {
+      border-bottom-right-radius: var(--editor-border-radius);
+      border-bottom-left-radius: var(--editor-border-radius);
+    }
   </style>
+
   {children}
 </div>
 
