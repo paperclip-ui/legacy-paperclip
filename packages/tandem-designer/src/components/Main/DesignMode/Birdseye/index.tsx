@@ -144,12 +144,14 @@ const Header = memo(({ filter, onFilter }: HeaderProps) => {
     value: filter,
     onValueChange: onFilter
   });
+
+  // don't autofocus
   return (
     <styles.Header>
       <FilterTextInput
         filterInputRef={filterInputProps.ref}
         {...filterInputProps}
-        autoFocus
+        autoFocus={false}
       />
     </styles.Header>
   );

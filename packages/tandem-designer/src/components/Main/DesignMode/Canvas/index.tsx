@@ -83,8 +83,8 @@ export const Canvas = React.memo(() => {
             y: pixelY
           },
           mousePosition: {
-            x: event.pageX - rect.left,
-            y: event.pageY - rect.top
+            x: event.pageX - window.scrollX - rect.left,
+            y: event.pageY - window.scrollY - rect.top
           },
           metaKey: event.metaKey,
           ctrlKey: event.ctrlKey,
