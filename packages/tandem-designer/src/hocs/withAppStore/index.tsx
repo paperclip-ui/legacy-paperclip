@@ -15,6 +15,7 @@ export type WithAppStoreOptions = {
   showLeftSidebar?: boolean;
   showInspectorPanels?: boolean;
   rounded?: boolean;
+  codeEditorWidth?: string;
   activeFrame?: number;
   showCodeEditorOnStartup?: boolean;
 } & MainSagaOptions;
@@ -26,6 +27,7 @@ export const withAppStore = (Child: React.FC) => ({
   showLeftSidebar,
   showInspectorPanels,
   showCodeEditorOnStartup,
+  codeEditorWidth,
   activeFrame,
   rounded,
   ...options
@@ -38,7 +40,13 @@ export const withAppStore = (Child: React.FC) => ({
       return;
     }
 
-    let state: AppState = INITIAL_STATE;
+    let state: AppState = {
+      ...INITIAL_STATE,
+      designer: {
+        ...INITIAL_STATE.designer,
+        codeEditorWidth
+      }
+    };
     state = produce(state, newState => {
       if (showLaunchExternalButton != null) {
         newState.designer.sharable = showLaunchExternalButton;

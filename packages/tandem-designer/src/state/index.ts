@@ -192,6 +192,7 @@ export type DesignerState = {
   // rendererElement?: any;
   availableBrowsers: AvailableBrowser[];
   resourceHost: string;
+  codeEditorWidth?: string;
   highlightNodePath: string;
   scopedElementPath?: string;
   selectedNodePaths: string[];

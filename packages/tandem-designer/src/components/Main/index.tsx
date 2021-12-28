@@ -15,7 +15,13 @@ export const MainBase = () => {
 
   const { rounded, showLeftSidebar } = state.designer;
   return (
-    <styles.Container rounded={rounded} showLeftSidebar={showLeftSidebar}>
+    <styles.Container
+      rounded={rounded}
+      showLeftSidebar={showLeftSidebar}
+      style={{
+        "--code-editor-width": null
+      }}
+    >
       {showFullEditor && showLeftSidebar !== false && <LeftSidebar />}
       {showFullEditor && <CodeMode />}
       <DesignMode />

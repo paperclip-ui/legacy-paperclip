@@ -7,7 +7,7 @@
   <style>
     display: flex;
     flex-direction: column;
-    width: 70%;
+    width: var(--code-editor-width, 70%);
     overflow: hidden;
     border-top-left-radius: var(--editor-border-radius);
     border-bottom-left-radius: var(--editor-border-radius);
@@ -35,7 +35,7 @@
 <div export component as="Content" class:slim="slim">
   <style>
     height: 100%;
-    overflow: hidden;
+    overflow: scroll;
     &.slim {
       height: auto;
       padding: 14px 28px;

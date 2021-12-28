@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from "react";
-import "prism-material-themes/themes/material-palenight.css";
-import { highlight, languages } from "prismjs/components/prism-core";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-css";
-import "prismjs/components/prism-markup";
+import React, { useEffect, useRef, useState } from "react";
+// import "prism-material-themes/themes/material-palenight.css";
+import CodeMirror, { StateEffect, useCodeMirror } from "@uiw/react-codemirror";
+import { html } from "@codemirror/lang-html";
+import { gutter, lineNumbers } from "@codemirror/gutter";
+// import { highlight, languages } from "prismjs/components/prism-core";
+// import "prismjs/components/prism-clike";
+// import "prismjs/components/prism-css";
+// import "prismjs/components/prism-markup";
+import { Extension } from "@codemirror/state";
+import { materialPalenight } from "./theme";
 
-declare const Prism;
+// declare const Prism;
 
-if (typeof Prism !== "undefined") {
-  Prism.manual = true;
-}
-
-import SimpleEditor from "react-simple-code-editor";
+// if (typeof Prism !== "undefined") {
+//   Prism.manual = true;
+// }
 
 // import "prismjs/components/prism-clike";
-import "./prism.css";
+// import "./prism.css";
 
 type SlimEditorProps = {
   value: string;
   onChange: (value: string) => void;
   theme?: any;
 };
+
 export const SlimEditor = ({ value, onChange, theme }: SlimEditorProps) => {
   const [internalValue, setInternalValue] = useState(value);
 
@@ -35,26 +39,24 @@ export const SlimEditor = ({ value, onChange, theme }: SlimEditorProps) => {
     }
   }, [value]);
 
-  const baseTheme = theme && typeof theme.plain === "object" ? theme.plain : {};
+  // return <div ref={editor} />;
 
   return (
-    <SimpleEditor
+    <CodeMirror
+      theme={materialPalenight}
       value={internalValue}
-      style={{
-        width: "100%",
-        height: "100%",
-        fontFamily:
-          'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-        fontSize: 15.2,
-        letterSpacing: "0.06em",
-        ...baseTheme,
-        overflow: "scroll"
+      height="100%"
+      extensions={[
+        html(),
+        lineNumbers({
+          formatNumber() {
+            return "";
+          }
+        })
+      ]}
+      onChange={value => {
+        onChangeInternal(value);
       }}
-      preClassName="language-html"
-      onValueChange={onChangeInternal}
-      highlight={code =>
-        highlight(code, { ...languages.html, ...languages.css }, theme)
-      }
     />
   );
 };

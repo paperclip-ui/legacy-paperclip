@@ -12,6 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@codemirror/gutter": "^0.19.9",
+    "@codemirror/highlight": "^0.19.6",
+    "@codemirror/state": "^0.19.6",
+    "@codemirror/view": "^0.19.37",
+    "@ddietr/codemirror-themes": "^1.0.9",
     "history": "4.9.0",
     "paperclip": "^18.2.15",
     "paperclip-cli": "^18.2.15",

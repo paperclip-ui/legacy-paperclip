@@ -19,6 +19,7 @@ TODOS:
   component
   as="Container"
   class="editor {class?}"
+  {style?}
   class:rounded="rounded"
   class:showLeftSidebar="show-left-sidebar">
   <style>

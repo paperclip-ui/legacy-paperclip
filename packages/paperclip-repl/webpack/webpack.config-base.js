@@ -21,7 +21,7 @@ exports.config = {
       template: path.resolve(BASE_DIR, "src", "index.html")
     }),
     new webpack.ProvidePlugin({
-      process: "process/browser",
+      process: "process/browser.js",
       Buffer: ["buffer", "Buffer"]
     }),
     new webpack.DefinePlugin({

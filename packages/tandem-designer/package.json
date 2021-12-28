@@ -12,7 +12,9 @@
   "license": "GPLv3",
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",
   "dependencies": {
+    "@codemirror/lang-html": "^0.19.4",
     "@monaco-editor/loader": "^1.2.0",
+    "@uiw/react-codemirror": "^4.3.1",
     "automerge": "^0.14.2",
     "browserstack": "^1.6.1",
     "browserstack-local": "^1.4.8",

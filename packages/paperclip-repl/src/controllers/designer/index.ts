@@ -19,6 +19,7 @@ export class DesignerController {
       showCodeEditorOnStartup: true,
       activeFrame: 0,
       rounded: true,
+      codeEditorWidth: "200%",
       createConnection: () => this._workerParent.getWorkerConnection()
     });
   }

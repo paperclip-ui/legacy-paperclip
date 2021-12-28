@@ -39,7 +39,7 @@ export const CodeMode = () => {
   if (isPlainTextFile(currentCodeFilePath)) {
     if (useLiteEditor) {
       content = (
-        <styles.Content slim>
+        <styles.Content>
           <SlimEditor value={code} onChange={onChange} />
         </styles.Content>
       );
