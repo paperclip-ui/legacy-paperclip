@@ -19,7 +19,7 @@ export const MainBase = () => {
       rounded={rounded}
       showLeftSidebar={showLeftSidebar}
       style={{
-        "--code-editor-width": null
+        "--code-editor-width": state.designer.codeEditorWidth
       }}
     >
       {showFullEditor && showLeftSidebar !== false && <LeftSidebar />}
