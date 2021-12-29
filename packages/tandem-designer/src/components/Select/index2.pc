@@ -1,3 +1,4 @@
+<import src="styles/atoms.pc" as="atoms" />
 <style>
   @keyframes fade-in {
     0% {

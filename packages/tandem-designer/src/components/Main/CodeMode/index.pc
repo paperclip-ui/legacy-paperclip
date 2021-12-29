@@ -1,4 +1,5 @@
 <import src="tandem-design-system/src/atoms.pc" inject-styles />
+<import src="./Toolbar/index.pc" as="Toolbar" />
 <!--
   @frame { visible: false }
 -->
@@ -6,11 +7,22 @@
   <style>
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 70%;
+    width: var(--code-editor-width, 70%);
     overflow: hidden;
+    border-top-left-radius: var(--editor-border-radius);
+    border-bottom-left-radius: var(--editor-border-radius);
     background: rgb(40, 44, 52);
-    mini-height: 300px;
+    min-height: 300px;
+    &:within(:global(.floating-preview)) {
+      width: 100%;
+      height: 100%;
+      border-top-right-radius: var(--editor-border-radius);
+      border-bottom-right-radius: var(--editor-border-radius);
+    }
+    &:within(:global(.show-left-sidebar)) {
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
     &:within(:global(.compact)) {
       width: 100%;
       height: 80%;
@@ -29,6 +41,7 @@
 <div export component as="Content" class:slim="slim">
   <style>
     height: 100%;
+    overflow: scroll;
     &.slim {
       height: auto;
       padding: 14px 28px;
@@ -43,7 +56,6 @@
 -->
 <div export component as="CantEditScreen" class="v2 dark">
   <style>
-    background: var(--grey-night-500);
     width: 100%;
     height: 100%;
     color: rgba(255, 255, 255, 0.6);
@@ -61,8 +73,8 @@
 <!--
   @frame { visible: false, title: "CodeMode", width: 1024, height: 768, x: 1309, y: 171 }
 -->
-<Container export component as="Preview" {slim?}>
-  <Toolbar.Preview {showFileMenu?} />
+<Container export component as="Preview" {slim?} {float?}>
+  {showSlimNav && <Toolbar.Preview {showFileMenu?} {showFileMenu?} />}
   {!cantEdit && <Content>
     <!--  <img src="./code-screenshot.png">
       <style>
@@ -72,3 +84,10 @@
   </Content>}
   {cantEdit && <CantEditScreen />}
 </Container>
+
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 0, y: 0 }
+-->
+<Preview cantEdit />

@@ -1,50 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
-// import Editor from "@monaco-editor/react";
-import {
-  globalZKeyDown,
-  globalYKeyDown,
-  globalSaveKeyPress,
-  codeChanged
-} from "../../../actions";
-
-// Can't import, otherwise the react monaco editor breaks :(
-import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
-import loadMonaco from "@monaco-editor/loader";
-
-export type Monaco = typeof monacoEditor;
-// TODO: https://github.com/microsoft/monaco-editor/issues/221
+import React, { useEffect, useState } from "react";
+import { codeChanged } from "../../../actions";
 
 import * as styles from "./index.pc";
-// import { Toolbar } from "./Toolbar";
+import { MonacoEditor } from "./MonacoEditor";
 import { useAppStore } from "../../../hooks/useAppStore";
-// import { slimCodeEditorChanged } from "../../../actions";
-// import { canEditFile } from "../../../state";
-import { active as activatePaperclipExtension } from "paperclip-monaco";
-import { StringRange } from "paperclip-utils";
-import { isMediaFile, isPlainTextFile } from "tandem-common/lib/mime";
+import { isPlainTextFile } from "tandem-common/lib/mime";
+import { SlimEditor } from "./SlimEditor";
+import { Toolbar } from "./Toolbar";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
-  const currentCodeFilePath = state.designer.ui.query.canvasFile;
+  const currentCodeFilePath = state.designer.currentCodeFile;
+  const { useLiteEditor } = state.designer;
   const highlightLocation = null;
 
   let content;
-
+  // code & uri need to be set at the exact same time so that editor instance
+  const [[code, uri], setCode] = useState<[string, string]>(["", ""]);
+  const docContent = state.shared.documents[currentCodeFilePath] || "";
   const onChange = code => {
+    // will happen with REPL
+    if (code === docContent) {
+      return;
+    }
     dispatch(codeChanged({ value: code }));
   };
-  const onMount = (
-    editor: monacoEditor.editor.IStandaloneCodeEditor,
-    monaco: Monaco
-  ) => {
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
-      dispatch(globalSaveKeyPress(null) as any);
-    });
-  };
-
-  // code & uri need to be set at the exact same time so that editor instance
-  const [[code, uri], setCode] = useState<[string, string]>([null, null]);
-  const docContent = state.shared.documents[currentCodeFilePath];
 
   useEffect(() => {
     const uri = currentCodeFilePath;
@@ -54,159 +34,36 @@ export const CodeMode = () => {
       reader.onload = () => setCode([String(reader.result), uri]);
       reader.readAsText(docContent);
     } else {
-      setCode([String(docContent || ""), uri]);
+      setCode([String(docContent), uri]);
     }
   }, [docContent, currentCodeFilePath]);
 
   if (isPlainTextFile(currentCodeFilePath)) {
-    content = (
-      <styles.Content>
-        <Editor
-          uri={uri}
-          value={code}
-          highlightLocation={highlightLocation}
-          onChange={onChange}
-          onMount={onMount}
-        />
-      </styles.Content>
-    );
-  } else {
+    if (useLiteEditor) {
+      content = (
+        <styles.Content>
+          <SlimEditor value={code} onChange={onChange} />
+        </styles.Content>
+      );
+    } else {
+      content = (
+        <styles.Content>
+          <MonacoEditor
+            uri={uri}
+            value={code}
+            highlightLocation={highlightLocation}
+            onChange={onChange}
+          />
+        </styles.Content>
+      );
+    }
+  } else if (currentCodeFilePath) {
     content = <styles.CantEditScreen />;
   }
   return (
     <styles.Container>
-      {/* <Toolbar /> */}
+      {state.designer.showCodeToolbar && <Toolbar />}
       {content}
     </styles.Container>
   );
-};
-
-export type EditorProps = {
-  uri: string;
-  value: string;
-  highlightLocation: StringRange;
-  onChange: (value: string) => void;
-  onMount: (editor: any, monaco: any) => void;
-};
-
-const Editor = ({
-  uri,
-  value,
-  onChange,
-  highlightLocation,
-  onMount
-}: EditorProps) => {
-  const editorRef = useRef<HTMLDivElement>();
-  const [monaco, setMonaco] = useState<Monaco>();
-  const [editor, setEditor] = useState<monacoEditor.editor.ICodeEditor>();
-  const [models, setModels] = useState<
-    Record<string, monacoEditor.editor.ITextModel>
-  >({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!editor) {
-      return;
-    }
-    if (editor.getModel().uri.toString() !== uri) {
-      const model =
-        monaco.editor.getModel(monaco.Uri.parse(uri)) ||
-        monaco.editor.createModel(value, undefined, monaco.Uri.parse(uri));
-      editor.setModel(model);
-      editor.saveViewState();
-    } else if (editor.getValue() !== value) {
-      editor.executeEdits("", [
-        {
-          range: editor.getModel().getFullModelRange(),
-          text: value
-        }
-      ]);
-
-      editor.pushUndoStop();
-    }
-  }, [monaco, editor, uri, value]);
-
-  useEffect(() => {
-    if (!highlightLocation) {
-      return;
-    }
-
-    // dirty tricks here - trying to race against page changes. I'm
-    // just too damn lazy to do it the right way.
-    setTimeout(() => {
-      const range = getRange(
-        editor.getModel(),
-        highlightLocation.start.pos,
-        highlightLocation.end.pos
-      );
-      editor.setSelection(range);
-
-      editor.revealLine(range.startLineNumber);
-    }, 100);
-  }, [highlightLocation]);
-
-  useEffect(() => {
-    if (!editorRef.current) {
-      return;
-    }
-
-    loadMonaco.init().then(monaco => {
-      setMonaco(monaco);
-
-      // might exist if switching between pages - models are global so we need to dispose.
-      const model = monaco.editor.getModel(monaco.Uri.parse(uri));
-      if (model) {
-        model.dispose();
-      }
-
-      activatePaperclipExtension(monaco as any, { getCurrentUri: null });
-
-      const editor = monaco.editor.create(editorRef.current, {
-        language: "paperclip",
-        tabSize: 2,
-        automaticLayout: true,
-        insertSpaces: true,
-        model: monaco.editor.createModel(
-          value || "",
-          undefined,
-          monaco.Uri.parse(uri)
-        )
-      });
-
-      monaco.editor.setTheme("vs-dark");
-      setEditor(editor);
-
-      editor.onDidChangeModelContent(() => {
-        onChange(editor.getValue());
-      });
-
-      onMount(editor, monaco);
-
-      setLoading(false);
-    });
-
-    return () => {};
-  }, []);
-
-  return (
-    <>
-      <div ref={editorRef} style={{ height: `100%`, width: "100%" }} />
-    </>
-  );
-};
-
-const getRange = (
-  model: monacoEditor.editor.ITextModel,
-  start: number,
-  end: number
-): monacoEditor.IRange => {
-  const sp = model.getPositionAt(start);
-  const ep = model.getPositionAt(end);
-
-  return {
-    startColumn: sp.column,
-    startLineNumber: sp.lineNumber,
-    endColumn: ep.column,
-    endLineNumber: ep.lineNumber
-  };
 };

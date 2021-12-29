@@ -12,13 +12,16 @@ import {
 } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 
-import { Channel, sockAdapter } from "paperclip-common";
+import { Channel } from "paperclip-common";
 import {
   fileLoaded,
   StyleRuleFileNameClicked,
+  SyncPanelsClicked,
   dirLoaded,
+  sourcesEdited,
   allPCContentLoaded,
   globalBackspaceKeySent,
+  FileItemClicked,
   fileOpened,
   FSItemClicked,
   CanvasMouseDown,
@@ -26,7 +29,6 @@ import {
   NodeBreadcrumbClicked,
   redirectRequest,
   CodeChanged,
-  clientConnected,
   ActionType,
   commitRequestStateChanged,
   BranchChanged,
@@ -72,17 +74,25 @@ import {
 } from "paperclip-utils";
 import { PCMutation, PCMutationActionKind } from "paperclip-source-writer";
 import path from "path";
-import { Connection } from "./connection";
+import { IConnection, SockConnection } from "./connection";
 import { request, takeState } from "../utils";
 
-export function* handleRPC() {
-  let _client: Connection = new Connection();
+export type HandleRPCOptions = {
+  createConnection?: () => IConnection;
+};
+
+const createDefaultConnection = () => new SockConnection();
+
+export function* handleRPC({
+  createConnection = createDefaultConnection
+}: HandleRPCOptions) {
+  let _client: IConnection = createConnection();
   yield fork(handleServerOptions, _client);
   yield fork(handleProject, _client);
   yield fork(handleCanvasRedirect);
 }
 
-function* handleServerOptions(client: Connection) {
+function* handleServerOptions(client: IConnection) {
   const hello = helloChannel(client);
 
   ///oof... need to delay so that query state is populated. What a hack!
@@ -106,7 +116,7 @@ function* loadServerOptions(
   yield put(serverOptionsLoaded(options));
 }
 
-function* handleProject(client: Connection) {
+function* handleProject(client: IConnection) {
   const loadDirectory = loadDirectoryChannel(client);
   const events = eventsChannel(client);
   const commitChanges = commitChangesChannel(client);
@@ -203,6 +213,7 @@ function* handleClientComunication(client) {
 
     while (
       current &&
+      current !== "." &&
       current !== "/" &&
       current !== state.designer.projectDirectory?.absolutePath
     ) {
@@ -228,6 +239,15 @@ function* handleClientComunication(client) {
     if (action.payload.kind === FSItemKind.FILE) {
       yield put(redirectRequest({ query: { canvasFile: action.payload.url } }));
     }
+  });
+
+  yield takeEvery([ActionType.SYNC_PANELS_CLICKED], function*(
+    action: SyncPanelsClicked
+  ) {
+    const state: AppState = yield select();
+    yield put(
+      redirectRequest({ query: { canvasFile: state.designer.currentCodeFile } })
+    );
   });
 
   yield takeEvery(
@@ -390,6 +410,12 @@ function* handleClientComunication(client) {
     maybeLoadCanvasFile
   );
 
+  yield takeEvery([ActionType.FILE_ITEM_CLICKED], function*(
+    action: FileItemClicked
+  ) {
+    yield call(loadFile, action.payload.uri);
+  });
+
   // application may have been loaded in an error state, so evaluated data
   // won't be loaded in this case. When that happens, we need to reload the current
   // canvas file
@@ -410,11 +436,19 @@ function* handleClientComunication(client) {
       if (currUri) {
         yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
         yield call(loadNested, currUri);
-        const result = yield call(openFile.call, { uri: currUri });
-        if (result) {
-          yield put(fileLoaded(result));
-        }
+        yield call(loadFile, currUri);
       }
+    }
+  }
+
+  function* loadFile(uri: string) {
+    try {
+      const result = yield call(openFile.call, { uri });
+      if (result) {
+        yield put(fileLoaded(result));
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -429,7 +463,7 @@ function* handleClientComunication(client) {
       const state: AppState = yield select();
 
       yield call(
-        editPCSource.call,
+        editPCSource2,
         state.designer.selectedNodePaths
           .map((info, i) => {
             const frame = getFrameFromIndex(Number(info), state.designer);
@@ -450,12 +484,17 @@ function* handleClientComunication(client) {
     }
   );
 
+  function* editPCSource2(mutations: PCMutation[]) {
+    const changes = yield call(editPCSource.call, mutations);
+    yield put(sourcesEdited(changes));
+  }
+
   yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
     const state: AppState = yield select();
 
     if (state.designer.selectedNodePaths.length) {
       yield call(
-        editPCSource.call,
+        editPCSource2,
         state.designer.selectedNodePaths
           .map((v, index) => {
             // may not exist if source is not returned in time for this edit
@@ -483,7 +522,7 @@ const handleCodeChanged = (
   function*({ payload: { value } }: CodeChanged) {
     const state: AppState = yield select();
     yield call(editCode.call, {
-      uri: state.designer.ui.query.canvasFile,
+      uri: state.designer.currentCodeFile,
       value
     });
   };

@@ -90,6 +90,9 @@
     background: var(--background-100);
     border-bottom: 1px solid var(--border-color);
     justify-content: space-between;
+    &:within(:global(.rounded)) {
+      border-top-left-radius: 10px;
+    }
   </style>
   {children}
 </div>

@@ -9,15 +9,28 @@ import { LeftSidebar } from "./LeftSidebar";
 export const MainBase = () => {
   const { state } = useAppStore();
   const showFullEditor =
-    state.designer.workspace?.showFullEditor &&
-    !state.designer.ui.query.embedded;
-  return (
-    <styles.Container>
-      {showFullEditor && <LeftSidebar />}
+    (state.designer.workspace?.showFullEditor &&
+      !state.designer.ui.query.embedded) ||
+    state.designer.showCodeEditorOnStartup;
+
+  const { rounded, showLeftSidebar, floatingPreview } = state.designer;
+
+  let content = (
+    <styles.Container
+      rounded={rounded}
+      showLeftSidebar={showLeftSidebar}
+      floatingPreview={floatingPreview}
+      style={{
+        "--code-editor-width": state.designer.codeEditorWidth
+      }}
+    >
+      {showFullEditor && showLeftSidebar !== false && <LeftSidebar />}
       {showFullEditor && <CodeMode />}
-      <DesignMode />
+      <DesignMode floating={floatingPreview} />
     </styles.Container>
   );
+
+  return content;
 };
 
-export const Main = withAppStore(MainBase);
+export const createMain = withAppStore(MainBase);

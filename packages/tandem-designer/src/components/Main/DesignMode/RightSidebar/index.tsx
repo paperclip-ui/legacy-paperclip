@@ -8,7 +8,8 @@ export const RightSidebar = React.memo(() => {
 
   if (
     !state.designer.selectedNodeStyleInspections.length ||
-    state.designer.ui.query.expanded
+    state.designer.ui.query.expanded ||
+    state.designer.showInspectorPanels === false
   ) {
     return null;
   }

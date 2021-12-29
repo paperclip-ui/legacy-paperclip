@@ -1,0 +1,30 @@
+/* 
+:root {
+
+  --name: materialPalenight;
+  --background: rgb(40, 44, 52);
+  --foreground: #A6ACCD;
+  --selection: rgba(128, 203, 196, 0.2);
+  --cursor: #FFCC00;
+  --dropdownBackground: #263238;
+  --dropdownBorder: #FFFFFF10;
+  --activeLine: rgba(0, 0, 0, 0.5);
+  --matchingBracket: #263238;
+  --keyword: #C792EA;
+  --operator: #89DDFF;
+  --def: #82AAFF;
+  --storage: #89DDFF;
+  --variable: #EEFFFF;
+  --atom: #F78C6C;
+  --parameter: #EEFFFF;
+  --function: red;
+  --string: #C3E88D;
+  --constant: #89DDFF;
+  --type: #f07178;
+  --class: #FFCB6B;
+  --number: #FF5370;
+  --comment: #546E7A;
+  --heading: #89DDFF;
+  --invalid: #f0717870;
+  --regexp: #C3E88D
+} */

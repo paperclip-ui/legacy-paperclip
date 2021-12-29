@@ -6,8 +6,11 @@ export const stripFileProtocol = (filePath: string) =>
 export const paperclipSourceGlobPattern = (dir: string) =>
   dir === "." ? "**/*.pc" : dir + "/**/*.pc";
 
+// TODO: we want to watch for CSS files here, but need to be
+// cognizant of generated CSS files which may clobber the PC engine. THe fix here
+// I think is to load GLOB data, _as well as_ resources loaded into the PC file.
 export const paperclipResourceGlobPattern = (dir: string) =>
-  dir === "." ? "**/*.{pc,css}" : dir + "/**/*.{pc,css}";
+  dir === "." ? "**/*.{pc}" : dir + "/**/*.{pc}";
 
 export const isGeneratedPaperclipFile = (filePath: string) => {
   return /\.(pc(.\w+)+|scoped.css)$/.test(filePath);

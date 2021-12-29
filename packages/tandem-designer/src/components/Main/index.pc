@@ -15,13 +15,27 @@ TODOS:
 <!--
   @frame { visible: false, title: "Container", width: 1024, height: 768, x: -3, y: -73 }
 -->
-<div export component as="Container" class="editor {class?}">
+<div export
+  component
+  as="Container"
+  class="editor {class?}"
+  {style?}
+  class:rounded="rounded"
+  class:floatingPreview="floating-preview"
+  class:showLeftSidebar="show-left-sidebar">
   <style>
+    position: relative;
     display: flex;
     flex-direction: row;
     align-content: stretch;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: calc(var(--editor-border-radius) + 5px);
+    &.rounded {
+      --editor-border-radius: 5px;
+    }
+
   </style>
   {children}
 </div>
@@ -30,10 +44,24 @@ TODOS:
 <!--
   @frame { visible: false }
 -->
-<Container export component as="Preview">
+
+<Container export
+  component
+  as="Preview"
+  class:fullSize="full-size"
+  {rounded?}
+  {floatingPreview?}
+  {showLeftSidebar?}>
+  <style>
+    &.full-size {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
   {showLeftSidebar && <LeftSidebar.Preview />}
-  {codeMode && <CodeMode.Preview />}
-  {designer? && <DesignMode.Preview v2
+  {codeMode && <CodeMode.Preview {float?} {showSlimNav?} {showFileMenu?} />}
+  {designer? && <DesignMode.Preview {float?}
+    v2
     {showLeftSidebar}
     {dark?}
     {showEnvPopup?}
@@ -41,38 +69,59 @@ TODOS:
     {showCanvas?} />}
 </Container>
 
+
 <!--
   @frame { title: "Grid View / Large", width: 1864, height: 1050, x: 2345, y: -86 }
 -->
-<Preview designer showGrid showLeftSidebar />
+<Preview designer showGrid showLeftSidebar fullSize />
 
 <!--
   @frame { title: "Grid View / Large", width: 999, height: 737, x: 1219, y: -93 }
 -->
-<Preview designer showGrid showEnvPopup />
+<Preview designer showGrid showEnvPopup fullSize />
 
 <!--
   @frame { title: "Grid View / Small", width: 377, height: 737, x: -18, y: -104 }
 -->
-<Preview dark designer showGrid />
+<Preview dark designer showGrid fullSize />
 
 <!--
   @frame { title: " Grid View / Medium", width: 686, height: 737, x: 441, y: -107 }
 -->
-<Preview dark designer showGrid />
+<Preview dark designer showGrid fullSize />
 
 
 <!--
-  @frame { title: "Code Mode / Desktop", width: 1867, height: 1084, x: 2345, y: 1257 }
+  @frame { title: "Code Mode / Float / Desktop", width: 1867, height: 1084, x: 2342, y: 1246 }
 -->
-<Preview dark codeMode designer showGrid />
+<Preview dark codeMode designer showGrid fullSize floatingPreview rounded />
 
 <!--
   @frame { title: "Code Mode / Big", width: 3364, height: 1685, x: 2339, y: 2677 }
 -->
-<Preview dark codeMode designer showGrid />
+<Preview showSlimNav showFileMenu dark codeMode designer showGrid fullSize />
 
 <!--
-  @frame { title: "Canvas with file nav", width: 2001, height: 1255, x: -66, y: 917 }
+  @frame { title: "Canvas with file nav", width: 1905, height: 1246, x: -66, y: 917 }
 -->
-<Preview showLeftSidebar codeMode={false} designer v2 showCanvas />
+<Preview showLeftSidebar codeMode={false} designer v2 showCanvas fullSize />
+
+
+<!--
+  @frame { title: "Constrained canvas", width: 1917, height: 1231, x: -53, y: 2761 }
+-->
+<div>
+  <div>
+    <style>
+      width: 1500px;
+      height: 700px;
+      position: absolute;
+      border: 3px solid rgb(75, 75, 75);
+      border-radius: 13px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    </style>
+    <Preview showLeftSidebar codeMode rounded designer v2 showCanvas />
+  </div>
+</div>

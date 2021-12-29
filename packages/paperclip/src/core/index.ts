@@ -4,7 +4,6 @@ export * from "./utils";
 export {
   EngineDelegate,
   EngineMode,
-  keepEngineInSyncWithFileSystem2,
   EngineOptions,
   getEngineImports,
   isErrorResult,

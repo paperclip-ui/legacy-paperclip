@@ -137,6 +137,27 @@ export class LiveWindow {
           height: 100%;
           border: none;
         }
+
+        .loader {
+          width:12px;
+          height:12px;
+          background: #000000;
+          opacity: 0.3;
+          border-radius: 50%;
+          box-shadow: 20px 0 #00000022,-20px 0 #000000;
+          animation: loader 1s infinite linear alternate;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: -1;
+        }
+        @keyframes loader {
+            0% {box-shadow: 20px 0 #000000,-20px 0 #00000022;background: #000000}
+            33%{box-shadow: 20px 0 #000000,-20px 0 #00000022;background: #00000022}
+            66%{box-shadow: 20px 0 #00000022,-20px 0 #000000;background: #00000022}
+        }
+
       </style>
 
       <script>
@@ -162,6 +183,7 @@ export class LiveWindow {
     }?${qs.stringify(state.location.query)}&embedded=1&projectId=${
       this._projectId
     }"></iframe>
+    <div class="loader"></div>
     </body>
     </html>`;
   }

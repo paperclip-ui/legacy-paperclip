@@ -1,18 +1,22 @@
 import * as path from "path";
-import * as url from "url";
+// import _FileSystem from "fs";
 import {
   findPCConfigUrl,
   PaperclipConfig,
   PC_CONFIG_FILE_NAME
 } from "paperclip-utils";
-import * as fs from "fs";
+import { fileURLToPath, pathToFileURL } from "paperclip-utils/lib/core/url";
+
+type FileSystem = any;
 
 // TODO - move to paperclip-utils as soon as we have a glob library that can handle virtual file systems
 const findResourcesFromConfig = (
-  get: (config: PaperclipConfig, options: any) => string[]
-) => fs => (fromUri: string, relative?: boolean) => {
+  getResources: (
+    fs: FileSystem
+  ) => (config: PaperclipConfig, options: any) => string[]
+) => (fs: FileSystem) => (fromUri: string, relative?: boolean) => {
   // symlinks may fudge module resolution, so we need to find the real path
-  const fromPath = fs.realpathSync(new url.URL(fromUri));
+  const fromPath = fs.realpathSync(new URL(fromUri));
   const fromPathDirname = path.dirname(fromPath);
   const configUrl = findPCConfigUrl(fs)(fromUri);
 
@@ -23,12 +27,12 @@ const findResourcesFromConfig = (
     return [];
   }
 
-  const configUri = new url.URL(configUrl);
+  const configUri = new URL(configUrl);
   const config: PaperclipConfig = JSON.parse(
     fs.readFileSync(configUri, "utf8")
   );
 
-  return get(config, path.dirname(url.fileURLToPath(configUri)))
+  return getResources(fs)(config, path.dirname(fileURLToPath(configUri)))
     .filter(pathname => pathname !== fromPath)
     .map(pathname => {
       if (relative) {
@@ -52,14 +56,14 @@ const findResourcesFromConfig = (
         return relativePath;
       }
 
-      return url.pathToFileURL(pathname).href;
+      return pathToFileURL(pathname).href;
     })
     .map(filePath => {
       return filePath.replace(/\\/g, "/");
     });
 };
 
-const resolveModuleRoots = (fromDir: string, roots: string[] = []) => {
+const resolveModuleRoots = fs => (fromDir: string, roots: string[] = []) => {
   const stat = fs.lstatSync(fromDir);
   const realpath = stat.isSymbolicLink() ? fs.realpathSync(fromDir) : fromDir;
   const newStat = realpath === fromDir ? stat : fs.lstatSync(realpath);
@@ -70,13 +74,13 @@ const resolveModuleRoots = (fromDir: string, roots: string[] = []) => {
     roots.push(fromDir);
   } else {
     for (const dirname of fs.readdirSync(realpath)) {
-      resolveModuleRoots(path.join(fromDir, dirname), roots);
+      resolveModuleRoots(fs)(path.join(fromDir, dirname), roots);
     }
   }
   return roots;
 };
 
-const filterAllFiles = (filter: (filePath: string) => boolean) => {
+const filterAllFiles = fs => (filter: (filePath: string) => boolean) => {
   const scan = (currentPath: string, results: string[] = []) => {
     const stat = fs.lstatSync(currentPath);
     const realpath = stat.isSymbolicLink()
@@ -101,7 +105,7 @@ const filterAllFiles = (filter: (filePath: string) => boolean) => {
   return scan;
 };
 
-const resolveResources = (
+const resolveResources = (fs: FileSystem) => (
   config: PaperclipConfig,
   cwd: string,
   filterFiles: (dir: string) => string[]
@@ -112,7 +116,7 @@ const resolveResources = (
   if (config.moduleDirs) {
     for (const modulesDirname of config.moduleDirs) {
       const moduleDirPath = path.join(cwd, modulesDirname);
-      const moduleRoots = resolveModuleRoots(moduleDirPath);
+      const moduleRoots = resolveModuleRoots(fs)(moduleDirPath);
       for (const moduleDir of moduleRoots) {
         // need to scan until there's a package. This covers @organization namespaces.
 
@@ -141,36 +145,38 @@ const resolveResources = (
 };
 
 export const resolveAllPaperclipFiles = findResourcesFromConfig(
-  (config, cwd) => {
-    return resolveResources(
+  (fs: FileSystem) => (config, cwd) => {
+    return resolveResources(fs)(
       config,
       cwd,
-      filterAllFiles(
+      filterAllFiles(fs)(
         filePath =>
           path.extname(filePath) === ".pc" || path.extname(filePath) === ".css"
       )
     );
   }
 );
-export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
-  // const ext = `+(jpg|jpeg|png|gif|svg)`;
-  const exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".ttf"];
+export const resolveAllAssetFiles = findResourcesFromConfig(
+  (fs: FileSystem) => (config, cwd) => {
+    // const ext = `+(jpg|jpeg|png|gif|svg)`;
+    const exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".ttf"];
 
-  // const sourceDir = config.srcDir;
+    // const sourceDir = config.srcDir;
 
-  return resolveResources(
-    config,
-    cwd,
-    filterAllFiles(filePath => exts.includes(path.extname(filePath)))
-  );
-  // if (sourceDir === ".") {
-  //   return filterAllFiles(filePath => exts.includes(path.extname(filePath)))(cwd);
-  //   // return glob.sync(`**/*.${ext}`, { cwd, realpath: true });
-  // }
+    return resolveResources(fs)(
+      config,
+      cwd,
+      filterAllFiles(fs)(filePath => exts.includes(path.extname(filePath)))
+    );
+    // if (sourceDir === ".") {
+    //   return filterAllFiles(filePath => exts.includes(path.extname(filePath)))(cwd);
+    //   // return glob.sync(`**/*.${ext}`, { cwd, realpath: true });
+    // }
 
-  // // return glob.sync(`${sourceDir}/**/*.${ext}`, { cwd, realpath: true });
-  // return filterAllFiles(filePath => exts.includes(path.extname(filePath)))(path.join(cwd, sourceDir));
-});
+    // // return glob.sync(`${sourceDir}/**/*.${ext}`, { cwd, realpath: true });
+    // return filterAllFiles(filePath => exts.includes(path.extname(filePath)))(path.join(cwd, sourceDir));
+  }
+);
 
 const getModulePath = (
   configUri: string,
@@ -178,7 +184,7 @@ const getModulePath = (
   fullPath: string,
   fromDir?: string
 ) => {
-  const configDir = path.dirname(url.fileURLToPath(configUri));
+  const configDir = path.dirname(fileURLToPath(configUri));
 
   const moduleDirectory = path.join(configDir, config.srcDir) + "/";
 

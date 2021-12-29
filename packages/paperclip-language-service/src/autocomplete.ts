@@ -280,7 +280,7 @@ export class AutocompleteService {
       items.push(
         ...(ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || []).map(
           item => {
-            if (item.label === "className" && containsClasses(data, imports)) {
+            if (item.label === "class" && containsClasses(data, imports)) {
               return {
                 ...item,
                 command: RETRIGGER_COMMAND
@@ -323,7 +323,7 @@ export class AutocompleteService {
 
     const attrName = context.attributeName.split(":").shift();
 
-    if (attrName === "className" || attrName === "class") {
+    if (attrName === "class") {
       return this._getCSSClassReferenceSuggestion(data, imports);
     }
     return [];

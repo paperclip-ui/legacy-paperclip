@@ -165,7 +165,7 @@ const ALL_TAG_NAMES = [...NATIVE_TAG_NAMES, ...RESERVED_TAG_NAMES].sort();
 const VISIBLE_ELEMENT_ATTRIBUTE_NAMES = [
   "id",
   "style",
-  "className",
+  "class",
   "onClick",
   "onDoubleClick",
   "onMouseDown",

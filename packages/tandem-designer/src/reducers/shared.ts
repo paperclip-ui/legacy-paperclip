@@ -1,24 +1,18 @@
-import { AppState, IS_WINDOWS, updateShared } from "../state";
+import { AppState, updateShared } from "../state";
 import { produce } from "immer";
-import Automerge from "automerge";
 import { Action, ActionType, ExternalActionType } from "../actions";
-import { isPaperclipFile } from "paperclip-utils";
+import { editString } from "paperclip-source-writer/lib/string-editor";
 
 export const sharedReducer = (state: AppState, action: Action) => {
   switch (action.type) {
-    case ExternalActionType.CONTENT_CHANGED: {
-      if (!state.shared.documents[action.payload.fileUri]) {
-        return state;
-      }
+    case ActionType.SOURCES_EDITED: {
       return updateShared(state, {
         documents: produce(state.shared.documents, documents => {
-          for (const { rangeOffset, rangeLength, text } of action.payload
-            .changes) {
-            const doc = String(documents[action.payload.fileUri]);
-            documents[action.payload.fileUri] =
-              doc.substr(0, rangeOffset) +
-              text +
-              doc.substr(rangeOffset + rangeLength);
+          for (const uri in action.payload) {
+            documents[uri] = editString(
+              String(documents[uri]),
+              action.payload[uri]
+            );
           }
         })
       });
@@ -26,7 +20,7 @@ export const sharedReducer = (state: AppState, action: Action) => {
     case ActionType.CODE_CHANGED: {
       return updateShared(state, {
         documents: produce(state.shared.documents, documents => {
-          documents[state.designer.ui.query.canvasFile] = action.payload.value;
+          documents[state.designer.currentCodeFile] = action.payload.value;
         })
       });
     }

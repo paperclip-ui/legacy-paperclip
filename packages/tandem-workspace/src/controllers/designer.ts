@@ -1,6 +1,5 @@
 import express from "express";
 import * as path from "path";
-import * as http from "http";
 
 const DESIGNER_DIST_PATH = path.join(
   __dirname,
@@ -9,10 +8,7 @@ const DESIGNER_DIST_PATH = path.join(
 );
 
 export class Designer {
-  constructor(
-    private _express: express.Express,
-    private _httpServer: http.Server
-  ) {
+  constructor(private _express: express.Express) {
     this._installRoutes();
   }
 

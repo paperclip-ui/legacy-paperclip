@@ -9,7 +9,27 @@ module.exports = function(context, options) {
       return path.resolve(__dirname, "./theme");
     },
     configureWebpack(config, isServer) {
-      const plugins = [];
+      const plugins = [
+        // new CopyPlugin({
+        //   patterns: [
+        //     {
+        //       from: path.resolve(
+        //         __dirname,
+        //         "../../paperclip-repl/dist"
+        //       ),
+        //       to: ".",
+        //       globOptions: {
+        //         ignore: ["**/index.html"]
+        //       }
+        //     }
+        //   ]
+        // }),
+
+        new webpack.ProvidePlugin({
+          process: "process/browser.js",
+          Buffer: ["buffer", "Buffer"]
+        })
+      ];
 
       if (isServer) {
         plugins.push(
@@ -21,6 +41,9 @@ module.exports = function(context, options) {
       }
 
       return {
+        experiments: {
+          asyncWebAssembly: true
+        },
         module: {
           rules: [
             {
@@ -28,6 +51,13 @@ module.exports = function(context, options) {
               loader: "null-loader"
             }
           ]
+        },
+        resolve: {
+          alias: {
+            os: "os-browserify/browser"
+            // chokidar: "empty-module",
+            // fs: "empty-module"
+          }
         },
         plugins
       };

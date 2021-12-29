@@ -3,6 +3,10 @@
 <style>
   .canvas, .inner {
     background: rgb(231, 231, 231);
+    border-bottom-right-radius: var(--editor-border-radius);
+    &:within(:global(.floating-preview)) {
+      border-bottom-left-radius: var(--editor-border-radius);
+    }
   }
 </style>
 

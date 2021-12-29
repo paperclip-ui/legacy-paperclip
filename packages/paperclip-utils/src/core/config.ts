@@ -1,5 +1,5 @@
 import * as path from "path";
-import { paperclipResourceGlobPattern } from "./utils";
+import { paperclipSourceGlobPattern } from "./utils";
 
 export type CompilerOptions = {
   // where PC files should be compiled to. If undefined, then
@@ -53,14 +53,14 @@ export const getPaperclipConfigIncludes = (
   cwd: string
 ) => {
   if (config.srcDir) {
-    return [paperclipResourceGlobPattern(path.join(cwd, config.srcDir))];
+    return [paperclipSourceGlobPattern(path.join(cwd, config.srcDir))];
   }
 
   // if (config.include) {
   //   return config.include.map(inc => path.join(cwd, inc));
   // }
 
-  return [path.join(paperclipResourceGlobPattern(cwd))];
+  return [path.join(paperclipSourceGlobPattern(cwd))];
 };
 
 export const getOutputFile = (

@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Basic Paperclip example with React</title>
+    <style>
+      body,
+      html {
+        margin: 0px;
+        padding: 0px;
+      }
+      .loader {
+        width: 12px;
+        height: 12px;
+        background: #000000;
+        opacity: 0.3;
+        border-radius: 50%;
+        box-shadow: 20px 0 #00000022, -20px 0 #000000;
+        animation: loader 1s infinite linear alternate;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1;
+      }
+      @keyframes loader {
+        0% {
+          box-shadow: 20px 0 #000000, -20px 0 #00000022;
+          background: #000000;
+        }
+        33% {
+          box-shadow: 20px 0 #000000, -20px 0 #00000022;
+          background: #00000022;
+        }
+        66% {
+          box-shadow: 20px 0 #00000022, -20px 0 #000000;
+          background: #00000022;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div class="loader"></div>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" {class?} {style?}>
+  <style>
+    width: 100%;
+    height: 100%;
+    positon: absolute;
+  </style>
+  <style>
+    @export {
+      .bar {
+        position: absolute;
+        background: transparent;
+        --size: 5px;
+        &.top, &.bottom {
+          height: var(--size);
+          width: 100%;
+          cursor: ns-resize;
+        }
+        &.left, &.right {
+          width: var(--size);
+          cursor: ew-resize;
+          height: 100%;
+        }
+        &.top.left, &.top.right, &.bottom.left, &.bottom.right {
+          width: var(--size);
+          height: var(--size);
+        }
+
+        &.top.left, &.bottom.right {
+          cursor: nwse-resize;
+        }
+
+        &.top.right, &.bottom.left {
+          cursor: nesw-resize;
+        }
+
+        &.top {
+          top: 0px;
+        }
+        &.bottom {
+          bottom: 0px;
+        }
+        &.right {
+          right: 0px;
+        }
+      }
+    }
+
+  </style>
+  {children}
+</div>
+
+
+<WindowResizer>
+  <!-- bars -->
+  <div class="bar top" />
+  <div class="bar bottom" />
+  <div class="bar right" />
+  <div class="bar left" />
+
+  <!-- corners -->
+  <div class="bar top left" />
+  <div class="bar top right" />
+  <div class="bar bottom right" />
+  <div class="bar bottom left" />
+</WindowResizer>

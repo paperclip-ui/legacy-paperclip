@@ -6,18 +6,23 @@ type DragProps = {
   delta: Point;
 };
 
-export function useDragger(onDrag: (props: DragProps) => any) {
+export function useDragger(
+  onDrag: (props: DragProps, initialState?: any) => any
+) {
   const [dragging, setDragging] = useState(false);
 
-  const onMouseDown = (event: React.MouseEvent<any>) => {
+  const onMouseDown = (event: React.MouseEvent<any>, initialState?: any) => {
     setDragging(true);
     const start = { x: event.screenX, y: event.screenY };
 
     const onMouseMove = throttle((event: any) => {
       requestAnimationFrame(() => {
-        onDrag({
-          delta: { x: event.screenX - start.x, y: event.screenY - start.y }
-        });
+        onDrag(
+          {
+            delta: { x: event.screenX - start.x, y: event.screenY - start.y }
+          },
+          initialState
+        );
       });
     }, 30);
 

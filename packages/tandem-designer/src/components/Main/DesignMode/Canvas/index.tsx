@@ -83,8 +83,8 @@ export const Canvas = React.memo(() => {
             y: pixelY
           },
           mousePosition: {
-            x: event.pageX - rect.left,
-            y: event.pageY - rect.top
+            x: event.pageX - window.scrollX - rect.left,
+            y: event.pageY - window.scrollY - rect.top
           },
           metaKey: event.metaKey,
           ctrlKey: event.ctrlKey,
@@ -121,6 +121,8 @@ export const Canvas = React.memo(() => {
         })
       );
     };
+    const obs = new ResizeObserver(onResize);
+    obs.observe(ref);
 
     ref.addEventListener("wheel", onWheel, { passive: false });
 
@@ -130,6 +132,7 @@ export const Canvas = React.memo(() => {
 
     return () => {
       window.removeEventListener("resize", onResize);
+      obs.disconnect();
       ref.removeEventListener("wheel", onWheel);
     };
   }, [canvasRef]);

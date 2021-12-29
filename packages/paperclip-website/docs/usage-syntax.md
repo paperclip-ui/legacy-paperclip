@@ -9,7 +9,7 @@ sidebar_label: Syntax
 You can use regular HTML & CSS in Paperclip. For example:
 
 
-```html live height=150px
+```html live height=260px
 <style>
   div {
     color: purple;
@@ -17,7 +17,7 @@ You can use regular HTML & CSS in Paperclip. For example:
     font-family: papyrus;
   }
 </style>
-<div>I'm purple!</div>
+<div>I'm purple!!</div>
 ```
 
 The big difference between Paperclip and regular HTML & CSS is that CSS in Paperclip is scoped. This means that styles won't leak into other documents. 
@@ -50,7 +50,7 @@ Nested rules eliminates some redundancy around defining style selectors.
 **Example**:
 
 
-```html live height=150px
+```html live height=500px
 // file: nested-style-demo.pc
 <style>
   .container {
@@ -78,7 +78,7 @@ Nested rules eliminates some redundancy around defining style selectors.
 
 The `&` token can be used to combine the _parent_ selector in nested rules like so:
 
-```html live height=150px
+```html live height=550px
 // file: nested-combine-demo.pc
 <style>
   .button {
@@ -120,7 +120,7 @@ div {
 
 Style blocks that are the defined within elements are _scoped_ to that element. For example:
 
-```html live height=150px
+```html live height=320px
 <div>
   <div>
     <style>
@@ -129,12 +129,9 @@ Style blocks that are the defined within elements are _scoped_ to that element. 
         color: blue;
       }
     </style>
-  
-    I'm red text!
-  
+    I'm red text!  
     <span>I'm blue text!</span>
   </div>
-  
   I'm black text
 </div>
 ```
@@ -148,7 +145,7 @@ Scoped styles are recommended since they keep your styles & elements together in
 
 `:within([ancestor-selector])` allows you to apply styles within a parent or ancestor.
 
-```html live height=150px
+```html live height=330px
 <div class="bolder">
   <div>
     <style>
@@ -203,7 +200,7 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 
  **Example**:
 
-```html live height=150px
+```html live height=670px
 // file: mixin-demo.pc
 <style>
   :global(:root) {
@@ -247,12 +244,66 @@ Media queries are re-usable in Paperclip by using the following pattern:
   }
 }
 
-div {w
+div {
   @include desktop {
     font-size: 24px;
   }
 }
 ```
+
+**Example**:
+
+```html live height=500px
+// file: main.pc
+<import src="./breakpoints.pc" as="breakpoints" />
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="App">
+  <style>
+    font-family: sans-serif;
+    @include breakpoints.desktop {
+      font-size: 18px;
+    }
+    @include breakpoints.mobile {
+      font-size: 72px;
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { title: "App / Desktop", width: 1050, height: 421, x: 89, y: -295 }
+-->
+<App>
+  I'm some content
+</App>
+
+<!--
+  @frame { title: "App / Mobile", width: 326, height: 507, x: 102, y: 261 }
+-->
+<App>
+  I'm some content
+</App>
+
+// file: breakpoints.pc
+<style>
+  @export {
+    @mixin desktop {
+      @media screen and (max-width: 1400px) {
+        @content;
+      }
+    }
+    @mixin mobile {
+      @media screen and (max-width: 400px) {
+        @content;
+      }
+    }
+  }
+</style>
+```
+
 
 ### @export
 
@@ -278,7 +329,7 @@ The `@export` rule allows you to export styles to other documents, as well as ap
 
 **Example**:
 
-```html live  height=150px
+```html live  height=300px
 // file: main.pc
 <import src="./styles.pc" as="styles" />
 
@@ -366,7 +417,7 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 
 **Example**:
 
-```html live height=150px
+```html live height=180px
 // file: main.pc
 <import src="./atoms.pc" as="atoms" />
 
@@ -484,7 +535,7 @@ You can import [styles](#styling) & [components](#components) from other files.
 
 **Example**:
 
-```html live height=150px
+```html live height=330px
 // file: main.pc
 <import src="./pane.pc" as="pane" />
 <import src="./atoms.pc" as="atoms" />
@@ -573,7 +624,7 @@ The `inject-styles` props injects all of the import's exported styles into the c
 This is particularly useful for third-party CSS since `inject-styles` includes _all_ CSS selectors (class, ID, element, etc) into the current scope. Note that injected styles are only applied to the current document, so if you're importing components from another file, those components won't be styled. For example:
 
 
-```html live
+```html
 <import src="./tailwind.css" inject-styles />
 <import src="./some-module.pc" as="module" />
 
@@ -613,7 +664,6 @@ Note that `.css` files are a special case since all selectors are automatically 
   I'm large text
 </div>
 ```
-
 ## Components
 
 Components are your UI building blocks. Just add a `component` attribute to a root element (doesn't have a parent).
@@ -633,7 +683,7 @@ Components are your UI building blocks. Just add a `component` attribute to a ro
 
 **Example**:
 
-```html live height=150px
+```html live height=400px
 
 <!-- class and class can be used interchangeably -->
 <!--
@@ -670,7 +720,7 @@ Components can be exported to be used in application code, as well as other docu
 
 **Example**:
 
-```html live height=250px
+```html live height=1000px
 // file: todos.pc
 <import src="./styles.pc" as="styles" />
 
@@ -794,7 +844,7 @@ const TodoApp = () => {
 We can also use our exported component in other Paperclip documents. Here's an example:
 
 
-```html live height=250px
+```html live height=370px
 // file: importing-components-demo.pc
 <import src="./todos.pc" as="todos" />
 
@@ -929,7 +979,7 @@ attributeBoundToClassName="$class-name"
 
 **Example**:
 
-```html live height=150px
+```html live height=270px
 // file: style-override-demo.pc
 <import as="Message" src="./message.pc" />
 <style>
@@ -961,7 +1011,7 @@ Check out [class references](#class-reference) for more information on how to us
 
 Alternatively, you can overriding your components appearance by using scoped styles like so:
 
-```html live height=200px
+```html live height=400px
 
 <!-- Note that class is still necessary here! -->
 <!--
@@ -1002,7 +1052,7 @@ You may want to change the native tag name of a component. An example of this is
 
 **Example**
 
-```html live height=200px
+```html live height=270px
 // file: demo.pc 
 
 <!--
@@ -1038,7 +1088,7 @@ Bindings allow you to define dynamic behavior in components.
 
 **Example**:
 
-```html live height=150px
+```html live height=280px
 
 <!--
   @frame { visible: false }
@@ -1054,7 +1104,7 @@ Bindings allow you to define dynamic behavior in components.
 
 There will probably be the case where you want to define multiple areas of a component for children to go into. Here's an example of that:
 
-```html live height=250px
+```html live height=500px
 // file: main.pc
 <import src="./styles.pc" as="styles" />
 
@@ -1121,7 +1171,7 @@ There will probably be the case where you want to define multiple areas of a com
 
 You can define dynamic attributes on your elements. For example:
 
-```html live height=150px
+```html live height=450px
 // file: buttons.pc
 <import src="./typography.pc" as="typography" />
 <import src="./styles.pc" as="styles" />
@@ -1254,7 +1304,7 @@ The variant style syntax allows you to conditionally apply styles. For example:
 
 **Example**:
 
-```html live height=200px
+```html live height=900px
 
 <!--
   @frame { visible: false }
@@ -1307,7 +1357,7 @@ The variant style syntax allows you to conditionally apply styles. For example:
 
 Fragments are useful if you want to render a collection of elements. For example:
 
-```html live height=200px
+```html live height=350px
 <!--
   @frame { visible: false }
 -->

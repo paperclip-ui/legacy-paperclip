@@ -355,6 +355,9 @@ export const reduceDesigner = (
         newDesigner.currentEngineEvents[action.payload.id] = undefined;
       });
     }
+    case ActionType.SYNC_PANELS_CLICKED: {
+      return selectNode(null, false, false, designer);
+    }
     case ActionType.COMMIT_REQUEST_STATE_CHANGED: {
       return produce(designer, newDesigner => {
         newDesigner.commitProjectStatus = action.payload.result;
@@ -415,21 +418,25 @@ export const reduceDesigner = (
     case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
       return minimizeWindow(designer);
     }
+    case ActionType.FILE_ITEM_CLICKED: {
+      return produce(designer, newDesigner => {
+        newDesigner.currentCodeFile = action.payload.uri;
+      });
+    }
     case ActionType.SERVER_OPTIONS_LOADED: {
       return produce(designer, newDesigner => {
         newDesigner.workspace = action.payload;
-        console.log(action.payload);
+        newDesigner.currentCodeFile = action.payload.canvasFile;
       });
     }
     case ActionType.FILE_LOADED: {
       if (isPaperclipFile(action.payload.uri)) {
         designer = produce(designer, newDesigner => {
-          newDesigner.allLoadedPCFileData[designer.ui.query.canvasFile] = action
-            .payload.data as LoadedPCData;
+          newDesigner.allLoadedPCFileData[action.payload.uri] = action.payload
+            .data as LoadedPCData;
           newDesigner.pcFileDataVersion++;
         });
       }
-
       designer = maybeCenterCanvas(designer);
       designer = pruneDeletedNodes(designer);
       return designer;
@@ -805,8 +812,6 @@ const handleDoubleClick = (
     ),
     isExpanded(designer) ? getActiveFrameIndex(designer) : null
   )?.nodePath;
-
-  console.log(nodePath);
 
   designer = produce(designer, newDesigner => {
     newDesigner.canvasClickTimestamp = action.payload.timestamp;

@@ -7,16 +7,50 @@
       html {
         width: 100vw;
         height: 100vh;
+        margin: 0px;
+        padding: 0px;
         /* Stop spring scroll in Chrome */
         overflow: hidden;
         /* prevent back / forward history when panning */
         overscroll-behavior-x: none;
       }
-      #paperclip-playground {
+      #app {
         height: 100vh;
         width: 100vw;
       }
+
+      .loader {
+        width: 12px;
+        height: 12px;
+        background: #000000;
+        opacity: 0.3;
+        border-radius: 50%;
+        box-shadow: 20px 0 #00000022, -20px 0 #000000;
+        animation: loader 1s infinite linear alternate;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1;
+      }
+      @keyframes loader {
+        0% {
+          box-shadow: 20px 0 #000000, -20px 0 #00000022;
+          background: #000000;
+        }
+        33% {
+          box-shadow: 20px 0 #000000, -20px 0 #00000022;
+          background: #00000022;
+        }
+        66% {
+          box-shadow: 20px 0 #00000022, -20px 0 #000000;
+          background: #00000022;
+        }
+      }
     </style>
   </head>
-  <body></body>
+  <body>
+    <div id="app"></div>
+    <div class="loader"></div>
+  </body>
 </html>

@@ -4,11 +4,26 @@ import createSagaMiddleware from "redux-saga";
 import { Provider } from "react-redux";
 
 import defaultReducer from "../../reducers";
-import defaultSaga from "../../sagas";
-import { INITIAL_STATE } from "../../state";
-import { rpcEngine } from "../../engines/rpc";
+import { mainSaga, MainSagaOptions } from "../../sagas";
+import { AppState, INITIAL_STATE } from "../../state";
+import produce from "immer";
 
-export const withAppStore = (Child: React.FC) => {
+export type WithAppStoreOptions = {
+  showLaunchExternalButton?: boolean;
+  useLiteEditor?: boolean;
+  showCodeToolbar?: boolean;
+  showLeftSidebar?: boolean;
+  showInspectorPanels?: boolean;
+  floatingPreview?: boolean;
+  rounded?: boolean;
+  codeEditorWidth?: string;
+  activeFrame?: number;
+  showCodeEditorOnStartup?: boolean;
+} & MainSagaOptions;
+
+export const withAppStore = (Child: React.FC) => (
+  options: WithAppStoreOptions
+) => {
   let _inited = false;
   let _store;
 
@@ -17,16 +32,18 @@ export const withAppStore = (Child: React.FC) => {
       return;
     }
 
+    const state = createState(options);
+
     _inited = true;
     const sagaMiddleware = createSagaMiddleware();
     _store = createStore(
       defaultReducer,
-      INITIAL_STATE,
+      state,
       applyMiddleware(sagaMiddleware)
     );
 
     // DEPRECATED
-    sagaMiddleware.run(defaultSaga, document.body, state => state);
+    sagaMiddleware.run(mainSaga, document.body, state => state, options);
   };
 
   return props => {
@@ -38,4 +55,59 @@ export const withAppStore = (Child: React.FC) => {
       </Provider>
     );
   };
+};
+
+const createState = ({
+  showLaunchExternalButton,
+  useLiteEditor,
+  showCodeToolbar,
+  showLeftSidebar,
+  showInspectorPanels,
+  showCodeEditorOnStartup,
+  codeEditorWidth,
+  activeFrame,
+  floatingPreview,
+  rounded
+}: WithAppStoreOptions) => {
+  let state: AppState = {
+    ...INITIAL_STATE,
+    designer: {
+      ...INITIAL_STATE.designer,
+      codeEditorWidth
+    }
+  };
+  state = produce(state, newState => {
+    if (showLaunchExternalButton != null) {
+      newState.designer.sharable = showLaunchExternalButton;
+    }
+    if (useLiteEditor != null) {
+      newState.designer.useLiteEditor = useLiteEditor;
+    }
+    if (showCodeToolbar != null) {
+      newState.designer.showCodeToolbar = showCodeToolbar;
+    }
+    if (showLeftSidebar != null) {
+      newState.designer.showLeftSidebar = showLeftSidebar;
+    }
+    if (showInspectorPanels != null) {
+      newState.designer.showInspectorPanels = showInspectorPanels;
+    }
+
+    if (activeFrame != null) {
+      newState.designer.ui.query.frame = activeFrame;
+      newState.designer.ui.query.expanded = true;
+    }
+
+    if (rounded != null) {
+      newState.designer.rounded = rounded;
+    }
+    if (showCodeEditorOnStartup != null) {
+      newState.designer.showCodeEditorOnStartup = showCodeEditorOnStartup;
+    }
+    if (floatingPreview != null) {
+      newState.designer.floatingPreview = floatingPreview;
+    }
+  });
+
+  return state;
 };

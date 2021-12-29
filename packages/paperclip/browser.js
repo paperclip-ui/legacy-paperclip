@@ -4,7 +4,7 @@ export const loadEngineDelegate = async (options, onCrash) => {
   // need this here since webpack tree shakes it out
   await import("./native/browser/paperclip_bg.wasm");
 
-  const { NativeEngine } = await import("./native/browser/paperclip_bg");
+  const { NativeEngine } = await import("./native/browser/paperclip_bg.js");
   const { readFile, fileExists, resolveFile, getLintConfig } = options.io;
 
   return new EngineDelegate(
@@ -15,7 +15,7 @@ export const loadEngineDelegate = async (options, onCrash) => {
       getLintConfig,
       options.mode || EngineMode.MultiFrame
     ),
-    readFile,
+    options.io,
     onCrash ||
       function(e) {
         console.error(e);

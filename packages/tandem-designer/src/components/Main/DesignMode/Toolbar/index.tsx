@@ -13,9 +13,17 @@ import {
 import { useTextInput } from "tandem-design-system";
 import { isExpanded } from "../../../../state";
 
-const WIN_ENV = /^win/i.test(String(window?.navigator?.platform));
+const WIN_ENV =
+  typeof window !== "undefined"
+    ? /^win/i.test(String(window?.navigator?.platform))
+    : null;
 
-export const Toolbar = () => {
+export type ToolbarProps = {
+  onMouseDown: (event: React.MouseEvent<any>) => void;
+  onMouseUp?: (event: React.MouseEvent<any>) => void;
+};
+
+export const Toolbar = ({ onMouseDown, onMouseUp }: ToolbarProps) => {
   const { state, dispatch } = useAppStore();
   const {
     designer: { canvas, projectDirectory, sharable, readonly, birdseyeFilter }
@@ -101,6 +109,8 @@ export const Toolbar = () => {
     <styles.Container>
       <styles.Toolbar
         onDoubleClick={onDoubleClick}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
         leftControls={
           <>
             <styles.Tab active={showingBirdsEye} onClick={onGridButtonClick}>

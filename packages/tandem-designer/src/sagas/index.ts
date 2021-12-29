@@ -28,16 +28,20 @@ import {
 } from "../actions";
 import { AppState, SyncLocationMode } from "../state";
 import { handleCanvas } from "./canvas";
-import history from "../dom-history";
+import { History } from "history";
 import { omit } from "lodash";
-import { sockAdapter } from "paperclip-common";
-import { handleRPC } from "./rpc";
+import { handleRPC, HandleRPCOptions } from "./rpc";
 
 export type AppStateSelector = (state) => AppState;
 
-export default function* mainSaga(
+export type MainSagaOptions = {
+  history: History;
+} & HandleRPCOptions;
+
+export function* mainSaga(
   mount: HTMLElement,
-  getState: AppStateSelector
+  getState: AppStateSelector,
+  options: MainSagaOptions
 ) {
   yield fork(handleRenderer, getState);
   yield takeEvery(ActionType.CANVAS_MOUSE_DOWN, function*(
@@ -53,11 +57,11 @@ export default function* mainSaga(
   yield fork(handleCanvas, getState);
   // yield fork(handleClipboard, getState);
   yield fork(handleLocationChanged);
-  yield fork(handleLocation, getState);
+  yield fork(handleLocation, getState, options.history);
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
   yield fork(handleAppFocus);
-  yield fork(handleRPC);
+  yield fork(handleRPC, options);
 }
 
 function* handleRenderer(getState: AppStateSelector) {
@@ -241,7 +245,7 @@ function* handleLocationChanged() {
   );
 }
 
-function* handleLocation(getState: AppStateSelector) {
+function* handleLocation(getState: AppStateSelector, history: History) {
   const chan = eventChannel(emit => {
     return history.listen(emit);
   });
