@@ -44,6 +44,7 @@ TODOS:
 <!--
   @frame { visible: false }
 -->
+
 <Container export
   component
   as="Preview"
@@ -67,6 +68,7 @@ TODOS:
     {showGrid?}
     {showCanvas?} />}
 </Container>
+
 
 <!--
   @frame { title: "Grid View / Large", width: 1864, height: 1050, x: 2345, y: -86 }
@@ -106,7 +108,7 @@ TODOS:
 
 
 <!--
-  @frame { title: "Constrained canvas", width: 1917, height: 1262, x: -53, y: 2761 }
+  @frame { title: "Constrained canvas", width: 1917, height: 1231, x: -53, y: 2761 }
 -->
 <div>
   <div>

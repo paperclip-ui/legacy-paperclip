@@ -14,7 +14,8 @@ export const MainBase = () => {
     state.designer.showCodeEditorOnStartup;
 
   const { rounded, showLeftSidebar, floatingPreview } = state.designer;
-  return (
+
+  let content = (
     <styles.Container
       rounded={rounded}
       showLeftSidebar={showLeftSidebar}
@@ -25,9 +26,11 @@ export const MainBase = () => {
     >
       {showFullEditor && showLeftSidebar !== false && <LeftSidebar />}
       {showFullEditor && <CodeMode />}
-      <DesignMode />
+      <DesignMode floating={floatingPreview} />
     </styles.Container>
   );
+
+  return content;
 };
 
 export const createMain = withAppStore(MainBase);

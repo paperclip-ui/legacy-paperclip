@@ -6,6 +6,7 @@
 <import src="./Footer/index.pc" as="Footer" />
 <import src="./MediaPreview/index.pc" as="MediaPreview" />
 <import src="tandem-design-system/src/atoms.pc" inject-styles />
+<import src="./WindowResizer/index.pc" as="WindowResizer" />
 
 <!--
 
@@ -22,17 +23,6 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    &:within(:global(.floating-preview)) {
-      position: absolute;
-      z-index: 1024;
-      right: 32px;
-      top: 32px;
-      width: 30%;
-      min-width: 200px;
-      max-height: 500px;
-      height: calc(100% - 64px);
-      filter: drop-shadow(8px 8px 8px rgba(0,0,0,0.5));
-    }
   </style>
   {children}
 </div>
@@ -117,21 +107,43 @@
   </fragment>}
 </CanvasContainer>
 
+<WindowResizer.Container export component as="DesignModeResizer">
+  <style>
+    display: flex;
+    &:within(:global(.floating-preview)) {
+      position: absolute;
+      z-index: 1024;
+      right: 32px;
+      top: 32px;
+      width: 30%;
+      height: auto;
+      min-height: 200px;
+      min-width: 200px;
+      max-height: 500px;
+      height: calc(100% - 64px);
+      filter: drop-shadow(8px 8px 8px rgba(0,0,0,0.5));
+    }
+  </style>
+  {children}
+</WindowResizer.Container>
+
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: -719, y: 50 }
 -->
-<Container export component as="Preview" {float?}>
-  {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
-  {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
-  <CanvasContainerPreview {showCanvas?}
-    {showLeftSidebar?}
-    {showMedia?}
-    {showNoPreview?}
-    {showEmpty?}
-    {showGrid?}
-    {showComputed?} />
-</Container>
+<DesignModeResizer export component as="Preview">
+  <Container {float?}>
+    {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
+    {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
+    <CanvasContainerPreview {showCanvas?}
+      {showLeftSidebar?}
+      {showMedia?}
+      {showNoPreview?}
+      {showEmpty?}
+      {showGrid?}
+      {showComputed?} />
+  </Container>
+</DesignModeResizer>
 
 <!--
   @frame { title: "Center / Grid", width: 1024, height: 768, x: -14, y: 750 }

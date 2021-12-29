@@ -12,8 +12,13 @@ import { MediaPreview } from "./MediaPreview";
 import { isPaperclipFile } from "paperclip-utils";
 import { useDragger } from "../../../hooks/useDragger";
 import { Point } from "../../../state";
+import { WindowResizer } from "./WindowResizer";
 
-export const DesignMode = () => {
+export type DesignModeProps = {
+  floating: boolean;
+};
+
+export const DesignMode = ({ floating }: DesignModeProps) => {
   const { state, dispatch } = useAppStore();
 
   const canvasFile = state.designer.ui.query.canvasFile;
@@ -58,7 +63,7 @@ export const DesignMode = () => {
     }
   }
 
-  return (
+  let outer = (
     <styles.Container ref={ref} style={style}>
       <Toolbar onMouseDown={floatingPreview && onTitleMouseDown} />
       <styles.CanvasContainer disabled={dragger.dragging}>
@@ -68,4 +73,14 @@ export const DesignMode = () => {
       <ErrorBanner error={state.designer.currentError} dispatch={dispatch} />
     </styles.Container>
   );
+
+  if (floating) {
+    outer = (
+      <WindowResizer styles={{ Container: styles.DesignModeResizer }}>
+        {outer}
+      </WindowResizer>
+    );
+  }
+
+  return outer;
 };
