@@ -109,43 +109,47 @@ export const Toolbar = () => {
     dispatch(filesDropped(input.files));
     select.close();
   };
+
+  const hasMultipleFiles = allFileUris.length > 1;
+
   return (
     <styles.Topbar>
-      <styles.FileSelect
-        ref={select.ref}
-        active={select.menuVisible}
-        onButtonClick={select.onButtonClick}
-        onBlur={select.onBlur}
-        name={relativePath}
-        menu={
-          select.menuVisible && (
-            <styles.FileMenu>
-              <styles.FileMenuItems>
-                {allFileUris.map(uri => {
-                  return (
-                    <FileMenuItem
-                      key={uri}
-                      onRenamed={onRenamed}
-                      uri={uri}
-                      onFileItemClick={onFileItemClick}
-                      onRemoveClick={onRemoveClick}
-                    />
-                  );
-                })}
-                {showNewFileInput && (
-                  <styles.FileMenuItem noFocus moreSelect={null}>
-                    <TextInput
-                      type="text"
-                      autoFocus
-                      onBlur={onNewInputBlur}
-                      {...newFileInputProps}
-                      onKeyPress={onNewFileNameKeyPress}
-                    />
-                  </styles.FileMenuItem>
-                )}
-              </styles.FileMenuItems>
+      {hasMultipleFiles && (
+        <styles.FileSelect
+          ref={select.ref}
+          active={select.menuVisible}
+          onButtonClick={select.onButtonClick}
+          onBlur={select.onBlur}
+          name={relativePath}
+          menu={
+            select.menuVisible && (
+              <styles.FileMenu>
+                <styles.FileMenuItems>
+                  {allFileUris.map(uri => {
+                    return (
+                      <FileMenuItem
+                        key={uri}
+                        onRenamed={onRenamed}
+                        uri={uri}
+                        onFileItemClick={onFileItemClick}
+                        onRemoveClick={onRemoveClick}
+                      />
+                    );
+                  })}
+                  {showNewFileInput && (
+                    <styles.FileMenuItem noFocus moreSelect={null}>
+                      <TextInput
+                        type="text"
+                        autoFocus
+                        onBlur={onNewInputBlur}
+                        {...newFileInputProps}
+                        onKeyPress={onNewFileNameKeyPress}
+                      />
+                    </styles.FileMenuItem>
+                  )}
+                </styles.FileMenuItems>
 
-              {/* <styles.MenuFooter>
+                {/* <styles.MenuFooter>
                 <styles.AddDocumentButton page onClick={onAddFile}>
                   Create new page
                 </styles.AddDocumentButton>
@@ -157,10 +161,11 @@ export const Toolbar = () => {
                   Upload file
                 </styles.AddDocumentButton>
               </styles.MenuFooter> */}
-            </styles.FileMenu>
-          )
-        }
-      />
+              </styles.FileMenu>
+            )
+          }
+        />
+      )}
       {state.designer.currentCodeFile !==
         state.designer.ui.query.canvasFile && (
         <styles.EyeButton onClick={onSyncPanelsClick} />

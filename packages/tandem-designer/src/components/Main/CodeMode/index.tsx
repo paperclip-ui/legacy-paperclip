@@ -15,14 +15,16 @@ export const CodeMode = () => {
   const highlightLocation = null;
 
   let content;
-
-  const onChange = code => {
-    dispatch(codeChanged({ value: code }));
-  };
-
   // code & uri need to be set at the exact same time so that editor instance
   const [[code, uri], setCode] = useState<[string, string]>(["", ""]);
-  const docContent = state.shared.documents[currentCodeFilePath];
+  const docContent = state.shared.documents[currentCodeFilePath] || "";
+  const onChange = code => {
+    // will happen with REPL
+    if (code === docContent) {
+      return;
+    }
+    dispatch(codeChanged({ value: code }));
+  };
 
   useEffect(() => {
     const uri = currentCodeFilePath;
@@ -32,7 +34,7 @@ export const CodeMode = () => {
       reader.onload = () => setCode([String(reader.result), uri]);
       reader.readAsText(docContent);
     } else {
-      setCode([String(docContent || ""), uri]);
+      setCode([String(docContent), uri]);
     }
   }, [docContent, currentCodeFilePath]);
 
