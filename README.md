@@ -8,8 +8,6 @@
 
 > **Installation**: `npx paperclip-cli init` in your project directory.
 
-<!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
-
 
 Paperclip allows you to write _durable_ HTML & CSS that can be used in just about any codebase. Here's what it looks like:
 
@@ -32,6 +30,8 @@ Paperclip allows you to write _durable_ HTML & CSS that can be used in just abou
   {children}
 </div>
 ```
+
+> ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://paperclip.dev/repl)!** ✨
 
 Here an example of how you can use this HTML & CSS in a React app:
 
@@ -74,6 +74,7 @@ And more to come. Here's what's next:
 ### Resources
 
 - [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
+- [Playground](https://paperclip.dev/repl/)
 - Installation
   - [Project installation](https://paperclip.dev/docs/installation) - Basic installation of Paperclip for new and existing projects.
   - [VSCode extension](https://paperclip.dev/docs/guide-vscode) - Getting started with the VS Code extension.
