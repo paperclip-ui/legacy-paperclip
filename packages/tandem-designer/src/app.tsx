@@ -9,7 +9,7 @@ export type InitOptions = {
 } & Partial<WithAppStoreOptions>;
 
 export const init = ({
-  mount = document.getElementById("div"),
+  mount = document.getElementById("app"),
   history = createBrowserHistory(),
   ...rest
 }: InitOptions = {}) => {
