@@ -38,14 +38,14 @@ function Home() {
               <>
                 <buttonStyles.Anchor
                   className={typography.classNames["semi-bold"]}
-                  href="/docs"
+                  href="/docs/installation"
                   strong
                 >
                   Get Started
                 </buttonStyles.Anchor>
                 {/* <buttonStyles.Anchor
                 className={typography.classNames["semi-bold"]}
-                href="/docs"
+                href="/docs/installation"
                 strong
               >
                 Get started
