@@ -7,7 +7,7 @@ import {
   PaperclipResourceWatcher,
   ChangeKind,
   EngineDelegateEvent,
-  paperclipResourceGlobPattern,
+  paperclipSourceGlobPattern,
   isPaperclipFile
 } from "paperclip";
 import * as fs from "fs";
@@ -63,7 +63,7 @@ export class PaperclipProject {
 
   private _addAllProjects(config: PaperclipConfig) {
     const pcFiles = glob.sync(
-      paperclipResourceGlobPattern(path.join(this._cwd, config.srcDir))
+      paperclipSourceGlobPattern(path.join(this._cwd, config.srcDir))
     );
     for (const pcFile of pcFiles) {
       if (isPaperclipFile(pcFile)) {

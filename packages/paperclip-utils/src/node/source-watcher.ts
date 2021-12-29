@@ -2,7 +2,7 @@ import * as chokidar from "chokidar";
 import * as path from "path";
 import * as url from "url";
 import { EventEmitter } from "events";
-import { paperclipResourceGlobPattern } from "../core/utils";
+import { paperclipSourceGlobPattern } from "../core/utils";
 import { isGeneratedPaperclipFile } from "..";
 
 export enum ChangeKind {
@@ -33,7 +33,7 @@ export class PaperclipResourceWatcher {
   }
   private _init() {
     const watcher = (this._watcher = chokidar.watch(
-      paperclipResourceGlobPattern(this._srcDir),
+      paperclipSourceGlobPattern(this._srcDir),
       { cwd: this.cwd, ignoreInitial: true }
     ));
     watcher.on("all", (eventName, relativePath) => {
