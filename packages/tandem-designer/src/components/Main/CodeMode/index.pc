@@ -56,7 +56,6 @@
 -->
 <div export component as="CantEditScreen" class="v2 dark">
   <style>
-    background: var(--grey-night-500);
     width: 100%;
     height: 100%;
     color: rgba(255, 255, 255, 0.6);
@@ -85,3 +84,10 @@
   </Content>}
   {cantEdit && <CantEditScreen />}
 </Container>
+
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 0, y: 0 }
+-->
+<Preview cantEdit />

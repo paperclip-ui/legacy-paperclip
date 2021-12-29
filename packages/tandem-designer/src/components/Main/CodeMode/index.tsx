@@ -55,7 +55,7 @@ export const CodeMode = () => {
         </styles.Content>
       );
     }
-  } else {
+  } else if (currentCodeFilePath) {
     content = <styles.CantEditScreen />;
   }
   return (

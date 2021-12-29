@@ -107,6 +107,10 @@
   </fragment>}
 </CanvasContainer>
 
+
+<!--
+  @frame { visible: false }
+-->
 <WindowResizer.Container export component as="DesignModeResizer" {style?}>
   <style>
     display: flex;
