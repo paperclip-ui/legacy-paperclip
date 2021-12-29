@@ -7,11 +7,14 @@ import CodeBlock from "@theme-init/CodeBlock";
 
 export default props => {
   // const prismTheme = usePrismTheme();
-
   // turned off for now until playground hooked up to this repo
   if (props.live) {
     return (
-      <LiveEditor expanded={props.expanded !== "false"} height={props.height}>
+      <LiveEditor
+        expanded={props.expanded !== "false"}
+        fullScreen={props.fullScreen}
+        height={props.height}
+      >
         {props.children}
       </LiveEditor>
     );
@@ -34,7 +37,7 @@ const loadPlayground = () => {
   );
 };
 
-const LiveEditor = ({ children, height = 400, expanded }) => {
+const LiveEditor = ({ children, height = 400, fullScreen, expanded }) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
   const [playgroundLoaded, setPlaygroundLoaded] = useState();
@@ -46,10 +49,20 @@ const LiveEditor = ({ children, height = 400, expanded }) => {
       return;
     }
 
-    Object.assign(mountRef.current.style, {
-      height,
-      margin: "16px 0px"
-    });
+    const extStyle = {};
+
+    if (fullScreen) {
+      Object.assign(extStyle, {
+        height: "100vh"
+      });
+    } else {
+      Object.assign(extStyle, {
+        height,
+        margin: "16px 0px"
+      });
+    }
+
+    Object.assign(mountRef.current.style, extStyle);
 
     // const app = new module.App(
     //   {
