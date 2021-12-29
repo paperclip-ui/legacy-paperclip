@@ -14,13 +14,14 @@ export const config = {
   activeLine: "rgba(0, 0, 0, 0.5)",
   matchingBracket: "#263238",
   keyword: "#C792EA",
-  operator: "#89DDFF",
+  operator: "#c792ea",
   def: "#82AAFF",
   storage: "#89DDFF",
   variable: "#EEFFFF",
   atom: "#F78C6C",
   parameter: "#EEFFFF",
   function: "#82AAFF",
+  property: "#c792ea",
   string: "#C3E88D",
   constant: "#89DDFF",
   type: "#f07178",
@@ -110,7 +111,7 @@ export const materialDarkHighlightStyle = HighlightStyle.define([
     tag: [t.name, t.deleted, t.character, t.macroName],
     color: config.variable
   },
-  { tag: [t.propertyName], color: config.function },
+  { tag: [t.propertyName], color: config.property },
   {
     tag: [t.processingInstruction, t.string, t.inserted, t.special(t.string)],
     color: config.string
