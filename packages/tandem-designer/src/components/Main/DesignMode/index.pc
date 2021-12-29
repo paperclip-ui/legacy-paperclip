@@ -112,7 +112,7 @@
     display: flex;
     &:within(:global(.floating-preview)) {
       position: absolute;
-      z-index: 1024;
+      z-index: 1;
       right: 32px;
       top: 32px;
       width: 30%;

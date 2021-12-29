@@ -41,8 +41,10 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
 
   const dragger = useDragger((props, pos) => {
     setStyle({
-      left: clamp(pos.left + props.delta.x, 0, window.innerWidth - pos.width),
-      top: clamp(pos.top + props.delta.y, 0, window.innerHeight - pos.height)
+      left: pos.left + props.delta.x,
+      top: pos.top + props.delta.y
+      // left: clamp(pos.left + props.delta.x, 0, window.innerWidth - pos.width),
+      // top: clamp(pos.top + props.delta.y, 0, window.innerHeight - pos.height)
     });
   });
 

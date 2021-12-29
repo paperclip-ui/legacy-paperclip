@@ -82,21 +82,21 @@ export const WindowResizer = forwardRef(
           height = height + props.delta.y;
         }
 
-        if (left < 0) {
-          left = 0;
-        }
+        // if (left < 0) {
+        //   left = 0;
+        // }
 
-        if (top < 0) {
-          top = 0;
-        }
+        // if (top < 0) {
+        //   top = 0;
+        // }
 
-        if (left + width > window.innerWidth) {
-          width = window.innerWidth - left;
-        }
+        // if (left + width > window.innerWidth) {
+        //   width = window.innerWidth - left;
+        // }
 
-        if (top + height > window.innerHeight) {
-          height = window.innerHeight - top;
-        }
+        // if (top + height > window.innerHeight) {
+        //   height = window.innerHeight - top;
+        // }
 
         setInternalStyle({
           ...internalStyle,
