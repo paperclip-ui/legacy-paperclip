@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "18.2.16",
+  "version": "18.2.17",
   "private": true,
   "scripts": {
     "start": "docusaurus clear && docusaurus start",
