@@ -11,7 +11,7 @@
     @export {
       .bar {
         position: absolute;
-        background: blue;
+        background: transparent;
         --size: 5px;
         &.top, &.bottom {
           height: var(--size);

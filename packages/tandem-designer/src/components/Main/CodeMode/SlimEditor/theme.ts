@@ -139,8 +139,6 @@ export const materialDarkHighlightStyle = HighlightStyle.define([
   { tag: t.strikethrough, textDecoration: "line-through" }
 ]);
 
-console.log(materialDarkTheme);
-
 export const materialPalenight: Extension = [
   materialDarkTheme,
   materialDarkHighlightStyle

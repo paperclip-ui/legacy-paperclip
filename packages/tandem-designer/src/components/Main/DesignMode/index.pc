@@ -107,7 +107,7 @@
   </fragment>}
 </CanvasContainer>
 
-<WindowResizer.Container export component as="DesignModeResizer">
+<WindowResizer.Container export component as="DesignModeResizer" {style?}>
   <style>
     display: flex;
     &:within(:global(.floating-preview)) {

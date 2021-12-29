@@ -13,6 +13,7 @@ import { isPaperclipFile } from "paperclip-utils";
 import { useDragger } from "../../../hooks/useDragger";
 import { Point } from "../../../state";
 import { WindowResizer } from "./WindowResizer";
+import { clamp } from "lodash";
 
 export type DesignModeProps = {
   floating: boolean;
@@ -23,16 +24,25 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
 
   const canvasFile = state.designer.ui.query.canvasFile;
   const floatingPreview = state.designer.floatingPreview;
+  const [resizing, setResizing] = useState(false);
 
   let content;
 
   const [style, setStyle] = useState<any>({});
   const ref = useRef<HTMLDivElement>();
 
+  const onResizeStart = () => {
+    setResizing(true);
+  };
+
+  const onResizeStop = () => {
+    setResizing(false);
+  };
+
   const dragger = useDragger((props, pos) => {
     setStyle({
-      left: pos.left + props.delta.x,
-      top: pos.top + props.delta.y
+      left: clamp(pos.left + props.delta.x, 0, window.innerWidth - pos.width),
+      top: clamp(pos.top + props.delta.y, 0, window.innerHeight - pos.height)
     });
   });
 
@@ -40,9 +50,12 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
     const offParent = ref.current.offsetParent;
     const offRect = offParent.getBoundingClientRect();
     const rect = ref.current.getBoundingClientRect();
+
     dragger.onMouseDown(event, {
       left: rect.x - offRect.x,
-      top: rect.y - offRect.y
+      top: rect.y - offRect.y,
+      width: rect.width,
+      height: rect.height
     });
   };
 
@@ -64,9 +77,9 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
   }
 
   let outer = (
-    <styles.Container ref={ref} style={style}>
+    <styles.Container>
       <Toolbar onMouseDown={floatingPreview && onTitleMouseDown} />
-      <styles.CanvasContainer disabled={dragger.dragging}>
+      <styles.CanvasContainer disabled={dragger.dragging || resizing}>
         {content}
         <RightSidebar />
       </styles.CanvasContainer>
@@ -76,7 +89,13 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
 
   if (floating) {
     outer = (
-      <WindowResizer styles={{ Container: styles.DesignModeResizer }}>
+      <WindowResizer
+        ref={ref}
+        style={style}
+        styles={{ Container: styles.DesignModeResizer }}
+        onResizeStart={onResizeStart}
+        onResizeStop={onResizeStop}
+      >
         {outer}
       </WindowResizer>
     );
