@@ -1,5 +1,4 @@
 import React from "react";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import CodeBlock from "../../plugins/theme/CodeBlock";
 
 const EXAMPLE = `
