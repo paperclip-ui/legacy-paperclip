@@ -6,6 +6,7 @@ import { ParentController } from "./controllers/parent";
 export type Options = {
   files: Record<string, string>;
   entry: string;
+  activeFrame?: number;
 };
 
 export class App {
@@ -14,6 +15,6 @@ export class App {
     const workerParent = new ParentController(this._options);
     const channels = new REPLChannels(workerParent.getWorkerConnection());
     new ChannelHandler(channels, this._options);
-    new DesignerController(workerParent, this._mount).init();
+    new DesignerController(workerParent, this._mount, this._options).init();
   }
 }

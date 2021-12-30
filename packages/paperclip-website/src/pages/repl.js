@@ -18,7 +18,7 @@ const EXAMPLE = `
 
 function REPL() {
   return (
-    <CodeBlock live fullScreen>
+    <CodeBlock live fullScreen showAllFrames={false}>
       {EXAMPLE}
     </CodeBlock>
   );

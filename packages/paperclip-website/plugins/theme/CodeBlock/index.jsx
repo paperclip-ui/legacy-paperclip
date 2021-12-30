@@ -14,6 +14,7 @@ export default props => {
         expanded={props.expanded !== "false"}
         fullScreen={props.fullScreen}
         height={props.height}
+        showAllFrames={props.showAllFrames}
       >
         {props.children}
       </LiveEditor>
@@ -37,7 +38,13 @@ const loadPlayground = () => {
   );
 };
 
-const LiveEditor = ({ children, height = 400, fullScreen, expanded }) => {
+const LiveEditor = ({
+  children,
+  height = 400,
+  fullScreen,
+  expanded,
+  showAllFrames
+}) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
   const [playgroundLoaded, setPlaygroundLoaded] = useState();
@@ -78,7 +85,8 @@ const LiveEditor = ({ children, height = 400, fullScreen, expanded }) => {
       const app = new module.App(
         {
           files: graph,
-          entry: Object.keys(graph)[0]
+          entry: Object.keys(graph)[0],
+          activeFrame: showAllFrames ? null : 0
         },
         mountRef.current
       );
