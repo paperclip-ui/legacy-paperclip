@@ -23,7 +23,7 @@ function Home() {
     <div className="home">
       <Layout
         className="dograg"
-        title={`${siteConfig.title} - Scoped HTML & CSS for any kind of web application.`}
+        title={`${siteConfig.title} - Durable HTML & CSS for any kind of web application.`}
         description="Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again."
       >
         <styles.Home>
@@ -76,7 +76,7 @@ function Home() {
           />
 
           <styles.Summary
-            title="Keep your HTML & CSS clean"
+            title="No more leaky styles"
             text="Maintaining HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about accidentally styling elements again."
           />
 
