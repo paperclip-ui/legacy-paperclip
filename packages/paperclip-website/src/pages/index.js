@@ -31,7 +31,7 @@ function Home() {
             title={
               <>
                 Paperclip is a tiny language that brings{" "}
-                <strong>scalable HTML & CSS to any kind of web application.</strong>
+                <strong>scalable</strong> HTML & CSS to any kind of web application.
               </>
             }
             cta={
