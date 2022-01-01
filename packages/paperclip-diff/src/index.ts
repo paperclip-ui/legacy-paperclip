@@ -1,5 +1,5 @@
 import * as pupetter from "puppeteer";
-import * as chalk from "chalk";
+const pLimit = require("p-limit");
 import * as path from "path";
 import { eachFrame } from "paperclip-diff-utils";
 import { snakeCase } from "lodash";
@@ -20,6 +20,9 @@ export class PaperclipDiff {
     this._browser = await pupetter.launch();
     return this;
   }
+  private _getGITDir() {
+    return this._git.revparse([`--show-toplevel`]);
+  }
   async snapshot() {
     const status = await this._git.status();
 
@@ -27,64 +30,39 @@ export class PaperclipDiff {
       logWarn(
         `You need to commit your changes before you can make a snapshot.`
       );
-      this._browser.close();
-      return;
+      // this._browser.close();
+      // return;
     }
+    const gitDir = await this._getGITDir();
 
-    console.log(status);
     const latestCommit = (await this._git.log()).latest.hash;
 
-    await fsa.mkdirp(path.join(this._cwd, PC_HIDDEN_DIR, ""));
+    const snapshotDir = getBaseSnapshotsDir(gitDir, latestCommit);
+
+    await fsa.mkdirp(snapshotDir);
+    const limit = pLimit(10);
 
     await eachFrame(
       ".",
       { cwd: this._cwd, skipHidden: true },
       async (html, annotations, title, assets) => {
-        console.log(`Snapshot ${snakeCase(title)}`);
-        const page = await this._browser.newPage();
-        await page.setContent(html);
+        return limit(async () => {
+          console.log(`Snapshot ${title}`);
+          const fileName = snakeCase(title) + ".png";
+          const page = await this._browser.newPage();
+
+          // TODO - responsive sizes
+
+          page.setViewport({ width: 1400, height: 768 });
+          await page.setContent(html);
+          await page.screenshot({
+            path: path.join(snapshotDir, fileName)
+          });
+        });
       }
     );
-    // const filePaths = glob.sync(paperclipSourceGlobPattern(this._cwd));
-    // // const css = filePaths.reduce((css, filePath) => {
-    // //   return [...css, this._interim.parseFile(filePath).css.sheetText];
-    // // }, []).join("\n");
 
-    // for (const filePath of filePaths) {
-    //   const result = this._engine.open(
-    //     URL.pathToFileURL(filePath).href
-    //   ) as EvaluatedPCData;
-
-    //   // const frames = getChildren(result.preview);
-
-    //   const html = `
-    //     <html>
-    //       <head>
-    //         <style>
-    //           ${stringifyCSSSheet(result.sheet)}
-    //         </style>
-    //       </head>
-    //       <body>
-    //         ${stringifyVirtualNode(result.preview)}
-    //       </body>
-    //     </html>
-    //   `;
-
-    //   console.log(html);
-    //   const page = await this._browser.newPage();
-    //   await page.setContent(html);
-
-    //   await page.screenshot({
-    //     path: path.join(
-    //       this._cwd,
-    //       ".paperclip",
-    //       Math.round(Math.random() * 99999) + ".png"
-    //     )
-    //   });
-    // }
-    // await this._browser.close();
-
-    // await page.setContent();
+    await this._browser.close();
   }
   async detectChanges(branch?: string, watch?: boolean) {}
 }

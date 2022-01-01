@@ -56,6 +56,8 @@ export const eachFrame = async (
     mode: EngineMode.MultiFrame
   });
 
+  const promises: any = [];
+
   for (const filePath of paperclipFilePaths) {
     const relativePath = path.relative(cwd, filePath);
     let result: LoadedData;
@@ -124,8 +126,10 @@ export const eachFrame = async (
         return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
       });
 
-      await each(fixedHTML, annotations, snapshotName, assetPaths);
+      promises.push(each(fixedHTML, annotations, snapshotName, assetPaths));
     }
+
+    await Promise.all(promises);
   }
 };
 

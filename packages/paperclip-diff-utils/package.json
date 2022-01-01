@@ -3,7 +3,10 @@
   "version": "18.2.16",
   "description": "",
   "main": "lib/index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
