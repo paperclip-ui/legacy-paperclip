@@ -5,7 +5,6 @@ import * as glob from "glob";
 import { createEngineDelegate, EngineDelegate } from "paperclip";
 import {
   paperclipSourceGlobPattern,
-  PaperclipResourceWatcher,
   stringifyVirtualNode,
   EvaluatedDataKind,
   stringifyCSSSheet,
