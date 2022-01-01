@@ -80,8 +80,9 @@ export class PaperclipDiff {
     let spinner = ora(`Generating snapshots from current changes`).start();
     await this._saveScreenshots(currentBranch);
     await spinner.stop();
+    await timeout(500);
 
-    spinner = ora(`Diffing against ${deltaCommit}`).start();
+    logInfo(`Diffing against ${deltaCommit}...`);
 
     const currentBranchSnapshots = getSnapshotFilePaths(
       this._gitDir,
@@ -107,12 +108,13 @@ export class PaperclipDiff {
       if (deltaSnapshotPath) {
         const info = diffSnapshots(snapshotFilePath, deltaSnapshotPath);
         if (info.changeCount) {
-          logInfo(`Changed ${snapshotFilePath}`);
+          logWarn(`Changed ${snapshotFilePath}`);
           saveDiffSnapshot(snapshotFilePath, deltaCommit, info);
         }
       } else {
         // NEW SNAPSHOT
       }
+      await timeout(10);
     }
 
     spinner.stop();
@@ -194,12 +196,13 @@ const saveDiffSnapshot = (
   const fileName = path.basename(snapshotFilePath);
   const diffFileName =
     fileName.replace(/\.png$/, "") + DIFF_BOUNDARY + deltaCommit + ".png";
-  console.log(diffFileName);
   fsa.writeFileSync(
     path.join(path.dirname(snapshotFilePath), diffFileName),
     PNG.sync.write(diff)
   );
 };
+
+const timeout = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const getManifestPath = (cwd: string) =>
   path.join(cwd, PC_HIDDEN_DIR, MANIFEST_FILE_NAME);
