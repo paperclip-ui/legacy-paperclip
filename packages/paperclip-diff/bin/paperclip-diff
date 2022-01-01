@@ -14,20 +14,16 @@ yargs.command("snapshot", "Take snapshots of the current PR", yargs => {
   // .option("output", desc("output directory of files"))
   // .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
 }, async argv => {
-  diff.start().then(() => {
-    return diff.snapshot();
-  });
+  diff.start().then(() => diff.snapshot()).then(() => diff.close());
 })
 .command("changes [branch]", "Show changes against a different branch", yargs => {
   yargs
-  .option("watch", desc("re-run when a PC file changes"));
+  .option("watch", { description: "re-run when a PC file changes" });
   // .option("print", desc("Only print compiled output"))
   // .option("only", desc("Target files to generate"))
   // .option("silent", desc("silence output information"))
   // .option("output", desc("output directory of files"))
   // .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
 }, async argv => {
-  diff.start().then(() => {
-    return diff.detectChanges(argv.branch, argv.watch);
-  })
+  diff.start().then(() => diff.detectChanges(argv.branch, argv.watch)).then(() => diff.close());
 }).argv;
