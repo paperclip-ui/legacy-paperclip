@@ -5,7 +5,7 @@ import { eachFrame } from "paperclip-diff-utils";
 import { snakeCase } from "lodash";
 import git, { SimpleGit } from "simple-git";
 import * as fsa from "fs-extra";
-import { logWarn } from "./utils";
+import { logInfo, logWarn } from "./utils";
 import * as ora from "ora";
 import { Manifest } from "./state";
 const pixelmatch = require("pixelmatch");
@@ -48,7 +48,7 @@ export class PaperclipDiff {
       );
     }
 
-    const spinner = ora(`Generating base snapshots`).start();
+    const spinner = ora(`Generating snapshots from latest commit`).start();
 
     const latestCommit = (await this._git.log()).latest.hash;
     const currentBranch = await (await this._git.branch()).current;
@@ -77,9 +77,9 @@ export class PaperclipDiff {
     const manifest = getManifest(this._gitDir);
     const deltaCommit = manifest.branchSnapshots[deltaBranch];
 
-    let spinner = ora(`Generating current snapshots`).start();
+    let spinner = ora(`Generating snapshots from current changes`).start();
     await this._saveScreenshots(currentBranch);
-    spinner.stop();
+    await spinner.stop();
 
     spinner = ora(`Diffing against ${deltaCommit}`).start();
 
@@ -105,22 +105,11 @@ export class PaperclipDiff {
 
       const deltaSnapshotPath = deltaBranchSnapshotsByFileName[fileName];
       if (deltaSnapshotPath) {
-        // console.log("SNAP", snapshotFilePath, deltaSnapshotPath);
-
-        const img1 = PNG.sync.read(fsa.readFileSync(snapshotFilePath));
-        const img2 = PNG.sync.read(fsa.readFileSync(deltaSnapshotPath));
-        const { width, height } = img1;
-        const diff = new PNG({ width, height });
-        pixelmatch(img1.data, img2.data, diff.data, width, height, {
-          threshold: 0.1
-        });
-        const diffFileName =
-          fileName.replace(/\.png$/, "") + DIFF_BOUNDARY + deltaCommit + ".png";
-        // console.log(path.join(path.dirname(snapshotFilePath), diffFileName))
-        fsa.writeFileSync(
-          path.join(path.dirname(snapshotFilePath), diffFileName),
-          PNG.sync.write(diff)
-        );
+        const info = diffSnapshots(snapshotFilePath, deltaSnapshotPath);
+        if (info.changeCount) {
+          logInfo(`Changed ${snapshotFilePath}`);
+          saveDiffSnapshot(snapshotFilePath, deltaCommit, info);
+        }
       } else {
         // NEW SNAPSHOT
       }
@@ -176,6 +165,40 @@ const getSnapshotFilePaths = (cwd: string, snapshotDir: string) => {
         /\.png$/.test(filePath) &&
         !path.basename(filePath).includes(DIFF_BOUNDARY)
     );
+};
+
+const diffSnapshots = (snapshotFilePath: string, deltaSnapshotPath: string) => {
+  const img1 = PNG.sync.read(fsa.readFileSync(snapshotFilePath));
+  const img2 = PNG.sync.read(fsa.readFileSync(deltaSnapshotPath));
+  const { width, height } = img1;
+  const diff = new PNG({ width, height });
+  const changeCount = pixelmatch(
+    img1.data,
+    img2.data,
+    diff.data,
+    width,
+    height,
+    {
+      threshold: 0.1
+    }
+  );
+
+  return { diff, changeCount };
+};
+
+const saveDiffSnapshot = (
+  snapshotFilePath: string,
+  deltaCommit: string,
+  { diff }
+) => {
+  const fileName = path.basename(snapshotFilePath);
+  const diffFileName =
+    fileName.replace(/\.png$/, "") + DIFF_BOUNDARY + deltaCommit + ".png";
+  console.log(diffFileName);
+  fsa.writeFileSync(
+    path.join(path.dirname(snapshotFilePath), diffFileName),
+    PNG.sync.write(diff)
+  );
 };
 
 const getManifestPath = (cwd: string) =>

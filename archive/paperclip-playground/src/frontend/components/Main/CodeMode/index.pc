@@ -61,7 +61,7 @@
       position: relative;
       top: 30%;
     </style>
-    Unable to edit this file!
+    Unable to edit this file
   </div>
 </div>
 
