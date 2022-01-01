@@ -23,7 +23,7 @@ function Home() {
     <div className="home">
       <Layout
         className="dograg"
-        title={`${siteConfig.title} - Durable HTML & CSS for any kind of web application.`}
+        title={`${siteConfig.title} - Scalable HTML & CSS for any kind of web application.`}
         description="Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again."
       >
         <styles.Home>
@@ -31,7 +31,7 @@ function Home() {
             title={
               <>
                 Paperclip is a tiny language that brings{" "}
-                <strong>scoped CSS to any kind of web application.</strong>
+                <strong>scalable</strong> HTML & CSS to any kind of web application.
               </>
             }
             cta={
