@@ -473,7 +473,7 @@
           display: none;
           margin-top: 10px;
           align-items: center;
-          color: #9ac6ff;
+          color: rgb(102, 163, 241);
           text-decoration: none;
           ._mini-cta-icon {
             font-size: 0.9em;
