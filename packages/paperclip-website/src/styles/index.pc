@@ -37,32 +37,6 @@
 
 
 
-<!--
-  @frame { visible: false }
--->
-<span export
-  component
-  as="Highlight"
-  class="_highlight"
-  class:noBreak="noBreak"
-  class:darker="darker"
-  class:bold="bold">
-  <style>
-    color: var(--color-green-neon-light);
-    font-weight: 500;
-    &.darker {
-      color: var(--color-green-army);
-    }
-    &.bold {
-      font-weight: 600;
-    }
-    &.noBreak {
-      white-space: nowrap;
-    }
-  </style>
-  {children}
-</span>
-
 
 <!--
   @frame { visible: false }
@@ -499,7 +473,7 @@
           display: none;
           margin-top: 10px;
           align-items: center;
-          color: rgb(23, 170, 23);
+          color: #9ac6ff;
           text-decoration: none;
           ._mini-cta-icon {
             font-size: 0.9em;

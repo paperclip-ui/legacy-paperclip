@@ -16,7 +16,8 @@ module.exports = {
       trackingID: "UA-173953110-1"
     },
     prism: {
-      theme: require("prism-react-renderer/themes/oceanicNext")
+      theme: require("prism-react-renderer/themes/oceanicNext"),
+      additionalLanguages: ["php"]
     },
     navbar: {
       title: "Paperclip",
@@ -37,8 +38,8 @@ module.exports = {
           position: "left"
         },
         {
-          label: "Visual Tools",
-          to: "/docs/visual-tooling",
+          label: "Blog",
+          to: "/blog",
           position: "left"
         },
         // {

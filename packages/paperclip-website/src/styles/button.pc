@@ -8,7 +8,7 @@
     display: inline-block;
     text-decoration: none;
     transition: 0.1s linear;
-    color: inherit;
+    color: rgb(31, 72, 85);
     &--strong {
       font-weight: 600;
     }
