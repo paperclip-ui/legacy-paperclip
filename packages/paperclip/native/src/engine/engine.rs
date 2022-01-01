@@ -125,6 +125,7 @@ pub struct Engine {
   // keeping tabs of
   pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
   pub get_lint_config: Option<Box<GetLintConfigResolverFn>>,
+  pub include_used_exprs: bool
 }
 
 impl Engine {
@@ -133,6 +134,7 @@ impl Engine {
     file_exists: Box<FileExistsFn>,
     resolve_file: Box<FileResolverFn>,
     get_lint_config: Option<Box<GetLintConfigResolverFn>>,
+    include_used_exprs: bool,
     mode: EngineMode,
   ) -> Engine {
     let mut engine = Engine {
@@ -143,6 +145,7 @@ impl Engine {
       get_lint_config,
       dependency_graph: DependencyGraph::new(),
       diagnostics: BTreeMap::new(),
+      include_used_exprs,
       mode,
     };
 
@@ -435,6 +438,7 @@ impl Engine {
         &self.dependency_graph,
         &self.vfs,
         &self.evaluated_data,
+        self.include_used_exprs,
         &self.mode,
       )
       .and_then(|info| Ok(DependencyEvalInfo::PC(info))),
@@ -525,6 +529,7 @@ mod tests {
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
       None,
+      false,
       EngineMode::SingleFrame,
     );
 
@@ -593,6 +598,7 @@ pub fn __test__evaluate_pc_files<'a>(
     Box::new(move |uri| f2.get(uri) != None),
     Box::new(|_, uri| Some(uri.to_string())),
     None,
+    false,
     EngineMode::SingleFrame,
   );
 

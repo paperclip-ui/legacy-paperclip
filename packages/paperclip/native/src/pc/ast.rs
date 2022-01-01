@@ -229,8 +229,19 @@ pub enum AttributeDynamicStringPart {
   Slot(js_ast::Expression),
 }
 
+impl AttributeDynamicStringPart {
+ pub fn get_id(&self) -> &String {
+    match self {
+      AttributeDynamicStringPart::ClassNamePierce(expr) => &expr.id,
+      AttributeDynamicStringPart::Literal(expr) => &expr.id,
+      AttributeDynamicStringPart::Slot(expr) => &expr.get_id()
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringLiteral {
+  pub id: String,
   pub value: String,
   pub range: Range,
 }
@@ -238,6 +249,7 @@ pub struct AttributeDynamicStringLiteral {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "className")]
 pub struct AttributeDynamicStringClassNamePierce {
+  pub id: String,
   #[serde(rename = "className")]
   pub class_name: String,
   pub range: Range,
@@ -305,6 +317,7 @@ impl fmt::Display for Attribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SpreadAttribute {
+  pub id: String,
   // !{...slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
@@ -320,6 +333,7 @@ impl fmt::Display for SpreadAttribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
+  pub id: String,
   pub reference: js_ast::Expression,
   pub range: Range,
 }

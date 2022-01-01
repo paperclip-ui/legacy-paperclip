@@ -56,6 +56,7 @@ impl NativeEngine {
     file_exists: js_sys::Function,
     resolve_file: js_sys::Function,
     get_lint_config: js_sys::Function,
+    include_used_exprs: bool,
     engine_mode: NativeEngineMode,
   ) -> NativeEngine {
     console_error_panic_hook::set_once();
@@ -86,6 +87,7 @@ impl NativeEngine {
             .into_serde()
             .unwrap_or(None)
         })),
+        include_used_exprs,
         match engine_mode {
           NativeEngineMode::SingleFrame => EngineMode::SingleFrame,
           NativeEngineMode::MultiFrame => EngineMode::MultiFrame,

@@ -6562,6 +6562,11 @@ executable@^4.1.1:
   dependencies:
     pify "^2.2.0"
 
+expect.js@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/expect.js/-/expect.js-0.3.1.tgz#b0a59a0d2eff5437544ebf0ceaa6015841d09b5b"
+  integrity sha1-sKWaDS7/VDdUTr8M6qYBWEHQm1s=
+
 express@^4.17.1:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.17.2.tgz#c18369f265297319beed4e5558753cc8c1364cb3"

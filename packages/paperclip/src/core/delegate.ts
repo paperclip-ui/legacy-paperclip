@@ -20,12 +20,18 @@ import {
   Dependency,
   Module,
   DiffedEvent,
-  LoadedPCData
+  LoadedPCData,
+  ExprTextSource
 } from "paperclip-utils";
 import { noop } from "./utils";
 
 export type FileContent = {
   [identifier: string]: string;
+};
+
+export type VirtualNodeSourceInfo = {
+  sourceId: string;
+  textSource: ExprTextSource;
 };
 
 export type ErrorResult = { error: any };
@@ -200,7 +206,10 @@ export class EngineDelegate {
   lint(uri: string): Diagnostic[] {
     return this._native.lint_file(uri);
   }
-  getVirtualNodeSourceInfo(nodePath: number[], uri: string) {
+  getVirtualNodeSourceInfo(
+    nodePath: number[],
+    uri: string
+  ): VirtualNodeSourceInfo {
     return this._native.get_virtual_node_source_info(nodePath, uri);
   }
   getLoadedAst(uri: string): DependencyContent {

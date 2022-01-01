@@ -54,7 +54,10 @@ const getIOOptions = options => {
       mode: EngineMode.SingleFrame
     },
     options.io,
-    { mode: options.mode }
+    {
+      mode: options.mode,
+      includedUsedExpressions: options.includeUsedExpressions
+    }
   );
 };
 
@@ -66,10 +69,18 @@ export const createEngineDelegate = (options = {}, onCrash: any = () => {}) => {
     fileExists,
     resolveFile,
     getLintConfig,
-    mode = EngineMode.SingleFrame
+    mode = EngineMode.SingleFrame,
+    includedUsedExpressions = false
   } = io;
   return new EngineDelegate(
-    NativeEngine.new(readFile, fileExists, resolveFile, getLintConfig, mode),
+    NativeEngine.new(
+      readFile,
+      fileExists,
+      resolveFile,
+      getLintConfig,
+      includedUsedExpressions,
+      mode
+    ),
     io,
     onCrash ||
       function(e) {

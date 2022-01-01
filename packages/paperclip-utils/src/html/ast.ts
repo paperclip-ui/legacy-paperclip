@@ -118,22 +118,26 @@ type BaseAttribute<TKind extends AttributeKind> = {
 };
 
 type ShorthandAttribute = {
+  id: string;
   reference: JsExpression;
   range: StringRange;
 } & BaseAttribute<AttributeKind.ShorthandAttribute>;
 
 type SpreadAttribute = {
+  id: string;
   script: JsExpression;
   range: StringRange;
 } & BaseAttribute<AttributeKind.SpreadAttribute>;
 
 type KeyValueAttribute = {
+  id: string;
   name: string;
   value?: AttributeValue;
   range: StringRange;
 } & BaseAttribute<AttributeKind.KeyValueAttribute>;
 
 export type PropertyBoundAttribute = {
+  id: string;
   name: string;
   bindingName: string;
   value: AttributeValue;

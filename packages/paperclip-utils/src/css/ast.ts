@@ -25,6 +25,7 @@ export enum RuleKind {
 }
 
 type BaseRule<TKind extends RuleKind> = {
+  id: string;
   ruleKind: TKind;
   range: StringRange;
 };
@@ -51,6 +52,7 @@ export enum SelectorKind {
 }
 
 export type BaseSelector<TKind extends SelectorKind> = {
+  id: string;
   selectorKind: TKind;
   range: StringRange;
 };
@@ -164,6 +166,7 @@ export enum StyleDeclarationKind {
 }
 
 type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
+  id: string;
   declarationKind: TKind;
   range: StringRange;
 };
@@ -187,11 +190,13 @@ export type Content = {
 } & BaseStyleDeclaration<StyleDeclarationKind.Content>;
 
 export type IncludeReference = {
+  id: string;
   parts: IncludePart[];
   range: StringRange;
 };
 
 export type IncludePart = {
+  id: string;
   name: string;
   range: StringRange;
 };
@@ -287,6 +292,7 @@ export type MixinRule = {
 } & BaseRule<RuleKind.Mixin>;
 
 export type MixinName = {
+  id: string;
   value: string;
   range: StringRange;
 };

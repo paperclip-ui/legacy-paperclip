@@ -1,0 +1,22 @@
+{
+  "name": "paperclip-coverage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha lib/test",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "paperclip": "^18.2.16",
+    "paperclip-utils": "^18.2.16",
+    "typescript": "^4.2.3"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3"
+  }
+}

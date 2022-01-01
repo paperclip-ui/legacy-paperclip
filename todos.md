@@ -1,8 +1,12 @@
-### Immediate
+## Todos
 
-- REPL for paperclip
-  - do not show safari button
-  - use code mirror for editor instead
-  - use slim view
-- docs should have live examples
-- website should have cycled example
+Theme is code quality tools. How to incentivize people to write Previews?
+
+- [ ] coverage tool
+- [ ] tree shaking (needs coverage tool)
+- [ ] A11Y tooling using Axe
+- [ ] diff 
+
+
+- coverage tools
+- tree shaking

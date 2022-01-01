@@ -539,6 +539,7 @@ fn parse_shorthand_attribute<'a>(
     let script = parse_slot_script(context, None)?;
     Ok(pc_ast::Attribute::SpreadAttribute(
       pc_ast::SpreadAttribute {
+        id: context.id_generator.new_id(),
         omit_from_compilation,
         script,
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
@@ -548,6 +549,7 @@ fn parse_shorthand_attribute<'a>(
     let reference = parse_slot_script(context, None)?;
     Ok(pc_ast::Attribute::ShorthandAttribute(
       pc_ast::ShorthandAttribute {
+        id: context.id_generator.new_id(),
         reference,
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       },
@@ -686,6 +688,7 @@ fn parse_attribute_string_value<'a>(
 
       parts.push(pc_ast::AttributeDynamicStringPart::ClassNamePierce(
         pc_ast::AttributeDynamicStringClassNamePierce {
+          id: context.id_generator.new_id(),
           class_name,
           range: pos.range_from(context.tokenizer.scanner.get_u16pos()),
         },
@@ -703,6 +706,7 @@ fn parse_attribute_string_value<'a>(
       .to_string();
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({
         pc_ast::AttributeDynamicStringLiteral {
+          id: context.id_generator.new_id(),
           value,
           range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
         }

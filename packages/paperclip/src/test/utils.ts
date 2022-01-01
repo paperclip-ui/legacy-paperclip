@@ -24,7 +24,8 @@ export const createMockEngine = (
   graph: Graph,
   onErr = e => console.error(e),
   io: Partial<any> = {},
-  mode = EngineMode.SingleFrame
+  mode = EngineMode.SingleFrame,
+  includeUsedExpressions = false
 ) =>
   createEngineDelegate(
     {
@@ -49,6 +50,7 @@ export const createMockEngine = (
         },
         ...io
       },
+      includeUsedExpressions,
       mode
     },
     onErr

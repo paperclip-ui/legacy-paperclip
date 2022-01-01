@@ -144,6 +144,7 @@ impl fmt::Display for Include {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeReference {
+  pub id: String,
   pub parts: Vec<IncludeReferencePart>,
   pub range: Range,
 }
@@ -166,6 +167,7 @@ impl fmt::Display for IncludeReference {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeReferencePart {
+  pub id: String,
   pub name: String,
   pub range: Range,
 }
@@ -342,6 +344,7 @@ impl fmt::Display for StyleRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildRuleSelector {
+  pub id: String,
   pub connector: String,
   pub selector: Option<Selector>,
   pub range: Range,
@@ -349,6 +352,7 @@ pub struct ChildRuleSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildStyleRule {
+  pub id: String,
   pub selectors: Vec<ChildRuleSelector>,
   pub declarations: Vec<Declaration>,
   pub children: Vec<ChildStyleRule>,
@@ -465,6 +469,7 @@ impl MixinRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinName {
+  pub id: String,
   pub value: String,
   pub range: Range,
 }
@@ -492,6 +497,7 @@ impl fmt::Display for KeyframesRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframeRule {
+  pub id: String,
   pub key: String,
   pub raws: BasicRaws,
   pub declarations: Vec<Declaration>,
@@ -771,6 +777,7 @@ impl fmt::Display for Selector {
 // &--test, & + &, &:hover { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PrefixedSelector {
+  pub id: String,
   pub connector: String,
 
   #[serde(rename = "postfixSelector")]
@@ -792,6 +799,7 @@ impl fmt::Display for PrefixedSelector {
 // a, b, h1, h2 { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GroupSelector {
+  pub id: String,
   pub selectors: Vec<Selector>,
   pub range: Range,
 }
@@ -810,6 +818,7 @@ impl fmt::Display for GroupSelector {
 // a.b[c=d] {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ComboSelector {
+  pub id: String,
   pub selectors: Vec<Selector>,
   pub range: Range,
 }
@@ -828,6 +837,7 @@ impl fmt::Display for ComboSelector {
 // a b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct DescendentSelector {
+  pub id: String,
   pub ancestor: Box<Selector>,
   pub descendent: Box<Selector>,
   pub range: Range,
@@ -847,6 +857,7 @@ impl fmt::Display for DescendentSelector {
 // :global(.selector)
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GlobalSelector {
+  pub id: String,
   pub selector: Box<Selector>,
   pub range: Range,
 }
@@ -859,6 +870,7 @@ impl fmt::Display for GlobalSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SelfSelector {
+  pub id: String,
   pub selector: Option<Box<Selector>>,
   pub range: Range,
 }
@@ -876,6 +888,7 @@ impl fmt::Display for SelfSelector {
 // a > b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildSelector {
+  pub id: String,
   pub parent: Box<Selector>,
   pub child: Box<Selector>,
   pub range: Range,
@@ -883,6 +896,7 @@ pub struct ChildSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct WithinSelector {
+  pub id: String,
   pub selector: Box<Selector>,
   pub range: Range,
 }
@@ -895,6 +909,7 @@ impl fmt::Display for WithinSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NotSelector {
+  pub id: String,
   pub selector: Box<Selector>,
   pub range: Range,
 }
@@ -907,6 +922,7 @@ impl fmt::Display for NotSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SubElementSelector {
+  pub id: String,
   pub name: String,
   pub selector: Box<Selector>,
   pub range: Range,
