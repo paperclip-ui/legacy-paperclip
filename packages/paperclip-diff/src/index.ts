@@ -23,7 +23,7 @@ export class PaperclipDiff {
   async snapshot() {
     const status = await this._git.status();
 
-    if (status.ahead) {
+    if (status.files.length) {
       logWarn(
         `You need to commit your changes before you can make a snapshot.`
       );
