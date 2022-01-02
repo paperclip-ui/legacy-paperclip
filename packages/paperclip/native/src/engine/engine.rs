@@ -155,9 +155,9 @@ impl Engine {
 
   pub async fn generate_coverage_report(&mut self) -> Result<CoverageReport, EngineError> {
     self.include_used_exprs = true;
+    let keys: Vec<String> = self.dependency_graph.dependencies.keys().cloned().collect();
     self.reset();
 
-    let keys: Vec<String> = self.dependency_graph.dependencies.keys().cloned().collect();
 
     for uri in keys {
       self.run(&uri).await?;

@@ -11,6 +11,7 @@ pub trait ExprVisitor<'a> {
   fn should_continue(&self) -> bool;
 }
 
+
 pub fn walk_exprs<'a, TExpr: Expr>(exprs: &'a Vec<TExpr>, visitor: &mut ExprVisitor<'a>) {
   for expr in exprs {
     expr.walk(visitor);
@@ -29,6 +30,7 @@ pub trait Expr: std::fmt::Debug {
 pub fn find_expr_by_id<'a>(target_id: String, ast: &'a Expr) -> Option<pc_ast::PCObject<'a>> {
   ExprByIdFinder::find(target_id, ast)
 }
+
 
 struct ExprByIdFinder<'a> {
   target_id: String,
