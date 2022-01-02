@@ -1,13 +1,8 @@
 import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
-import * as React from "react";
 import { InterimCompiler } from "paperclip-interim";
 import { isPaperclipFile, PaperclipConfig } from "paperclip-utils";
-
-const builtin = {
-  react: React
-};
 
 export const compileModules = async (
   graph: Record<string, string>,
@@ -66,7 +61,6 @@ export const compileModules = async (
       module(path => {
         const mod = modules[path] || modules[path.substr(1)];
         const ex = executed[path] || (executed[path] = mod && mod());
-        return builtin[path] || ex;
       });
     modules[path] = wrapper;
   }

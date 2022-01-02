@@ -1,8 +1,8 @@
 {
-  "name": "paperclip-compiler-html",
+  "name": "paperclip-compiler-base-jsx",
   "version": "18.2.16",
   "description": "HTML compiler for Paperclip",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "lint": "eslint src",
     "test": "mocha lib/test",

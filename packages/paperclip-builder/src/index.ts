@@ -285,5 +285,5 @@ const requireTargetCompilers = (
     }
   }
 
-  return Object.values(compilers);
+  return Object.values(compilers).filter(compiler => compiler.compile != null);
 };

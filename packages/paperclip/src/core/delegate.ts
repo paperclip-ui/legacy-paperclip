@@ -15,6 +15,7 @@ import {
   hasAttribute,
   Diagnostic,
   INJECT_STYLES_TAG_NAME,
+  CoverageReport,
   NodeStyleInspection,
   VirtNodeSource,
   Dependency,
@@ -101,10 +102,6 @@ export class EngineDelegate {
 
     this.onEvent(this._onEngineEvent);
     return this;
-  }
-
-  includeUsedExprIds() {
-    this._native.include_used_expr_ids();
   }
 
   resolveFile(fromPath: string, toPath: string) {
@@ -216,7 +213,7 @@ export class EngineDelegate {
   ): VirtualNodeSourceInfo {
     return this._native.get_virtual_node_source_info(nodePath, uri);
   }
-  generateCoverageReport() {
+  generateCoverageReport(): CoverageReport {
     return this._tryCatch(() => {
       return mapResult(this._native.generate_coverage_report());
     });
