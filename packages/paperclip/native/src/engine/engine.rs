@@ -7,19 +7,19 @@ use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::id_generator::generate_seed;
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
+use crate::coverage::reporter::{generate_coverage_report, CoverageReport};
+use crate::css::ast as css_ast;
+use crate::css::parser::parse as parse_css;
 use crate::css::runtime::diff::diff as diff_css;
 use crate::css::runtime::evaluator::evaluate as evaluate_css;
+use crate::css::runtime::export as css_export;
 use crate::css::runtime::mutation as css_mutation;
 use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
-use crate::css::ast as css_ast;
-use crate::css::parser::parse as parse_css;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
-use crate::css::runtime::export as css_export;
-use crate::coverage::reporter::{generate_coverage_report, CoverageReport};
 use crate::pc::runtime::inspect_node_styles::{
   inspect_node_styles, InspectionOptions, NodeInspectionInfo,
 };
@@ -100,12 +100,11 @@ pub struct EvalOptions {
 #[serde(tag = "moduleKind")]
 pub enum Module {
   PC(pc_ast::Node),
-  CSS(css_ast::Sheet)
+  CSS(css_ast::Sheet),
 }
 
 type EngineEventListener = dyn Fn(&EngineEvent);
 type GetLintConfigResolverFn = dyn Fn(&String) -> Option<LintOptions>;
-
 
 fn parse_content(content: &String, uri: &String) -> Result<Module, ParseError> {
   Result::Ok(if uri.ends_with(".css") {
@@ -126,7 +125,7 @@ pub struct Engine {
   // keeping tabs of
   pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
   pub get_lint_config: Option<Box<GetLintConfigResolverFn>>,
-  pub include_used_exprs: bool
+  pub include_used_exprs: bool,
 }
 
 impl Engine {
@@ -157,7 +156,6 @@ impl Engine {
     self.include_used_exprs = true;
     let keys: Vec<String> = self.dependency_graph.dependencies.keys().cloned().collect();
     self.reset();
-
 
     for uri in keys {
       self.run(&uri).await?;
@@ -268,7 +266,10 @@ impl Engine {
       })
   }
 
-  pub fn get_expression_by_id<'a>(&'a self, id: &String) -> Option<(String, pc_ast::Expression<'a>)> {
+  pub fn get_expression_by_id<'a>(
+    &'a self,
+    id: &String,
+  ) -> Option<(String, pc_ast::Expression<'a>)> {
     self.dependency_graph.get_expression_by_id(id)
   }
 

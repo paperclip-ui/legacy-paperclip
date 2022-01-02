@@ -1,7 +1,7 @@
 use crate::base::ast::{BasicRaws, Range};
-use serde::Serialize;
-use crate::core::ast::{ExprVisitor, Expr};
+use crate::core::ast::{Expr, ExprVisitor};
 use crate::pc::ast as pc_ast;
+use serde::Serialize;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -39,9 +39,8 @@ impl Expr for Declaration {
   }
 
   fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
-    return pc_ast::Expression::CSS(Expression::Declaration(self))
+    return pc_ast::Expression::CSS(Expression::Declaration(self));
   }
-  
 }
 
 impl fmt::Display for Declaration {
@@ -249,7 +248,7 @@ impl Expr for Rule {
       Rule::Media(rule) => rule.walk_inside(visitor),
       Rule::Mixin(rule) => rule.walk_inside(visitor),
       Rule::Include(rule) => rule.walk_inside(visitor),
-      _ => {},
+      _ => {}
     }
   }
   fn get_id(&self) -> &String {
@@ -1156,10 +1155,7 @@ impl fmt::Display for Sheet {
   }
 }
 
-fn walk_exprs<'a, TExpr: Expr>(
-  exprs: &'a Vec<TExpr>,
-  visitor: &mut ExprVisitor<'a>
-) {
+fn walk_exprs<'a, TExpr: Expr>(exprs: &'a Vec<TExpr>, visitor: &mut ExprVisitor<'a>) {
   if !visitor.should_continue() {
     return;
   }

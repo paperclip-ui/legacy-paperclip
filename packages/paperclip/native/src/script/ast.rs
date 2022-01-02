@@ -1,9 +1,8 @@
 use crate::base::ast::Range;
+use crate::core::ast::{Expr, ExprVisitor};
 use crate::pc::ast as pc_ast;
 use serde::Serialize;
 use std::fmt;
-use crate::core::ast::{ExprVisitor, Expr};
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "scriptKind")]
@@ -33,12 +32,10 @@ impl Expr for Expression {
         if visitor.should_continue() {
           conj.right.walk(visitor);
         }
-      },
+      }
       Expression::Node(node) => node.walk(visitor),
       Expression::Group(expr) => expr.expression.walk(visitor),
-      _ => {
-
-      }
+      _ => {}
     };
   }
   fn get_id<'a>(&'a self) -> &'a String {
@@ -48,7 +45,6 @@ impl Expr for Expression {
     return pc_ast::Expression::Script(self);
   }
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Str {

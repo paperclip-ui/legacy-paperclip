@@ -2,8 +2,8 @@ use super::vfs::VirtualFileSystem;
 use crate::base::ast::Range;
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
-use crate::core::id_generator::IDGenerator;
 use crate::core::ast::find_expr_by_id;
+use crate::core::id_generator::IDGenerator;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use crc::crc32;
@@ -87,7 +87,6 @@ impl DependencyGraph {
     source_id: &String,
   ) -> Option<(String, pc_ast::Expression<'a>)> {
     for (uri, dep) in self.dependencies.iter() {
-      
       let option: Option<pc_ast::Expression<'a>> = dep.get_expression_by_id(source_id);
 
       if let Some(obj) = option {
@@ -282,10 +281,7 @@ impl<'a> Dependency {
     }
   }
 
-  pub fn get_expression_by_id(
-    &'a self,
-    source_id: &String,
-  ) -> Option<pc_ast::Expression<'a>> {
+  pub fn get_expression_by_id(&'a self, source_id: &String) -> Option<pc_ast::Expression<'a>> {
     match &self.content {
       DependencyContent::StyleSheet(sheet) => find_expr_by_id(source_id.clone(), sheet),
       DependencyContent::Node(node) => find_expr_by_id(source_id.clone(), node),

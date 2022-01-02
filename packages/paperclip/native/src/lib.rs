@@ -13,11 +13,11 @@ extern crate lazy_static;
 mod annotation;
 mod base;
 mod core;
+mod coverage;
 mod css;
 mod engine;
-mod script;
 mod pc;
-mod coverage;
+mod script;
 
 use crate::pc::runtime::evaluator::EngineMode;
 use crate::pc::runtime::inspect_node_styles::InspectionOptions;

@@ -17,7 +17,7 @@ use super::virt::Node as VirtNode;
 use crate::base::ast::{ExprSource, ExprTextSource, Range};
 use serde::{Deserialize, Serialize};
 // use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
-use crate::core::graph::{DependencyGraph};
+use crate::core::graph::DependencyGraph;
 use crate::css::ast as css_ast;
 use crate::css::runtime::virt::{
   CSSStyleProperty as VirtCSSStyleProperty, Rule as VirtRule, StyleRule as VirtStyleRule,

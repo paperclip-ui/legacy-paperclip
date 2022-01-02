@@ -1,7 +1,6 @@
-use std::collections::{HashMap};
 use crate::engine::engine::Engine;
 use crate::pc::runtime::evaluator::EngineMode;
-
+use std::collections::HashMap;
 
 pub fn create_mock_engine<'a>(graph: &HashMap<String, String>) -> Engine {
   let graph2 = graph.clone();

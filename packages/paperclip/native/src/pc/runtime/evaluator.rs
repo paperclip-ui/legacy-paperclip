@@ -1,25 +1,25 @@
 use super::super::ast;
 use super::export::{ComponentExport, Exports, Property};
-use crate::core::ast::ExprVisitor;
 use super::virt;
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::{Range};
+use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_id, get_document_style_public_scope, is_relative_path};
+use crate::core::ast::ExprVisitor;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
+use crate::core::ast::Expr;
+use crate::css::ast as css_ast;
 use crate::css::runtime::evaluator::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
-use crate::css::ast as css_ast;
 use crate::script::ast as script_ast;
 use crate::script::runtime::evaluator::evaluate as evaluate_js;
 use crate::script::runtime::virt as script_virt;
 use regex::Regex;
 use serde::Serialize;
-use crate::core::ast::Expr;
 use std::collections::{BTreeMap, HashSet};
 use std::iter::FromIterator;
 
@@ -60,7 +60,7 @@ pub struct Context<'a> {
   pub evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   pub mode: &'a EngineMode,
   pub include_used_exprs: bool,
-  pub used_expr_ids: HashSet<String>
+  pub used_expr_ids: HashSet<String>,
 }
 
 impl<'a> Context<'a> {
@@ -92,8 +92,7 @@ pub struct EvalInfo {
   pub preview: virt::Node,
   pub exports: Exports,
   #[serde(rename = "usedExprIds")]
-  pub used_expr_ids: Option<HashSet<String>>
-
+  pub used_expr_ids: Option<HashSet<String>>,
 }
 
 pub fn evaluate<'a>(
@@ -109,7 +108,6 @@ pub fn evaluate<'a>(
     uri,
     &Range::nil(),
   ))?;
-
 
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = script_virt::Value::Object(script_virt::Object::new(node_expr.get_id().to_string()));
@@ -210,9 +208,8 @@ fn collect_component_exports<'a>(
   Ok(exports)
 }
 
-
 struct CollectNodePropVisitor {
-  pub properties: BTreeMap<String, Property>
+  pub properties: BTreeMap<String, Property>,
 }
 
 impl<'a> ExprVisitor<'a> for CollectNodePropVisitor {
@@ -281,7 +278,7 @@ impl<'a> ExprVisitor<'a> for CollectNodePropVisitor {
 
 fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
   let mut visitor = CollectNodePropVisitor {
-    properties: BTreeMap::new()
+    properties: BTreeMap::new(),
   };
 
   node.walk(&mut visitor);
@@ -289,7 +286,10 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
   visitor.properties
 }
 
-fn add_script_property(script: &script_ast::Expression, properties: &mut BTreeMap<String, Property>) {
+fn add_script_property(
+  script: &script_ast::Expression,
+  properties: &mut BTreeMap<String, Property>,
+) {
   match script {
     script_ast::Expression::Reference(reference) => {
       let part = reference.path.get(0).unwrap();
@@ -353,9 +353,7 @@ pub fn get_instance_target_node<'a>(
         && ast::has_attribute("component", child)
         && (!imported || ast::has_attribute("export", child))
     }),
-    RenderStrategy::Auto => {
-      find_child(node_expr, |child| ast::has_attribute("preview", child))
-    }
+    RenderStrategy::Auto => find_child(node_expr, |child| ast::has_attribute("preview", child)),
   };
 
   if let Some(target_node) = target_node_option {
@@ -549,7 +547,6 @@ fn create_context<'a>(
   include_used_exprs: bool,
   mode: &'a EngineMode,
 ) -> Context<'a> {
-
   let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
 
@@ -568,7 +565,7 @@ fn create_context<'a>(
     data,
     mode,
     include_used_exprs,
-    used_expr_ids: HashSet::new()
+    used_expr_ids: HashSet::new(),
   }
 }
 
@@ -606,9 +603,7 @@ pub fn evaluate_node<'a>(
   }
 
   match &node_expr {
-    ast::Node::Element(el) => {
-      evaluate_element(&el, depth, instance_source, annotations, context)
-    }
+    ast::Node::Element(el) => evaluate_element(&el, depth, instance_source, annotations, context),
     ast::Node::StyleElement(el) => {
       return evaluate_style_element(&el, context);
     }
@@ -660,9 +655,7 @@ fn evaluate_element<'a>(
   annotations: &Option<script_virt::Object>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-
   add_used_expr_id(&element.id, context);
-  
 
   match element.tag_name.as_str() {
     "import" => evaluate_import_element(element, context),
@@ -722,20 +715,9 @@ fn evaluate_element<'a>(
         // fragments should be preserved if in multi frame mode if root
         if element.tag_name == "fragment" && (context.mode != &EngineMode::MultiFrame || depth > 1)
         {
-          evaluate_children_as_fragment(
-            &element.children,
-            depth,
-            &element.id,
-            context,
-          )
+          evaluate_children_as_fragment(&element.children, depth, &element.id, context)
         } else {
-          evaluate_native_element(
-            element,
-            depth,
-            instance_source,
-            annotations,
-            context,
-          )
+          evaluate_native_element(element, depth, instance_source, annotations, context)
         }
       }
     }
@@ -752,7 +734,6 @@ fn evaluate_slot<'a>(
 
   let script = &slot.script;
   let mut script_value = evaluate_js(script, depth + 1, context)?;
-
 
   // if array of values, then treat as document fragment
   if let script_virt::Value::Array(ary) = &mut script_value {
@@ -898,7 +879,6 @@ fn create_component_instance_data<'a>(
 ) -> Result<script_virt::Value, RuntimeError> {
   let mut data = evaluate_attributes(instance_element, depth, context)?;
 
-
   println!("OKOKOKOK");
 
   let mut script_children = script_virt::Array::new(instance_element.id.to_string());
@@ -1030,12 +1010,11 @@ fn evaluate_native_element<'a>(
   annotations: &Option<script_virt::Object>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
   let mut tag_name = ast::get_tag_name(element).to_string();
 
   let attribute_data = evaluate_attributes(element, depth, context)?;
-  
+
   for (key, value) in attribute_data.values {
     if value.truthy() {
       attributes.insert(key.to_string(), Some(value.to_string()));
@@ -1088,11 +1067,14 @@ fn evaluate_native_element<'a>(
         None
       },
     },
-    source_id: use_expr_id(if let Some(source) = &instance_source {
-      &source.id
-    } else {
-      &element.id
-    }, context),
+    source_id: use_expr_id(
+      if let Some(source) = &instance_source {
+        &source.id
+      } else {
+        &element.id
+      },
+      context,
+    ),
     annotations: annotations.clone(),
     tag_name,
     attributes,
@@ -1100,8 +1082,11 @@ fn evaluate_native_element<'a>(
   })))
 }
 
-fn evaluate_attributes(element: &ast::Element, depth: u32, context: &mut Context) -> Result<script_virt::Object, RuntimeError> {
-
+fn evaluate_attributes(
+  element: &ast::Element,
+  depth: u32,
+  context: &mut Context,
+) -> Result<script_virt::Object, RuntimeError> {
   let mut data: script_virt::Object = script_virt::Object::new(element.id.to_string());
 
   let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
@@ -1115,10 +1100,13 @@ fn evaluate_attributes(element: &ast::Element, depth: u32, context: &mut Context
         use_expr_id(&kv_attr.id, context);
 
         let (name, value_option) = if kv_attr.value == None {
-          (actual_name, script_virt::Value::Boolean(script_virt::Boolean {
-            source_id: kv_attr.id.to_string(),
-            value: true
-          }))
+          (
+            actual_name,
+            script_virt::Value::Boolean(script_virt::Boolean {
+              source_id: kv_attr.id.to_string(),
+              value: true,
+            }),
+          )
         } else {
           let value = evaluate_attribute_value(
             &element.tag_name,
@@ -1152,8 +1140,10 @@ fn evaluate_attributes(element: &ast::Element, depth: u32, context: &mut Context
         match attr_data {
           script_virt::Value::Object(mut object) => {
             for (key, value) in object.values.drain() {
-              data.values.insert(key.to_string(), 
-              maybe_cast_attribute_script_value(&key, value, true, context));
+              data.values.insert(
+                key.to_string(),
+                maybe_cast_attribute_script_value(&key, value, true, context),
+              );
             }
           }
           _ => {
@@ -1176,10 +1166,7 @@ fn evaluate_attributes(element: &ast::Element, depth: u32, context: &mut Context
 
         if script_value.truthy() {
           script_value = maybe_cast_attribute_script_value(&name, script_value, true, context);
-          data.values.insert(
-            name.to_string(),
-            script_value,
-          );
+          data.values.insert(name.to_string(), script_value);
         }
       }
     };
@@ -1345,12 +1332,7 @@ fn evaluate_fragment<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  evaluate_children_as_fragment(
-    &fragment.children,
-    depth,
-    &fragment.id,
-    context,
-  )
+  evaluate_children_as_fragment(&fragment.children, depth, &fragment.id, context)
 }
 
 fn evaluate_children_as_fragment<'a>(
@@ -1385,7 +1367,9 @@ fn evaluate_attribute_value<'a>(
     ast::AttributeValue::Slot(value) => {
       assert_attr_slot_restrictions(tag_name, name, &value.range, context)?;
       let value = evaluate_attribute_slot(&value.script, depth, context)?;
-      Ok(maybe_cast_attribute_script_value(name, value, true, context))
+      Ok(maybe_cast_attribute_script_value(
+        name, value, true, context,
+      ))
     }
   }
 }
@@ -1406,7 +1390,6 @@ fn evaluate_attribute_dynamic_string<'a>(
     buffer.push(match part {
       ast::AttributeDynamicStringPart::Literal(value) => value.value.to_string(),
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
-
         if pierce.class_name.contains(".") {
           let parts = pierce.class_name.split(".").collect::<Vec<&str>>();
           let import_id = parts.first().unwrap().to_string();
@@ -1495,7 +1478,12 @@ fn evaluate_attribute_dynamic_string<'a>(
     value: val.to_string(),
   });
 
-  Ok(maybe_cast_attribute_script_value(name, script_value, is_native, context,))
+  Ok(maybe_cast_attribute_script_value(
+    name,
+    script_value,
+    is_native,
+    context,
+  ))
 }
 
 fn get_import<'a>(
@@ -1705,7 +1693,6 @@ fn assert_slot_restrictions(_range: &Range, _context: &Context) -> Result<(), Ru
 
   return Ok(());
 }
-
 
 pub fn __test__evaluate_pc_code<'a>(
   code: &'a str,

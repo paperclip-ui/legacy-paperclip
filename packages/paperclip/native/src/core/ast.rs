@@ -1,5 +1,5 @@
-use crate::pc::ast as pc_ast;
 use crate::css::ast as css_ast;
+use crate::pc::ast as pc_ast;
 use crate::script::ast as script_ast;
 
 pub trait ExprVisitor<'a> {
@@ -11,7 +11,6 @@ pub trait ExprVisitor<'a> {
   fn visit_script_expression(&mut self, rule: &'a script_ast::Expression);
   fn should_continue(&self) -> bool;
 }
-
 
 pub fn walk_exprs<'a, TExpr: Expr>(exprs: &'a Vec<TExpr>, visitor: &mut ExprVisitor<'a>) {
   for expr in exprs {
@@ -32,17 +31,16 @@ pub fn find_expr_by_id<'a>(target_id: String, ast: &'a Expr) -> Option<pc_ast::E
   ExprByIdFinder::find(target_id, ast)
 }
 
-
 struct ExprByIdFinder<'a> {
   target_id: String,
-  found_expr: Option<pc_ast::Expression<'a>>
+  found_expr: Option<pc_ast::Expression<'a>>,
 }
 
 impl<'a> ExprByIdFinder<'a> {
   fn new(target_id: String) -> ExprByIdFinder<'a> {
     ExprByIdFinder {
       target_id,
-      found_expr: None
+      found_expr: None,
     }
   }
   fn find(target_id: String, ast: &'a Expr) -> Option<pc_ast::Expression<'a>> {
@@ -61,10 +59,10 @@ impl<'a> ExprByIdFinder<'a> {
 impl<'a> ExprVisitor<'a> for ExprByIdFinder<'a> {
   fn visit_node(&mut self, expr: &'a pc_ast::Node) {
     self.visit_core_expr(expr);
-  } 
+  }
   fn visit_attr(&mut self, expr: &'a pc_ast::Attribute) {
     self.visit_core_expr(expr);
-  } 
+  }
 
   fn visit_css_rule(&mut self, expr: &'a css_ast::Rule) {
     self.visit_core_expr(expr);
@@ -81,7 +79,6 @@ impl<'a> ExprVisitor<'a> for ExprByIdFinder<'a> {
   fn visit_script_expression(&mut self, expr: &'a script_ast::Expression) {
     self.visit_core_expr(expr);
   }
-
 
   fn should_continue(&self) -> bool {
     return self.found_expr == None;

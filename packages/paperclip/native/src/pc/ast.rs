@@ -1,11 +1,11 @@
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{BasicRaws, Range};
+use crate::core::ast::{walk_exprs, Expr, ExprVisitor};
 use crate::css::ast as css_ast;
 use crate::script::ast as script_ast;
 use serde::Serialize;
 use std::fmt;
 use std::str;
-use crate::core::ast::{ExprVisitor, Expr, walk_exprs};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ElementRaws {
@@ -133,26 +133,24 @@ impl Expr for Node {
     match self {
       Node::Slot(slot) => {
         slot.walk_inside(visitor);
-      },
+      }
       Node::StyleElement(style) => {
         style.walk_inside(visitor);
-      },
+      }
       Node::Fragment(fragment) => {
         fragment.walk_inside(visitor);
-      },
+      }
       Node::Element(element) => {
         element.walk_inside(visitor);
-      },
-      Node::Comment(_) | Node::Text(_) => {
-
       }
+      Node::Comment(_) | Node::Text(_) => {}
     }
   }
   fn get_id<'a>(&'a self) -> &'a String {
     self.get_id()
   }
   fn wrap<'a>(&'a self) -> Expression<'a> {
-    return Expression::Node(self)
+    return Expression::Node(self);
   }
 }
 
@@ -235,11 +233,11 @@ pub enum AttributeDynamicStringPart {
 }
 
 impl AttributeDynamicStringPart {
- pub fn get_id(&self) -> &String {
+  pub fn get_id(&self) -> &String {
     match self {
       AttributeDynamicStringPart::ClassNamePierce(expr) => &expr.id,
       AttributeDynamicStringPart::Literal(expr) => &expr.id,
-      AttributeDynamicStringPart::Slot(expr) => &expr.get_id()
+      AttributeDynamicStringPart::Slot(expr) => &expr.get_id(),
     }
   }
 }
@@ -311,13 +309,13 @@ pub enum Attribute {
 
 impl Attribute {
   pub fn get_range(&self) -> &Range {
-      match self {
-        Attribute::ShorthandAttribute(expr) => &expr.range,
-        Attribute::SpreadAttribute(expr) => &expr.range,
-        Attribute::KeyValueAttribute(expr) => &expr.range,
-        Attribute::PropertyBoundAttribute(expr) => &expr.range,
-      }
+    match self {
+      Attribute::ShorthandAttribute(expr) => &expr.range,
+      Attribute::SpreadAttribute(expr) => &expr.range,
+      Attribute::KeyValueAttribute(expr) => &expr.range,
+      Attribute::PropertyBoundAttribute(expr) => &expr.range,
     }
+  }
 }
 
 impl Expr for Attribute {
@@ -337,7 +335,7 @@ impl Expr for Attribute {
     }
   }
   fn wrap<'a>(&'a self) -> Expression<'a> {
-    return Expression::Attribute(self)
+    return Expression::Attribute(self);
   }
 }
 
@@ -494,7 +492,6 @@ pub struct Fragment {
   pub range: Range,
   pub children: Vec<Node>,
 }
-
 
 impl Fragment {
   fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {

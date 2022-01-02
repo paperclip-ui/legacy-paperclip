@@ -3,7 +3,9 @@ use super::virt;
 use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
 use crate::pc::ast as pc_ast;
-use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext, use_expr_id};
+use crate::pc::runtime::evaluator::{
+  evaluate_node as evaluate_pc_node, use_expr_id, Context as PCContext,
+};
 
 pub fn evaluate<'a>(
   expr: &ast::Expression,
@@ -101,7 +103,10 @@ fn evaluate_node<'a>(
   }
 }
 
-fn evaluate_string<'a>(value: &ast::Str, context: &'a mut PCContext) -> Result<virt::Value, RuntimeError> {
+fn evaluate_string<'a>(
+  value: &ast::Str,
+  context: &'a mut PCContext,
+) -> Result<virt::Value, RuntimeError> {
   use_expr_id(&value.id, context);
   Ok(virt::Value::Str(virt::Str {
     source_id: value.id.to_string(),
@@ -109,7 +114,10 @@ fn evaluate_string<'a>(value: &ast::Str, context: &'a mut PCContext) -> Result<v
   }))
 }
 
-fn evaluate_boolean<'a>(value: &ast::Boolean, context: &'a mut PCContext) -> Result<virt::Value, RuntimeError> {
+fn evaluate_boolean<'a>(
+  value: &ast::Boolean,
+  context: &'a mut PCContext,
+) -> Result<virt::Value, RuntimeError> {
   use_expr_id(&value.id, context);
   Ok(virt::Value::Boolean(virt::Boolean {
     source_id: value.id.to_string(),
