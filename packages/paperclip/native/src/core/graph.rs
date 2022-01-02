@@ -88,10 +88,7 @@ impl DependencyGraph {
   ) -> Option<(String, pc_ast::PCObject<'a>)> {
     for (uri, dep) in self.dependencies.iter() {
       
-      let option: Option<pc_ast::PCObject<'a>> = match &dep.content {
-        DependencyContent::StyleSheet(sheet) => find_expr_by_id(source_id.clone(), sheet),
-        DependencyContent::Node(node) => find_expr_by_id(source_id.clone(), node),
-      };
+      let option: Option<pc_ast::PCObject<'a>> = dep.get_expression_by_id(source_id);
 
       if let Some(obj) = option {
         return Some((uri.to_string(), obj));
@@ -282,6 +279,16 @@ impl<'a> Dependency {
       Dependency::from_css_source(source, uri, id_seed)
     } else {
       Dependency::from_pc_source(source, uri, vfs, id_seed)
+    }
+  }
+
+  pub fn get_expression_by_id(
+    &'a self,
+    source_id: &String,
+  ) -> Option<pc_ast::PCObject<'a>> {
+    match &self.content {
+      DependencyContent::StyleSheet(sheet) => find_expr_by_id(source_id.clone(), sheet),
+      DependencyContent::Node(node) => find_expr_by_id(source_id.clone(), node),
     }
   }
 
