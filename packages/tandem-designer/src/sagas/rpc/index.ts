@@ -68,7 +68,7 @@ import {
 } from "../../state";
 
 import {
-  computeVirtJSObject,
+  computeVirtScriptObject,
   nodePathToAry,
   VirtNodeSource
 } from "paperclip-utils";
@@ -475,7 +475,7 @@ function* handleClientComunication(client) {
               targetId: state.designer.selectedNodeSources[i]?.source.sourceId,
               action: {
                 kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-                annotations: computeVirtJSObject(frame.annotations)
+                annotations: computeVirtScriptObject(frame.annotations)
               }
             };
           })

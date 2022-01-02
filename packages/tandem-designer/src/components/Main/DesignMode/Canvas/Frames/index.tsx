@@ -16,7 +16,7 @@ import {
 } from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
-  computeVirtJSObject,
+  computeVirtScriptObject,
   VirtualElement,
   VirtualNode,
   VirtualText,
@@ -428,7 +428,7 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
   }
 
   const annotations: NodeAnnotations =
-    (preview.annotations && computeVirtJSObject(preview.annotations)) ||
+    (preview.annotations && computeVirtScriptObject(preview.annotations)) ||
     ({} as any);
 
   const frameStyle = useMemo(() => {

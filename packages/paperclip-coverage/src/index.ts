@@ -2,7 +2,7 @@ import { EngineDelegate } from "paperclip";
 import {
   Attribute,
   AttributeKind,
-  computeVirtJSObject,
+  computeVirtScriptObject,
   DependencyContentKind,
   EvaluatedDataKind,
   Expression,
@@ -176,7 +176,7 @@ const analyzeFrame = (
   engine: EngineDelegate
 ) => {
   const annotations: Record<string, any> = frame.annotations
-    ? computeVirtJSObject(frame.annotations)
+    ? computeVirtScriptObject(frame.annotations)
     : {};
 
   let frameWidth = FRAME_WIDTH;

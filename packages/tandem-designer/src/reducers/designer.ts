@@ -36,8 +36,8 @@ import { clamp, without } from "lodash";
 import {
   updateAllLoadedData,
   VirtualFrame,
-  toVirtJsValue,
-  computeVirtJSObject,
+  toVirtScriptValue,
+  computeVirtScriptObject,
   VirtScriptObjectKind,
   NodeAnnotations,
   isPaperclipFile,
@@ -103,7 +103,7 @@ const setCanvasZoom = (
 
 const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
   const annotations =
-    (frame.annotations && computeVirtJSObject(frame.annotations)) ||
+    (frame.annotations && computeVirtScriptObject(frame.annotations)) ||
     ({} as any);
 
   let mergedAnnotations = {
@@ -136,7 +136,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
     };
   }
 
-  frame.annotations.values = toVirtJsValue(mergedAnnotations).values;
+  frame.annotations.values = toVirtScriptValue(mergedAnnotations).values;
   return frame;
 };
 
@@ -672,7 +672,8 @@ export const reduceDesigner = (
         ) {
           const frame = frames[i];
           const annotations: NodeAnnotations =
-            (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
+            (frame.annotations && computeVirtScriptObject(frame.annotations)) ||
+            {};
           Object.assign(
             frame,
             updateAnnotations(frame, {

@@ -18,7 +18,7 @@ import * as qs from "querystring";
 import {
   VirtualElement,
   VirtualText,
-  computeVirtJSObject,
+  computeVirtScriptObject,
   NodeAnnotations,
   VirtualNode,
   VirtualFrame,
@@ -227,7 +227,7 @@ const useCell = ({
   node
 }: UseCellProps) => {
   const annotations: NodeAnnotations = node.annotations
-    ? computeVirtJSObject(node.annotations)
+    ? computeVirtScriptObject(node.annotations)
     : {};
   const frameBox = useMemo(
     () => ({ ...DEFAULT_FRAME_BOX, ...annotations.frame }),
@@ -296,7 +296,7 @@ const useCell = ({
 
 const getCellInfo = (node: VirtualFrame) => {
   const annotations: NodeAnnotations = node.annotations
-    ? computeVirtJSObject(node.annotations)
+    ? computeVirtScriptObject(node.annotations)
     : {};
 
   let label = "Untitled";

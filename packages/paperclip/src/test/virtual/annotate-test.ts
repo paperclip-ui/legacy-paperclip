@@ -1,6 +1,6 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import { Comment, computeVirtJSObject, Fragment } from "paperclip-utils";
+import { Comment, computeVirtScriptObject, Fragment } from "paperclip-utils";
 import { EngineMode } from "../../core";
 
 describe(__filename + "#", () => {
@@ -129,7 +129,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = engine.open("/entry.pc");
 
-    const metadata = computeVirtJSObject(
+    const metadata = computeVirtScriptObject(
       (result as any).preview.children[0].annotations
     );
 

@@ -13,7 +13,7 @@ import {
   EngineMode,
   LoadedData,
   VirtualFrame,
-  computeVirtJSObject,
+  computeVirtScriptObject,
   NodeAnnotations,
   EvaluatedDataKind
 } from "paperclip";
@@ -83,7 +83,7 @@ export const eachFrame = async (
       const frame = frames[i];
 
       const annotations: NodeAnnotations =
-        (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
+        (frame.annotations && computeVirtScriptObject(frame.annotations)) || {};
 
       const root: VirtualFragment = {
         children: [

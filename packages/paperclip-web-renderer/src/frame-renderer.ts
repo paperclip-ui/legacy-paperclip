@@ -13,7 +13,7 @@ import {
   VirtualElement,
   patchVirtNode,
   memoize,
-  computeVirtJSObject,
+  computeVirtScriptObject,
   NodeAnnotations,
   VirtualFrame,
   DiffedDataKind,
@@ -474,7 +474,7 @@ export const getFrameVirtualNode = (
 
 export const getFrameBounds = memoize((node: VirtualElement | VirtualText) => {
   const annotations: NodeAnnotations =
-    (node.annotations && computeVirtJSObject(node.annotations)) || {};
+    (node.annotations && computeVirtScriptObject(node.annotations)) || {};
   return {
     width: 1024,
     height: 768,
