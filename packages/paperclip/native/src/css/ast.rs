@@ -218,20 +218,6 @@ pub enum Rule {
 }
 
 impl Rule {
-  // pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-  //   if self.get_id() == id {
-  //     return Some(CSSObject::Rule(self));
-  //   }
-
-  //   match self {
-  //     Rule::Style(rule) => rule.get_object_by_id(id),
-  //     Rule::Export(rule) => rule.get_object_by_id(id),
-  //     Rule::Media(rule) => rule.get_object_by_id(id),
-  //     Rule::Mixin(rule) => rule.get_object_by_id(id),
-  //     Rule::Include(rule) => rule.get_object_by_id(id),
-  //     _ => None,
-  //   }
-  // }
   pub fn get_range(&self) -> &Range {
     match self {
       Rule::Comment(rule) => &rule.range,
