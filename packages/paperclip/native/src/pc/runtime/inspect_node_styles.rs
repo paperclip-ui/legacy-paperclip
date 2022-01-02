@@ -22,7 +22,7 @@ use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
 use crate::engine::engine::__test__evaluate_pc_files;
-use crate::js::runtime::virt as js_virt;
+use crate::script::runtime::virt as script_virt;
 use crate::pc::runtime::virt as pc_virt;
 use cached::proc_macro::cached;
 use cached::SizedCache;
@@ -472,7 +472,7 @@ fn get_frame_width(index: usize, eval_info: &PCEvalInfo) -> Option<u32> {
       }
     })
     .and_then(|width| {
-      if let js_virt::JsValue::JsNumber(number) = width {
+      if let script_virt::Value::Number(number) = width {
         Some(number.value as u32)
       } else {
         None

@@ -10,13 +10,13 @@ import {
   DynamicStringAttributeValuePart,
   isStyleSelector,
   isNode,
-  isJsExpression,
+  isScriptExpression,
   isStyleDeclaration,
   Node,
   NodeKind,
   DynamicStringAttributeValue,
-  JsExpressionKind,
-  JsConjunctionOperatorKind,
+  ScriptExpressionKind,
+  ScriptConjunctionOperatorKind,
   isRule,
   computeVirtJSObject,
   RuleKind,
@@ -25,7 +25,7 @@ import {
   KeyframeRule,
   AnnotationPropertyKind,
   computeVirtJSValue,
-  JsExpression,
+  ScriptExpression,
   StyleExpression,
   StyleRule
 } from "paperclip";
@@ -51,8 +51,8 @@ const MAX_LINES = 1;
 const groupConcat = (docs: Doc[]) => group(concat(docs));
 
 const CONJ_OP_MAP = {
-  [JsConjunctionOperatorKind.And]: "&&",
-  [JsConjunctionOperatorKind.Or]: "||"
+  [ScriptConjunctionOperatorKind.And]: "&&",
+  [ScriptConjunctionOperatorKind.Or]: "||"
 };
 
 export const print = (path: FastPath, options: Options, print): Doc => {
@@ -533,9 +533,9 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         return groupConcat(buffer);
       }
     }
-  } else if (isJsExpression(expr)) {
-    switch (expr.jsKind) {
-      case JsExpressionKind.Reference: {
+  } else if (isScriptExpression(expr)) {
+    switch (expr.scriptKind) {
+      case ScriptExpressionKind.Reference: {
         const buffer = [];
         buffer.push(
           expr.path
@@ -546,22 +546,22 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         );
         return groupConcat(buffer);
       }
-      case JsExpressionKind.String: {
+      case ScriptExpressionKind.String: {
         return groupConcat(['"', expr.value, '"']);
       }
-      case JsExpressionKind.Boolean: {
+      case ScriptExpressionKind.Boolean: {
         return String(expr.value);
       }
-      case JsExpressionKind.Number: {
+      case ScriptExpressionKind.Number: {
         return String(expr.value);
       }
-      case JsExpressionKind.Group: {
+      case ScriptExpressionKind.Group: {
         return groupConcat(["(", path.call(print, "expression"), ")"]);
       }
-      case JsExpressionKind.Not: {
+      case ScriptExpressionKind.Not: {
         return concat(["!", path.call(print, "expression")]);
       }
-      case JsExpressionKind.Conjunction: {
+      case ScriptExpressionKind.Conjunction: {
         return groupConcat([
           path.call(print, "left"),
           " ",
@@ -784,16 +784,16 @@ const stringifyObject = (value: any) => {
 
 const containsNewLine = (ws: string) => /[\n\r]/.test(ws);
 
-const computeJSExpr = (expr: JsExpression) => {
-  switch (expr.jsKind) {
-    case JsExpressionKind.Number:
+const computeJSExpr = (expr: ScriptExpression) => {
+  switch (expr.scriptKind) {
+    case ScriptExpressionKind.Number:
       return Number(expr.value);
-    case JsExpressionKind.Boolean:
-    case JsExpressionKind.String:
+    case ScriptExpressionKind.Boolean:
+    case ScriptExpressionKind.String:
       return expr.value;
-    case JsExpressionKind.Array:
+    case ScriptExpressionKind.Array:
       return expr.values.map(computeJSExpr);
-    case JsExpressionKind.Object:
+    case ScriptExpressionKind.Object:
       return expr.properties.reduce((obj, prop) => {
         obj[prop.key.replace(/['"]/g, "")] = computeJSExpr(prop.value);
         return obj;

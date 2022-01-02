@@ -15,7 +15,7 @@ mod base;
 mod core;
 mod css;
 mod engine;
-mod js;
+mod script;
 mod pc;
 mod coverage;
 

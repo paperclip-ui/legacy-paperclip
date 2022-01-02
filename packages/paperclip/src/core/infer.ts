@@ -7,8 +7,8 @@ import {
   Slot,
   Attribute,
   Fragment,
-  JsExpression,
-  JsExpressionKind,
+  ScriptExpression,
+  ScriptExpressionKind,
   DynamicStringAttributeValuePartKind,
   ReferencePart
 } from "paperclip-utils";
@@ -240,7 +240,7 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
         attribute.value &&
         attribute.value.attrValueKind === AttributeValueKind.Slot
       ) {
-        context = inferJsExpression(attribute.value.script, context);
+        context = inferScriptExpression(attribute.value.script, context);
       }
       if (
         attribute.value &&
@@ -248,7 +248,7 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
       ) {
         for (const part of attribute.value.values) {
           if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
-            context = inferJsExpression(part, context);
+            context = inferScriptExpression(part, context);
           }
         }
       }
@@ -263,11 +263,11 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
       break;
     }
     case AttributeKind.ShorthandAttribute: {
-      context = inferJsExpression(attribute.reference, context);
+      context = inferScriptExpression(attribute.reference, context);
       break;
     }
     case AttributeKind.SpreadAttribute: {
-      context = inferJsExpression(
+      context = inferScriptExpression(
         attribute.script,
         context,
         SPREADED_SHAPE_INFERENCE
@@ -279,7 +279,7 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
 };
 
 const inferSlot = (slot: Slot, context: Context) => {
-  return inferJsExpression(slot.script, context);
+  return inferScriptExpression(slot.script, context);
 };
 
 const inferFragment = (fragment: Fragment, context: Context) => {
@@ -292,13 +292,13 @@ const inferChildren = (children: Node[], context: Context) =>
     context
   );
 
-const inferJsExpression = (
-  expression: JsExpression,
+const inferScriptExpression = (
+  expression: ScriptExpression,
   context: Context,
   defaultInference: Inference = ANY_INFERENCE
 ) => {
-  switch (expression.jsKind) {
-    case JsExpressionKind.Reference: {
+  switch (expression.scriptKind) {
+    case ScriptExpressionKind.Reference: {
       context = addContextInferenceProperty(
         expression.path,
         defaultInference,
@@ -306,29 +306,41 @@ const inferJsExpression = (
       );
       break;
     }
-    case JsExpressionKind.Node: {
+    case ScriptExpressionKind.Node: {
       context = inferNode(expression, false, context);
       break;
     }
-    case JsExpressionKind.Object: {
+    case ScriptExpressionKind.Object: {
       for (const property of expression.properties) {
-        context = inferJsExpression(property.value, context, defaultInference);
+        context = inferScriptExpression(
+          property.value,
+          context,
+          defaultInference
+        );
       }
       break;
     }
-    case JsExpressionKind.Array: {
+    case ScriptExpressionKind.Array: {
       for (const value of expression.values) {
-        context = inferJsExpression(value, context, defaultInference);
+        context = inferScriptExpression(value, context, defaultInference);
       }
       break;
     }
-    case JsExpressionKind.Conjunction: {
-      context = inferJsExpression(expression.left, context, defaultInference);
-      context = inferJsExpression(expression.right, context, defaultInference);
+    case ScriptExpressionKind.Conjunction: {
+      context = inferScriptExpression(
+        expression.left,
+        context,
+        defaultInference
+      );
+      context = inferScriptExpression(
+        expression.right,
+        context,
+        defaultInference
+      );
       break;
     }
-    case JsExpressionKind.Not: {
-      context = inferJsExpression(
+    case ScriptExpressionKind.Not: {
+      context = inferScriptExpression(
         expression.expression,
         context,
         defaultInference

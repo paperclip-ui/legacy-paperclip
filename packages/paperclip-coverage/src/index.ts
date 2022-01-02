@@ -10,7 +10,7 @@ import {
   isAttribute,
   isNode,
   isStyleObject,
-  JsExpression,
+  ScriptExpression,
   Node,
   NodeKind,
   NodeStyleInspection,

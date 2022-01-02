@@ -2,7 +2,7 @@ use serde::Serialize;
 use crate::core::graph::{DependencyGraph, DependencyContent, Dependency};
 use crate::pc::ast as pc_ast;
 use crate::css::ast as css_ast;
-use crate::js::ast as script_ast;
+use crate::script::ast as script_ast;
 use crate::base::ast as base_ast;
 use crate::css::ast::{Sheet};
 use crate::core::ast::{ExprVisitor, Expr};

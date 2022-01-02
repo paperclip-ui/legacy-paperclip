@@ -1,7 +1,7 @@
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{BasicRaws, Range};
 use crate::css::ast as css_ast;
-use crate::js::ast as js_ast;
+use crate::script::ast as script_ast;
 use serde::Serialize;
 use std::fmt;
 use std::str;
@@ -77,7 +77,7 @@ pub enum Node {
 pub enum PCObject<'a> {
   Node(&'a Node),
   CSSObject(css_ast::CSSObject<'a>),
-  JSObject(&'a js_ast::Expression),
+  ScriptObject(&'a script_ast::Expression),
 }
 
 impl<'a> PCObject<'a> {
@@ -85,7 +85,7 @@ impl<'a> PCObject<'a> {
     match self {
       PCObject::Node(node) => node.get_range(),
       PCObject::CSSObject(css) => css.get_range(),
-      PCObject::JSObject(js) => js.get_range(),
+      PCObject::ScriptObject(js) => js.get_range(),
     }
   }
 }
@@ -159,7 +159,7 @@ pub struct Slot {
   // !{slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
-  pub script: js_ast::Expression,
+  pub script: script_ast::Expression,
   pub range: Range,
   pub raws: BasicRaws,
 }
@@ -193,7 +193,7 @@ pub struct AttributeStringValue {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSlotValue {
   pub id: String,
-  pub script: js_ast::Expression,
+  pub script: script_ast::Expression,
   pub range: Range,
 }
 
@@ -228,7 +228,7 @@ impl fmt::Display for AttributeDynamicStringValue {
 pub enum AttributeDynamicStringPart {
   Literal(AttributeDynamicStringLiteral),
   ClassNamePierce(AttributeDynamicStringClassNamePierce),
-  Slot(js_ast::Expression),
+  Slot(script_ast::Expression),
 }
 
 impl AttributeDynamicStringPart {
@@ -323,7 +323,7 @@ pub struct SpreadAttribute {
   // !{...slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
-  pub script: js_ast::Expression,
+  pub script: script_ast::Expression,
   pub range: Range,
 }
 
@@ -336,14 +336,14 @@ impl fmt::Display for SpreadAttribute {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
   pub id: String,
-  pub reference: js_ast::Expression,
+  pub reference: script_ast::Expression,
   pub range: Range,
 }
 
 impl ShorthandAttribute {
   pub fn get_name(&self) -> Result<&String, &'static str> {
     match &self.reference {
-      js_ast::Expression::Reference(reference) => {
+      script_ast::Expression::Reference(reference) => {
         if reference.path.len() == 1 {
           Ok(&reference.path[0].name)
         } else {

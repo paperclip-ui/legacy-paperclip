@@ -69,8 +69,6 @@ pub enum Token<'a> {
   // '
   SingleQuote,
 
-  Continuation(&'a str),
-
   // =
   Equals,
 
@@ -165,23 +163,12 @@ impl<'a> Tokenizer<'a> {
     }
   }
 
-  pub fn next_word_value(&mut self) -> Result<String, ParseError> {
-    let pos = self.scanner.get_u16pos();
-    if let Token::Word(value) = self.next()? {
-      Ok(value.to_string())
-    } else {
-      Err(ParseError::unexpected_token(
-        pos.range_from(self.scanner.get_u16pos()),
-      ))
-    }
-  }
-
   pub fn next(&mut self) -> Result<Token<'a>, ParseError> {
     if self.is_eof() {
       return Err(ParseError::eof());
     }
 
-    let mut c = self
+    let c = self
       .scanner
       .curr_byte()
       .or_else(|_| Err(ParseError::eof()))?;

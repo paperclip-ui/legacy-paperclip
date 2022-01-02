@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::base::ast::ExprTextSource;
 use crate::css::runtime::virt as css_virt;
-use crate::js::runtime::virt as js_virt;
+use crate::script::runtime::virt as script_virt;
 use serde::Serialize;
 use std::collections::BTreeMap;
 use std::fmt;
@@ -48,7 +48,7 @@ pub struct Element {
   pub source_id: String,
 
   // Deprecated, use source_id instead
-  pub annotations: Option<js_virt::JsObject>,
+  pub annotations: Option<script_virt::Object>,
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
@@ -60,7 +60,7 @@ pub struct Element {
 }
 
 impl Element {
-  pub fn get_annotation(&self, name: &String) -> Option<&js_virt::JsValue> {
+  pub fn get_annotation(&self, name: &String) -> Option<&script_virt::Value> {
     self.annotations.as_ref().and_then(|annotations| {
       if let Some(annotation) = annotations.values.get(name) {
         Some(annotation)
@@ -73,11 +73,11 @@ impl Element {
     &self,
     annotation_name: &str,
     property_name: &str,
-  ) -> Option<&js_virt::JsValue> {
+  ) -> Option<&script_virt::Value> {
     self
       .get_annotation(&annotation_name.to_string())
       .and_then(|ann| {
-        if let js_virt::JsValue::JsObject(object) = ann {
+        if let script_virt::Value::Object(object) = ann {
           object.values.get(property_name)
         } else {
           None
@@ -137,7 +137,7 @@ impl Element {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
   pub source_id: String,
-  pub annotations: Option<js_virt::JsObject>,
+  pub annotations: Option<script_virt::Object>,
   pub value: String,
 }
 

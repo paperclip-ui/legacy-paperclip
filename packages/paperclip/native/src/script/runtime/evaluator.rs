@@ -9,14 +9,14 @@ pub fn evaluate<'a>(
   expr: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::Value, RuntimeError> {
   evaluate_expression(&expr, depth, context)
 }
 fn evaluate_expression<'a>(
   expression: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::Value, RuntimeError> {
   match expression {
     ast::Expression::Reference(reference) => evaluate_reference(reference, context),
     ast::Expression::Conjunction(conjunction) => evaluate_conjuction(conjunction, depth, context),
@@ -34,7 +34,7 @@ fn evaluate_group<'a>(
   group: &ast::Group,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::Value, RuntimeError> {
   evaluate_expression(&group.expression, depth, context)
 }
 
@@ -42,7 +42,7 @@ fn evaluate_conjuction<'a>(
   conjunction: &ast::Conjunction,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::Value, RuntimeError> {
   let left = evaluate_expression(&conjunction.left, depth, context)?;
 
   match conjunction.operator {
@@ -76,8 +76,8 @@ fn evaluate_not<'a>(
   not: &ast::Not,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
-  Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
+) -> Result<virt::Value, RuntimeError> {
+  Ok(virt::Value::Boolean(virt::Boolean {
     source_id: not.id.to_string(),
     value: !evaluate_expression(&not.expression, depth, context)?.truthy(),
   }))
@@ -87,26 +87,26 @@ fn evaluate_node<'a>(
   node: &Box<pc_ast::Node>,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
-  let node_option = evaluate_pc_node(node, false, depth, None, &None, context)?;
+) -> Result<virt::Value, RuntimeError> {
+  let node_option = evaluate_pc_node(node, depth, None, &None, context)?;
   if let Some(node) = node_option {
-    Ok(virt::JsValue::JsNode(node))
+    Ok(virt::Value::Node(node))
   } else {
-    Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
+    Ok(virt::Value::Undefined(virt::Undefined {
       source_id: node.get_id().to_string(),
     }))
   }
 }
 
-fn evaluate_string<'a>(value: &ast::Str) -> Result<virt::JsValue, RuntimeError> {
-  Ok(virt::JsValue::JsString(virt::JsString {
+fn evaluate_string<'a>(value: &ast::Str) -> Result<virt::Value, RuntimeError> {
+  Ok(virt::Value::Str(virt::Str {
     source_id: value.id.to_string(),
     value: value.value.to_string(),
   }))
 }
 
-fn evaluate_boolean<'a>(value: &ast::Boolean) -> Result<virt::JsValue, RuntimeError> {
-  Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
+fn evaluate_boolean<'a>(value: &ast::Boolean) -> Result<virt::Value, RuntimeError> {
+  Ok(virt::Value::Boolean(virt::Boolean {
     source_id: value.id.to_string(),
     value: value.value,
   }))
@@ -115,11 +115,11 @@ fn evaluate_boolean<'a>(value: &ast::Boolean) -> Result<virt::JsValue, RuntimeEr
 fn evaluate_number<'a>(
   value: &ast::Number,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::Value, RuntimeError> {
   let value_result = value.value.parse::<f64>();
 
   if let Ok(number) = value_result {
-    Ok(virt::JsValue::JsNumber(virt::JsNumber {
+    Ok(virt::Value::Number(virt::Number {
       source_id: value.id.to_string(),
       value: number,
     }))
@@ -136,40 +136,40 @@ fn evaluate_array<'a>(
   ary: &ast::Array,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
-  let mut js_array = virt::JsArray::new(ary.id.to_string());
+) -> Result<virt::Value, RuntimeError> {
+  let mut script_array = virt::Array::new(ary.id.to_string());
   for value in &ary.values {
-    js_array
+    script_array
       .values
       .push(evaluate_expression(&value, depth, context)?);
   }
-  Ok(virt::JsValue::JsArray(js_array))
+  Ok(virt::Value::Array(script_array))
 }
 
 fn evaluate_object<'a>(
   obj: &ast::Object,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
-  let mut js_object = virt::JsObject::new(obj.id.to_string());
+) -> Result<virt::Value, RuntimeError> {
+  let mut script_object = virt::Object::new(obj.id.to_string());
   for property in &obj.properties {
-    js_object.values.insert(
+    script_object.values.insert(
       property.key.to_string(),
       evaluate_expression(&property.value, depth, context)?,
     );
   }
-  Ok(virt::JsValue::JsObject(js_object))
+  Ok(virt::Value::Object(script_object))
 }
 
 fn evaluate_reference<'a>(
   reference: &ast::Reference,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::Value, RuntimeError> {
   let mut curr = Some(context.data);
 
   for part in &reference.path {
     if let Some(object) = &curr {
-      curr = virt::get_js_value_property(&object, &part.name);
+      curr = virt::get_virt_value_property(&object, &part.name);
     } else {
       return Err(RuntimeError {
         uri: context.uri.to_string(),
@@ -179,10 +179,10 @@ fn evaluate_reference<'a>(
     }
   }
 
-  if let Some(js_value) = curr {
-    Ok(js_value.clone())
+  if let Some(script_value) = curr {
+    Ok(script_value.clone())
   } else {
-    Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
+    Ok(virt::Value::Undefined(virt::Undefined {
       source_id: reference.id.to_string(),
     }))
   }

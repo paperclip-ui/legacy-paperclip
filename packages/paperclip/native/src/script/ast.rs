@@ -6,22 +6,22 @@ use crate::core::ast::{ExprVisitor, Expr};
 
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum JSObject<'a> {
+pub enum ScriptObject<'a> {
   Expression(&'a Expression),
   PCObject(pc_ast::PCObject<'a>),
 }
 
-impl<'a> JSObject<'a> {
+impl<'a> ScriptObject<'a> {
   pub fn get_range(&'a self) -> &'a Range {
     match self {
-      JSObject::Expression(expr) => expr.get_range(),
-      JSObject::PCObject(expr) => expr.get_range(),
+      ScriptObject::Expression(expr) => expr.get_range(),
+      ScriptObject::PCObject(expr) => expr.get_range(),
     }
   }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "jsKind")]
+#[serde(tag = "scriptKind")]
 pub enum Expression {
   Conjunction(Conjunction),
   Group(Group),
@@ -60,7 +60,7 @@ impl Expr for Expression {
     return self.get_id();
   }
   fn wrap<'a>(&'a self) -> pc_ast::PCObject<'a> {
-    return pc_ast::PCObject::JSObject(self);
+    return pc_ast::PCObject::ScriptObject(self);
   }
 }
 

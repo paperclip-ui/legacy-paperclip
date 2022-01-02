@@ -1,6 +1,6 @@
 use crate::pc::ast as pc_ast;
 use crate::css::ast as css_ast;
-use crate::js::ast as script_ast;
+use crate::script::ast as script_ast;
 
 pub trait ExprVisitor<'a> {
   fn visit_node(&mut self, node: &'a pc_ast::Node);
