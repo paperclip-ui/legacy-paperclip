@@ -1,5 +1,5 @@
 import { ExprTextSource } from "../base/virt";
-import { VirtJsObject } from "../script/virt";
+import { VirtScriptObject } from "../script/virt";
 import { VirtualElementSourceInfo, VirtualNode } from "./virt";
 
 export enum ActionKind {
@@ -36,7 +36,7 @@ export type SetElementSourceInfo = {
   value: VirtualElementSourceInfo;
 } & BaseAction<ActionKind.SetElementSourceInfo>;
 export type SetAnnotations = {
-  value?: VirtJsObject;
+  value?: VirtScriptObject;
 } & BaseAction<ActionKind.SetAnnotations>;
 export type RemoveAttribute = {
   name: string;

@@ -20,7 +20,7 @@ type BaseScriptExpression<TKind extends ScriptExpressionKind> = {
 
 export type ScriptNode = Node & BaseScriptExpression<ScriptExpressionKind.Node>;
 
-export type JsObjectProperty = {
+export type ScriptObjectProperty = {
   key: string;
   value: ScriptExpression;
 };
@@ -37,8 +37,8 @@ export type ScriptConjunction = {
   operator: ScriptConjunctionOperatorKind;
 } & BaseScriptExpression<ScriptExpressionKind.Conjunction>;
 
-export type JsObject = {
-  properties: JsObjectProperty[];
+export type ScriptObject = {
+  properties: ScriptObjectProperty[];
   range: StringRange;
 } & BaseScriptExpression<ScriptExpressionKind.Object>;
 
@@ -52,22 +52,22 @@ export type ScriptString = {
   range: StringRange;
 } & BaseScriptExpression<ScriptExpressionKind.String>;
 
-export type JsBoolean = {
+export type ScriptBoolean = {
   value: boolean;
   range: StringRange;
 } & BaseScriptExpression<ScriptExpressionKind.Boolean>;
 
-export type JsNot = {
+export type ScriptNot = {
   expression: ScriptExpression;
   range: StringRange;
 } & BaseScriptExpression<ScriptExpressionKind.Not>;
 
-export type JsGroup = {
+export type ScriptGroup = {
   expression: ScriptExpression;
   range: StringRange;
 } & BaseScriptExpression<ScriptExpressionKind.Group>;
 
-export type JsNumber = {
+export type ScriptNumber = {
   value: number;
   range: StringRange;
 } & BaseScriptExpression<ScriptExpressionKind.Number>;
@@ -85,14 +85,14 @@ export type ReferencePart = {
 export type ScriptExpression =
   | Reference
   | ScriptNode
-  | JsObject
-  | JsGroup
+  | ScriptObject
+  | ScriptGroup
   | ScriptArray
-  | JsNumber
+  | ScriptNumber
   | ScriptString
-  | JsBoolean
+  | ScriptBoolean
   | ScriptConjunction
-  | JsNot;
+  | ScriptNot;
 
 export const traverseJSExpression = (
   expr: ScriptExpression,

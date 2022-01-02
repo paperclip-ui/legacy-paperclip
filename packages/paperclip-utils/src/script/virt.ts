@@ -1,43 +1,43 @@
 import { ExprTextSource } from "../base/virt";
 import { memoize } from "../core/memo";
 
-export enum VirtJsObjectKind {
-  JsObject = "JsObject",
-  ScriptArray = "ScriptArray",
-  JsBoolean = "JsBoolean",
-  JsNumber = "JsNumber",
-  ScriptString = "ScriptString"
+export enum VirtScriptObjectKind {
+  Object = "Object",
+  Array = "Array",
+  Boolean = "Boolean",
+  Number = "Number",
+  Str = "Str"
 }
 
-type BaseVirtJsObject<TKind extends VirtJsObjectKind> = {
+type BaseVirtScriptObject<TKind extends VirtScriptObjectKind> = {
   kind: TKind;
 };
 
-export type VirtJsObject = {
+export type VirtScriptObject = {
   values: Record<string, VirtJsValue>;
   source: ExprTextSource;
-} & BaseVirtJsObject<VirtJsObjectKind.JsObject>;
+} & BaseVirtScriptObject<VirtScriptObjectKind.Object>;
 export type VirtScriptArray = {
   values: VirtJsValue[];
-} & BaseVirtJsObject<VirtJsObjectKind.ScriptArray>;
-export type VirtJsNumber = {
+} & BaseVirtScriptObject<VirtScriptObjectKind.Array>;
+export type VirtScriptNumber = {
   value: number;
-} & BaseVirtJsObject<VirtJsObjectKind.JsNumber>;
-export type VirtJsBoolean = {
+} & BaseVirtScriptObject<VirtScriptObjectKind.Number>;
+export type VirtScriptBoolean = {
   value: boolean;
-} & BaseVirtJsObject<VirtJsObjectKind.JsBoolean>;
+} & BaseVirtScriptObject<VirtScriptObjectKind.Boolean>;
 export type VirtScriptString = {
   value: string;
-} & BaseVirtJsObject<VirtJsObjectKind.ScriptString>;
+} & BaseVirtScriptObject<VirtScriptObjectKind.Str>;
 
 export type VirtJsValue =
-  | VirtJsObject
+  | VirtScriptObject
   | VirtScriptArray
-  | VirtJsNumber
-  | VirtJsBoolean
+  | VirtScriptNumber
+  | VirtScriptBoolean
   | VirtScriptString;
 
-export const computeVirtJSObject = memoize((obj: VirtJsObject) => {
+export const computeVirtJSObject = memoize((obj: VirtScriptObject) => {
   const values = {};
   for (const key in obj.values) {
     values[key] = computeVirtJSValue(obj.values[key]);
@@ -48,7 +48,7 @@ export const computeVirtJSObject = memoize((obj: VirtJsObject) => {
 export const toVirtJsValue = memoize((value: any) => {
   if (Array.isArray(value)) {
     return {
-      kind: VirtJsObjectKind.ScriptArray,
+      kind: VirtScriptObjectKind.Array,
       values: value.map(toVirtJsValue)
     };
   } else if (value && typeof value === "object") {
@@ -57,22 +57,22 @@ export const toVirtJsValue = memoize((value: any) => {
       values[k] = toVirtJsValue(value[k]);
     }
     return {
-      kind: VirtJsObjectKind.JsObject,
+      kind: VirtScriptObjectKind.Object,
       values
     };
   } else if (typeof value === "number") {
     return {
-      kind: VirtJsObjectKind.JsNumber,
+      kind: VirtScriptObjectKind.Number,
       value
     };
   } else if (typeof value === "string") {
     return {
-      kind: VirtJsObjectKind.ScriptString,
+      kind: VirtScriptObjectKind.Str,
       value
     };
   } else if (typeof value === "boolean") {
     return {
-      kind: VirtJsObjectKind.JsBoolean,
+      kind: VirtScriptObjectKind.Boolean,
       value
     };
   }
@@ -80,15 +80,15 @@ export const toVirtJsValue = memoize((value: any) => {
 
 export const computeVirtJSValue = memoize((obj: VirtJsValue) => {
   switch (obj.kind) {
-    case VirtJsObjectKind.JsObject: {
+    case VirtScriptObjectKind.Object: {
       return computeVirtJSObject(obj);
     }
-    case VirtJsObjectKind.ScriptArray: {
+    case VirtScriptObjectKind.Array: {
       return obj.values.map(computeVirtJSValue);
     }
-    case VirtJsObjectKind.ScriptString:
-    case VirtJsObjectKind.JsBoolean:
-    case VirtJsObjectKind.JsNumber: {
+    case VirtScriptObjectKind.Str:
+    case VirtScriptObjectKind.Boolean:
+    case VirtScriptObjectKind.Number: {
       return obj.value;
     }
   }

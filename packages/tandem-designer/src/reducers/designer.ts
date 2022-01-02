@@ -38,7 +38,7 @@ import {
   VirtualFrame,
   toVirtJsValue,
   computeVirtJSObject,
-  VirtJsObjectKind,
+  VirtScriptObjectKind,
   NodeAnnotations,
   isPaperclipFile,
   EngineDelegateEventKind,
@@ -128,7 +128,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
 
   if (!frame.annotations) {
     frame.annotations = {
-      kind: VirtJsObjectKind.JsObject,
+      kind: VirtScriptObjectKind.Object,
       values: {},
 
       // null to indicate insertion
