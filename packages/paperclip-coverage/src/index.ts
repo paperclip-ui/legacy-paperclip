@@ -34,6 +34,8 @@ export const generateCodeCoverageReport = async (
   filePaths: string[],
   engine: EngineDelegate
 ) => {
+  engine.includeUsedExprIds();
+
   const fileReports = await generateFileReports(filePaths, engine);
 
   // TODO - calc summary from files coverage
@@ -115,10 +117,16 @@ const generateMissedFileStatements = async (
   engine: EngineDelegate
 ) => {
   const missedStatements: Record<number, boolean> = {};
-  await engine.open(filePath);
+  const result = await engine.open(filePath);
   const ast = engine.getLoadedAst(filePath);
 
   const eachExpression = eachAnalyzableExpr(expr => {
+    if (result.kind === EvaluatedDataKind.PC) {
+      if (result.usedExprIds.includes(expr.id)) {
+        return;
+      }
+    }
+
     missedStatements[expr.id] = true;
   });
 

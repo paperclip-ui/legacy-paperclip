@@ -19,6 +19,7 @@ use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
 use crate::css::runtime::export as css_export;
+use crate::coverage::reporter::{generate_coverage_report, CoverageReport};
 use crate::pc::runtime::inspect_node_styles::{
   inspect_node_styles, InspectionOptions, NodeInspectionInfo,
 };
@@ -150,6 +151,20 @@ impl Engine {
     };
 
     engine
+  }
+
+  pub async fn generate_coverage_report(&mut self) -> Result<CoverageReport, EngineError> {
+    self.include_used_exprs = true;
+    self.reset();
+
+    let keys: Vec<String> = self.dependency_graph.dependencies.keys().cloned().collect();
+
+    for uri in keys {
+      self.run(&uri).await?;
+    }
+    let report = generate_coverage_report(&self.dependency_graph, &self.evaluated_data);
+    self.include_used_exprs = false;
+    Ok(report)
   }
 
   pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {

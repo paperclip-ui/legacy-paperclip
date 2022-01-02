@@ -5,6 +5,7 @@ use crate::js::ast as js_ast;
 use serde::Serialize;
 use std::fmt;
 use std::str;
+use crate::core::ast::{ExprVisitor, Expr, walk_exprs};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ElementRaws {
@@ -36,6 +37,12 @@ pub struct Element {
   pub tag_name: String,
   pub attributes: Vec<Attribute>,
   pub children: Vec<Node>,
+}
+
+impl Element {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.children, visitor);
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -94,19 +101,6 @@ impl Node {
       Node::Slot(value) => &value.range,
     }
   }
-  pub fn walk<F: FnMut(&Node) -> bool>(&self, each: &mut F) -> bool {
-    if !(each)(self) {
-      return false;
-    }
-    if let Some(children) = get_children(self) {
-      for child in children {
-        if !child.walk(each) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
   pub fn get_id(&self) -> &String {
     match self {
       Node::Text(value) => &value.id,
@@ -117,38 +111,45 @@ impl Node {
       Node::Slot(value) => &value.id,
     }
   }
-  pub fn get_object_by_id<'a>(&self, id: &String) -> Option<PCObject> {
-    if self.get_id() == id {
-      return Some(PCObject::Node(self));
+  pub fn get_children<'a>(&'a self) -> Option<&'a Vec<Node>> {
+    match &self {
+      Node::Element(root) => Some(&root.children),
+      Node::Fragment(root) => Some(&root.children),
+      _ => None,
+    }
+  }
+}
+
+impl Expr for Node {
+  fn walk<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
+    visitor.visit_node(self);
+    if !visitor.should_continue() {
+      return;
     }
 
-    if let Node::Slot(slot) = self {
-      return slot
-        .script
-        .get_object_by_id(id)
-        .and_then(|object| match object {
-          js_ast::JSObject::PCObject(obj) => Some(obj),
-          js_ast::JSObject::Expression(expr) => match expr {
-            js_ast::Expression::Node(node) => Some(PCObject::Node(node)),
-            _ => Some(PCObject::JSObject(expr)),
-          },
-        });
-    } else if let Node::StyleElement(style_element) = self {
-      return style_element
-        .sheet
-        .get_object_by_id(id)
-        .and_then(|object| Some(PCObject::CSSObject(object)));
-    }
+    match self {
+      Node::Slot(slot) => {
+        slot.walk_inside(visitor);
+      },
+      Node::StyleElement(style) => {
+        style.walk_inside(visitor);
+      },
+      Node::Fragment(fragment) => {
+        fragment.walk_inside(visitor);
+      },
+      Node::Element(element) => {
+        element.walk_inside(visitor);
+      },
+      Node::Comment(_) | Node::Text(_) => {
 
-    get_children(self).and_then(|children| {
-      for child in children {
-        let nested = child.get_object_by_id(id);
-        if nested != None {
-          return nested;
-        }
       }
-      None
-    })
+    }
+  }
+  fn get_id<'a>(&'a self) -> &'a String {
+    self.get_id()
+  }
+  fn wrap<'a>(&'a self) -> PCObject<'a> {
+    return PCObject::Node(self)
   }
 }
 
@@ -161,6 +162,12 @@ pub struct Slot {
   pub script: js_ast::Expression,
   pub range: Range,
   pub raws: BasicRaws,
+}
+
+impl Slot {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    self.script.walk(visitor);
+  }
 }
 
 impl fmt::Display for Node {
@@ -213,11 +220,6 @@ impl fmt::Display for AttributeDynamicStringValue {
       }
     }
     Ok(())
-    // match &self {
-    //   AttributeValue::String(value) => write!(f, "{}", value.to_string()),
-    //   AttributeValue::Slot(script) => write!(f, "{{{}}}", script.to_string()),
-    //   AttributeValue::DyanmicString(script) => write!(f, "{{{}}}", script.to_string()),
-    // }
   }
 }
 
@@ -426,6 +428,12 @@ pub struct StyleElement {
   pub range: Range,
 }
 
+impl StyleElement {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    self.sheet.walk(visitor);
+  }
+}
+
 impl fmt::Display for StyleElement {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     fmt_start_tag("style", &self.attributes, f)?;
@@ -442,6 +450,13 @@ pub struct Fragment {
   pub children: Vec<Node>,
 }
 
+
+impl Fragment {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.children, visitor);
+  }
+}
+
 impl fmt::Display for Fragment {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "")?;
@@ -452,18 +467,11 @@ impl fmt::Display for Fragment {
     Ok(())
   }
 }
-pub fn get_children<'a>(expr: &'a Node) -> Option<&'a Vec<Node>> {
-  match &expr {
-    Node::Element(root) => Some(&root.children),
-    Node::Fragment(root) => Some(&root.children),
-    _ => None,
-  }
-}
 
 pub fn get_imports<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
   let mut imports = vec![];
 
-  let children = get_children(root_expr);
+  let children = root_expr.get_children();
 
   if children != None {
     for child in children.unwrap() {
@@ -497,7 +505,7 @@ pub fn get_tag_namespace<'a>(element: &'a Element) -> Option<String> {
 pub fn get_parts<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
   let mut parts = vec![];
 
-  let children = get_children(root_expr);
+  let children = root_expr.get_children();
 
   if children != None {
     for child in children.unwrap() {

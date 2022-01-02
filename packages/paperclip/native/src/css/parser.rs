@@ -234,7 +234,7 @@ fn parse_style_rule2<'a, 'b>(
 
 fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>, Option<&'a [u8]>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<Rule>, Option<&'a [u8]>), ParseError> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.scanner.get_u16pos();
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
@@ -922,9 +922,9 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
 
 fn parse_declarations_and_children<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<Rule>), ParseError> {
   let mut declarations = vec![];
-  let mut children = vec![];
+  let mut children: Vec<Rule> = vec![];
 
   // START HERE - need to remove superfluous
   let mut raw_before = eat_superfluous(context)?;
@@ -937,14 +937,14 @@ fn parse_declarations_and_children<'a, 'b>(
     let tok = context.tokenizer.peek(1)?;
 
     if let Token::Byte(b'&') = tok {
-      children.push(parse_style_rule2(context, raw_before, false)?);
+      children.push(Rule::Style(parse_style_rule2(context, raw_before, false)?));
     } else if tok == Token::At {
       declarations.push(parse_at_declaration(context, raw_before)?);
     } else {
       if is_next_declaration(context)? {
         declarations.push(parse_key_value_declaration(context, raw_before)?);
       } else {
-        children.push(parse_style_rule2(context, raw_before, true)?);
+        children.push(Rule::Style(parse_style_rule2(context, raw_before, true)?));
       }
     }
     raw_before = eat_superfluous(context)?;

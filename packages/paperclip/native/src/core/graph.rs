@@ -3,6 +3,7 @@ use crate::base::ast::Range;
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
+use crate::core::ast::find_expr_by_id;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use crc::crc32;
@@ -86,11 +87,10 @@ impl DependencyGraph {
     source_id: &String,
   ) -> Option<(String, pc_ast::PCObject<'a>)> {
     for (uri, dep) in self.dependencies.iter() {
+      
       let option: Option<pc_ast::PCObject<'a>> = match &dep.content {
-        DependencyContent::StyleSheet(sheet) => sheet
-          .get_object_by_id(source_id)
-          .and_then(|css_object| Some(pc_ast::PCObject::CSSObject(css_object))),
-        DependencyContent::Node(node) => node.get_object_by_id(source_id),
+        DependencyContent::StyleSheet(sheet) => find_expr_by_id(source_id.clone(), sheet),
+        DependencyContent::Node(node) => find_expr_by_id(source_id.clone(), node),
       };
 
       if let Some(obj) = option {

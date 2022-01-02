@@ -51,6 +51,7 @@ export type EvaluatedPCData = {
 
   // TODO - change to declarations, or something to imply declarations in the file. Definitions maybe?
   exports: PCExports;
+  usedExprIds?: string[];
 } & BaseEvaluatedData<EvaluatedDataKind.PC>;
 
 export type EvaluatedCSSData = {

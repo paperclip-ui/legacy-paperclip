@@ -17,6 +17,7 @@ mod css;
 mod engine;
 mod js;
 mod pc;
+mod coverage;
 
 use crate::pc::runtime::evaluator::EngineMode;
 use crate::pc::runtime::inspect_node_styles::InspectionOptions;
@@ -56,7 +57,6 @@ impl NativeEngine {
     file_exists: js_sys::Function,
     resolve_file: js_sys::Function,
     get_lint_config: js_sys::Function,
-    include_used_exprs: bool,
     engine_mode: NativeEngineMode,
   ) -> NativeEngine {
     console_error_panic_hook::set_once();
@@ -87,13 +87,17 @@ impl NativeEngine {
             .into_serde()
             .unwrap_or(None)
         })),
-        include_used_exprs,
+        false,
         match engine_mode {
           NativeEngineMode::SingleFrame => EngineMode::SingleFrame,
           NativeEngineMode::MultiFrame => EngineMode::MultiFrame,
         },
       ),
     }
+  }
+  pub fn generate_coverage_report(&mut self) -> JsValue {
+    let result = block_on(self.target.generate_coverage_report());
+    JsValue::from_serde(&result).unwrap()
   }
   pub fn load(&mut self, uri: String) -> JsValue {
     let result = block_on(self.target.load(&uri));

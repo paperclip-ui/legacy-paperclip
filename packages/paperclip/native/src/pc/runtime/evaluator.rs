@@ -1,6 +1,7 @@
 use super::super::ast;
 use super::cache::Cache;
 use super::export::{ComponentExport, Exports, Property};
+use crate::core::ast::ExprVisitor;
 use super::virt;
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, ExprTextSource, Range};
@@ -14,12 +15,14 @@ use crate::core::id_generator::IDGenerator;
 use crate::css::runtime::evaluator::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
-use crate::js::ast as js_ast;
+use crate::css::ast as css_ast;
+use crate::js::ast as script_ast;
 use crate::js::runtime::evaluator::evaluate as evaluate_js;
 use crate::js::runtime::virt as js_virt;
 use crc::crc32;
 use regex::Regex;
 use serde::Serialize;
+use crate::core::ast::Expr;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::iter::FromIterator;
 
@@ -92,6 +95,9 @@ pub struct EvalInfo {
   pub sheet: css_virt::CSSSheet,
   pub preview: virt::Node,
   pub exports: Exports,
+  #[serde(rename = "usedExprIds")]
+  pub used_expr_ids: Option<HashSet<String>>
+
 }
 
 pub fn evaluate<'a>(
@@ -108,7 +114,6 @@ pub fn evaluate<'a>(
     &Range::nil(),
   ))?;
 
-  let used_expr_ids: Vec<&'a String> = Vec::new();
 
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(node_expr.get_id().to_string()));
@@ -144,6 +149,11 @@ pub fn evaluate<'a>(
       preview,
       all_imported_sheet_uris: graph.flatten_dependencies(uri),
       dependencies: dep.dependencies.clone(),
+      used_expr_ids: if include_used_exprs {
+        Some(context.used_expr_ids.clone())
+      } else {
+        None
+      },
       exports: Exports {
         style: css_exports,
         components: collect_component_exports(&node_expr, &context)?,
@@ -164,7 +174,7 @@ fn collect_component_exports<'a>(
 ) -> Result<BTreeMap<String, ComponentExport>, RuntimeError> {
   let mut exports: BTreeMap<String, ComponentExport> = BTreeMap::new();
 
-  let children = ast::get_children(root);
+  let children = root.get_children();
 
   if let Some(children) = children {
     for child in children.iter() {
@@ -204,10 +214,13 @@ fn collect_component_exports<'a>(
   Ok(exports)
 }
 
-fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
-  let mut properties: BTreeMap<String, Property> = BTreeMap::new();
 
-  node.walk(&mut |node| -> bool {
+struct CollectNodePropVisitor {
+  pub properties: BTreeMap<String, Property>
+}
+
+impl<'a> ExprVisitor<'a> for CollectNodePropVisitor {
+  fn visit_node(&mut self, node: &'a ast::Node) {
     match node {
       ast::Node::Element(element) => {
         for attr in &element.attributes {
@@ -218,7 +231,7 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
                 match value {
                   // <a key={value} />
                   ast::AttributeValue::Slot(slot) => {
-                    add_script_property(&slot.script, &mut properties);
+                    add_script_property(&slot.script, &mut self.properties);
                   }
 
                   // <a key="value {anotherValue}" />
@@ -226,7 +239,7 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
                     for val in &d_string.values {
                       match val {
                         ast::AttributeDynamicStringPart::Slot(slot) => {
-                          add_script_property(&slot, &mut properties);
+                          add_script_property(&slot, &mut self.properties);
                         }
                         ast::AttributeDynamicStringPart::ClassNamePierce(_)
                         | ast::AttributeDynamicStringPart::Literal(_) => {}
@@ -240,45 +253,61 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
 
             // <a {...props} />
             ast::Attribute::SpreadAttribute(spread) => {
-              add_script_property(&spread.script, &mut properties);
+              add_script_property(&spread.script, &mut self.properties);
             }
 
             // <a class:b="c" />
             ast::Attribute::PropertyBoundAttribute(p_attr) => {
-              add_property(&p_attr.binding_name, true, &mut properties);
+              add_property(&p_attr.binding_name, true, &mut self.properties);
             }
             // <a {props} />
             ast::Attribute::ShorthandAttribute(s_attr) => {
-              add_script_property(&s_attr.reference, &mut properties);
+              add_script_property(&s_attr.reference, &mut self.properties);
             }
           }
         }
       }
       ast::Node::Slot(slot) => {
-        add_script_property(&slot.script, &mut properties);
+        add_script_property(&slot.script, &mut self.properties);
       }
       _ => {}
     }
-    true
-  });
-
-  properties
+  }
+  fn should_continue(&self) -> bool {
+    return true;
+  }
+  fn visit_script_expression(&mut self, rule: &'a script_ast::Expression) {}
+  fn visit_css_rule(&mut self, rule: &'a css_ast::Rule) {}
+  fn visit_css_decl(&mut self, decl: &'a css_ast::Declaration) {}
+  fn visit_css_sheet(&mut self, decl: &'a css_ast::Sheet) {}
 }
 
-fn add_script_property(script: &js_ast::Expression, properties: &mut BTreeMap<String, Property>) {
+fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
+  let mut properties: BTreeMap<String, Property> = BTreeMap::new();
+
+  let mut visitor = CollectNodePropVisitor {
+    properties: BTreeMap::new()
+  };
+
+  node.walk(&mut visitor);
+
+  visitor.properties
+}
+
+fn add_script_property(script: &script_ast::Expression, properties: &mut BTreeMap<String, Property>) {
   match script {
-    js_ast::Expression::Reference(reference) => {
+    script_ast::Expression::Reference(reference) => {
       let part = reference.path.get(0).unwrap();
       add_property(&part.name, part.optional, properties);
     }
-    js_ast::Expression::Conjunction(conjunction) => {
+    script_ast::Expression::Conjunction(conjunction) => {
       add_script_property(&conjunction.left, properties);
       add_script_property(&conjunction.right, properties);
     }
-    js_ast::Expression::Group(group) => {
+    script_ast::Expression::Group(group) => {
       add_script_property(&group.expression, properties);
     }
-    js_ast::Expression::Node(node) => {
+    script_ast::Expression::Node(node) => {
       properties.extend(collect_node_properties(&node));
     }
     _ => {}
@@ -347,7 +376,7 @@ fn find_child<TTest>(parent: &ast::Node, test: TTest) -> Option<&ast::Node>
 where
   TTest: Fn(&ast::Element) -> bool,
 {
-  match ast::get_children(parent) {
+  match parent.get_children() {
     Some(children) => children.iter().find(|child| {
       if let ast::Node::Element(element) = child {
         if test(element) {
@@ -420,7 +449,7 @@ fn evaluate_node_sheet<'a>(
     }
   }
 
-  let children_option = ast::get_children(&current);
+  let children_option = current.get_children();
   if let Some(children) = children_option {
     // style elements are only allowed in root, so no need to traverse
     for child in children {
@@ -435,7 +464,7 @@ fn evaluate_node_sheet<'a>(
         if let Some(value) = &kv.value {
           if let ast::AttributeValue::Slot(slot) = value {
             traverse_js_expr_css(&slot.script, &mut |expr| {
-              if let js_ast::Expression::Node(node) = expr {
+              if let script_ast::Expression::Node(node) = expr {
                 evaluate_node_sheet(uri, Some(&current), &*node, sheet, css_exports, context)?;
               }
               Ok(())
@@ -448,7 +477,7 @@ fn evaluate_node_sheet<'a>(
 
   if let ast::Node::Slot(slot) = current {
     traverse_js_expr_css(&slot.script, &mut |expr| {
-      if let js_ast::Expression::Node(node) = expr {
+      if let script_ast::Expression::Node(node) = expr {
         evaluate_node_sheet(uri, Some(&current), &*node, sheet, css_exports, context)?;
       }
       Ok(())
@@ -459,32 +488,32 @@ fn evaluate_node_sheet<'a>(
 }
 
 pub fn traverse_js_expr_css<TEach>(
-  current: &js_ast::Expression,
+  current: &script_ast::Expression,
   each: &mut TEach,
 ) -> Result<(), RuntimeError>
 where
-  TEach: FnMut(&js_ast::Expression) -> Result<(), RuntimeError>,
+  TEach: FnMut(&script_ast::Expression) -> Result<(), RuntimeError>,
 {
   each(current)?;
 
   match current {
-    js_ast::Expression::Conjunction(expr) => {
+    script_ast::Expression::Conjunction(expr) => {
       traverse_js_expr_css(&expr.left, each)?;
       traverse_js_expr_css(&expr.right, each)?;
     }
-    js_ast::Expression::Group(expr) => {
+    script_ast::Expression::Group(expr) => {
       traverse_js_expr_css(&expr.expression, each)?;
     }
-    js_ast::Expression::Not(expr) => {
+    script_ast::Expression::Not(expr) => {
       traverse_js_expr_css(&expr.expression, each)?;
     }
-    js_ast::Expression::Array(expr) => {
+    script_ast::Expression::Array(expr) => {
       for value in &expr.values {
         traverse_js_expr_css(&value, each)?;
       }
     }
-    js_ast::Expression::Node(expr) => {}
-    js_ast::Expression::Object(expr) => {
+    script_ast::Expression::Node(expr) => {}
+    script_ast::Expression::Object(expr) => {
       for property in &expr.properties {
         traverse_js_expr_css(&property.value, each)?;
       }
@@ -1769,7 +1798,7 @@ fn evaluate_attribute_key_value_string<'a>(
 }
 
 fn evaluate_attribute_slot<'a>(
-  script: &js_ast::Expression,
+  script: &script_ast::Expression,
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {

@@ -103,6 +103,10 @@ export class EngineDelegate {
     return this;
   }
 
+  includeUsedExprIds() {
+    this._native.include_used_expr_ids();
+  }
+
   resolveFile(fromPath: string, toPath: string) {
     return this._io.resolveFile(fromPath, toPath);
   }
@@ -211,6 +215,11 @@ export class EngineDelegate {
     uri: string
   ): VirtualNodeSourceInfo {
     return this._native.get_virtual_node_source_info(nodePath, uri);
+  }
+  generateCoverageReport() {
+    return this._tryCatch(() => {
+      return mapResult(this._native.generate_coverage_report());
+    });
   }
   getLoadedAst(uri: string): DependencyContent {
     return this._tryCatch(() => this._native.get_loaded_ast(uri));

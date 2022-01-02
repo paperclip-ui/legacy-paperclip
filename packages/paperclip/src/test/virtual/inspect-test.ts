@@ -111,7 +111,7 @@ describe(__filename + "#", () => {
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-5-1",
+                sourceId: "80f4925f-6-1",
                 name: "color",
                 value: "red",
                 active: true
@@ -207,7 +207,7 @@ describe(__filename + "#", () => {
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-3-1",
+                sourceId: "80f4925f-4-1",
                 name: "color",
                 value: "red",
                 active: true
@@ -273,12 +273,12 @@ describe(__filename + "#", () => {
               ]
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-1-4",
+            sourceId: "80f4925f-1-5",
             sourceUri: "/entry.pc",
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-1-3",
+                sourceId: "80f4925f-1-4",
                 name: "color",
                 value: "blue",
                 active: true
@@ -350,12 +350,12 @@ describe(__filename + "#", () => {
               scope: null
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-1-2",
+            sourceId: "80f4925f-1-3",
             sourceUri: "/entry.pc",
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-1-1",
+                sourceId: "80f4925f-1-2",
                 name: "color",
                 value: "red",
                 active: true
@@ -848,12 +848,12 @@ describe(__filename + "#", () => {
               ]
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-3-2",
+            sourceId: "80f4925f-4-5",
             sourceUri: "/entry.pc",
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-3-1",
+                sourceId: "80f4925f-4-4",
                 name: "ab",
                 value: "red",
                 active: true
@@ -909,12 +909,12 @@ describe(__filename + "#", () => {
               }
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-3-4",
+            sourceId: "80f4925f-4-9",
             sourceUri: "/entry.pc",
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-3-3",
+                sourceId: "80f4925f-4-8",
                 name: "ab",
                 value: "blue",
                 active: false
@@ -1164,7 +1164,7 @@ describe(__filename + "#", () => {
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-5-1",
+                sourceId: "80f4925f-6-1",
                 name: "color",
                 value: "var(--color)",
                 active: true
@@ -1182,12 +1182,12 @@ describe(__filename + "#", () => {
               scope: null
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-1-4",
+            sourceId: "80f4925f-1-6",
             sourceUri: "/entry.pc",
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-1-3",
+                sourceId: "80f4925f-1-5",
                 name: "--color",
                 value: "blue",
                 active: true
@@ -1203,12 +1203,12 @@ describe(__filename + "#", () => {
               value: ":root"
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-1-2",
+            sourceId: "80f4925f-1-3",
             sourceUri: "/entry.pc",
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-1-1",
+                sourceId: "80f4925f-1-2",
                 name: "--color",
                 value: "red",
                 active: false
@@ -1278,7 +1278,7 @@ describe(__filename + "#", () => {
             media: null,
             declarations: [
               {
-                sourceId: "80f4925f-6-1",
+                sourceId: "80f4925f-8-1",
                 name: "color",
                 value: "var(--color)",
                 active: true
@@ -1369,7 +1369,7 @@ describe(__filename + "#", () => {
               ]
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-1-5",
+            sourceId: "80f4925f-1-8",
             sourceUri: "/entry.pc",
             media: {
               conditionText: "screen and (max-width: 500px)",
@@ -1377,7 +1377,7 @@ describe(__filename + "#", () => {
             },
             declarations: [
               {
-                sourceId: "80f4925f-1-4",
+                sourceId: "80f4925f-1-7",
                 name: "background",
                 value: "red",
                 active: true
@@ -1437,7 +1437,7 @@ describe(__filename + "#", () => {
               ]
             },
             pseudoElementName: null,
-            sourceId: "80f4925f-1-5",
+            sourceId: "80f4925f-1-8",
             sourceUri: "/entry.pc",
             media: {
               conditionText: "screen and (max-width: 500px)",
@@ -1445,7 +1445,7 @@ describe(__filename + "#", () => {
             },
             declarations: [
               {
-                sourceId: "80f4925f-1-4",
+                sourceId: "80f4925f-1-7",
                 name: "background",
                 value: "red",
                 active: true

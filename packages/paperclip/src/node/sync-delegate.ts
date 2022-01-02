@@ -69,18 +69,10 @@ export const createEngineDelegate = (options = {}, onCrash: any = () => {}) => {
     fileExists,
     resolveFile,
     getLintConfig,
-    mode = EngineMode.SingleFrame,
-    includedUsedExpressions = false
+    mode = EngineMode.SingleFrame
   } = io;
   return new EngineDelegate(
-    NativeEngine.new(
-      readFile,
-      fileExists,
-      resolveFile,
-      getLintConfig,
-      includedUsedExpressions,
-      mode
-    ),
+    NativeEngine.new(readFile, fileExists, resolveFile, getLintConfig, mode),
     io,
     onCrash ||
       function(e) {
