@@ -22,6 +22,7 @@ mod script;
 use crate::pc::runtime::evaluator::EngineMode;
 use crate::pc::runtime::inspect_node_styles::InspectionOptions;
 use crate::pc::runtime::lint::LintOptions;
+use crate::coverage::reporter::CoverageReport;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use engine::engine::Engine;

@@ -14,7 +14,6 @@ use crate::css::runtime::diff::diff as diff_css;
 use crate::css::runtime::evaluator::evaluate as evaluate_css;
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::mutation as css_mutation;
-use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
@@ -77,23 +76,12 @@ pub struct DiffedEvent<'a> {
 }
 
 #[derive(Debug, PartialEq, Serialize)]
-pub struct NodeParsedEvent {
-  pub uri: String,
-  pub node: pc_ast::Node,
-}
-
-#[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "kind")]
 pub enum EngineEvent<'a> {
   Evaluated(EvaluatedEvent<'a>),
   Deleted(DeletedFileEvent),
   Diffed(DiffedEvent<'a>),
-  NodeParsed(NodeParsedEvent),
   Error(EngineError),
-}
-
-pub struct EvalOptions {
-  part: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -137,7 +125,7 @@ impl Engine {
     include_used_exprs: bool,
     mode: EngineMode,
   ) -> Engine {
-    let mut engine = Engine {
+    let engine = Engine {
       listeners: vec![],
       evaluated_data: BTreeMap::new(),
       needs_reval: BTreeMap::new(),
@@ -160,7 +148,7 @@ impl Engine {
     for uri in keys {
       self.run(&uri).await?;
     }
-    let report = generate_coverage_report(&self.dependency_graph, &self.evaluated_data);
+    let report = generate_coverage_report(&self.dependency_graph, &self.evaluated_data, &mut self.vfs).await;
     self.include_used_exprs = false;
     Ok(report)
   }
@@ -212,7 +200,7 @@ impl Engine {
       .await;
 
     match load_result {
-      Ok(loaded_uris) => {
+      Ok(_loaded_uris) => {
         let mut stack = HashSet::new();
 
         self
@@ -549,57 +537,8 @@ mod tests {
       EngineMode::SingleFrame,
     );
 
-    let result = block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
+    block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
   }
-
-  // #[test]
-  // fn can_return_source_info_for_various_cases() {
-  //   let cases = [
-  //     (
-  //       "<div />",
-  //       vec![0],
-  //       Some(ast::ExprSource {
-  //         id: "406d2856".to_string(),
-  //         text_source: Some(ast::ExprTextSource {
-  //           uri: "/entry.pc".to_string(),
-  //           location: ast::Location { start: 0, end: 7 },
-  //         }),
-  //       }),
-  //     ),
-  //     (
-  //       "{<div />}",
-  //       vec![0],
-  //       Some(ast::ExprSource {
-  //         id: "769346c8".to_string(),
-  //         text_source: Some(ast::ExprTextSource {
-  //           uri: "/entry.pc".to_string(),
-  //           location: ast::Location { start: 1, end: 8 },
-  //         }),
-  //       }),
-  //     ),
-  //   ];
-
-  //   for (content, path, output) in &cases {
-  //     let content = content.to_string();
-
-  //     let mut engine = Engine::new(
-  //       Box::new(move |uri| content.to_string()),
-  //       Box::new(move |uri| true),
-  //       Box::new(|_, _| Some("".to_string())),
-  //       None,
-  //       EngineMode::SingleFrame,
-  //     );
-
-  //     block_on(engine.load(&"/entry.pc".to_string()));
-
-  //     let info = engine.get_virtual_node_source_info(&pc_virt::NodeSource {
-  //       path: path.clone(),
-  //       document_uri: "/entry.pc".to_string(),
-  //     });
-
-  //     assert_eq!(&info, output);
-  //   }
-  // }
 }
 
 pub fn __test__evaluate_pc_files<'a>(

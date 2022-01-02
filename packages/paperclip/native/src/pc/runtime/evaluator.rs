@@ -879,8 +879,6 @@ fn create_component_instance_data<'a>(
 ) -> Result<script_virt::Value, RuntimeError> {
   let mut data = evaluate_attributes(instance_element, depth, context)?;
 
-  println!("OKOKOKOK");
-
   let mut script_children = script_virt::Array::new(instance_element.id.to_string());
 
   let (ret_children, contains_style) =
@@ -1179,6 +1177,7 @@ fn evaluate_attributes(
           let value_option = object.values.get(&kv_attr.binding_name);
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
+              use_expr_id(&kv_attr.id, context);
               let value = if let Some(kv_value) = &kv_attr.value {
                 evaluate_attribute_value(
                   &element.tag_name,
@@ -1239,16 +1238,21 @@ fn stringify_attribute_value(key: &String, value: &script_virt::Value) -> String
 }
 
 fn evaluate_import_element<'a>(
-  _element: &ast::Element,
-  _context: &'a mut Context,
+  element: &ast::Element,
+  context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+  use_expr_id(&element.id, context);
+  for attr in &element.attributes {
+    use_expr_id(&attr.get_id(), context);
+  }
   Ok(None)
 }
 
 fn evaluate_style_element<'a>(
-  _element: &ast::StyleElement,
-  _context: &'a mut Context,
+  element: &ast::StyleElement,
+  context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+  use_expr_id(&element.id, context);
   Ok(None)
 }
 
@@ -1264,7 +1268,8 @@ fn evaluate_children<'a>(
 
   for child_expr in children_expr {
     match child_expr {
-      ast::Node::StyleElement(_) => {
+      ast::Node::StyleElement(element) => {
+        use_expr_id(&element.id, context);
         contains_style = true;
       }
       ast::Node::Comment(comment) => {
