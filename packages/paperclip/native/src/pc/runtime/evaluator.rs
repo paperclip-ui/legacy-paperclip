@@ -152,7 +152,7 @@ pub fn evaluate<'a>(
       },
       exports: Exports {
         style: css_exports,
-        components: collect_component_exports(&node_expr, &context)?,
+        components: collect_component_exports(&node_expr, &mut context)?,
       },
     })
   } else {
@@ -166,7 +166,7 @@ pub fn evaluate<'a>(
 
 fn collect_component_exports<'a>(
   root: &ast::Node,
-  context: &Context,
+  context: &mut Context,
 ) -> Result<BTreeMap<String, ComponentExport>, RuntimeError> {
   let mut exports: BTreeMap<String, ComponentExport> = BTreeMap::new();
 
@@ -276,6 +276,7 @@ impl<'a> ExprVisitor<'a> for CollectNodePropVisitor {
   fn visit_css_rule(&mut self, _rule: &'a css_ast::Rule) {}
   fn visit_css_decl(&mut self, _decl: &'a css_ast::Declaration) {}
   fn visit_css_sheet(&mut self, _decl: &'a css_ast::Sheet) {}
+  fn visit_attr(&mut self, _attr: &'a ast::Attribute) {}
 }
 
 fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
@@ -746,13 +747,12 @@ fn evaluate_slot<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+  use_expr_id(&slot.id, context);
   assert_slot_restrictions(&slot.range, context)?;
 
   let script = &slot.script;
   let mut script_value = evaluate_js(script, depth + 1, context)?;
 
-  println!("{:?}", context.used_expr_ids);
-  println!("OKOKO");
 
   // if array of values, then treat as document fragment
   if let script_virt::Value::Array(ary) = &mut script_value {
@@ -823,7 +823,7 @@ fn add_used_expr_id<'a>(expr_id: &String, context: &'a mut Context) {
   }
 }
 
-fn use_expr_id<'a>(expr_id: &'a String, context: &'a mut Context) -> String {
+pub fn use_expr_id<'a>(expr_id: &'a String, context: &'a mut Context) -> String {
   let ret = expr_id.to_string();
   add_used_expr_id(&ret, context);
   ret
@@ -896,133 +896,10 @@ fn create_component_instance_data<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<script_virt::Value, RuntimeError> {
-  let mut data = script_virt::Object::new(instance_element.id.to_string());
+  let mut data = evaluate_attributes(instance_element, depth, context)?;
 
-  let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
 
-  for attr_expr in &instance_element.attributes {
-    let attr = &attr_expr;
-    match attr {
-      ast::Attribute::KeyValueAttribute(kv_attr) => {
-        if kv_attr.value == None {
-          data.values.insert(
-            kv_attr.name.to_string(),
-            script_virt::Value::Boolean(script_virt::Boolean {
-              source_id: use_expr_id(&kv_attr.id, context),
-              value: true,
-            }),
-          );
-        } else {
-          let value = evaluate_attribute_value(
-            &instance_element.tag_name,
-            &kv_attr.name,
-            &kv_attr.value.as_ref().unwrap(),
-            false,
-            depth,
-            context,
-          )?;
-
-          data.values.insert(kv_attr.name.to_string(), value);
-        }
-      }
-      ast::Attribute::SpreadAttribute(attr) => {
-        assert_slot_restrictions(&attr.range, context)?;
-        let attr_data = evaluate_js(&attr.script, depth + 1, context)?;
-        match attr_data {
-          script_virt::Value::Object(mut object) => {
-            for (key, value) in object.values.drain() {
-              data.values.insert(key.to_string(), value);
-            }
-          }
-          _ => {
-            return Err(RuntimeError::new(
-              "Spread value must be an object.".to_string(),
-              context.uri,
-              &instance_element.range,
-            ));
-          }
-        };
-      }
-      ast::Attribute::ShorthandAttribute(sh_attr) => {
-        let name = sh_attr.get_name().map_err(|message| RuntimeError {
-          uri: context.uri.to_string(),
-          message: message.to_string(),
-          range: Range::nil(),
-        })?;
-        assert_attr_slot_restrictions(
-          &instance_element.tag_name,
-          &name.to_string(),
-          &sh_attr.range,
-          context,
-        )?;
-
-        data.values.insert(
-          name.to_string(),
-          evaluate_attribute_slot(&sh_attr.reference, depth, context)?,
-        );
-      }
-      ast::Attribute::PropertyBoundAttribute(kv_attr) => {
-        assert_attr_slot_restrictions(
-          &instance_element.tag_name,
-          &kv_attr.name,
-          &kv_attr.range,
-          context,
-        )?;
-        property_bound_attrs.push(kv_attr);
-      }
-    };
-  }
-
-  // property bound attributes happen at the end so that we ensure that they're actually
-  // added
-  if property_bound_attrs.len() > 0 {
-    for kv_attr in property_bound_attrs {
-      match context.data {
-        script_virt::Value::Object(object) => {
-          let value_option = object.values.get(&kv_attr.binding_name);
-          if let Some(prop_value) = value_option {
-            if prop_value.truthy() {
-              let value = if let Some(attr_value) = &kv_attr.value {
-                evaluate_attribute_value(
-                  &instance_element.tag_name,
-                  &kv_attr.name,
-                  attr_value,
-                  false,
-                  depth,
-                  context,
-                )?
-              } else {
-                evaluate_attribute_key_value_string(
-                  &kv_attr.name,
-                  &kv_attr.binding_name,
-                  &kv_attr.id.to_string(),
-                  &kv_attr.range,
-                  false,
-                  context,
-                )?
-              };
-
-              let combined_value = if let Some(existing_value) = data.values.get(&kv_attr.name) {
-                script_virt::Value::Str(script_virt::Str {
-                  source_id: use_expr_id(&kv_attr.id, context),
-                  value: format!(
-                    "{} {}",
-                    stringify_attribute_value(&kv_attr.name, existing_value),
-                    value.to_string()
-                  ),
-                })
-              } else {
-                value
-              };
-
-              data.values.insert(kv_attr.name.to_string(), combined_value);
-            }
-          }
-        }
-        _ => {}
-      }
-    }
-  }
+  println!("OKOKOKOK");
 
   let mut script_children = script_virt::Array::new(instance_element.id.to_string());
 
@@ -1132,10 +1009,6 @@ fn evaluate_component_instance<'a>(
   }
 }
 
-fn get_actual_attribute_name(name: &String) -> String {
-  name.clone()
-}
-
 fn append_attribute<'a>(
   attributes: &mut BTreeMap<String, Option<String>>,
   key: &'a str,
@@ -1157,129 +1030,17 @@ fn evaluate_native_element<'a>(
   annotations: &Option<script_virt::Object>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
+  let mut tag_name = ast::get_tag_name(element).to_string();
 
-  let mut tag_name = ast::get_tag_name(element);
-
-  let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
-
-  for attr_expr in &element.attributes {
-    let attr = &attr_expr;
-
-    match attr {
-      ast::Attribute::KeyValueAttribute(kv_attr) => {
-        let actual_name = get_actual_attribute_name(&kv_attr.name);
-
-        let (name, value_option) = if kv_attr.value == None {
-          (actual_name, None)
-        } else {
-          let value = evaluate_attribute_value(
-            &element.tag_name,
-            &actual_name,
-            &kv_attr.value.as_ref().unwrap(),
-            true,
-            depth,
-            context,
-          )?;
-          if !value.truthy() {
-            continue;
-          }
-          (
-            actual_name,
-            Some(stringify_attribute_value(&kv_attr.name, &value)),
-          )
-        };
-
-        if name == "export" || name == "component" || name == "as" {
-          continue;
-        }
-        attributes.insert(name, value_option);
-      }
-      ast::Attribute::PropertyBoundAttribute(kv_attr) => {
-        assert_attr_slot_restrictions(&element.tag_name, &kv_attr.name, &kv_attr.range, context)?;
-        property_bound_attrs.push(kv_attr);
-      }
-      ast::Attribute::SpreadAttribute(attr) => {
-        assert_slot_restrictions(&attr.range, context)?;
-        let attr_data = evaluate_js(&attr.script, depth + 1, context)?;
-        match attr_data {
-          script_virt::Value::Object(mut object) => {
-            for (key, value) in object.values.drain() {
-              attributes.insert(get_actual_attribute_name(&key), Some(value.to_string()));
-            }
-          }
-          _ => {
-            return Err(RuntimeError::new(
-              "Spread value must be an object.".to_string(),
-              context.uri,
-              &element.range,
-            ));
-          }
-        };
-      }
-      ast::Attribute::ShorthandAttribute(sh_attr) => {
-        let name = sh_attr.get_name().map_err(|message| RuntimeError {
-          uri: context.uri.to_string(),
-          message: message.to_string(),
-          range: Range::nil(),
-        })?;
-        let actual_name = get_actual_attribute_name(&name);
-
-        assert_attr_slot_restrictions(&element.tag_name, &actual_name, &sh_attr.range, context)?;
-        let mut script_value = evaluate_attribute_slot(&sh_attr.reference, depth, context)?;
-
-        if script_value.truthy() {
-          script_value = maybe_cast_attribute_script_value(&actual_name, script_value, true, context);
-
-          attributes.insert(
-            actual_name,
-            Some(stringify_attribute_value(&name, &script_value)),
-          );
-        }
-      }
-    };
-  }
-
-  if property_bound_attrs.len() > 0 {
-    for kv_attr in property_bound_attrs {
-      match context.data {
-        script_virt::Value::Object(object) => {
-          let value_option = object.values.get(&kv_attr.binding_name);
-          if let Some(prop_value) = value_option {
-            if prop_value.truthy() {
-              let actual_name = get_actual_attribute_name(&kv_attr.name);
-              let value = if let Some(kv_value) = &kv_attr.value {
-                evaluate_attribute_value(
-                  &element.tag_name,
-                  &actual_name,
-                  &kv_value,
-                  true,
-                  depth,
-                  context,
-                )?
-              } else {
-                evaluate_attribute_key_value_string(
-                  &actual_name,
-                  &kv_attr.binding_name,
-                  &kv_attr.id,
-                  &kv_attr.range,
-                  true,
-                  context,
-                )?
-              };
-
-              let combined_value = combine_attr_value(
-                stringify_attribute_value(&actual_name, &value),
-                attributes.get(&actual_name),
-                " ".to_string(),
-              );
-
-              attributes.insert(actual_name, Some(combined_value));
-            }
-          }
-        }
-        _ => {}
-      }
+  let attribute_data = evaluate_attributes(element, depth, context)?;
+  
+  for (key, value) in attribute_data.values {
+    if value.truthy() {
+      attributes.insert(key.to_string(), Some(value.to_string()));
+    } else {
+      attributes.insert(key.to_string(), None);
     }
   }
 
@@ -1333,10 +1094,147 @@ fn evaluate_native_element<'a>(
       &element.id
     }, context),
     annotations: annotations.clone(),
-    tag_name: tag_name,
+    tag_name,
     attributes,
     children,
   })))
+}
+
+fn evaluate_attributes(element: &ast::Element, depth: u32, context: &mut Context) -> Result<script_virt::Object, RuntimeError> {
+
+  let mut data: script_virt::Object = script_virt::Object::new(element.id.to_string());
+
+  let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
+
+  for attr_expr in &element.attributes {
+    let attr = &attr_expr;
+
+    match attr {
+      ast::Attribute::KeyValueAttribute(kv_attr) => {
+        let actual_name = kv_attr.name.clone();
+        use_expr_id(&kv_attr.id, context);
+
+        let (name, value_option) = if kv_attr.value == None {
+          (actual_name, script_virt::Value::Boolean(script_virt::Boolean {
+            source_id: kv_attr.id.to_string(),
+            value: true
+          }))
+        } else {
+          let value = evaluate_attribute_value(
+            &element.tag_name,
+            &actual_name,
+            &kv_attr.value.as_ref().unwrap(),
+            true,
+            depth,
+            context,
+          )?;
+          if !value.truthy() {
+            continue;
+          }
+          (
+            actual_name,
+            maybe_cast_attribute_script_value(&kv_attr.name, value, true, context),
+          )
+        };
+
+        if name == "export" || name == "component" || name == "as" {
+          continue;
+        }
+        data.values.insert(name, value_option);
+      }
+      ast::Attribute::PropertyBoundAttribute(kv_attr) => {
+        assert_attr_slot_restrictions(&element.tag_name, &kv_attr.name, &kv_attr.range, context)?;
+        property_bound_attrs.push(kv_attr);
+      }
+      ast::Attribute::SpreadAttribute(attr) => {
+        assert_slot_restrictions(&attr.range, context)?;
+        let attr_data = evaluate_js(&attr.script, depth + 1, context)?;
+        match attr_data {
+          script_virt::Value::Object(mut object) => {
+            for (key, value) in object.values.drain() {
+              data.values.insert(key.to_string(), 
+              maybe_cast_attribute_script_value(&key, value, true, context));
+            }
+          }
+          _ => {
+            return Err(RuntimeError::new(
+              "Spread value must be an object.".to_string(),
+              context.uri,
+              &element.range,
+            ));
+          }
+        };
+      }
+      ast::Attribute::ShorthandAttribute(sh_attr) => {
+        let name = sh_attr.get_name().map_err(|message| RuntimeError {
+          uri: context.uri.to_string(),
+          message: message.to_string(),
+          range: Range::nil(),
+        })?;
+        assert_attr_slot_restrictions(&element.tag_name, &name, &sh_attr.range, context)?;
+        let mut script_value = evaluate_attribute_slot(&sh_attr.reference, depth, context)?;
+
+        if script_value.truthy() {
+          script_value = maybe_cast_attribute_script_value(&name, script_value, true, context);
+          data.values.insert(
+            name.to_string(),
+            script_value,
+          );
+        }
+      }
+    };
+  }
+
+  if property_bound_attrs.len() > 0 {
+    for kv_attr in property_bound_attrs {
+      match context.data {
+        script_virt::Value::Object(object) => {
+          let value_option = object.values.get(&kv_attr.binding_name);
+          if let Some(prop_value) = value_option {
+            if prop_value.truthy() {
+              let value = if let Some(kv_value) = &kv_attr.value {
+                evaluate_attribute_value(
+                  &element.tag_name,
+                  &kv_attr.name,
+                  &kv_value,
+                  true,
+                  depth,
+                  context,
+                )?
+              } else {
+                evaluate_attribute_key_value_string(
+                  &kv_attr.name,
+                  &kv_attr.binding_name,
+                  &kv_attr.id,
+                  &kv_attr.range,
+                  true,
+                  context,
+                )?
+              };
+
+              let combined_value = if let Some(existing_value) = data.values.get(&kv_attr.name) {
+                script_virt::Value::Str(script_virt::Str {
+                  source_id: use_expr_id(&kv_attr.id, context),
+                  value: format!(
+                    "{} {}",
+                    value.to_string(),
+                    stringify_attribute_value(&kv_attr.name, existing_value)
+                  ),
+                })
+              } else {
+                value
+              };
+
+              data.values.insert(kv_attr.name.to_string(), combined_value);
+            }
+          }
+        }
+        _ => {}
+      }
+    }
+  }
+
+  Ok(data)
 }
 
 fn stringify_attribute_value(key: &String, value: &script_virt::Value) -> String {
@@ -1476,6 +1374,7 @@ fn evaluate_attribute_value<'a>(
   depth: u32,
   context: &mut Context,
 ) -> Result<script_virt::Value, RuntimeError> {
+  use_expr_id(value.get_id(), context);
   match value {
     ast::AttributeValue::DyanmicString(st) => {
       evaluate_attribute_dynamic_string(name, st, &st.id, is_native, depth, context)
@@ -1596,9 +1495,7 @@ fn evaluate_attribute_dynamic_string<'a>(
     value: val.to_string(),
   });
 
-  Ok(maybe_cast_attribute_script_value(
-    name, script_value, is_native, context,
-  ))
+  Ok(maybe_cast_attribute_script_value(name, script_value, is_native, context,))
 }
 
 fn get_import<'a>(

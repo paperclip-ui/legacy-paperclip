@@ -257,7 +257,7 @@ impl Engine {
           .get_expression_by_id(descendent.get_range_id())
       })
       .and_then(|(uri, expr)| match expr {
-        pc_ast::PCObject::Node(pc_node) => Some((uri, pc_node)),
+        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node)),
         _ => None,
       })
       .and_then(|(uri, ast)| {
@@ -268,7 +268,7 @@ impl Engine {
       })
   }
 
-  pub fn get_expression_by_id<'a>(&'a self, id: &String) -> Option<(String, pc_ast::PCObject<'a>)> {
+  pub fn get_expression_by_id<'a>(&'a self, id: &String) -> Option<(String, pc_ast::Expression<'a>)> {
     self.dependency_graph.get_expression_by_id(id)
   }
 

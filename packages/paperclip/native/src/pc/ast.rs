@@ -42,6 +42,7 @@ pub struct Element {
 impl Element {
   fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
     walk_exprs(&self.children, visitor);
+    walk_exprs(&self.attributes, visitor);
   }
 }
 
@@ -74,18 +75,20 @@ pub enum Node {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "pcObjectKind")]
-pub enum PCObject<'a> {
+pub enum Expression<'a> {
   Node(&'a Node),
-  CSSObject(css_ast::CSSObject<'a>),
-  ScriptObject(&'a script_ast::Expression),
+  Attribute(&'a Attribute),
+  CSS(css_ast::Expression<'a>),
+  Script(&'a script_ast::Expression),
 }
 
-impl<'a> PCObject<'a> {
+impl<'a> Expression<'a> {
   pub fn get_range(&'a self) -> &'a Range {
     match self {
-      PCObject::Node(node) => node.get_range(),
-      PCObject::CSSObject(css) => css.get_range(),
-      PCObject::ScriptObject(js) => js.get_range(),
+      Expression::Node(node) => node.get_range(),
+      Expression::Attribute(attr) => attr.get_range(),
+      Expression::CSS(css) => css.get_range(),
+      Expression::Script(js) => js.get_range(),
     }
   }
 }
@@ -148,8 +151,8 @@ impl Expr for Node {
   fn get_id<'a>(&'a self) -> &'a String {
     self.get_id()
   }
-  fn wrap<'a>(&'a self) -> PCObject<'a> {
-    return PCObject::Node(self)
+  fn wrap<'a>(&'a self) -> Expression<'a> {
+    return Expression::Node(self)
   }
 }
 
@@ -306,6 +309,38 @@ pub enum Attribute {
   PropertyBoundAttribute(PropertyBoundAttribute),
 }
 
+impl Attribute {
+  pub fn get_range(&self) -> &Range {
+      match self {
+        Attribute::ShorthandAttribute(expr) => &expr.range,
+        Attribute::SpreadAttribute(expr) => &expr.range,
+        Attribute::KeyValueAttribute(expr) => &expr.range,
+        Attribute::PropertyBoundAttribute(expr) => &expr.range,
+      }
+    }
+}
+
+impl Expr for Attribute {
+  fn get_id<'a>(&'a self) -> &'a String {
+    match self {
+      Attribute::ShorthandAttribute(expr) => &expr.id,
+      Attribute::SpreadAttribute(expr) => &expr.id,
+      Attribute::KeyValueAttribute(expr) => &expr.id,
+      Attribute::PropertyBoundAttribute(expr) => &expr.id,
+    }
+  }
+
+  fn walk<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
+    visitor.visit_attr(self);
+    if !visitor.should_continue() {
+      return;
+    }
+  }
+  fn wrap<'a>(&'a self) -> Expression<'a> {
+    return Expression::Attribute(self)
+  }
+}
+
 impl fmt::Display for Attribute {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
@@ -407,6 +442,16 @@ pub enum AttributeValue {
   DyanmicString(AttributeDynamicStringValue),
   String(AttributeStringValue),
   Slot(AttributeSlotValue),
+}
+
+impl AttributeValue {
+  pub fn get_id(&self) -> &String {
+    match self {
+      AttributeValue::DyanmicString(value) => &value.id,
+      AttributeValue::String(value) => &value.id,
+      AttributeValue::Slot(value) => &value.id,
+    }
+  }
 }
 
 impl fmt::Display for AttributeValue {

@@ -1,7 +1,7 @@
 use crate::base::ast::{BasicRaws, Range};
 use serde::Serialize;
 use crate::core::ast::{ExprVisitor, Expr};
-use crate::pc::ast::PCObject;
+use crate::pc::ast as pc_ast;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -38,8 +38,8 @@ impl Expr for Declaration {
     }
   }
 
-  fn wrap<'a>(&'a self) -> PCObject<'a> {
-    return PCObject::CSSObject(CSSObject::Declaration(self))
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    return pc_ast::Expression::CSS(Expression::Declaration(self))
   }
   
 }
@@ -57,20 +57,20 @@ impl fmt::Display for Declaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "cssObjectKind")]
-pub enum CSSObject<'a> {
+pub enum Expression<'a> {
   Declaration(&'a Declaration),
   Rule(&'a Rule),
   StyleRule(&'a StyleRule),
   Sheet(&'a Sheet),
 }
 
-impl<'a> CSSObject<'a> {
+impl<'a> Expression<'a> {
   pub fn get_range(&self) -> &Range {
     match self {
-      CSSObject::Declaration(decl) => decl.get_range(),
-      CSSObject::Rule(rule) => rule.get_range(),
-      CSSObject::Sheet(rule) => &rule.range,
-      CSSObject::StyleRule(rule) => &rule.range,
+      Expression::Declaration(decl) => decl.get_range(),
+      Expression::Rule(rule) => rule.get_range(),
+      Expression::Sheet(rule) => &rule.range,
+      Expression::StyleRule(rule) => &rule.range,
     }
   }
 }
@@ -116,7 +116,7 @@ pub struct Include {
 }
 
 impl Include {
-  // pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+  // pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<Expression<'a>> {
   //   get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
   // }
   pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
@@ -269,8 +269,8 @@ impl Expr for Rule {
       Rule::Page(rule) => &rule.id,
     }
   }
-  fn wrap<'a>(&'a self) -> PCObject<'a> {
-    PCObject::CSSObject(CSSObject::Rule(self))
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    pc_ast::Expression::CSS(Expression::Rule(self))
   }
 }
 
@@ -429,7 +429,7 @@ pub struct ConditionRule {
 }
 
 impl ConditionRule {
-  // pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+  // pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<Expression<'a>> {
   //   get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
   // }
 
@@ -1142,8 +1142,8 @@ impl Expr for Sheet {
   fn get_id<'a>(&'a self) -> &'a String {
     &self.id
   }
-  fn wrap<'a>(&'a self) -> PCObject<'a> {
-    PCObject::CSSObject(CSSObject::Sheet(self))
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    pc_ast::Expression::CSS(Expression::Sheet(self))
   }
 }
 

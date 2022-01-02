@@ -155,7 +155,7 @@ fn get_selector_info(ast: &css_ast::Selector, graph: &DependencyGraph) -> Result
           DependencyObject::Dependency(dep) => SelectorScope::Document(SelectorScopeInfo {
             id: scope_id.to_string(),
           }),
-          DependencyObject::PCObject(dep) => SelectorScope::Element(SelectorScopeInfo {
+          DependencyObject::Expression(dep) => SelectorScope::Element(SelectorScopeInfo {
             id: scope_id.to_string(),
           }),
         })

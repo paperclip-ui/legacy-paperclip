@@ -40,7 +40,7 @@ pub struct DependencyGraph {
 
 pub enum DependencyObject<'a> {
   Dependency(&'a Dependency),
-  PCObject(pc_ast::PCObject<'a>),
+  Expression(pc_ast::Expression<'a>),
 }
 
 #[allow(dead_code)]
@@ -85,10 +85,10 @@ impl DependencyGraph {
   pub fn get_expression_by_id<'a>(
     &'a self,
     source_id: &String,
-  ) -> Option<(String, pc_ast::PCObject<'a>)> {
+  ) -> Option<(String, pc_ast::Expression<'a>)> {
     for (uri, dep) in self.dependencies.iter() {
       
-      let option: Option<pc_ast::PCObject<'a>> = dep.get_expression_by_id(source_id);
+      let option: Option<pc_ast::Expression<'a>> = dep.get_expression_by_id(source_id);
 
       if let Some(obj) = option {
         return Some((uri.to_string(), obj));
@@ -123,7 +123,7 @@ impl DependencyGraph {
 
     self
       .get_expression_by_id(id)
-      .and_then(|(uri, object)| return Some((uri, DependencyObject::PCObject(object))))
+      .and_then(|(uri, object)| return Some((uri, DependencyObject::Expression(object))))
   }
   pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<String> {
     let mut all_deps: Vec<String> = vec![];
@@ -285,7 +285,7 @@ impl<'a> Dependency {
   pub fn get_expression_by_id(
     &'a self,
     source_id: &String,
-  ) -> Option<pc_ast::PCObject<'a>> {
+  ) -> Option<pc_ast::Expression<'a>> {
     match &self.content {
       DependencyContent::StyleSheet(sheet) => find_expr_by_id(source_id.clone(), sheet),
       DependencyContent::Node(node) => find_expr_by_id(source_id.clone(), node),

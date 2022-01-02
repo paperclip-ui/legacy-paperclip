@@ -3,7 +3,7 @@ use super::virt;
 use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
 use crate::pc::ast as pc_ast;
-use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
+use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext, use_expr_id};
 
 pub fn evaluate<'a>(
   expr: &ast::Expression,
@@ -23,8 +23,8 @@ fn evaluate_expression<'a>(
     ast::Expression::Group(group) => evaluate_group(group, depth, context),
     ast::Expression::Not(conjunction) => evaluate_not(conjunction, depth, context),
     ast::Expression::Node(node) => evaluate_node(node, depth, context),
-    ast::Expression::String(value) => evaluate_string(&value),
-    ast::Expression::Boolean(value) => evaluate_boolean(&value),
+    ast::Expression::String(value) => evaluate_string(&value, context),
+    ast::Expression::Boolean(value) => evaluate_boolean(&value, context),
     ast::Expression::Number(value) => evaluate_number(&value, context),
     ast::Expression::Array(value) => evaluate_array(value, depth, context),
     ast::Expression::Object(value) => evaluate_object(value, depth, context),
@@ -35,6 +35,7 @@ fn evaluate_group<'a>(
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::Value, RuntimeError> {
+  use_expr_id(&group.id, context);
   evaluate_expression(&group.expression, depth, context)
 }
 
@@ -43,6 +44,7 @@ fn evaluate_conjuction<'a>(
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::Value, RuntimeError> {
+  use_expr_id(&conjunction.id, context);
   let left = evaluate_expression(&conjunction.left, depth, context)?;
 
   match conjunction.operator {
@@ -77,6 +79,7 @@ fn evaluate_not<'a>(
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::Value, RuntimeError> {
+  use_expr_id(&not.id, context);
   Ok(virt::Value::Boolean(virt::Boolean {
     source_id: not.id.to_string(),
     value: !evaluate_expression(&not.expression, depth, context)?.truthy(),
@@ -98,14 +101,16 @@ fn evaluate_node<'a>(
   }
 }
 
-fn evaluate_string<'a>(value: &ast::Str) -> Result<virt::Value, RuntimeError> {
+fn evaluate_string<'a>(value: &ast::Str, context: &'a mut PCContext) -> Result<virt::Value, RuntimeError> {
+  use_expr_id(&value.id, context);
   Ok(virt::Value::Str(virt::Str {
     source_id: value.id.to_string(),
     value: value.value.to_string(),
   }))
 }
 
-fn evaluate_boolean<'a>(value: &ast::Boolean) -> Result<virt::Value, RuntimeError> {
+fn evaluate_boolean<'a>(value: &ast::Boolean, context: &'a mut PCContext) -> Result<virt::Value, RuntimeError> {
+  use_expr_id(&value.id, context);
   Ok(virt::Value::Boolean(virt::Boolean {
     source_id: value.id.to_string(),
     value: value.value,
@@ -116,6 +121,7 @@ fn evaluate_number<'a>(
   value: &ast::Number,
   context: &'a mut PCContext,
 ) -> Result<virt::Value, RuntimeError> {
+  use_expr_id(&value.id, context);
   let value_result = value.value.parse::<f64>();
 
   if let Ok(number) = value_result {
@@ -165,6 +171,7 @@ fn evaluate_reference<'a>(
   reference: &ast::Reference,
   context: &'a mut PCContext,
 ) -> Result<virt::Value, RuntimeError> {
+  use_expr_id(&reference.id, context);
   let mut curr = Some(context.data);
 
   for part in &reference.path {

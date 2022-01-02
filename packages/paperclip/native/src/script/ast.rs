@@ -5,21 +5,6 @@ use std::fmt;
 use crate::core::ast::{ExprVisitor, Expr};
 
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum ScriptObject<'a> {
-  Expression(&'a Expression),
-  PCObject(pc_ast::PCObject<'a>),
-}
-
-impl<'a> ScriptObject<'a> {
-  pub fn get_range(&'a self) -> &'a Range {
-    match self {
-      ScriptObject::Expression(expr) => expr.get_range(),
-      ScriptObject::PCObject(expr) => expr.get_range(),
-    }
-  }
-}
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "scriptKind")]
 pub enum Expression {
@@ -59,8 +44,8 @@ impl Expr for Expression {
   fn get_id<'a>(&'a self) -> &'a String {
     return self.get_id();
   }
-  fn wrap<'a>(&'a self) -> pc_ast::PCObject<'a> {
-    return pc_ast::PCObject::ScriptObject(self);
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    return pc_ast::Expression::Script(self);
   }
 }
 

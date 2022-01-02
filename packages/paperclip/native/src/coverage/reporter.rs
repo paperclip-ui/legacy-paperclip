@@ -1,18 +1,17 @@
 use serde::Serialize;
 use crate::core::graph::{DependencyGraph, DependencyContent, Dependency};
 use crate::pc::ast as pc_ast;
+use crate::pc::runtime::virt as pc_virt;
 use crate::css::ast as css_ast;
 use crate::script::ast as script_ast;
 use crate::base::ast as base_ast;
 use crate::css::ast::{Sheet};
 use crate::core::ast::{ExprVisitor, Expr};
 use crate::core::eval::DependencyEvalInfo;
-use crate::engine::engine::{Engine};
 use crate::css::runtime::evaluator as css_eval;
 use crate::pc::runtime::evaluator as pc_eval;
 use std::collections::{HashMap, BTreeMap, HashSet};
-use ::futures::executor::block_on;
-use crate::base::string_scanner::U16Position;
+use crate::pc::runtime::inspect_node_styles;
 
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -24,7 +23,7 @@ pub struct CoverageReport {
 struct FileReport {
   uri: String,
   missing_statement_ranges: Vec<base_ast::Range>,
-  percent_coverage: u32
+  statement_coverage: u32
 }
 
 
@@ -54,6 +53,7 @@ pub fn generate_coverage_report(graph: &DependencyGraph, evaluated: &BTreeMap<St
 } 
 
 fn generate_file_reports(missed_ids: &HashMap<String, String>, graph: &DependencyGraph) -> Vec<FileReport> {
+  println!("Missing {:?}", missed_ids);
   let mut reports: Vec<FileReport> = vec![];
   let mut file_expr_id_map:HashMap<String, HashSet<String>> = HashMap::new();
 
@@ -78,30 +78,18 @@ fn generate_file_report(uri: &String, dep: &Dependency, missing_ids: &HashSet<St
 
   let mut missing_statement_ranges: Vec<base_ast::Range> = vec![];
 
-  // println!("{:?}", missing_ids);
-  // panic!("aa");
-
   for id in missing_ids {
     if let Some(expr) = dep.get_expression_by_id(id) {
-      println!("{:?}", expr);
       missing_statement_ranges.push(expr.get_range().clone());
     } else {
       panic!("Expr ID not found");
     }
   }
 
-  // match dep.content {
-  //   DependencyContent::Node(node) => {
-
-  //   },
-  //   => {
-
-  //   }
-  // }
   FileReport {
     uri: uri.to_string(),
     missing_statement_ranges,
-    percent_coverage: 0
+    statement_coverage: 0
   }
 }
 
@@ -141,16 +129,23 @@ fn analyze_content(uri: &String, content: &DependencyEvalInfo, context: &mut Ana
   }
 }
 
-
 fn analyze_css_content(uri: &String, content: &css_eval::EvalInfo, context: &mut AnalyzeContext) {
 }
 
 fn analyze_pc_content(uri: &String, content: &pc_eval::EvalInfo, context: &mut AnalyzeContext) {
+
+  // first, remove all PC expressions that have been used. This includes scripts, and HTML
   if let Some(used_expr_ids) = &content.used_expr_ids {
     for used_id in used_expr_ids {
       context.missed_ids.remove(used_id);
     }
   }
+
+  analayze_node_styles(uri, &content.preview, context);
+}
+
+fn analayze_node_styles(uri: &String, node: &pc_virt::Node, context: &mut AnalyzeContext) {
+
 }
 
 struct ExprIdCollector {
@@ -158,7 +153,8 @@ struct ExprIdCollector {
 }
 
 impl ExprIdCollector {
-  fn visit_expr<'a>(&'a mut self, expr: &'a dyn Expr)  {
+  fn visit_core_expr<'a>(&'a mut self, expr: &'a dyn Expr)  {
+    println!("{:?}", expr);
     self.expr_ids.insert(expr.get_id().to_string());
   }
   fn collect_expr_ids(expr: &dyn Expr) -> HashSet<String> {
@@ -169,29 +165,32 @@ impl ExprIdCollector {
     expr.walk(&mut collector);
 
     collector.expr_ids
-
   }
 }
 
 impl<'a> ExprVisitor<'a> for ExprIdCollector {
   fn visit_node(&mut self, expr: &'a pc_ast::Node) {
-    self.visit_expr(expr);
+    self.visit_core_expr(expr);
+  } 
+
+  fn visit_attr(&mut self, expr: &'a pc_ast::Attribute) {
+    self.visit_core_expr(expr);
   } 
 
   fn visit_css_rule(&mut self, expr: &'a css_ast::Rule) {
-    self.visit_expr(expr);
+    self.visit_core_expr(expr);
   }
 
   fn visit_css_decl(&mut self, expr: &'a css_ast::Declaration) {
-    self.visit_expr(expr);
+    self.visit_core_expr(expr);
   }
 
   fn visit_css_sheet(&mut self, expr: &'a css_ast::Sheet) {
-    self.visit_expr(expr);
+    self.visit_core_expr(expr);
   }
 
   fn visit_script_expression(&mut self, expr: &'a script_ast::Expression) {
-    self.visit_expr(expr);
+    self.visit_core_expr(expr);
   }
 
   fn should_continue(&self) -> bool {
@@ -199,11 +198,15 @@ impl<'a> ExprVisitor<'a> for ExprIdCollector {
   }
 }
 
+
 #[cfg(test)]
 mod tests {
   use super::*;
   use crate::engine::engine::{Engine};
   use crate::engine::test_utils::{create_mock_engine};
+  use ::futures::executor::block_on;
+  use crate::base::string_scanner::U16Position;
+
   fn open_all_entries(graph: &HashMap<String, String>, engine: &mut Engine) {
     for (uri, _) in graph {
       if let Err(err) = block_on(engine.run(uri)) {
@@ -217,18 +220,16 @@ mod tests {
     let graph: HashMap<String, String> = [
       ("entry.pc".to_string(), "<div></div>".to_string())
     ].iter().cloned().collect();
-
-    let mut engine = create_mock_engine(&graph);
-    open_all_entries(&graph, &mut engine);
-    assert_eq!(block_on(engine.generate_coverage_report()), Ok(CoverageReport {
+    assert_graph_report(graph, CoverageReport {
       files: vec![
         FileReport {
           uri: "entry.pc".to_string(),
-          missing_statement_ranges: vec![],
-          percent_coverage: 0
+          missing_statement_ranges: vec![
+          ],
+          statement_coverage: 0
         }
       ]
-    }));
+    });
   }
 
 
@@ -243,44 +244,147 @@ mod tests {
       <Test />
     ".to_string())
     ].iter().cloned().collect();
-
-    let mut engine = create_mock_engine(&graph);
-    open_all_entries(&graph, &mut engine);
-    assert_eq!(block_on(engine.generate_coverage_report()), Ok(CoverageReport {
+    assert_graph_report(graph, CoverageReport {
       files: vec![
         FileReport {
           uri: "entry.pc".to_string(),
           missing_statement_ranges: vec![
-            base_ast::Range::new(U16Position::new(41, 3, 9), U16Position::new(50, 3, 18))
           ],
-          percent_coverage: 0
+          statement_coverage: 0
         }
       ]
-    }));
+    });
   }
 
   #[test]
-  fn shows_missing_lines_for_a_slot() {
+  fn shows_missing_statements_for_a_slot() {
     let graph: HashMap<String, String> = [
       ("entry.pc".to_string(), "
         <div component as=\"Test\">
-          {<div />}
+          {a && <div />}
         </div>
 
         <Test />
       ".to_string())
     ].iter().cloned().collect();
-
-    let mut engine = create_mock_engine(&graph);
-    open_all_entries(&graph, &mut engine);
-    assert_eq!(block_on(engine.generate_coverage_report()), Ok(CoverageReport {
+    assert_graph_report(graph, CoverageReport {
       files: vec![
         FileReport {
           uri: "entry.pc".to_string(),
-          missing_statement_ranges: vec![],
-          percent_coverage: 0
+          missing_statement_ranges: vec![
+            base_ast::Range::new(U16Position::new(51, 3, 17), U16Position::new(58, 3, 24))
+          ],
+          statement_coverage: 0
         }
       ]
-    }));
+    });
+  }
+
+  #[test]
+  fn shows_other_script_expressions_as_covered() {
+    let graph: HashMap<String, String> = [
+      ("entry.pc".to_string(), "
+        <div component as=\"Test\">
+          {1}
+          {a || <div />}
+          {(true)}
+          {\"a\"}
+          {!true}
+        </div>
+
+        <Test />
+      ".to_string())
+    ].iter().cloned().collect();
+    assert_graph_report(graph, CoverageReport {
+      files: vec![
+        FileReport {
+          uri: "entry.pc".to_string(),
+          missing_statement_ranges: vec![
+          ],
+          statement_coverage: 0
+        }
+      ]
+    });
+  }
+
+
+  #[test]
+  fn shows_element_as_covered_if_variant_provided() {
+    let graph: HashMap<String, String> = [
+      ("entry.pc".to_string(), "
+        <div component as=\"Test\">
+          {a && <div />}
+        </div>
+
+        <Test />
+        <Test a />
+      ".to_string())
+    ].iter().cloned().collect();
+    assert_graph_report(graph, CoverageReport {
+      files: vec![
+        FileReport {
+          uri: "entry.pc".to_string(),
+          missing_statement_ranges: vec![
+          ],
+          statement_coverage: 0
+        }
+      ]
+    });
+  }
+
+
+
+  #[test]
+  fn variant_class_names_that_arent_used_are_shown_as_missing() {
+    let graph: HashMap<String, String> = [
+      ("entry.pc".to_string(), "
+        <div export component as=\"Test\" class:test=\"test\">
+        </div>
+
+        <Test test />
+      ".to_string())
+    ].iter().cloned().collect();
+    assert_graph_report(graph, CoverageReport {
+      files: vec![
+        FileReport {
+          uri: "entry.pc".to_string(),
+          missing_statement_ranges: vec![
+          ],
+          statement_coverage: 1
+        }
+      ]
+    });
+  }
+
+
+
+  #[test]
+  fn shows_style_as_covered() {
+    // let graph: HashMap<String, String> = [
+    //   ("entry.pc".to_string(), "
+    //     <style>
+    //       div {
+    //         color: blue;
+    //       }
+    //     </style>
+    //     <div />
+    //   ".to_string())
+    // ].iter().cloned().collect();
+    // assert_graph_report(graph, CoverageReport {
+    //   files: vec![
+    //     FileReport {
+    //       uri: "entry.pc".to_string(),
+    //       missing_statement_ranges: vec![
+    //       ],
+    //       statement_coverage: 0
+    //     }
+    //   ]
+    // });
+  }
+
+  fn assert_graph_report(graph: HashMap<String, String>, report: CoverageReport) {
+    let mut engine = create_mock_engine(&graph);
+    open_all_entries(&graph, &mut engine);
+    assert_eq!(block_on(engine.generate_coverage_report()), Ok(report));
   }
 }
