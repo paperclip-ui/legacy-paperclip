@@ -1,6 +1,6 @@
 import * as React from "react";
 import { expect } from "chai";
-import { compile } from "../code-compiler";
+import { compile } from "..";
 import * as ez from "enzyme";
 import { compileModules } from "paperclip-compiler-base-jsx/lib/test/utils";
 

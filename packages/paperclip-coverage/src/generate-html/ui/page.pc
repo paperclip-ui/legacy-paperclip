@@ -1,0 +1,4 @@
+<html export component as="default">
+  <head />
+  <body>COVER</body>
+</html>

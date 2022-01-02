@@ -5,7 +5,8 @@ import { isPaperclipFile, PaperclipConfig } from "paperclip-utils";
 
 export const compileModules = (
   compile: (...args: any) => any,
-  builtin: any
+  builtin: any,
+  extensionName = "js"
 ) => async (graph: Record<string, string>, config: PaperclipConfig) => {
   const engine = await createEngineDelegate({
     io: {
@@ -37,7 +38,12 @@ export const compileModules = (
       modules[path] = () => graph[path];
       continue;
     }
-    const es6 = compile(intermCompiler.parseFile(path), path, config, []).code;
+    const es6 = compile({
+      module: intermCompiler.parseFile(path),
+      fileUrl: path,
+      config,
+      includes: []
+    })["." + extensionName];
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,

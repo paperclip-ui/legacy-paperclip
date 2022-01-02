@@ -4,19 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "yarn build:paperclip && tsc",
     "test": "mocha lib/test",
-    "build:watch": "tsc --watch"
+    "build:paperclip": "paperclip build --only=mjs,mjs.map",
+    "build:watch": "concurrently \"tsc --watch\" \"yarn build:paperclip --watch\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "paperclip": "^18.2.16",
+    "paperclip-compiler-html": "^18.2.16",
     "paperclip-utils": "^18.2.16",
     "typescript": "^4.2.3"
   },
   "devDependencies": {
     "chai": "^4.3.4",
-    "mocha": "^9.1.3"
+    "concurrently": "^6.5.1",
+    "mocha": "^9.1.3",
+    "paperclip-compiler-html": "^18.2.16"
   }
 }
