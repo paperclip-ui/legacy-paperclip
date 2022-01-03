@@ -3,7 +3,7 @@
     "packages/*",
     "examples/*"
   ],
-  "version": "18.3.0",
+  "version": "18.3.1",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "nohoist": [
