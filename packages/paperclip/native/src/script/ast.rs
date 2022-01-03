@@ -26,6 +26,7 @@ impl Expr for Expression {
       return;
     }
 
+    // TODO - need to walk inside all of these
     match self {
       Expression::Conjunction(conj) => {
         conj.left.walk(visitor);
@@ -33,7 +34,7 @@ impl Expr for Expression {
           conj.right.walk(visitor);
         }
       }
-      Expression::Node(node) => node.walk(visitor),
+      Expression::Node(node) => node.walk_inside(visitor),
       Expression::Group(expr) => expr.expression.walk(visitor),
       _ => {}
     };
@@ -42,6 +43,9 @@ impl Expr for Expression {
     return self.get_id();
   }
   fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    if let Expression::Node(node) = self {
+      return node.wrap();
+    }
     return pc_ast::Expression::Script(self);
   }
 }

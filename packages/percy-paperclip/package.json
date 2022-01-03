@@ -1,6 +1,6 @@
 {
   "name": "percy-paperclip",
-  "version": "18.3.0",
+  "version": "18.3.2",
   "description": "Percy integration for Paperclip",
   "main": "index.js",
   "bin": "./bin/percy-paperclip",
@@ -27,8 +27,8 @@
     "lodash": "^4.17.19",
     "mime": "^2.4.6",
     "p-limit": "^3.1.0",
-    "paperclip": "^18.3.0",
-    "paperclip-diff-utils": "^18.3.0",
+    "paperclip": "^18.3.2",
+    "paperclip-diff-utils": "^18.3.2",
     "w3c-xmlhttprequest": "^2.1.3",
     "yargs": "^15.3.1"
   }

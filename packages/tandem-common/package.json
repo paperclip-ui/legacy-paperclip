@@ -1,6 +1,6 @@
 {
   "name": "tandem-common",
-  "version": "18.3.0",
+  "version": "18.3.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "express": "^4.17.1",
     "mime-types": "^2.1.32",
     "node-fetch": "^2.6.1",
-    "paperclip-utils": "^18.3.0"
+    "paperclip-utils": "^18.3.2"
   },
   "devDependencies": {
     "@types/redux-saga": "^0.10.5",

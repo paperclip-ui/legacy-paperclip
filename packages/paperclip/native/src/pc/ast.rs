@@ -121,15 +121,7 @@ impl Node {
       _ => None,
     }
   }
-}
-
-impl Expr for Node {
-  fn walk<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
-    visitor.visit_node(self);
-    if !visitor.should_continue() {
-      return;
-    }
-
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
     match self {
       Node::Slot(slot) => {
         slot.walk_inside(visitor);
@@ -145,6 +137,17 @@ impl Expr for Node {
       }
       Node::Comment(_) | Node::Text(_) => {}
     }
+  }
+}
+
+impl Expr for Node {
+  fn walk<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
+    visitor.visit_node(self);
+    if !visitor.should_continue() {
+      return;
+    }
+  
+    self.walk_inside(visitor);
   }
   fn get_id<'a>(&'a self) -> &'a String {
     self.get_id()
@@ -198,11 +201,28 @@ pub struct AttributeSlotValue {
   pub range: Range,
 }
 
+impl AttributeSlotValue {
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    self.script.walk(visitor);
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringValue {
   pub id: String,
   pub values: Vec<AttributeDynamicStringPart>,
   pub range: Range,
+}
+
+impl AttributeDynamicStringValue {
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    for value in &self.values {
+      value.walk(visitor);
+      if !visitor.should_continue() {
+        break;
+      }
+    }
+  }
 }
 
 impl fmt::Display for AttributeDynamicStringValue {
@@ -238,6 +258,16 @@ impl AttributeDynamicStringPart {
       AttributeDynamicStringPart::ClassNamePierce(expr) => &expr.id,
       AttributeDynamicStringPart::Literal(expr) => &expr.id,
       AttributeDynamicStringPart::Slot(expr) => &expr.get_id(),
+    }
+  }
+  pub fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    match self {
+      AttributeDynamicStringPart::ClassNamePierce(_) | AttributeDynamicStringPart::Literal(_) => {
+
+      },
+      AttributeDynamicStringPart::Slot(slot) => {
+        slot.walk(visitor);
+      }
     }
   }
 }
@@ -333,6 +363,12 @@ impl Expr for Attribute {
     if !visitor.should_continue() {
       return;
     }
+    match self {
+      Attribute::KeyValueAttribute(kv) => kv.walk_inside(visitor),
+      Attribute::ShorthandAttribute(kv) => kv.walk_inside(visitor),
+      Attribute::PropertyBoundAttribute(kv) => kv.walk_inside(visitor),
+      Attribute::SpreadAttribute(kv) => kv.walk_inside(visitor)
+    }
   }
   fn wrap<'a>(&'a self) -> Expression<'a> {
     return Expression::Attribute(self);
@@ -358,6 +394,12 @@ pub struct SpreadAttribute {
   pub omit_from_compilation: bool,
   pub script: script_ast::Expression,
   pub range: Range,
+}
+
+impl SpreadAttribute {
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    self.script.walk(visitor);
+  }
 }
 
 impl fmt::Display for SpreadAttribute {
@@ -386,6 +428,9 @@ impl ShorthandAttribute {
       _ => Err("Unexpected Expression"),
     }
   }
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    self.reference.walk(visitor);
+  }
 }
 
 impl fmt::Display for ShorthandAttribute {
@@ -402,6 +447,14 @@ pub struct PropertyBoundAttribute {
   pub name: String,
   pub range: Range,
   pub value: Option<AttributeValue>,
+}
+
+impl PropertyBoundAttribute {
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    if let Some(value) = &self.value {
+      value.walk(visitor);
+    }
+  }
 }
 
 impl fmt::Display for PropertyBoundAttribute {
@@ -421,6 +474,14 @@ pub struct KeyValueAttribute {
   pub name: String,
   pub range: Range,
   pub value: Option<AttributeValue>,
+}
+
+impl KeyValueAttribute {
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    if let Some(value) = &self.value {
+      value.walk(visitor);
+    }
+  }
 }
 
 impl fmt::Display for KeyValueAttribute {
@@ -448,6 +509,13 @@ impl AttributeValue {
       AttributeValue::DyanmicString(value) => &value.id,
       AttributeValue::String(value) => &value.id,
       AttributeValue::Slot(value) => &value.id,
+    }
+  }
+  pub fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    match self {
+      AttributeValue::DyanmicString(ds) => ds.walk_inside(visitor),
+      AttributeValue::Slot(ds) => ds.walk_inside(visitor),
+      AttributeValue::String(_ds) => { }
     }
   }
 }

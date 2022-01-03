@@ -526,6 +526,11 @@ impl Engine {
 #[cfg(test)]
 mod tests {
   use super::*;
+  use super::super::test_utils::create_mock_engine;
+  use std::collections::HashMap;
+  use crate::pc::runtime::virt::NodeSource;
+  use crate::base::string_scanner::U16Position;
+  use ::futures::executor::block_on;
 
   #[test]
   fn can_smoke_parse_various_nodes() {
@@ -539,6 +544,57 @@ mod tests {
     );
 
     block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
+  }
+
+  #[test]
+  fn can_reveal_source_info_for_virt_test_component() {
+    let graph: HashMap<String, String> = vec![
+      ("entry.pc".to_string(), "
+        <div></div>
+      ".to_string())
+    ].iter().cloned().collect();
+    assert_get_source_info(&graph, vec![], ast::ExprSource {
+      id: "17bc3462-1".to_string(),
+      text_source: Some(ast::ExprTextSource {
+        uri: "entry.pc".to_string(),
+        range: ast::Range::new(U16Position::new(0, 1, 1), U16Position::new(27, 3, 7))
+      })
+    });
+  }
+
+  #[test]
+  fn can_reveal_source_of_slotted_element() {
+    let graph: HashMap<String, String> = vec![
+      ("entry.pc".to_string(), "
+        <!-- 
+          @frame { visible: false }
+        -->
+        <div component as='Test'>
+          <div>
+            {child}
+          </div>
+        </div>
+
+        <Test child={<div></div>} />
+
+      ".to_string())
+    ].iter().cloned().collect();
+    assert_get_source_info(&graph, vec![0, 0, 0], ast::ExprSource {
+      id: "e93244ce".to_string(),
+      text_source: Some(ast::ExprTextSource {
+        uri: "entry.pc".to_string(),
+        range: ast::Range::new(U16Position::new(187, 11, 22), U16Position::new(198, 11, 33))
+      })
+    });
+  }
+
+  fn assert_get_source_info(graph: &HashMap<String, String>, path: Vec<usize>, expected: ast::ExprSource) {
+    let mut mock_engine = create_mock_engine(&graph);
+    block_on(mock_engine.run(&"entry.pc".to_string()));
+    assert_eq!(mock_engine.get_virtual_node_source_info(&NodeSource {
+      path,
+      document_uri: "entry.pc".to_string()
+    }), Some(expected));
   }
 }
 

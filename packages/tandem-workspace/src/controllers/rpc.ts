@@ -103,8 +103,14 @@ class Connection {
       source.path,
       source.uri
     );
+
     if (info) {
       this._options.adapter?.revealSource(info);
+    } else {
+      console.error(
+        `Could not find node source: `,
+        JSON.stringify(source, null, 2)
+      );
     }
   };
 
