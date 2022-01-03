@@ -1,6 +1,6 @@
 {
   "name": "paperclip-coverage",
-  "version": "18.2.20",
+  "version": "18.3.0",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.ds.ts",
@@ -17,9 +17,9 @@
     "chalk": "2.0.0",
     "cli-table": "^0.3.11",
     "html-entities": "^1.2.1",
-    "paperclip": "^18.2.16",
-    "paperclip-compiler-html": "^18.2.16",
-    "paperclip-utils": "^18.2.16",
+    "paperclip": "^18.3.0",
+    "paperclip-compiler-html": "^18.3.0",
+    "paperclip-utils": "^18.3.0",
     "typescript": "^4.2.3"
   },
   "devDependencies": {

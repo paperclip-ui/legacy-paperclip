@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "18.2.19",
+  "version": "18.3.0",
   "description": "Command line tools for Paperclip",
   "main": "lib/cli.js",
   "bin": {
@@ -25,14 +25,14 @@
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
     "lodash": "^4.17.19",
-    "paperclip": "^18.2.16",
-    "paperclip-cli-minimal": "^18.2.16",
-    "paperclip-coverage": "^18.2.16",
-    "paperclip-cli-utils": "^18.2.16",
-    "paperclip-utils": "^18.2.16",
+    "paperclip": "^18.3.0",
+    "paperclip-cli-minimal": "^18.3.0",
+    "paperclip-cli-utils": "^18.3.0",
+    "paperclip-coverage": "^18.3.0",
+    "paperclip-utils": "^18.3.0",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
-    "tandem-workspace": "^18.2.19",
+    "tandem-workspace": "^18.3.0",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
