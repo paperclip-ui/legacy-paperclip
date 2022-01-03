@@ -26,6 +26,6 @@
     "chai": "^2.0.0",
     "concurrently": "^6.5.1",
     "mocha": "^9.1.3",
-    "paperclip-compiler-html": "^18.2.16"
+    "paperclip-compiler-html": "^18.3.0"
   }
 }
