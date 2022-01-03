@@ -78,6 +78,7 @@ export const compile = compilers({
     vendorName: "_vanilla"
   },
   definition: {
+    imports: "",
     elementType: "string"
   },
   extensionName: (config: PaperclipConfig) =>
