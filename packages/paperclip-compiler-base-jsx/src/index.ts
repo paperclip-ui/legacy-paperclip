@@ -26,7 +26,7 @@ export const compilers = ({
 
     let outputCode = code;
 
-    if ((config.compilerOptions as any).es5) {
+    if ((config.compilerOptions as any)?.es5) {
       outputCode = babel.transformSync(code, { presets: ["@babel/preset-env"] })
         .code;
     }
