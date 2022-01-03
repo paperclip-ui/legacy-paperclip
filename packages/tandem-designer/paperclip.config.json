@@ -1,5 +1,8 @@
 {
   "srcDir": "./src",
+  "compilerOptions": {
+    "target": ["react"]
+  },
   "lintOptions": {
     "enforceVars": [
       "font-family",
