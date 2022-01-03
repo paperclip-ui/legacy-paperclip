@@ -882,7 +882,7 @@ mod tests {
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 17,
           html: PartReport {
-            count: 11,
+            count: 12,
             missing_ranges: vec![],
           },
           css: PartReport {
