@@ -148,7 +148,8 @@ impl Engine {
     for uri in keys {
       self.run(&uri).await?;
     }
-    let report = generate_coverage_report(&self.dependency_graph, &self.evaluated_data, &mut self.vfs).await;
+    let report =
+      generate_coverage_report(&self.dependency_graph, &self.evaluated_data, &mut self.vfs).await;
     self.include_used_exprs = false;
     Ok(report)
   }

@@ -19,10 +19,10 @@ mod engine;
 mod pc;
 mod script;
 
+use crate::coverage::reporter::CoverageReport;
 use crate::pc::runtime::evaluator::EngineMode;
 use crate::pc::runtime::inspect_node_styles::InspectionOptions;
 use crate::pc::runtime::lint::LintOptions;
-use crate::coverage::reporter::CoverageReport;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use engine::engine::Engine;
@@ -171,7 +171,7 @@ impl NativeEngine {
       },
       &InspectionOptions {
         screen_width: Some(screen_width),
-        include_inherited: true
+        include_inherited: true,
       },
     );
 

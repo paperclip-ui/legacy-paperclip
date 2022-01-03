@@ -378,7 +378,7 @@ impl NodeInspectionInfo {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InspectionOptions {
   pub screen_width: Option<u32>,
-  pub include_inherited: bool
+  pub include_inherited: bool,
 }
 
 pub fn inspect_node_styles(
@@ -408,7 +408,6 @@ pub fn inspect_node_styles(
 
   inspection_info
 }
-
 
 pub fn inspect_local_node_styles(
   element_path: &Vec<usize>,
@@ -643,7 +642,10 @@ mod tests {
     test_pc_code(
       source,
       vec![0, 0],
-      InspectionOptions { screen_width: None, include_inherited: true },
+      InspectionOptions {
+        screen_width: None,
+        include_inherited: true,
+      },
       NodeInspectionInfo {
         style_rules: vec![],
       },

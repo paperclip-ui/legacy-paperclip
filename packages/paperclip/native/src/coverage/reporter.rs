@@ -2,7 +2,7 @@ use crate::base::ast as base_ast;
 use crate::core::ast::{Expr, ExprVisitor};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use std::collections::hash_map::Entry;
+use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
 use crate::css::runtime::evaluator as css_eval;
 use crate::pc::ast as pc_ast;
@@ -10,51 +10,48 @@ use crate::pc::runtime::evaluator as pc_eval;
 use crate::pc::runtime::inspect_node_styles::{inspect_node_styles, InspectionOptions};
 use crate::pc::runtime::virt as pc_virt;
 use crate::script::ast as script_ast;
-use crate::core::vfs::VirtualFileSystem;
 use serde::Serialize;
-use std::io::{Cursor, BufRead};
+use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, HashMap, HashSet};
-
+use std::io::{BufRead, Cursor};
 
 #[derive(Debug, PartialEq, Serialize)]
 struct CoverageSummary {
-
   // 0 <> 100
   statements: u32,
 
   // 0 <> 100
-  lines: u32
+  lines: u32,
 }
 
 #[derive(Clone, Hash, Debug, Eq, PartialEq)]
 enum ExprIdKind {
   CSS,
-  HTML
+  HTML,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 struct ExprIdInfo {
   source_uri: String,
-  kind: ExprIdKind
+  kind: ExprIdKind,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct CoverageReport {
-  files: Vec<FileReport>
+  files: Vec<FileReport>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct PartReport {
   #[serde(rename = "missingRanges")]
   missing_ranges: Vec<base_ast::Range>,
-  count: u32
+  count: u32,
 }
 
 struct ExprCounts {
   css: u32,
-  html: u32
+  html: u32,
 }
-
 
 #[derive(Debug, PartialEq, Serialize)]
 struct FileReport {
@@ -67,7 +64,7 @@ struct FileReport {
   missing_lines: HashSet<u32>,
 
   #[serde(rename = "lineCount")]
-  line_count: u32
+  line_count: u32,
 }
 
 struct Source<'a> {
@@ -78,13 +75,13 @@ struct Source<'a> {
 struct AnalyzeContext<'a> {
   pub evaluated: &'a BTreeMap<String, DependencyEvalInfo>,
   pub missed_ids: HashMap<String, ExprIdInfo>,
-  pub graph: &'a DependencyGraph
+  pub graph: &'a DependencyGraph,
 }
 
 pub async fn generate_coverage_report(
   graph: &DependencyGraph,
   evaluated: &BTreeMap<String, DependencyEvalInfo>,
-  vfs: &mut VirtualFileSystem
+  vfs: &mut VirtualFileSystem,
 ) -> CoverageReport {
   let source: Source = Source { graph, evaluated };
 
@@ -100,7 +97,7 @@ pub async fn generate_coverage_report(
   analyze_graph(&mut analyze_context);
 
   CoverageReport {
-    files: generate_file_reports(&analyze_context.missed_ids, &expr_counts, graph, vfs).await
+    files: generate_file_reports(&analyze_context.missed_ids, &expr_counts, graph, vfs).await,
   }
 }
 
@@ -108,20 +105,14 @@ fn count_exprs(expr_ids: &HashMap<String, ExprIdInfo>) -> HashMap<String, ExprCo
   let mut expr_counts: HashMap<String, ExprCounts> = HashMap::new();
 
   for (id, info) in expr_ids {
-
-    
-
-
     let mut counts = match expr_counts.entry(info.source_uri.to_string()) {
       Entry::Occupied(e) => e.into_mut(),
-      Entry::Vacant(e) => {
-        e.insert(ExprCounts { css: 0, html: 0 })
-      }
+      Entry::Vacant(e) => e.insert(ExprCounts { css: 0, html: 0 }),
     };
 
     match info.kind {
       ExprIdKind::CSS => counts.css = counts.css + 1,
-      ExprIdKind::HTML => counts.html = counts.html + 1
+      ExprIdKind::HTML => counts.html = counts.html + 1,
     }
   }
 
@@ -132,7 +123,7 @@ async fn generate_file_reports(
   missed_ids: &HashMap<String, ExprIdInfo>,
   expr_counts: &HashMap<String, ExprCounts>,
   graph: &DependencyGraph,
-  vfs: &mut VirtualFileSystem
+  vfs: &mut VirtualFileSystem,
 ) -> Vec<FileReport> {
   let mut reports: Vec<FileReport> = vec![];
 
@@ -149,13 +140,16 @@ async fn generate_file_reports(
   }
 
   for (uri, dep) in &graph.dependencies {
-    reports.push(generate_file_report(
-      &uri,
-      dep,
-      expr_counts.get(uri).unwrap(),
-      file_expr_id_map.get(uri).unwrap_or(&HashMap::new()),
-      vfs
-    ).await);
+    reports.push(
+      generate_file_report(
+        &uri,
+        dep,
+        expr_counts.get(uri).unwrap(),
+        file_expr_id_map.get(uri).unwrap_or(&HashMap::new()),
+        vfs,
+      )
+      .await,
+    );
   }
 
   return reports;
@@ -166,13 +160,25 @@ async fn generate_file_report(
   dep: &Dependency,
   counts: &ExprCounts,
   missing_ids: &HashMap<String, ExprIdInfo>,
-  vfs: &mut VirtualFileSystem
+  vfs: &mut VirtualFileSystem,
 ) -> FileReport {
   let mut missing_parts: HashMap<ExprIdKind, PartReport> = HashMap::new();
   let mut missing_statement_ranges: Vec<base_ast::Range> = vec![];
 
-  missing_parts.insert(ExprIdKind::HTML, PartReport { count: counts.html, missing_ranges: vec![] });
-  missing_parts.insert(ExprIdKind::CSS, PartReport { count: counts.css, missing_ranges: vec![] });
+  missing_parts.insert(
+    ExprIdKind::HTML,
+    PartReport {
+      count: counts.html,
+      missing_ranges: vec![],
+    },
+  );
+  missing_parts.insert(
+    ExprIdKind::CSS,
+    PartReport {
+      count: counts.css,
+      missing_ranges: vec![],
+    },
+  );
 
   for (id, info) in missing_ids {
     if let Some(expr) = dep.get_expression_by_id(id) {
@@ -191,13 +197,24 @@ async fn generate_file_report(
     uri: uri.to_string(),
     missing_lines: calc_missed_lines(&missing_statement_ranges),
     line_count,
-    css: missing_parts.get(&ExprIdKind::CSS).unwrap_or(&PartReport { count: 0, missing_ranges: vec![] }).clone(),
-    html: missing_parts.get(&ExprIdKind::HTML).unwrap_or(&PartReport { count: 0, missing_ranges: vec![] }).clone()
+    css: missing_parts
+      .get(&ExprIdKind::CSS)
+      .unwrap_or(&PartReport {
+        count: 0,
+        missing_ranges: vec![],
+      })
+      .clone(),
+    html: missing_parts
+      .get(&ExprIdKind::HTML)
+      .unwrap_or(&PartReport {
+        count: 0,
+        missing_ranges: vec![],
+      })
+      .clone(),
   }
 }
 
 fn calc_missed_lines(mised_statement_ranges: &Vec<base_ast::Range>) -> HashSet<u32> {
-
   let mut missed_lines: HashSet<u32> = HashSet::new();
 
   for range in mised_statement_ranges {
@@ -206,8 +223,6 @@ fn calc_missed_lines(mised_statement_ranges: &Vec<base_ast::Range>) -> HashSet<u
     }
   }
 
-  
-
   missed_lines
 }
 
@@ -215,21 +230,23 @@ fn count_lines(content: &String) -> u32 {
   let cursor = Cursor::new(content.as_bytes());
   let mut lc = 0;
   for _line in cursor.lines() {
-    lc  = lc + 1;
+    lc = lc + 1;
   }
   lc
 }
-
 
 fn get_coverable_expr_ids(source: &Source) -> HashMap<String, ExprIdInfo> {
   let mut missed: HashMap<String, ExprIdInfo> = HashMap::new();
 
   for (uri, dep) in &source.graph.dependencies {
     for (id, kind) in get_missed_file_expr_ids(dep) {
-      missed.insert(id.to_string(), ExprIdInfo {
-        source_uri: uri.to_string(),
-        kind
-      });
+      missed.insert(
+        id.to_string(),
+        ExprIdInfo {
+          source_uri: uri.to_string(),
+          kind,
+        },
+      );
     }
   }
 
@@ -260,7 +277,12 @@ fn analyze_content(uri: &String, content: &DependencyEvalInfo, context: &mut Ana
   }
 }
 
-fn analyze_css_content(_uri: &String, _content: &css_eval::EvalInfo, _context: &mut AnalyzeContext) {}
+fn analyze_css_content(
+  _uri: &String,
+  _content: &css_eval::EvalInfo,
+  _context: &mut AnalyzeContext,
+) {
+}
 
 fn analyze_pc_content(uri: &String, content: &pc_eval::EvalInfo, context: &mut AnalyzeContext) {
   // first, remove all PC expressions that have been used. This includes scripts, and HTML
@@ -273,13 +295,17 @@ fn analyze_pc_content(uri: &String, content: &pc_eval::EvalInfo, context: &mut A
   analayze_node_styles(uri, &content.preview, &vec![], context);
 }
 
-fn analayze_node_styles(uri: &String, node: &pc_virt::Node, path: &Vec<usize>, context: &mut AnalyzeContext) {
+fn analayze_node_styles(
+  uri: &String,
+  node: &pc_virt::Node,
+  path: &Vec<usize>,
+  context: &mut AnalyzeContext,
+) {
   if let pc_virt::Node::Element(element) = node {
     analayze_element_styles(uri, path, context);
   }
 
   if let Some(children) = node.get_children() {
-
     for (index, child) in children.iter().enumerate() {
       let mut child_path = path.clone();
       child_path.push(index);
@@ -289,19 +315,24 @@ fn analayze_node_styles(uri: &String, node: &pc_virt::Node, path: &Vec<usize>, c
 }
 
 fn analayze_element_styles(uri: &String, path: &Vec<usize>, context: &mut AnalyzeContext) {
-  let inspection = inspect_node_styles(path, uri, context.evaluated, &context.graph, &InspectionOptions {
-    screen_width: None,
+  let inspection = inspect_node_styles(
+    path,
+    uri,
+    context.evaluated,
+    &context.graph,
+    &InspectionOptions {
+      screen_width: None,
 
-    // omit things like font-family and such. We just want rules that are
-    // attached to the target node
-    include_inherited: false
-  });
+      // omit things like font-family and such. We just want rules that are
+      // attached to the target node
+      include_inherited: false,
+    },
+  );
 
   for rule in inspection.style_rules {
     context.missed_ids.remove(&rule.source_id);
   }
 }
-
 
 struct ExprIdCollector {
   pub expr_ids: HashMap<String, ExprIdKind>,
@@ -322,13 +353,10 @@ impl ExprIdCollector {
   }
 }
 
-
 impl<'a> ExprVisitor<'a> for ExprIdCollector {
   fn visit_node(&mut self, expr: &'a pc_ast::Node) {
     match expr {
-      pc_ast::Node::Comment(_) => {
-
-      },
+      pc_ast::Node::Comment(_) => {}
       _ => {
         self.visit_core_expr(expr, ExprIdKind::HTML);
       }
@@ -355,7 +383,7 @@ impl<'a> ExprVisitor<'a> for ExprIdCollector {
     match expr {
       css_ast::Rule::Style(_) => {
         self.visit_core_expr(expr, ExprIdKind::CSS);
-      },
+      }
       _ => {}
     }
   }
@@ -409,12 +437,12 @@ mod tests {
           line_count: 1,
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           html: PartReport {
             count: 2,
-            missing_ranges: vec![]
-          }
+            missing_ranges: vec![],
+          },
         }],
       },
     );
@@ -445,12 +473,12 @@ mod tests {
           line_count: 7,
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           html: PartReport {
             count: 7,
-            missing_ranges: vec![]
-          }
+            missing_ranges: vec![],
+          },
         }],
       },
     );
@@ -481,15 +509,15 @@ mod tests {
           line_count: 7,
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           html: PartReport {
             count: 9,
             missing_ranges: vec![base_ast::Range::new(
               U16Position::new(51, 3, 17),
               U16Position::new(58, 3, 24),
-            )]
-          }
+            )],
+          },
         }],
       },
     );
@@ -524,12 +552,12 @@ mod tests {
           line_count: 11,
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           html: PartReport {
             count: 18,
-            missing_ranges: vec![]
-          }
+            missing_ranges: vec![],
+          },
         }],
       },
     );
@@ -561,12 +589,12 @@ mod tests {
           line_count: 8,
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           html: PartReport {
             count: 11,
-            missing_ranges: vec![]
-          }
+            missing_ranges: vec![],
+          },
         }],
       },
     );
@@ -607,12 +635,12 @@ mod tests {
                 line: 2,
                 column: 58,
               },
-            }]
+            }],
           },
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
-          }
+            missing_ranges: vec![],
+          },
         }],
       },
     );
@@ -642,12 +670,12 @@ mod tests {
           line_count: 6,
           html: PartReport {
             count: 8,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
-          }
+            missing_ranges: vec![],
+          },
         }],
       },
     );
@@ -655,8 +683,9 @@ mod tests {
 
   #[test]
   fn shows_style_as_covered() {
-    let graph: HashMap<String, String> = [
-      ("entry.pc".to_string(), "
+    let graph: HashMap<String, String> = [(
+      "entry.pc".to_string(),
+      "
         <style>
           div {
             color: blue;
@@ -668,42 +697,53 @@ mod tests {
           }
         </style>
         <div />
-      ".to_string())
-    ].iter().cloned().collect();
-    assert_graph_report(graph, CoverageReport {
-      files: vec![
-        FileReport {
+      "
+      .to_string(),
+    )]
+    .iter()
+    .cloned()
+    .collect();
+    assert_graph_report(
+      graph,
+      CoverageReport {
+        files: vec![FileReport {
           uri: "entry.pc".to_string(),
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 13,
           html: PartReport {
             count: 3,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           css: PartReport {
             count: 2,
-            missing_ranges: vec![]
-          }
-        }
-      ]
-    });
+            missing_ranges: vec![],
+          },
+        }],
+      },
+    );
   }
 
   #[test]
   fn shows_style_as_not_covered_if_not_applied() {
-    let graph: HashMap<String, String> = [
-      ("entry.pc".to_string(), "
+    let graph: HashMap<String, String> = [(
+      "entry.pc".to_string(),
+      "
         <style>
           span {
             color: blue;
           }
         </style>
         <div />
-      ".to_string())
-    ].iter().cloned().collect();
-    assert_graph_report(graph, CoverageReport {
-      files: vec![
-        FileReport {
+      "
+      .to_string(),
+    )]
+    .iter()
+    .cloned()
+    .collect();
+    assert_graph_report(
+      graph,
+      CoverageReport {
+        files: vec![FileReport {
           uri: "entry.pc".to_string(),
           missing_lines: HashSet::from_iter(vec![4, 6, 3, 5].iter().cloned()),
           line_count: 8,
@@ -720,25 +760,31 @@ mod tests {
                 line: 6,
                 column: 9,
               },
-            }]
+            }],
           },
           html: PartReport {
             count: 3,
-            missing_ranges: vec![]
-          }
-        }
-      ]
-    });
+            missing_ranges: vec![],
+          },
+        }],
+      },
+    );
   }
 
   #[test]
   fn shows_external_file_as_covered() {
     let graph: HashMap<String, String> = [
-      ("entry.pc".to_string(), "
+      (
+        "entry.pc".to_string(),
+        "
         <import src=\"atoms.pc\" inject-styles />
         <span />
-      ".to_string()),
-      ("atoms.pc".to_string(), "
+      "
+        .to_string(),
+      ),
+      (
+        "atoms.pc".to_string(),
+        "
         <style>
           @export {
             span {
@@ -749,18 +795,24 @@ mod tests {
             }
           }
         </style>
-      ".to_string())
-    ].iter().cloned().collect();
-    assert_graph_report(graph, CoverageReport {
-      files: vec![
-        FileReport {
-          uri: "atoms.pc".to_string(),
-          missing_lines: HashSet::from_iter(vec![7, 8, 9, 10].iter().cloned()),
-          line_count: 12,
-          css: PartReport {
-            count: 2,
-            missing_ranges: vec![
-              base_ast::Range {
+      "
+        .to_string(),
+      ),
+    ]
+    .iter()
+    .cloned()
+    .collect();
+    assert_graph_report(
+      graph,
+      CoverageReport {
+        files: vec![
+          FileReport {
+            uri: "atoms.pc".to_string(),
+            missing_lines: HashSet::from_iter(vec![7, 8, 9, 10].iter().cloned()),
+            line_count: 12,
+            css: PartReport {
+              count: 2,
+              missing_ranges: vec![base_ast::Range {
                 start: U16Position {
                   pos: 109,
                   line: 7,
@@ -771,36 +823,36 @@ mod tests {
                   line: 10,
                   column: 11,
                 },
-              }
-            ]
+              }],
+            },
+            html: PartReport {
+              count: 2,
+              missing_ranges: vec![],
+            },
           },
-          html: PartReport {
-            count: 2,
-            missing_ranges: vec![]
-          }
-        },
-        FileReport {
-          uri: "entry.pc".to_string(),
-          missing_lines: HashSet::from_iter(vec![].iter().cloned()),
-          line_count: 4,
-          css: PartReport {
-            count: 0,
-            missing_ranges: vec![]
+          FileReport {
+            uri: "entry.pc".to_string(),
+            missing_lines: HashSet::from_iter(vec![].iter().cloned()),
+            line_count: 4,
+            css: PartReport {
+              count: 0,
+              missing_ranges: vec![],
+            },
+            html: PartReport {
+              count: 5,
+              missing_ranges: vec![],
+            },
           },
-          html: PartReport {
-            count: 5,
-            missing_ranges: vec![]
-          }
-        }
-      ]
-    });
+        ],
+      },
+    );
   }
-
 
   #[test]
   fn shows_instances_of_instances_covered() {
-    let graph: HashMap<String, String> = [
-      ("entry.pc".to_string(), "
+    let graph: HashMap<String, String> = [(
+      "entry.pc".to_string(),
+      "
 
         <!-- 
           @frame { visible: false }
@@ -816,25 +868,30 @@ mod tests {
 
         </Test>
         <Test2 a />
-      ".to_string())
-    ].iter().cloned().collect();
-    assert_graph_report(graph, CoverageReport {
-      files: vec![
-        FileReport {
+      "
+      .to_string(),
+    )]
+    .iter()
+    .cloned()
+    .collect();
+    assert_graph_report(
+      graph,
+      CoverageReport {
+        files: vec![FileReport {
           uri: "entry.pc".to_string(),
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 17,
           html: PartReport {
             count: 11,
-            missing_ranges: vec![]
+            missing_ranges: vec![],
           },
           css: PartReport {
             count: 0,
-            missing_ranges: vec![]
-          }
-        }
-      ]
-    });
+            missing_ranges: vec![],
+          },
+        }],
+      },
+    );
   }
 
   fn assert_graph_report(graph: HashMap<String, String>, report: CoverageReport) {
