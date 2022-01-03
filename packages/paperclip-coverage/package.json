@@ -5,15 +5,16 @@
   "main": "lib/index.js",
   "types": "lib/index.ds.ts",
   "scripts": {
-    "build": "yarn build:paperclip && tsc",
+    "build": "yarn build:definition && yarn build:paperclip && tsc",
     "test": "mocha lib/test",
-    "build:paperclip": "paperclip build --only=mjs,mjs.map",
+    "build:paperclip": "paperclip build --only=js,js.map,css",
     "build:definition": "paperclip build --only=d.ts --output=src",
-    "build:watch": "concurrently \"tsc --watch\" \"yarn build:paperclip --watch\""
+    "build:watch": "concurrently \"tsc --watch\" \"yarn build:paperclip --watch\"  \"yarn build:definition --watch\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "html-entities": "^1.2.1",
     "paperclip": "^18.2.16",
     "paperclip-compiler-html": "^18.2.16",
     "paperclip-utils": "^18.2.16",

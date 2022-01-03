@@ -2,6 +2,8 @@ import * as path from "path";
 import { paperclipSourceGlobPattern } from "./utils";
 
 export type CompilerOptions = {
+  target?: string[];
+
   // where PC files should be compiled to. If undefined, then
   // srcDir is used
   outDir?: string;

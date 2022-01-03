@@ -27,3 +27,4 @@ paperclip-html.tmLanguage.json
 
 .paperclip
 *.tgz
+*.mjs

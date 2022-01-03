@@ -23,6 +23,10 @@
       background-color: var(--okay-coverage-color);
     }
   }
+
+  a {
+    color: inherit;
+  }
 </style>
 
 
@@ -39,7 +43,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
 -->
-<div export component as="Breadcrumb" {href}>
+<div export component as="Breadcrumb">
   <style>
     color: rgb(117, 117, 117);
     &:before {
@@ -53,12 +57,12 @@
       }
     }
   </style>
-  <a {href}>
+  {href && <a {href}>
     <style>
       color: inherit;
     </style>
     {children}
-  </a>
+  </a> || children}
 </div>
 
 <!--
@@ -68,6 +72,7 @@
   <style>
     display: flex;
     border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
     border-top: 1px solid var(--border-color);
     &.header {
       border: 1px solid transparent;
@@ -139,7 +144,7 @@
   <style>
     justify-content: space-between;
   </style>
-  {children}
+  <a {href}>{children}</a>
   <CoverageBar {percentage} />
 </Cell>
 
@@ -191,7 +196,7 @@
       }
       &:within(.stretch) {
         width: 100%;
-        text-align: center;
+        margin-left: 40%;
       }
     </style>
     {percentage}%
@@ -205,7 +210,6 @@
     ({coveredCount} / {totalCount})
   </span>
 </div>
-
 
 <!--
   @frame { visible: false }
@@ -267,6 +271,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -6, y: 74 }
+-->
 <div export component as="FileReportContent">
   <style>
     margin: 16px;
@@ -293,7 +301,7 @@
   breadcrumbs={<fragment>
     <Breadcrumb href="a">path</Breadcrumb>
     <Breadcrumb href="a">to</Breadcrumb>
-    <Breadcrumb href="a">directory</Breadcrumb>
+    <Breadcrumb>directory</Breadcrumb>
   </fragment>}>
   <FileReportContent>
     <Line good number="1">I'm code</Line>
@@ -306,6 +314,10 @@
   </FileReportContent>
 </Report>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 3, y: 57 }
+-->
 <div component as="LineNumber" class="coverage" class:good="good">
   <style>
     background: rgb(230, 230, 230);
@@ -320,6 +332,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 17, y: 62 }
+-->
 <div export
   component
   as="Line"
@@ -337,7 +353,7 @@
 
 
 <!--
-  @frame { title: "Directory Report" }
+  @frame { title: "Directory Report", width: 1024, height: 768, x: 0, y: 1 }
 -->
 <Report okay
   title="Coverage report"
@@ -363,11 +379,11 @@
       <Cell>Lines</Cell>
     </Row>
     <Row>
-      <FileCell good percentage="83">path/to/file.pc</FileCell>
+      <FileCell good percentage="83" href="#">path/to/file.pc</FileCell>
       <PercentCell okay
         title="Lines"
         percentage="83"
-        coveredCount="290"
+        coveredCount="29000"
         totalCount="300" />
       <PercentCell poor
         title="Lines"

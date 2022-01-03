@@ -270,10 +270,29 @@ impl ExprIdCollector {
 
 impl<'a> ExprVisitor<'a> for ExprIdCollector {
   fn visit_node(&mut self, expr: &'a pc_ast::Node) {
-    self.visit_core_expr(expr);
+    match expr {
+      pc_ast::Node::Comment(_) => {
+
+      },
+      _ => {
+        self.visit_core_expr(expr);
+      }
+    };
   }
 
   fn visit_attr(&mut self, expr: &'a pc_ast::Attribute) {
+    let attr_name = match expr {
+      pc_ast::Attribute::KeyValueAttribute(kv) => kv.name.to_string(),
+      pc_ast::Attribute::PropertyBoundAttribute(kv) => kv.name.to_string(),
+      pc_ast::Attribute::ShorthandAttribute(kv) => kv.reference.to_string(),
+      pc_ast::Attribute::SpreadAttribute(kv) => kv.script.to_string(),
+    };
+
+    // skip event handlers. This is a dirty approach
+    if attr_name.starts_with("on") {
+      return;
+    }
+
     self.visit_core_expr(expr);
   }
 
@@ -650,6 +669,41 @@ mod tests {
           statement_count: 9,
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 4,
+          missing_statement_ranges: vec![],
+        }
+      ]
+    });
+  }
+
+
+  #[test]
+  fn shows_instances_of_instances_covered() {
+    let graph: HashMap<String, String> = [
+      ("entry.pc".to_string(), "
+
+        <!-- 
+          @frame { visible: false }
+        -->
+        <div component as=\"Test\">
+
+        </div>
+
+        <!-- 
+          @frame { visible: false }
+        -->
+        <Test export component as=\"Test2\" {onClick?}>
+
+        </Test>
+        <Test2 />
+      ".to_string())
+    ].iter().cloned().collect();
+    assert_graph_report(graph, CoverageReport {
+      files: vec![
+        FileReport {
+          uri: "entry.pc".to_string(),
+          statement_count: 8,
+          missing_lines: HashSet::from_iter(vec![].iter().cloned()),
+          line_count: 17,
           missing_statement_ranges: vec![],
         }
       ]

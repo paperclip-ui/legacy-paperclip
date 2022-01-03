@@ -1,4 +1,4 @@
-import { printCoverage, generateCoverageHTML } from "paperclip-coverage";
+import { printCoverage, writeCoverageHTML } from "paperclip-coverage";
 import * as fsa from "fs-extra";
 import * as path from "path";
 import * as glob from "glob";
@@ -46,7 +46,8 @@ export const coverage = ({ output, save, cwd }: CoverageOptions) => {
     const outputDir = path.join(cwd, coverageDir);
 
     fsa.mkdirpSync(outputDir);
-    generateCoverageHTML(report, { output: outputDir, cwd });
+    writeCoverageHTML(report, { output: outputDir, cwd });
+    console.log(`Write .${outputDir.replace(cwd, "")}`);
   } else {
     printCoverage(report);
   }

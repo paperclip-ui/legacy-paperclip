@@ -52,7 +52,7 @@
 <!--
   @frame { visible: false, width: 338, height: 147, x: 0, y: 0 }
 -->
-<Button export component as="CommitButton" {onClick} {title}>
+<Button export component as="CommitButton" {onClick} {title?}>
   {children}
   {loading && <Spinner />}
   {success && <Check />}
@@ -69,7 +69,7 @@
     grid-column-gap: 6px;
     padding: 6px;
   </style>
-  <CommitButton loading>Commit</CommitButton>
+  <CommitButton loading title="Title">Commit</CommitButton>
   <CommitButton failed>Commit</CommitButton>
   <CommitButton success>Commit</CommitButton>
 </div>

@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "lib"
+    "target": ["html"],
+    "outDir": "lib",
+    "mainCSSFileName": "main.css",
+    "assetOutDir": "lib/assets",
+    "es5": true
   },
   "srcDir": "./src"
 }

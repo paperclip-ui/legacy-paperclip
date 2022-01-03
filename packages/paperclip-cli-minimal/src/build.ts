@@ -39,7 +39,7 @@ export const build = async (options: BuildOptions) => {
 
   builder
     .onFile((outFilePath: string, content: string) => {
-      const ext = outFilePath.replace(/.*?\.pc\./, "");
+      const ext = outFilePath.replace(/.*?(\.pc)?\./, "");
 
       if (options.only && !options.only.includes(ext)) {
         return;
@@ -49,7 +49,6 @@ export const build = async (options: BuildOptions) => {
         console.log("Write %s", path.relative(options.cwd, outFilePath));
       }
       if (options.print && isPaperclipFile(outFilePath)) {
-        console.log(content);
       } else {
         writeFileSync(outFilePath, content, options);
       }

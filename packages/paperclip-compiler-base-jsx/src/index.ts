@@ -1,5 +1,7 @@
 import { CompileOptions } from "paperclip-interim";
+import { PaperclipConfig } from "paperclip-utils";
 import { codeCompiler, CodeCompilerOptions } from "./code-compiler";
+import * as babel from "@babel/core";
 import {
   definitionCompiler,
   DefinitionCompilerOptions
@@ -8,7 +10,7 @@ import {
 export type CompilersOptions = {
   code: CodeCompilerOptions;
   definition: DefinitionCompilerOptions;
-  extensionName: string;
+  extensionName: string | ((config: PaperclipConfig) => string);
 };
 
 export const compilers = ({
@@ -20,11 +22,20 @@ export const compilers = ({
   const compile2Defition = definitionCompiler(definition);
 
   return ({ module, fileUrl, includes, config }: CompileOptions) => {
-    const { code, map } = compile2Code(module, fileUrl, config, includes);
+    let { code, map } = compile2Code(module, fileUrl, config, includes);
+
+    if ((config.compilerOptions as any).es5) {
+      code = babel.transformSync(code, { presets: ["@babel/preset-env"] }).code;
+    }
+
+    const ext =
+      typeof extensionName == "function"
+        ? extensionName(config)
+        : extensionName;
 
     return {
-      ["." + extensionName]: code,
-      ["." + extensionName + ".map"]: map.toString(),
+      ["." + ext]: code,
+      ["." + ext + ".map"]: map.toString(),
       ".d.ts": compile2Defition(module, fileUrl, config)
     };
   };
