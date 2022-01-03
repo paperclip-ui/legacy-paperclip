@@ -6,7 +6,7 @@ import {
   startBlock,
   endBlock,
   writeJoin
-} from "paperclip-compiler-base-jsx/lib/utils";
+} from "./utils";
 import { InterimComponent, InterimModule } from "paperclip-interim";
 import { PaperclipConfig } from "paperclip-utils";
 
