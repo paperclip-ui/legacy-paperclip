@@ -241,8 +241,15 @@
         margin: 0px;
       }
     </style>
-    <h3>{title}</h3>
-    <Breadcrumbs>{breadcrumbs}</Breadcrumbs>
+    <div>
+      <style>
+        display: flex;
+        flex-direction: column;
+        grid-row-gap: 8px;
+      </style>
+      <h3>{title}</h3>
+      <Breadcrumbs>{breadcrumbs}</Breadcrumbs>
+    </div>
     <div>
       <style>
         display: flex;
@@ -254,14 +261,22 @@
   <div class="coverage" class:good="good" class:poor="poor" class:okay="okay">
     <style>
       height: 8px;
+      margin: 0px 16px;
     </style>
   </div>
   {children}
 </div>
 
+<div export component as="FileReportContent">
+  <style>
+    margin: 16px;
+  </style>
+  {children}
+</div>
+
 
 <!--
-  @frame { title: "File Report", width: 1024, height: 768, x: 1157, y: -8 }
+  @frame { title: "File Report", width: 1024, height: 768, x: 1157, y: -9 }
 -->
 <Report okay
   title="Coverage report"
@@ -280,18 +295,15 @@
     <Breadcrumb href="a">to</Breadcrumb>
     <Breadcrumb href="a">directory</Breadcrumb>
   </fragment>}>
-  <div>
-    <style>
-      margin: 16px;
-    </style>
+  <FileReportContent>
     <Line good number="1">I'm code</Line>
     <Line poor number="1">I'm code</Line>
     <Line good number="1">I'm code</Line>
     <Line good number="1">I'm code</Line>
     <Line good number="1">I'm code</Line>
+    <Line okay number="1">I'm code</Line>
     <Line good number="1">I'm code</Line>
-    <Line good number="1">I'm code</Line>
-  </div>
+  </FileReportContent>
 </Report>
 
 <div component as="LineNumber" class="coverage" class:good="good">
@@ -300,7 +312,7 @@
     padding: 0px 8px;
     padding: 4px 16px;
     width: 100px;
-    &:within(.poor) {
+    &:within(.poor, .okay) {
       background: transparent;
     }
 
@@ -308,7 +320,12 @@
   {children}
 </div>
 
-<div export component as="Line" class="coverage" class:poor="poor">
+<div export
+  component
+  as="Line"
+  class="coverage"
+  class:poor="poor"
+  class:okay="okay">
   <style>
     display: flex;
     align-items: center;
