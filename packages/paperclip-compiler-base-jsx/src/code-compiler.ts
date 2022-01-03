@@ -1,7 +1,6 @@
 import {
   InterimNode,
   InterimText,
-  InterimImport,
   InterimElement,
   InterimNodeKind,
   InterimSlotNode,
@@ -34,8 +33,7 @@ import {
 import { Html5Entities } from "html-entities";
 import { Context } from "./utils";
 import { SourceNode } from "source-map";
-import { PaperclipConfig, ParseErrorKind } from "paperclip-utils";
-import identity from "lodash/identity";
+import { PaperclipConfig } from "paperclip-utils";
 
 const entities = new Html5Entities();
 

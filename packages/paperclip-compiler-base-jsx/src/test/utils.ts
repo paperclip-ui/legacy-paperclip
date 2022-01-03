@@ -25,7 +25,7 @@ export const compileModules = (
       readFile(filePath) {
         return Buffer.from(graph[filePath]);
       },
-      getFileSize(filePath) {
+      getFileSize() {
         return 0;
       }
     }

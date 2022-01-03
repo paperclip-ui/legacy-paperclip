@@ -1,6 +1,5 @@
 import { ShapeProperty, InferenceKind, Inference } from "paperclip";
 import {
-  RENAME_PROPS,
   createTranslateContext,
   Context,
   addBuffer,
@@ -116,7 +115,6 @@ export const definitionCompiler = ({
     const props = {};
 
     for (const key in component.schema.properties) {
-      const propName = RENAME_PROPS[key] || key;
       context = translateProp(key, component.schema.properties[key])(context);
       props[key] = [null];
     }

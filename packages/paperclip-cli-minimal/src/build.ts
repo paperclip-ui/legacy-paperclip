@@ -10,7 +10,7 @@ import {
   stripFileProtocol
 } from "paperclip-utils";
 import { createEngineDelegate } from "paperclip";
-import { mkdirpSync, outputFile } from "fs-extra";
+import { mkdirpSync } from "fs-extra";
 
 export type BuildOptions = {
   cwd: string;
@@ -49,6 +49,7 @@ export const build = async (options: BuildOptions) => {
         console.log("Write %s", path.relative(options.cwd, outFilePath));
       }
       if (options.print && isPaperclipFile(outFilePath)) {
+        console.log(content);
       } else {
         writeFileSync(outFilePath, content, options);
       }

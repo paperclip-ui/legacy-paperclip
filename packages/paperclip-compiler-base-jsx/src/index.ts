@@ -22,10 +22,13 @@ export const compilers = ({
   const compile2Defition = definitionCompiler(definition);
 
   return ({ module, fileUrl, includes, config }: CompileOptions) => {
-    let { code, map } = compile2Code(module, fileUrl, config, includes);
+    const { code, map } = compile2Code(module, fileUrl, config, includes);
+
+    let outputCode = code;
 
     if ((config.compilerOptions as any).es5) {
-      code = babel.transformSync(code, { presets: ["@babel/preset-env"] }).code;
+      outputCode = babel.transformSync(code, { presets: ["@babel/preset-env"] })
+        .code;
     }
 
     const ext =
@@ -34,7 +37,7 @@ export const compilers = ({
         : extensionName;
 
     return {
-      ["." + ext]: code,
+      ["." + ext]: outputCode,
       ["." + ext + ".map"]: map.toString(),
       ".d.ts": compile2Defition(module, fileUrl, config)
     };
