@@ -165,7 +165,7 @@ const generateDirectoryReport = (
               reportStyles.FileCell({
                 href: getHTMLPathName(relativePath),
                 children: relativePath.join("/"),
-                percentage: statementPercentage
+                percentage: linePercentage
               }),
               reportStyles.PercentCell({
                 percentage: statementPercentage,
