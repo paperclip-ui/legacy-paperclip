@@ -228,12 +228,9 @@
 </div>
 
 <!--
-  @frame { title: "DirectoryReport", width: 1024, height: 768, x: 76, y: -95 }
+  @frame { visible: false, title: "DirectoryReport", width: 1024, height: 768, x: 76, y: -95 }
 -->
-<div>
-  <!--
-    @frame { title: "", width: 1024, height: 768, x: 0, y: 0 }
-  -->
+<div export component as="Report">
   <div>
     <style>
       display: flex;
@@ -244,32 +241,45 @@
         margin: 0px;
       }
     </style>
-    <h3>Coverage report</h3>
-    <Breadcrumbs>
-      <Breadcrumb href="a">path</Breadcrumb>
-      <Breadcrumb href="a">to</Breadcrumb>
-      <Breadcrumb href="a">directory</Breadcrumb>
-    </Breadcrumbs>
+    <h3>{title}</h3>
+    <Breadcrumbs>{breadcrumbs}</Breadcrumbs>
     <div>
       <style>
         display: flex;
         grid-column-gap: 16px;
       </style>
-      <CoverageInfo title="Statements"
-        percentage="83"
-        coveredCount="290"
-        totalCount="300" />
-      <CoverageInfo title="Lines"
-        percentage="83"
-        coveredCount="290"
-        totalCount="300" />
+      {coverage}
     </div>
   </div>
-  <div class="coverage poor">
+  <div class="coverage" class:good="good" class:poor="poor" class:okay="okay">
     <style>
       height: 8px;
     </style>
   </div>
+  {children}
+</div>
+
+
+<!--
+  @frame { title: "Directory Report" }
+-->
+<Report okay
+  title="Coverage report"
+  coverage={<fragment>
+    <CoverageInfo title="Statements"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+    <CoverageInfo title="Lines"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+  </fragment>}
+  breadcrumbs={<fragment>
+    <Breadcrumb href="a">path</Breadcrumb>
+    <Breadcrumb href="a">to</Breadcrumb>
+    <Breadcrumb href="a">directory</Breadcrumb>
+  </fragment>}>
   <Table>
     <Row header>
       <Cell>file</Cell>
@@ -342,4 +352,4 @@
         totalCount="300" />
     </Row>
   </Table>
-</div>
+</Report>
