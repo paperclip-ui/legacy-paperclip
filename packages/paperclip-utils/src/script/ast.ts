@@ -1,7 +1,7 @@
 import { Node, traverseExpression } from "../html/ast";
 import { StringRange } from "../base/ast";
 
-export enum JsExpressionKind {
+export enum ScriptExpressionKind {
   Node = "Node",
   Reference = "Reference",
   Array = "Array",
@@ -14,102 +14,102 @@ export enum JsExpressionKind {
   Group = "Group"
 }
 
-type BaseJsExpression<TKind extends JsExpressionKind> = {
-  jsKind: TKind;
+type BaseScriptExpression<TKind extends ScriptExpressionKind> = {
+  scriptKind: TKind;
 };
 
-export type JsNode = Node & BaseJsExpression<JsExpressionKind.Node>;
+export type ScriptNode = Node & BaseScriptExpression<ScriptExpressionKind.Node>;
 
-export type JsObjectProperty = {
+export type ScriptObjectProperty = {
   key: string;
-  value: JsExpression;
+  value: ScriptExpression;
 };
 
-export enum JsConjunctionOperatorKind {
+export enum ScriptConjunctionOperatorKind {
   And = "And",
   Or = "Or"
 }
 
-export type JsConjunction = {
-  left: JsExpression;
+export type ScriptConjunction = {
+  left: ScriptExpression;
   range: StringRange;
-  right: JsExpression;
-  operator: JsConjunctionOperatorKind;
-} & BaseJsExpression<JsExpressionKind.Conjunction>;
+  right: ScriptExpression;
+  operator: ScriptConjunctionOperatorKind;
+} & BaseScriptExpression<ScriptExpressionKind.Conjunction>;
 
-export type JsObject = {
-  properties: JsObjectProperty[];
+export type ScriptObject = {
+  properties: ScriptObjectProperty[];
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.Object>;
+} & BaseScriptExpression<ScriptExpressionKind.Object>;
 
-export type JsArray = {
-  values: JsExpression[];
+export type ScriptArray = {
+  values: ScriptExpression[];
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.Array>;
+} & BaseScriptExpression<ScriptExpressionKind.Array>;
 
-export type JsString = {
+export type ScriptString = {
   value: string;
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.String>;
+} & BaseScriptExpression<ScriptExpressionKind.String>;
 
-export type JsBoolean = {
+export type ScriptBoolean = {
   value: boolean;
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.Boolean>;
+} & BaseScriptExpression<ScriptExpressionKind.Boolean>;
 
-export type JsNot = {
-  expression: JsExpression;
+export type ScriptNot = {
+  expression: ScriptExpression;
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.Not>;
+} & BaseScriptExpression<ScriptExpressionKind.Not>;
 
-export type JsGroup = {
-  expression: JsExpression;
+export type ScriptGroup = {
+  expression: ScriptExpression;
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.Group>;
+} & BaseScriptExpression<ScriptExpressionKind.Group>;
 
-export type JsNumber = {
+export type ScriptNumber = {
   value: number;
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.Number>;
+} & BaseScriptExpression<ScriptExpressionKind.Number>;
 
 export type Reference = {
   path: ReferencePart[];
   range: StringRange;
-} & BaseJsExpression<JsExpressionKind.Reference>;
+} & BaseScriptExpression<ScriptExpressionKind.Reference>;
 
 export type ReferencePart = {
   name: string;
   optional: boolean;
 };
 
-export type JsExpression =
+export type ScriptExpression =
   | Reference
-  | JsNode
-  | JsObject
-  | JsGroup
-  | JsArray
-  | JsNumber
-  | JsString
-  | JsBoolean
-  | JsConjunction
-  | JsNot;
+  | ScriptNode
+  | ScriptObject
+  | ScriptGroup
+  | ScriptArray
+  | ScriptNumber
+  | ScriptString
+  | ScriptBoolean
+  | ScriptConjunction
+  | ScriptNot;
 
 export const traverseJSExpression = (
-  expr: JsExpression,
-  each: (expr: JsExpression) => void | boolean
+  expr: ScriptExpression,
+  each: (expr: ScriptExpression) => void | boolean
 ) => {
-  if (expr.jsKind === JsExpressionKind.Conjunction) {
+  if (expr.scriptKind === ScriptExpressionKind.Conjunction) {
     return (
       traverseJSExpression(expr.left, each) &&
       traverseJSExpression(expr.right, each)
     );
-  } else if (expr.jsKind === JsExpressionKind.Array) {
+  } else if (expr.scriptKind === ScriptExpressionKind.Array) {
     for (const value of expr.values) {
       if (traverseJSExpression(value, each) === false) {
         return false;
       }
     }
-  } else if (expr.jsKind === JsExpressionKind.Node) {
+  } else if (expr.scriptKind === ScriptExpressionKind.Node) {
     return traverseExpression(expr, each);
   }
   return true;

@@ -454,12 +454,14 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
 }
 
 pub fn evaluate_style_rules<'a>(
-  rules: &Vec<ast::StyleRule>,
+  rules: &Vec<ast::Rule>,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   for rule in rules {
-    evaluate_style_rule2(&rule, context, parent_selector_context)?;
+    if let ast::Rule::Style(style) = rule {
+      evaluate_style_rule2(&style, context, parent_selector_context)?;
+    }
   }
   Ok(())
 }
@@ -689,7 +691,7 @@ fn get_mixin_from_pc_doc<'a>(
   content: &'a pc_ast::Node,
   name: &String,
 ) -> Option<&'a ast::MixinRule> {
-  if let Some(children) = pc_ast::get_children(content) {
+  if let Some(children) = content.get_children() {
     for child in children {
       match &child {
         pc_ast::Node::StyleElement(element) => {

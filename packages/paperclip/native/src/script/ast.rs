@@ -1,25 +1,11 @@
 use crate::base::ast::Range;
+use crate::core::ast::{Expr, ExprVisitor};
 use crate::pc::ast as pc_ast;
 use serde::Serialize;
 use std::fmt;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum JSObject<'a> {
-  Expression(&'a Expression),
-  PCObject(pc_ast::PCObject<'a>),
-}
-
-impl<'a> JSObject<'a> {
-  pub fn get_range(&'a self) -> &'a Range {
-    match self {
-      JSObject::Expression(expr) => expr.get_range(),
-      JSObject::PCObject(expr) => expr.get_range(),
-    }
-  }
-}
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "jsKind")]
+#[serde(tag = "scriptKind")]
 pub enum Expression {
   Conjunction(Conjunction),
   Group(Group),
@@ -33,19 +19,30 @@ pub enum Expression {
   Node(Box<pc_ast::Node>),
 }
 
-impl Expression {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<JSObject<'a>> {
-    if self.get_id() == id {
-      return Some(JSObject::Expression(self));
+impl Expr for Expression {
+  fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    visitor.visit_script_expression(self);
+    if !visitor.should_continue() {
+      return;
     }
 
     match self {
-      Expression::Conjunction(conj) => conj.get_object_by_id(id),
-      Expression::Node(node) => node
-        .get_object_by_id(id)
-        .and_then(|object| Some(JSObject::PCObject(object))),
-      _ => None,
-    }
+      Expression::Conjunction(conj) => {
+        conj.left.walk(visitor);
+        if visitor.should_continue() {
+          conj.right.walk(visitor);
+        }
+      }
+      Expression::Node(node) => node.walk(visitor),
+      Expression::Group(expr) => expr.expression.walk(visitor),
+      _ => {}
+    };
+  }
+  fn get_id<'a>(&'a self) -> &'a String {
+    return self.get_id();
+  }
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    return pc_ast::Expression::Script(self);
   }
 }
 
@@ -151,15 +148,6 @@ pub struct Conjunction {
   pub left: Box<Expression>,
   pub operator: ConjunctionOperatorKind,
   pub right: Box<Expression>,
-}
-
-impl Conjunction {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<JSObject<'a>> {
-    self
-      .left
-      .get_object_by_id(id)
-      .or_else(|| self.right.get_object_by_id(id))
-  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

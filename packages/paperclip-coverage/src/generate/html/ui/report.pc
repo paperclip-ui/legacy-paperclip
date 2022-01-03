@@ -1,0 +1,473 @@
+<import src="./atoms.pc" inject-styles />
+<style>
+  :global(:root) {
+    font-family: sans-serif;
+    font-size: 16px;
+    --border-color: rgb(133, 133, 133);
+    --okay-coverage-color: rgb(255, 255, 145);
+    --poor-coverage-color: rgb(255, 145, 145);
+    --good-coverage-color: rgb(180, 231, 180);
+  }
+  * {
+    box-sizing: border-box;
+  }
+
+  .coverage {
+    &.good {
+      background-color: var(--good-coverage-color);
+    }
+    &.poor {
+      background-color: var(--poor-coverage-color);
+    }
+    &.okay {
+      background-color: var(--okay-coverage-color);
+    }
+  }
+
+  a {
+    color: inherit;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Breadcrumbs">
+  <style>
+    display: flex;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div export component as="Breadcrumb">
+  <style>
+    color: rgb(117, 117, 117);
+    &:before {
+      content: "/";
+      margin: 0px 4px;
+    }
+    &:first-child {
+      &:before {
+        content: "";
+        margin: 0;
+      }
+    }
+  </style>
+  {href && <a {href}>
+    <style>
+      color: inherit;
+    </style>
+    {children}
+  </a> || children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Row" class:header="header">
+  <style>
+    display: flex;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
+    &.header {
+      border: 1px solid transparent;
+    }
+    &:last-child {
+      border-bottom: 1px solid var(--border-color);
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 1 }
+-->
+<div export
+  component
+  as="Cell"
+  class="coverage {class?}"
+  class:okay="okay"
+  class:poor="poor"
+  class:good="good">
+  <style>
+    display: flex;
+    grid-column-gap: 16px;
+    width: 100%;
+    padding: 8px 16px;
+    border-left: 1px solid var(--border-color);
+    &:within(.header) {
+      background: transparent;
+      border-left: none;
+    }
+    &:first-child {
+      border-left: 0px;
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 1 }
+-->
+<div export component as="Table">
+  <style>
+    margin: 16px;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Cell export component as="PercentCell" {okay?} {good?} {poor?}>
+  <CoveragePercentInfo {coveredCount}
+    {percentage}
+    {totalCount}
+    transparent
+    stretch
+    subtle />
+</Cell>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<Cell export component as="FileCell" {okay?} {good?} {poor?}>
+  <style>
+    justify-content: space-between;
+  </style>
+  <a {href}>{children}</a>
+  <CoverageBar {percentage} />
+</Cell>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div export component as="CoverageInfo">
+  <style>
+    display: flex;
+    align-items: center;
+    grid-column-gap: 8px;
+  </style>
+  <span>{title}</span>
+  <CoveragePercentInfo {percentage} {coveredCount} {totalCount} />
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div export
+  component
+  as="CoveragePercentInfo"
+  class:transparent="transparent"
+  class:stretch="stretch"
+  class:subtle="subtle">
+  <style>
+    background: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    grid-column-gap: 4px;
+    &.transparent {
+      border: none;
+      background: none;
+    }
+    &.stretch {
+      justify-content: space-between;
+      padding: 0px;
+      width: 100%;
+    }
+  </style>
+  <span>
+    <style>
+      font-weight: 700;
+      &:within(.subtle) {
+        font-weight: normal;
+      }
+      &:within(.stretch) {
+        width: 100%;
+        margin-left: 40%;
+      }
+    </style>
+    {percentage}%
+  </span>
+  <span>
+    <style>
+      font-size: 0.8em;
+      opacity: 0.4;
+      white-space: nowrap;
+    </style>
+    ({coveredCount} / {totalCount})
+  </span>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="CoverageBar">
+  <style>
+    background: white;
+    border-radius: 4px;
+    border: 1px solid rgb(129, 129, 129);
+    width: 100px;
+    position: relative;
+  </style>
+  <div style="width: {percentage}%">
+    <style>
+      background: rgb(129, 129, 129);
+      border-right: 1px solid rgb(129, 129, 129);
+      height: 100%;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { visible: false, title: "DirectoryReport", width: 1024, height: 768, x: 76, y: -95 }
+-->
+<div export component as="Report">
+  <div>
+    <style>
+      display: flex;
+      flex-direction: column;
+      grid-row-gap: 16px;
+      padding: 16px;
+      h2, h3, h4 {
+        margin: 0px;
+      }
+    </style>
+    <div>
+      <style>
+        display: flex;
+        flex-direction: column;
+        grid-row-gap: 8px;
+      </style>
+      <h3>{title}</h3>
+      <Breadcrumbs>{breadcrumbs}</Breadcrumbs>
+    </div>
+    <div>
+      <style>
+        display: flex;
+        grid-column-gap: 16px;
+      </style>
+      {coverage}
+    </div>
+  </div>
+  <div class="coverage" class:good="good" class:poor="poor" class:okay="okay">
+    <style>
+      height: 8px;
+      margin: 0px 16px;
+    </style>
+  </div>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -6, y: 74 }
+-->
+<div export component as="FileReportContent">
+  <style>
+    margin: 16px;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { title: "File Report", width: 1024, height: 768, x: 1157, y: -9 }
+-->
+<Report okay
+  title="Coverage report"
+  coverage={<fragment>
+    <CoverageInfo title="Statements"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+    <CoverageInfo title="Lines"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+  </fragment>}
+  breadcrumbs={<fragment>
+    <Breadcrumb href="a">path</Breadcrumb>
+    <Breadcrumb href="a">to</Breadcrumb>
+    <Breadcrumb>directory</Breadcrumb>
+  </fragment>}>
+  <FileReportContent>
+    <Line good number="1">I'm code</Line>
+    <Line poor number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+    <Line okay number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+  </FileReportContent>
+</Report>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 3, y: 57 }
+-->
+<div component as="LineNumber" class="coverage" class:good="good">
+  <style>
+    background: rgb(230, 230, 230);
+    padding: 0px 8px;
+    padding: 4px 16px;
+    width: 100px;
+    &:within(.poor, .okay) {
+      background: transparent;
+    }
+
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 17, y: 62 }
+-->
+<div export
+  component
+  as="Line"
+  class="coverage"
+  class:poor="poor"
+  class:okay="okay">
+  <style>
+    display: flex;
+    align-items: center;
+    grid-column-gap: 16px;
+  </style>
+  <LineNumber {good?}>{number}</LineNumber>
+  {children}
+</div>
+
+
+<!--
+  @frame { title: "Directory Report", width: 1024, height: 768, x: 0, y: 1 }
+-->
+<Report okay
+  title="Coverage report"
+  coverage={<fragment>
+    <CoverageInfo title="Statements"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+    <CoverageInfo title="Lines"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+  </fragment>}
+  breadcrumbs={<fragment>
+    <Breadcrumb href="a">path</Breadcrumb>
+    <Breadcrumb href="a">to</Breadcrumb>
+    <Breadcrumb href="a">directory</Breadcrumb>
+  </fragment>}>
+  <Table>
+    <Row header>
+      <Cell>file</Cell>
+      <Cell>HTML</Cell>
+      <Cell>CSS</Cell>
+      <Cell>Lines</Cell>
+    </Row>
+    <Row>
+      <FileCell good percentage="83" href="#">path/to/file.pc</FileCell>
+      <PercentCell okay
+        title="Lines"
+        percentage="83"
+        coveredCount="29000"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+    </Row>
+    <Row>
+      <FileCell good percentage="20">path/to/file.pc</FileCell>
+      <PercentCell good
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+    </Row>
+    <Row>
+      <FileCell good percentage="83">path/to/file.pc</FileCell>
+      <PercentCell good
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+    </Row>
+    <Row>
+      <FileCell good percentage="100">path/to/file.pc</FileCell>
+      <PercentCell okay
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell good
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+    </Row>
+    <Row>
+      <FileCell good percentage="40">path/to/file.pc</FileCell>
+      <PercentCell okay
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell good
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+    </Row>
+  </Table>
+</Report>

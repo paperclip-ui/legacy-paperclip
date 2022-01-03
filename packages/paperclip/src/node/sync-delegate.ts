@@ -54,7 +54,10 @@ const getIOOptions = options => {
       mode: EngineMode.SingleFrame
     },
     options.io,
-    { mode: options.mode }
+    {
+      mode: options.mode,
+      includedUsedExpressions: options.includeUsedExpressions
+    }
   );
 };
 

@@ -32,36 +32,6 @@ export const getDocumenAssetPaths = (source: string) => {
   return uris;
 };
 
-// export class PCDocument {
-//   styleSheets = [];
-//   documentElement;
-//   URL;
-//   constructor(
-//     readonly root: VirtualFragment,
-//     private _serializeFilePath: (value: string) => string
-//   ) {
-//     this.documentElement = this;
-
-//     // surpress percy warn
-//     this.URL = "http://127.0.0.1/";
-//   }
-//   get outerHTML() {
-//     // Need to embed local assets, otherwise they'll show up as broken images.
-//     return embedAssets(
-//       `<html><head><meta charset="utf-8"></head><body><style>body { margin: 0px; padding: 0px }</style>${stringifyVirtualNode(
-//         this.root
-//       )}</body></html>`,
-//       this._serializeFilePath
-//     );
-//   }
-//   querySelectorAll() {
-//     return [];
-//   }
-//   cloneNode() {
-//     return this;
-//   }
-// }
-
 export const embedAssets = (
   source: string,
   serializeFilePath: (value: string) => string

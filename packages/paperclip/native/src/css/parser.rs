@@ -234,7 +234,7 @@ fn parse_style_rule2<'a, 'b>(
 
 fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>, Option<&'a [u8]>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<Rule>, Option<&'a [u8]>), ParseError> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.scanner.get_u16pos();
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
@@ -387,6 +387,7 @@ fn parse_mixin_rule<'a, 'b>(
     range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
     raws: BasicRaws::new(raw_start, raw_after),
     name: MixinName {
+      id: context.id_generator.new_id(),
       value: name,
       range: name_range,
     },
@@ -459,6 +460,7 @@ fn parse_keyframe_rule<'a, 'b>(
   let (declarations, _children, raw_after) = parse_declaration_body(context)?;
 
   Ok(KeyframeRule {
+    id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, raw_after),
     key,
     declarations,
@@ -506,6 +508,7 @@ fn parse_group_selector<'a, 'b>(
     Ok(selectors.pop().unwrap())
   } else {
     Ok(Selector::Group(GroupSelector {
+      id: context.id_generator.new_id(),
       selectors,
       range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
     }))
@@ -524,6 +527,7 @@ fn parse_pair_selector<'a, 'b>(
     ) {
     // TODO - change to BlankSelector
     Selector::Prefixed(PrefixedSelector {
+      id: context.id_generator.new_id(),
       connector: " ".to_string(),
       postfix_selector: None,
       range: Range::new(
@@ -552,6 +556,7 @@ fn parse_next_pair_selector<'a, 'b>(
       eat_superfluous(context)?;
       let child = parse_pair_selector(context, false)?;
       Ok(Selector::Child(ChildSelector {
+        id: context.id_generator.new_id(),
         parent: Box::new(selector),
         child: Box::new(child),
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
@@ -583,6 +588,7 @@ fn parse_next_pair_selector<'a, 'b>(
       let descendent_result = parse_pair_selector(context, false);
       if let Ok(descendent) = descendent_result {
         Ok(Selector::Descendent(DescendentSelector {
+          id: context.id_generator.new_id(),
           ancestor: Box::new(selector),
           descendent: Box::new(descendent),
           range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
@@ -616,6 +622,7 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
     Ok(selectors.pop().unwrap())
   } else {
     Ok(Selector::Combo(ComboSelector {
+      id: context.id_generator.new_id(),
       selectors,
       range: Range::new(pos, context.tokenizer.scanner.get_u16pos()),
     }))
@@ -654,30 +661,35 @@ fn parse_pseudo_element_selector<'a, 'b>(
     let selector = if name == "not" {
       let sel = parse_pair_selector(context, false)?;
       Selector::Not(NotSelector {
+        id: context.id_generator.new_id(),
         selector: Box::new(sel),
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       })
     } else if name == "within" {
       let sel = parse_group_selector(context, false)?;
       Selector::Within(WithinSelector {
+        id: context.id_generator.new_id(),
         selector: Box::new(sel),
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       })
     } else if name == "global" {
       let sel = parse_group_selector(context, false)?;
       Selector::Global(GlobalSelector {
+        id: context.id_generator.new_id(),
         selector: Box::new(sel),
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       })
     } else if name == "self" {
       let sel = parse_group_selector(context, false)?;
       Selector::This(SelfSelector {
+        id: context.id_generator.new_id(),
         selector: Some(Box::new(sel)),
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       })
     } else if name == "has" {
       let sel = parse_pair_selector(context, false)?;
       Selector::SubElement(SubElementSelector {
+        id: context.id_generator.new_id(),
         name,
         selector: Box::new(sel),
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
@@ -700,6 +712,7 @@ fn parse_pseudo_element_selector<'a, 'b>(
   } else {
     if name == "self" {
       Selector::This(SelfSelector {
+        id: context.id_generator.new_id(),
         selector: None,
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       })
@@ -748,12 +761,14 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
         Some(Box::new(postfix_selectors.pop().unwrap()))
       } else {
         Some(Box::new(Selector::Combo(ComboSelector {
+          id: context.id_generator.new_id(),
           selectors: postfix_selectors,
           range: pos.range_from(context.tokenizer.scanner.get_u16pos()),
         })))
       };
 
       Selector::Prefixed(PrefixedSelector {
+        id: context.id_generator.new_id(),
         connector,
         postfix_selector,
         range: pos.range_from(context.tokenizer.scanner.get_u16pos()),
@@ -907,9 +922,9 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
 
 fn parse_declarations_and_children<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<Rule>), ParseError> {
   let mut declarations = vec![];
-  let mut children = vec![];
+  let mut children: Vec<Rule> = vec![];
 
   // START HERE - need to remove superfluous
   let mut raw_before = eat_superfluous(context)?;
@@ -922,14 +937,14 @@ fn parse_declarations_and_children<'a, 'b>(
     let tok = context.tokenizer.peek(1)?;
 
     if let Token::Byte(b'&') = tok {
-      children.push(parse_style_rule2(context, raw_before, false)?);
+      children.push(Rule::Style(parse_style_rule2(context, raw_before, false)?));
     } else if tok == Token::At {
       declarations.push(parse_at_declaration(context, raw_before)?);
     } else {
       if is_next_declaration(context)? {
         declarations.push(parse_key_value_declaration(context, raw_before)?);
       } else {
-        children.push(parse_style_rule2(context, raw_before, true)?);
+        children.push(Rule::Style(parse_style_rule2(context, raw_before, true)?));
       }
     }
     raw_before = eat_superfluous(context)?;
@@ -1032,6 +1047,7 @@ fn parse_include<'a, 'b>(
     let start = context.tokenizer.scanner.get_u16pos();
     if let Token::Keyword(keyword) = context.tokenizer.next()? {
       mixin_path.push(IncludeReferencePart {
+        id: context.id_generator.new_id(),
         name: keyword.to_string(),
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       });
@@ -1047,6 +1063,7 @@ fn parse_include<'a, 'b>(
   }
 
   let mixin_name = IncludeReference {
+    id: context.id_generator.new_id(),
     parts: mixin_path,
     range: Range::new(ref_start, context.tokenizer.scanner.get_u16pos()),
   };

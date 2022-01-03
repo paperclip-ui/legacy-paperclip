@@ -2,7 +2,7 @@ import produce from "immer";
 import { isEqual, omit, omitBy, pick, pickBy } from "lodash";
 import mime from "mime-types";
 import {
-  computeVirtJSObject,
+  computeVirtScriptObject,
   ExprSource,
   getNodeAncestors,
   getNodeByPath,
@@ -520,7 +520,7 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
     (frame: VirtualFrame) => {
       const annotations =
         (frame.annotations &&
-          (computeVirtJSObject(frame.annotations) as NodeAnnotations)) ||
+          (computeVirtScriptObject(frame.annotations) as NodeAnnotations)) ||
         {};
       const box = annotations.frame || DEFAULT_FRAME_BOX;
       if (annotations.frame?.visible === false) {

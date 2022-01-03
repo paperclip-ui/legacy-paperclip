@@ -1,7 +1,8 @@
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{BasicRaws, Range};
+use crate::core::ast::{walk_exprs, Expr, ExprVisitor};
 use crate::css::ast as css_ast;
-use crate::js::ast as js_ast;
+use crate::script::ast as script_ast;
 use serde::Serialize;
 use std::fmt;
 use std::str;
@@ -38,6 +39,13 @@ pub struct Element {
   pub children: Vec<Node>,
 }
 
+impl Element {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.children, visitor);
+    walk_exprs(&self.attributes, visitor);
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Comment {
   pub id: String,
@@ -67,18 +75,20 @@ pub enum Node {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "pcObjectKind")]
-pub enum PCObject<'a> {
+pub enum Expression<'a> {
   Node(&'a Node),
-  CSSObject(css_ast::CSSObject<'a>),
-  JSObject(&'a js_ast::Expression),
+  Attribute(&'a Attribute),
+  CSS(css_ast::Expression<'a>),
+  Script(&'a script_ast::Expression),
 }
 
-impl<'a> PCObject<'a> {
+impl<'a> Expression<'a> {
   pub fn get_range(&'a self) -> &'a Range {
     match self {
-      PCObject::Node(node) => node.get_range(),
-      PCObject::CSSObject(css) => css.get_range(),
-      PCObject::JSObject(js) => js.get_range(),
+      Expression::Node(node) => node.get_range(),
+      Expression::Attribute(attr) => attr.get_range(),
+      Expression::CSS(css) => css.get_range(),
+      Expression::Script(js) => js.get_range(),
     }
   }
 }
@@ -94,19 +104,6 @@ impl Node {
       Node::Slot(value) => &value.range,
     }
   }
-  pub fn walk<F: FnMut(&Node) -> bool>(&self, each: &mut F) -> bool {
-    if !(each)(self) {
-      return false;
-    }
-    if let Some(children) = get_children(self) {
-      for child in children {
-        if !child.walk(each) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
   pub fn get_id(&self) -> &String {
     match self {
       Node::Text(value) => &value.id,
@@ -117,38 +114,43 @@ impl Node {
       Node::Slot(value) => &value.id,
     }
   }
-  pub fn get_object_by_id<'a>(&self, id: &String) -> Option<PCObject> {
-    if self.get_id() == id {
-      return Some(PCObject::Node(self));
+  pub fn get_children<'a>(&'a self) -> Option<&'a Vec<Node>> {
+    match &self {
+      Node::Element(root) => Some(&root.children),
+      Node::Fragment(root) => Some(&root.children),
+      _ => None,
+    }
+  }
+}
+
+impl Expr for Node {
+  fn walk<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
+    visitor.visit_node(self);
+    if !visitor.should_continue() {
+      return;
     }
 
-    if let Node::Slot(slot) = self {
-      return slot
-        .script
-        .get_object_by_id(id)
-        .and_then(|object| match object {
-          js_ast::JSObject::PCObject(obj) => Some(obj),
-          js_ast::JSObject::Expression(expr) => match expr {
-            js_ast::Expression::Node(node) => Some(PCObject::Node(node)),
-            _ => Some(PCObject::JSObject(expr)),
-          },
-        });
-    } else if let Node::StyleElement(style_element) = self {
-      return style_element
-        .sheet
-        .get_object_by_id(id)
-        .and_then(|object| Some(PCObject::CSSObject(object)));
-    }
-
-    get_children(self).and_then(|children| {
-      for child in children {
-        let nested = child.get_object_by_id(id);
-        if nested != None {
-          return nested;
-        }
+    match self {
+      Node::Slot(slot) => {
+        slot.walk_inside(visitor);
       }
-      None
-    })
+      Node::StyleElement(style) => {
+        style.walk_inside(visitor);
+      }
+      Node::Fragment(fragment) => {
+        fragment.walk_inside(visitor);
+      }
+      Node::Element(element) => {
+        element.walk_inside(visitor);
+      }
+      Node::Comment(_) | Node::Text(_) => {}
+    }
+  }
+  fn get_id<'a>(&'a self) -> &'a String {
+    self.get_id()
+  }
+  fn wrap<'a>(&'a self) -> Expression<'a> {
+    return Expression::Node(self);
   }
 }
 
@@ -158,9 +160,15 @@ pub struct Slot {
   // !{slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
-  pub script: js_ast::Expression,
+  pub script: script_ast::Expression,
   pub range: Range,
   pub raws: BasicRaws,
+}
+
+impl Slot {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    self.script.walk(visitor);
+  }
 }
 
 impl fmt::Display for Node {
@@ -186,7 +194,7 @@ pub struct AttributeStringValue {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSlotValue {
   pub id: String,
-  pub script: js_ast::Expression,
+  pub script: script_ast::Expression,
   pub range: Range,
 }
 
@@ -213,11 +221,6 @@ impl fmt::Display for AttributeDynamicStringValue {
       }
     }
     Ok(())
-    // match &self {
-    //   AttributeValue::String(value) => write!(f, "{}", value.to_string()),
-    //   AttributeValue::Slot(script) => write!(f, "{{{}}}", script.to_string()),
-    //   AttributeValue::DyanmicString(script) => write!(f, "{{{}}}", script.to_string()),
-    // }
   }
 }
 
@@ -226,11 +229,22 @@ impl fmt::Display for AttributeDynamicStringValue {
 pub enum AttributeDynamicStringPart {
   Literal(AttributeDynamicStringLiteral),
   ClassNamePierce(AttributeDynamicStringClassNamePierce),
-  Slot(js_ast::Expression),
+  Slot(script_ast::Expression),
+}
+
+impl AttributeDynamicStringPart {
+  pub fn get_id(&self) -> &String {
+    match self {
+      AttributeDynamicStringPart::ClassNamePierce(expr) => &expr.id,
+      AttributeDynamicStringPart::Literal(expr) => &expr.id,
+      AttributeDynamicStringPart::Slot(expr) => &expr.get_id(),
+    }
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringLiteral {
+  pub id: String,
   pub value: String,
   pub range: Range,
 }
@@ -238,6 +252,7 @@ pub struct AttributeDynamicStringLiteral {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "className")]
 pub struct AttributeDynamicStringClassNamePierce {
+  pub id: String,
   #[serde(rename = "className")]
   pub class_name: String,
   pub range: Range,
@@ -292,6 +307,38 @@ pub enum Attribute {
   PropertyBoundAttribute(PropertyBoundAttribute),
 }
 
+impl Attribute {
+  pub fn get_range(&self) -> &Range {
+    match self {
+      Attribute::ShorthandAttribute(expr) => &expr.range,
+      Attribute::SpreadAttribute(expr) => &expr.range,
+      Attribute::KeyValueAttribute(expr) => &expr.range,
+      Attribute::PropertyBoundAttribute(expr) => &expr.range,
+    }
+  }
+}
+
+impl Expr for Attribute {
+  fn get_id<'a>(&'a self) -> &'a String {
+    match self {
+      Attribute::ShorthandAttribute(expr) => &expr.id,
+      Attribute::SpreadAttribute(expr) => &expr.id,
+      Attribute::KeyValueAttribute(expr) => &expr.id,
+      Attribute::PropertyBoundAttribute(expr) => &expr.id,
+    }
+  }
+
+  fn walk<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
+    visitor.visit_attr(self);
+    if !visitor.should_continue() {
+      return;
+    }
+  }
+  fn wrap<'a>(&'a self) -> Expression<'a> {
+    return Expression::Attribute(self);
+  }
+}
+
 impl fmt::Display for Attribute {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
@@ -305,10 +352,11 @@ impl fmt::Display for Attribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SpreadAttribute {
+  pub id: String,
   // !{...slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
-  pub script: js_ast::Expression,
+  pub script: script_ast::Expression,
   pub range: Range,
 }
 
@@ -320,14 +368,15 @@ impl fmt::Display for SpreadAttribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
-  pub reference: js_ast::Expression,
+  pub id: String,
+  pub reference: script_ast::Expression,
   pub range: Range,
 }
 
 impl ShorthandAttribute {
   pub fn get_name(&self) -> Result<&String, &'static str> {
     match &self.reference {
-      js_ast::Expression::Reference(reference) => {
+      script_ast::Expression::Reference(reference) => {
         if reference.path.len() == 1 {
           Ok(&reference.path[0].name)
         } else {
@@ -393,6 +442,16 @@ pub enum AttributeValue {
   Slot(AttributeSlotValue),
 }
 
+impl AttributeValue {
+  pub fn get_id(&self) -> &String {
+    match self {
+      AttributeValue::DyanmicString(value) => &value.id,
+      AttributeValue::String(value) => &value.id,
+      AttributeValue::Slot(value) => &value.id,
+    }
+  }
+}
+
 impl fmt::Display for AttributeValue {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match &self {
@@ -412,6 +471,12 @@ pub struct StyleElement {
   pub range: Range,
 }
 
+impl StyleElement {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    self.sheet.walk(visitor);
+  }
+}
+
 impl fmt::Display for StyleElement {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     fmt_start_tag("style", &self.attributes, f)?;
@@ -428,6 +493,12 @@ pub struct Fragment {
   pub children: Vec<Node>,
 }
 
+impl Fragment {
+  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.children, visitor);
+  }
+}
+
 impl fmt::Display for Fragment {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "")?;
@@ -438,18 +509,11 @@ impl fmt::Display for Fragment {
     Ok(())
   }
 }
-pub fn get_children<'a>(expr: &'a Node) -> Option<&'a Vec<Node>> {
-  match &expr {
-    Node::Element(root) => Some(&root.children),
-    Node::Fragment(root) => Some(&root.children),
-    _ => None,
-  }
-}
 
 pub fn get_imports<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
   let mut imports = vec![];
 
-  let children = get_children(root_expr);
+  let children = root_expr.get_children();
 
   if children != None {
     for child in children.unwrap() {
@@ -483,7 +547,7 @@ pub fn get_tag_namespace<'a>(element: &'a Element) -> Option<String> {
 pub fn get_parts<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
   let mut parts = vec![];
 
-  let children = get_children(root_expr);
+  let children = root_expr.get_children();
 
   if children != None {
     for child in children.unwrap() {

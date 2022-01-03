@@ -13,11 +13,13 @@ extern crate lazy_static;
 mod annotation;
 mod base;
 mod core;
+mod coverage;
 mod css;
 mod engine;
-mod js;
 mod pc;
+mod script;
 
+use crate::coverage::reporter::CoverageReport;
 use crate::pc::runtime::evaluator::EngineMode;
 use crate::pc::runtime::inspect_node_styles::InspectionOptions;
 use crate::pc::runtime::lint::LintOptions;
@@ -86,12 +88,17 @@ impl NativeEngine {
             .into_serde()
             .unwrap_or(None)
         })),
+        false,
         match engine_mode {
           NativeEngineMode::SingleFrame => EngineMode::SingleFrame,
           NativeEngineMode::MultiFrame => EngineMode::MultiFrame,
         },
       ),
     }
+  }
+  pub fn generate_coverage_report(&mut self) -> JsValue {
+    let result = block_on(self.target.generate_coverage_report());
+    JsValue::from_serde(&result).unwrap()
   }
   pub fn load(&mut self, uri: String) -> JsValue {
     let result = block_on(self.target.load(&uri));
@@ -164,6 +171,7 @@ impl NativeEngine {
       },
       &InspectionOptions {
         screen_width: Some(screen_width),
+        include_inherited: true,
       },
     );
 

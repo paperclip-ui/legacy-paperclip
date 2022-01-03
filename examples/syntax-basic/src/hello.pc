@@ -4,5 +4,8 @@
     font-size: 32px;
     font-family: papyrus;
   }
+  span {
+    color: blue;
+  }
 </style>
 <div>I'm purple!</div>

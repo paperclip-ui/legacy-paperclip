@@ -22,8 +22,8 @@ use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
 use crate::engine::engine::__test__evaluate_pc_files;
-use crate::js::runtime::virt as js_virt;
 use crate::pc::runtime::virt as pc_virt;
+use crate::script::runtime::virt as script_virt;
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use serde::Serialize;
@@ -378,6 +378,7 @@ impl NodeInspectionInfo {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InspectionOptions {
   pub screen_width: Option<u32>,
+  pub include_inherited: bool,
 }
 
 pub fn inspect_node_styles(
@@ -394,14 +395,16 @@ pub fn inspect_node_styles(
   let mut inspection_info =
     inspect_local_node_styles(element_path, document_uri, all_eval_info, graph, &options);
 
-  add_inherited_properties(
-    &mut inspection_info,
-    element_path,
-    document_uri,
-    all_eval_info,
-    graph,
-    &options,
-  );
+  if options.include_inherited {
+    add_inherited_properties(
+      &mut inspection_info,
+      element_path,
+      document_uri,
+      all_eval_info,
+      graph,
+      &options,
+    );
+  }
 
   inspection_info
 }
@@ -472,7 +475,7 @@ fn get_frame_width(index: usize, eval_info: &PCEvalInfo) -> Option<u32> {
       }
     })
     .and_then(|width| {
-      if let js_virt::JsValue::JsNumber(number) = width {
+      if let script_virt::Value::Number(number) = width {
         Some(number.value as u32)
       } else {
         None
@@ -639,7 +642,10 @@ mod tests {
     test_pc_code(
       source,
       vec![0, 0],
-      InspectionOptions { screen_width: None },
+      InspectionOptions {
+        screen_width: None,
+        include_inherited: true,
+      },
       NodeInspectionInfo {
         style_rules: vec![],
       },

@@ -1,4 +1,6 @@
 use crate::base::ast::{BasicRaws, Range};
+use crate::core::ast::{Expr, ExprVisitor};
+use crate::pc::ast as pc_ast;
 use serde::Serialize;
 use std::fmt;
 
@@ -20,8 +22,14 @@ impl Declaration {
       Declaration::Media(kv) => &kv.range,
     }
   }
+}
 
-  pub fn get_id(&self) -> &String {
+impl Expr for Declaration {
+  fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    visitor.visit_css_decl(self);
+  }
+
+  fn get_id<'a>(&'a self) -> &'a String {
     match self {
       Declaration::KeyValue(kv) => &kv.id,
       Declaration::Include(kv) => &kv.id,
@@ -30,16 +38,8 @@ impl Declaration {
     }
   }
 
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    if self.get_id() == id {
-      return Some(CSSObject::Declaration(self));
-    }
-
-    match self {
-      Declaration::Include(kv) => kv.get_object_by_id(id),
-      Declaration::Media(kv) => kv.get_object_by_id(id),
-      _ => None,
-    }
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    return pc_ast::Expression::CSS(Expression::Declaration(self));
   }
 }
 
@@ -56,20 +56,20 @@ impl fmt::Display for Declaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "cssObjectKind")]
-pub enum CSSObject<'a> {
+pub enum Expression<'a> {
   Declaration(&'a Declaration),
   Rule(&'a Rule),
   StyleRule(&'a StyleRule),
   Sheet(&'a Sheet),
 }
 
-impl<'a> CSSObject<'a> {
+impl<'a> Expression<'a> {
   pub fn get_range(&self) -> &Range {
     match self {
-      CSSObject::Declaration(decl) => decl.get_range(),
-      CSSObject::Rule(rule) => rule.get_range(),
-      CSSObject::Sheet(rule) => &rule.range,
-      CSSObject::StyleRule(rule) => &rule.range,
+      Expression::Declaration(decl) => decl.get_range(),
+      Expression::Rule(rule) => rule.get_range(),
+      Expression::Sheet(rule) => &rule.range,
+      Expression::StyleRule(rule) => &rule.range,
     }
   }
 }
@@ -109,14 +109,18 @@ pub struct Include {
   #[serde(rename = "mixinName")]
   pub mixin_name: IncludeReference,
   pub declarations: Vec<Declaration>,
-  pub rules: Vec<StyleRule>,
+  pub rules: Vec<Rule>,
   pub range: Range,
   pub raws: BasicRaws,
 }
 
 impl Include {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  // pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<Expression<'a>> {
+  //   get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  // }
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.rules, visitor);
+    walk_exprs(&self.declarations, visitor);
   }
 }
 
@@ -144,6 +148,7 @@ impl fmt::Display for Include {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeReference {
+  pub id: String,
   pub parts: Vec<IncludeReferencePart>,
   pub range: Range,
 }
@@ -166,6 +171,7 @@ impl fmt::Display for IncludeReference {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeReferencePart {
+  pub id: String,
   pub name: String,
   pub range: Range,
 }
@@ -211,7 +217,41 @@ pub enum Rule {
 }
 
 impl Rule {
-  pub fn get_id(&self) -> &String {
+  pub fn get_range(&self) -> &Range {
+    match self {
+      Rule::Comment(rule) => &rule.range,
+      Rule::Style(rule) => &rule.range,
+      Rule::Charset(value) => &value.range,
+      Rule::Export(export) => &export.range,
+      Rule::FontFace(rule) => &rule.range,
+      Rule::Media(rule) => &rule.range,
+      Rule::Mixin(rule) => &rule.range,
+      Rule::Include(rule) => &rule.range,
+      Rule::Supports(value) => &value.range,
+      Rule::Keyframes(rule) => &rule.range,
+      Rule::Document(rule) => &rule.range,
+      Rule::Page(rule) => &rule.range,
+    }
+  }
+}
+
+impl Expr for Rule {
+  fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    visitor.visit_css_rule(self);
+    if !visitor.should_continue() {
+      return;
+    }
+
+    match self {
+      Rule::Style(rule) => rule.walk_inside(visitor),
+      Rule::Export(rule) => rule.walk_inside(visitor),
+      Rule::Media(rule) => rule.walk_inside(visitor),
+      Rule::Mixin(rule) => rule.walk_inside(visitor),
+      Rule::Include(rule) => rule.walk_inside(visitor),
+      _ => {}
+    }
+  }
+  fn get_id(&self) -> &String {
     match self {
       Rule::Comment(rule) => &rule.id,
       Rule::Style(rule) => &rule.id,
@@ -228,35 +268,8 @@ impl Rule {
       Rule::Page(rule) => &rule.id,
     }
   }
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    if self.get_id() == id {
-      return Some(CSSObject::Rule(self));
-    }
-
-    match self {
-      Rule::Style(rule) => rule.get_object_by_id(id),
-      Rule::Export(rule) => rule.get_object_by_id(id),
-      Rule::Media(rule) => rule.get_object_by_id(id),
-      Rule::Mixin(rule) => rule.get_object_by_id(id),
-      Rule::Include(rule) => rule.get_object_by_id(id),
-      _ => None,
-    }
-  }
-  pub fn get_range(&self) -> &Range {
-    match self {
-      Rule::Comment(rule) => &rule.range,
-      Rule::Style(rule) => &rule.range,
-      Rule::Charset(value) => &value.range,
-      Rule::Export(export) => &export.range,
-      Rule::FontFace(rule) => &rule.range,
-      Rule::Media(rule) => &rule.range,
-      Rule::Mixin(rule) => &rule.range,
-      Rule::Include(rule) => &rule.range,
-      Rule::Supports(value) => &value.range,
-      Rule::Keyframes(rule) => &rule.range,
-      Rule::Document(rule) => &rule.range,
-      Rule::Page(rule) => &rule.range,
-    }
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    pc_ast::Expression::CSS(Expression::Rule(self))
   }
 }
 
@@ -314,17 +327,15 @@ pub struct StyleRule {
   pub id: String,
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
-  pub children: Vec<StyleRule>,
+  pub children: Vec<Rule>,
   pub range: Range,
   pub raws: BasicRaws,
 }
 
 impl StyleRule {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    if (&self.id == id) {
-      return Some(CSSObject::StyleRule(&self));
-    }
-    get_object_by_id_in_style_rules_or_declarations(&self.children, &self.declarations, id)
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.children, visitor);
+    walk_exprs(&self.declarations, visitor);
   }
 }
 
@@ -342,6 +353,7 @@ impl fmt::Display for StyleRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildRuleSelector {
+  pub id: String,
   pub connector: String,
   pub selector: Option<Selector>,
   pub range: Range,
@@ -349,6 +361,7 @@ pub struct ChildRuleSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildStyleRule {
+  pub id: String,
   pub selectors: Vec<ChildRuleSelector>,
   pub declarations: Vec<Declaration>,
   pub children: Vec<ChildStyleRule>,
@@ -396,8 +409,8 @@ impl fmt::Display for ExportRule {
 }
 
 impl ExportRule {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    get_object_by_id_in_rules(&self.rules, id)
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.rules, visitor);
   }
 }
 
@@ -408,15 +421,20 @@ pub struct ConditionRule {
 
   #[serde(rename = "conditionText")]
   pub condition_text: String,
-  pub rules: Vec<StyleRule>,
+  pub rules: Vec<Rule>,
   pub declarations: Vec<Declaration>,
   pub range: Range,
   pub raws: BasicRaws,
 }
 
 impl ConditionRule {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  // pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<Expression<'a>> {
+  //   get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  // }
+
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.rules, visitor);
+    walk_exprs(&self.declarations, visitor);
   }
 }
 
@@ -439,7 +457,7 @@ pub struct MixinRule {
   pub raws: BasicRaws,
   pub range: Range,
   pub declarations: Vec<Declaration>,
-  pub rules: Vec<StyleRule>,
+  pub rules: Vec<Rule>,
 }
 
 impl fmt::Display for MixinRule {
@@ -458,13 +476,15 @@ impl fmt::Display for MixinRule {
 }
 
 impl MixinRule {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    get_object_by_id_in_declarations(&self.declarations, id)
+  pub fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    walk_exprs(&self.rules, visitor);
+    walk_exprs(&self.declarations, visitor);
   }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinName {
+  pub id: String,
   pub value: String,
   pub range: Range,
 }
@@ -492,6 +512,7 @@ impl fmt::Display for KeyframesRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframeRule {
+  pub id: String,
   pub key: String,
   pub raws: BasicRaws,
   pub declarations: Vec<Declaration>,
@@ -771,6 +792,7 @@ impl fmt::Display for Selector {
 // &--test, & + &, &:hover { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PrefixedSelector {
+  pub id: String,
   pub connector: String,
 
   #[serde(rename = "postfixSelector")]
@@ -792,6 +814,7 @@ impl fmt::Display for PrefixedSelector {
 // a, b, h1, h2 { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GroupSelector {
+  pub id: String,
   pub selectors: Vec<Selector>,
   pub range: Range,
 }
@@ -810,6 +833,7 @@ impl fmt::Display for GroupSelector {
 // a.b[c=d] {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ComboSelector {
+  pub id: String,
   pub selectors: Vec<Selector>,
   pub range: Range,
 }
@@ -828,6 +852,7 @@ impl fmt::Display for ComboSelector {
 // a b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct DescendentSelector {
+  pub id: String,
   pub ancestor: Box<Selector>,
   pub descendent: Box<Selector>,
   pub range: Range,
@@ -847,6 +872,7 @@ impl fmt::Display for DescendentSelector {
 // :global(.selector)
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GlobalSelector {
+  pub id: String,
   pub selector: Box<Selector>,
   pub range: Range,
 }
@@ -859,6 +885,7 @@ impl fmt::Display for GlobalSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SelfSelector {
+  pub id: String,
   pub selector: Option<Box<Selector>>,
   pub range: Range,
 }
@@ -876,6 +903,7 @@ impl fmt::Display for SelfSelector {
 // a > b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildSelector {
+  pub id: String,
   pub parent: Box<Selector>,
   pub child: Box<Selector>,
   pub range: Range,
@@ -883,6 +911,7 @@ pub struct ChildSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct WithinSelector {
+  pub id: String,
   pub selector: Box<Selector>,
   pub range: Range,
 }
@@ -895,6 +924,7 @@ impl fmt::Display for WithinSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NotSelector {
+  pub id: String,
   pub selector: Box<Selector>,
   pub range: Range,
 }
@@ -907,6 +937,7 @@ impl fmt::Display for NotSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SubElementSelector {
+  pub id: String,
   pub name: String,
   pub selector: Box<Selector>,
   pub range: Range,
@@ -1100,6 +1131,21 @@ pub struct Sheet {
   pub range: Range,
 }
 
+impl Expr for Sheet {
+  fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+    visitor.visit_css_sheet(self);
+    // walk_rules_and_decls(&self.rules, &self.declarations, visitor);
+    walk_exprs(&self.rules, visitor);
+    walk_exprs(&self.rules, visitor);
+  }
+  fn get_id<'a>(&'a self) -> &'a String {
+    &self.id
+  }
+  fn wrap<'a>(&'a self) -> pc_ast::Expression<'a> {
+    pc_ast::Expression::CSS(Expression::Sheet(self))
+  }
+}
+
 impl fmt::Display for Sheet {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     for rule in &self.rules {
@@ -1109,63 +1155,14 @@ impl fmt::Display for Sheet {
   }
 }
 
-impl Sheet {
-  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
-    if &self.id == id {
-      return Some(CSSObject::Sheet(&self));
-    }
-
-    get_object_by_id_in_rules_or_declarations(&self.rules, &self.declarations, id)
+fn walk_exprs<'a, TExpr: Expr>(exprs: &'a Vec<TExpr>, visitor: &mut ExprVisitor<'a>) {
+  if !visitor.should_continue() {
+    return;
   }
-}
-
-fn get_object_by_id_in_rules_or_declarations<'a>(
-  rules: &'a Vec<Rule>,
-  decls: &'a Vec<Declaration>,
-  id: &String,
-) -> Option<CSSObject<'a>> {
-  get_object_by_id_in_rules(rules, id).or_else(|| get_object_by_id_in_declarations(decls, id))
-}
-fn get_object_by_id_in_style_rules_or_declarations<'a>(
-  rules: &'a Vec<StyleRule>,
-  decls: &'a Vec<Declaration>,
-  id: &String,
-) -> Option<CSSObject<'a>> {
-  get_object_by_id_in_style_rules(rules, id).or_else(|| get_object_by_id_in_declarations(decls, id))
-}
-
-fn get_object_by_id_in_style_rules<'a>(
-  rules: &'a Vec<StyleRule>,
-  id: &String,
-) -> Option<CSSObject<'a>> {
-  for rule in rules {
-    let nested_object = rule.get_object_by_id(id);
-    if nested_object != None {
-      return nested_object;
+  for expr in exprs {
+    expr.walk(visitor);
+    if !visitor.should_continue() {
+      return;
     }
   }
-  return None;
-}
-
-fn get_object_by_id_in_rules<'a>(rules: &'a Vec<Rule>, id: &String) -> Option<CSSObject<'a>> {
-  for rule in rules {
-    let nested_object = rule.get_object_by_id(id);
-    if nested_object != None {
-      return nested_object;
-    }
-  }
-  return None;
-}
-
-fn get_object_by_id_in_declarations<'a>(
-  decls: &'a Vec<Declaration>,
-  id: &String,
-) -> Option<CSSObject<'a>> {
-  for decl in decls {
-    let nested_object = decl.get_object_by_id(id);
-    if nested_object != None {
-      return nested_object;
-    }
-  }
-  return None;
 }

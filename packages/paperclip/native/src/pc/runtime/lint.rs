@@ -17,13 +17,12 @@ use super::virt::Node as VirtNode;
 use crate::base::ast::{ExprSource, ExprTextSource, Range};
 use serde::{Deserialize, Serialize};
 // use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
-use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::css::ast::{CSSObject, Rule};
+use crate::core::graph::DependencyGraph;
+use crate::css::ast as css_ast;
 use crate::css::runtime::virt::{
-  CSSSheet, CSSStyleProperty as VirtCSSStyleProperty, Rule as VirtRule, StyleRule as VirtStyleRule,
+  CSSStyleProperty as VirtCSSStyleProperty, Rule as VirtRule, StyleRule as VirtStyleRule,
 };
-use crate::pc::ast::PCObject;
-use crate::pc::parser::parse;
+use crate::pc::ast as pc_ast;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct LintWarningInfo {
@@ -186,16 +185,16 @@ fn lint_unused_style(
       let mut expr_range: &Range = expr.get_range();
 
       // check for :global
-      if let PCObject::CSSObject(cssobject) = &expr {
-        if let CSSObject::StyleRule(style) = cssobject {
+      if let pc_ast::Expression::CSS(cssobject) = &expr {
+        if let css_ast::Expression::StyleRule(style) = cssobject {
           expr_range = style.selector.get_range();
           if style.selector.is_global() {
             return;
           }
         }
 
-        if let CSSObject::Rule(rule) = cssobject {
-          if let Rule::Style(style) = rule {
+        if let css_ast::Expression::Rule(rule) = cssobject {
+          if let css_ast::Rule::Style(style) = rule {
             expr_range = style.selector.get_range();
             if style.selector.is_global() {
               return;

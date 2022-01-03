@@ -1,0 +1,17 @@
+{
+  "name": "paperclip-diff-utils",
+  "version": "18.3.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^7.2.0",
+    "paperclip": "^18.3.0",
+    "paperclip-utils": "^18.3.0"
+  }
+}

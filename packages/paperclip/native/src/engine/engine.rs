@@ -7,18 +7,18 @@ use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::id_generator::generate_seed;
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
-use crate::css::runtime::diff::diff as diff_css;
-use crate::css::runtime::evaluator::evaluate as evaluate_css;
-use crate::css::runtime::mutation as css_mutation;
-use crate::css::runtime::virt as css_virt;
-use crate::pc::ast as pc_ast;
+use crate::coverage::reporter::{generate_coverage_report, CoverageReport};
 use crate::css::ast as css_ast;
 use crate::css::parser::parse as parse_css;
+use crate::css::runtime::diff::diff as diff_css;
+use crate::css::runtime::evaluator::evaluate as evaluate_css;
+use crate::css::runtime::export as css_export;
+use crate::css::runtime::mutation as css_mutation;
+use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
-use crate::css::runtime::export as css_export;
 use crate::pc::runtime::inspect_node_styles::{
   inspect_node_styles, InspectionOptions, NodeInspectionInfo,
 };
@@ -76,35 +76,23 @@ pub struct DiffedEvent<'a> {
 }
 
 #[derive(Debug, PartialEq, Serialize)]
-pub struct NodeParsedEvent {
-  pub uri: String,
-  pub node: pc_ast::Node,
-}
-
-#[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "kind")]
 pub enum EngineEvent<'a> {
   Evaluated(EvaluatedEvent<'a>),
   Deleted(DeletedFileEvent),
   Diffed(DiffedEvent<'a>),
-  NodeParsed(NodeParsedEvent),
   Error(EngineError),
-}
-
-pub struct EvalOptions {
-  part: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "moduleKind")]
 pub enum Module {
   PC(pc_ast::Node),
-  CSS(css_ast::Sheet)
+  CSS(css_ast::Sheet),
 }
 
 type EngineEventListener = dyn Fn(&EngineEvent);
 type GetLintConfigResolverFn = dyn Fn(&String) -> Option<LintOptions>;
-
 
 fn parse_content(content: &String, uri: &String) -> Result<Module, ParseError> {
   Result::Ok(if uri.ends_with(".css") {
@@ -125,6 +113,7 @@ pub struct Engine {
   // keeping tabs of
   pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
   pub get_lint_config: Option<Box<GetLintConfigResolverFn>>,
+  pub include_used_exprs: bool,
 }
 
 impl Engine {
@@ -133,9 +122,10 @@ impl Engine {
     file_exists: Box<FileExistsFn>,
     resolve_file: Box<FileResolverFn>,
     get_lint_config: Option<Box<GetLintConfigResolverFn>>,
+    include_used_exprs: bool,
     mode: EngineMode,
   ) -> Engine {
-    let mut engine = Engine {
+    let engine = Engine {
       listeners: vec![],
       evaluated_data: BTreeMap::new(),
       needs_reval: BTreeMap::new(),
@@ -143,10 +133,25 @@ impl Engine {
       get_lint_config,
       dependency_graph: DependencyGraph::new(),
       diagnostics: BTreeMap::new(),
+      include_used_exprs,
       mode,
     };
 
     engine
+  }
+
+  pub async fn generate_coverage_report(&mut self) -> Result<CoverageReport, EngineError> {
+    self.include_used_exprs = true;
+    let keys: Vec<String> = self.dependency_graph.dependencies.keys().cloned().collect();
+    self.reset();
+
+    for uri in keys {
+      self.run(&uri).await?;
+    }
+    let report =
+      generate_coverage_report(&self.dependency_graph, &self.evaluated_data, &mut self.vfs).await;
+    self.include_used_exprs = false;
+    Ok(report)
   }
 
   pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {
@@ -196,7 +201,7 @@ impl Engine {
       .await;
 
     match load_result {
-      Ok(loaded_uris) => {
+      Ok(_loaded_uris) => {
         let mut stack = HashSet::new();
 
         self
@@ -239,7 +244,7 @@ impl Engine {
           .get_expression_by_id(descendent.get_range_id())
       })
       .and_then(|(uri, expr)| match expr {
-        pc_ast::PCObject::Node(pc_node) => Some((uri, pc_node)),
+        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node)),
         _ => None,
       })
       .and_then(|(uri, ast)| {
@@ -250,7 +255,10 @@ impl Engine {
       })
   }
 
-  pub fn get_expression_by_id<'a>(&'a self, id: &String) -> Option<(String, pc_ast::PCObject<'a>)> {
+  pub fn get_expression_by_id<'a>(
+    &'a self,
+    id: &String,
+  ) -> Option<(String, pc_ast::Expression<'a>)> {
     self.dependency_graph.get_expression_by_id(id)
   }
 
@@ -435,6 +443,7 @@ impl Engine {
         &self.dependency_graph,
         &self.vfs,
         &self.evaluated_data,
+        self.include_used_exprs,
         &self.mode,
       )
       .and_then(|info| Ok(DependencyEvalInfo::PC(info))),
@@ -525,60 +534,12 @@ mod tests {
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
       None,
+      false,
       EngineMode::SingleFrame,
     );
 
-    let result = block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
+    block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
   }
-
-  // #[test]
-  // fn can_return_source_info_for_various_cases() {
-  //   let cases = [
-  //     (
-  //       "<div />",
-  //       vec![0],
-  //       Some(ast::ExprSource {
-  //         id: "406d2856".to_string(),
-  //         text_source: Some(ast::ExprTextSource {
-  //           uri: "/entry.pc".to_string(),
-  //           location: ast::Location { start: 0, end: 7 },
-  //         }),
-  //       }),
-  //     ),
-  //     (
-  //       "{<div />}",
-  //       vec![0],
-  //       Some(ast::ExprSource {
-  //         id: "769346c8".to_string(),
-  //         text_source: Some(ast::ExprTextSource {
-  //           uri: "/entry.pc".to_string(),
-  //           location: ast::Location { start: 1, end: 8 },
-  //         }),
-  //       }),
-  //     ),
-  //   ];
-
-  //   for (content, path, output) in &cases {
-  //     let content = content.to_string();
-
-  //     let mut engine = Engine::new(
-  //       Box::new(move |uri| content.to_string()),
-  //       Box::new(move |uri| true),
-  //       Box::new(|_, _| Some("".to_string())),
-  //       None,
-  //       EngineMode::SingleFrame,
-  //     );
-
-  //     block_on(engine.load(&"/entry.pc".to_string()));
-
-  //     let info = engine.get_virtual_node_source_info(&pc_virt::NodeSource {
-  //       path: path.clone(),
-  //       document_uri: "/entry.pc".to_string(),
-  //     });
-
-  //     assert_eq!(&info, output);
-  //   }
-  // }
 }
 
 pub fn __test__evaluate_pc_files<'a>(
@@ -593,6 +554,7 @@ pub fn __test__evaluate_pc_files<'a>(
     Box::new(move |uri| f2.get(uri) != None),
     Box::new(|_, uri| Some(uri.to_string())),
     None,
+    false,
     EngineMode::SingleFrame,
   );
 

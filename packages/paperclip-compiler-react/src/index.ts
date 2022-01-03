@@ -1,18 +1,14 @@
-import { CompileOptions } from "paperclip-interim";
-import { compile as compile2Code } from "./code-compiler";
-import { compile as compileDefinition } from "./definition-compiler";
+import { compilers } from "paperclip-compiler-base-jsx";
 
-export const compile = ({
-  module,
-  fileUrl,
-  includes,
-  config
-}: CompileOptions) => {
-  const { code, map } = compile2Code(module, fileUrl, config, includes);
-
-  return {
-    ".js": code,
-    ".js.map": map.toString(),
-    ".d.ts": compileDefinition(module, fileUrl, config)
-  };
-};
+export const compile = compilers({
+  code: {
+    preflight: "",
+    imports: `import React from "react";\n`,
+    vendorName: "React"
+  },
+  definition: {
+    imports: `import {ReactElement} from "react";\n`,
+    elementType: "ReactElement"
+  },
+  extensionName: "js"
+});

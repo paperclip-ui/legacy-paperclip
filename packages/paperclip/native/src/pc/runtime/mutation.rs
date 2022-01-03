@@ -1,7 +1,7 @@
 use super::virt::{ElementSourceInfo, Node};
 use crate::base::ast::ExprTextSource;
 use crate::css::runtime::mutation as css_mutation;
-use crate::js::runtime::virt as js_virt;
+use crate::script::runtime::virt as script_virt;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -38,7 +38,7 @@ pub struct SetText {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetAnnotations {
-  pub value: Option<js_virt::JsObject>,
+  pub value: Option<script_virt::Object>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

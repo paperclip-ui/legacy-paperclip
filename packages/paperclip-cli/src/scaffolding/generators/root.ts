@@ -27,7 +27,8 @@ export const root = {
         message: "Is there a compiler that you'd like to use?",
         choices: [
           { name: "None", value: null },
-          { name: "React", value: "paperclip-compiler-react" }
+          { name: "React", value: "paperclip-compiler-react" },
+          { name: "HTML", value: "paperclip-compiler-html" }
         ]
       }
     ]);

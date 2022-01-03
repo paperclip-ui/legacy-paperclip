@@ -180,7 +180,9 @@ function watch(cwd, filesGlob, compileFile) {
     cwd: cwd
   });
 
-  watcher.on("change", compileFile);
+  watcher.on("change", file => {
+    compileFile(path.join(cwd, file));
+  });
 }
 
 const getMainCSSFilePath = (cwd: string, config: PaperclipConfig) => {
@@ -280,10 +282,17 @@ const requireTargetCompilers = (
 
     for (const moduleName of fs.readdirSync(possibleDir)) {
       if (/paperclip-compiler-/.test(moduleName) && !compilers[moduleName]) {
-        compilers[moduleName] = require(path.join(possibleDir, moduleName));
+        if (
+          !config.compilerOptions.target ||
+          config.compilerOptions.target.includes(
+            moduleName.substring("paperclip-compiler-".length)
+          )
+        ) {
+          compilers[moduleName] = require(path.join(possibleDir, moduleName));
+        }
       }
     }
   }
 
-  return Object.values(compilers);
+  return Object.values(compilers).filter(compiler => compiler.compile != null);
 };

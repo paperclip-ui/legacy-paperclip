@@ -1,7 +1,7 @@
 import { CSSExports } from "../css/exports";
 import { PCExports } from "./exports";
 import { DependencyContent } from "../core/graph";
-import { VirtJsObject } from "../script/virt";
+import { VirtScriptObject } from "../script/virt";
 import { memoize } from "../core/memo";
 import { getNodeAncestors, getNodePath } from "./tree";
 import { Mutation } from "./virt-mtuation";
@@ -51,6 +51,7 @@ export type EvaluatedPCData = {
 
   // TODO - change to declarations, or something to imply declarations in the file. Definitions maybe?
   exports: PCExports;
+  usedExprIds?: string[];
 } & BaseEvaluatedData<EvaluatedDataKind.PC>;
 
 export type EvaluatedCSSData = {
@@ -117,7 +118,7 @@ export type VirtualElementSourceInfo = {
 };
 
 export type VirtualElement = {
-  annotations?: VirtJsObject;
+  annotations?: VirtScriptObject;
   tagName: string;
   sourceInfo?: VirtualElementSourceInfo;
   attributes: {
@@ -127,7 +128,7 @@ export type VirtualElement = {
 } & VirtualBaseNode<VirtualNodeKind.Element>;
 
 export type VirtualText = {
-  annotations?: VirtJsObject;
+  annotations?: VirtScriptObject;
   value: string;
 } & VirtualBaseNode<VirtualNodeKind.Text>;
 

@@ -426,7 +426,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\/g, "/Z/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
+      `<div></div><div><style></style></div><div><span class="true _80f4925f _pub-80f4925f"></span></div>`
     );
 
     engine.updateVirtualFileContent(

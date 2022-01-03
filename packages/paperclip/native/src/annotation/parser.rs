@@ -2,8 +2,8 @@ use super::ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast as base_ast;
 use crate::base::parser::{get_buffer, ParseError};
-use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::tokenizer::Tokenizer as JSTokenizer;
+use crate::script::parser::parse_with_tokenizer as parse_js_with_tokenizer;
+use crate::script::tokenizer::Tokenizer as JSTokenizer;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 

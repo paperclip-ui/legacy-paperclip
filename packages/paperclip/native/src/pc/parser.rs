@@ -12,9 +12,9 @@ use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
-use crate::js::ast as js_ast;
-use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::tokenizer::Tokenizer as JSTokenizer;
+use crate::script::ast as script_ast;
+use crate::script::parser::parse_with_tokenizer as parse_js_with_tokenizer;
+use crate::script::tokenizer::Tokenizer as JSTokenizer;
 use crc::crc32;
 use std::str;
 
@@ -183,7 +183,7 @@ fn parse_slot<'a>(
 fn parse_slot_script<'a>(
   context: &mut Context<'a>,
   id_seed_info_option: Option<(&Vec<String>, usize)>,
-) -> Result<js_ast::Expression, ParseError> {
+) -> Result<script_ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.get_u16pos();
   let mut js_tokenizer = JSTokenizer::new_from_scanner(context.tokenizer.scanner.clone());
   let id_seed = if let Some((path, index)) = id_seed_info_option {
@@ -539,6 +539,7 @@ fn parse_shorthand_attribute<'a>(
     let script = parse_slot_script(context, None)?;
     Ok(pc_ast::Attribute::SpreadAttribute(
       pc_ast::SpreadAttribute {
+        id: context.id_generator.new_id(),
         omit_from_compilation,
         script,
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
@@ -548,6 +549,7 @@ fn parse_shorthand_attribute<'a>(
     let reference = parse_slot_script(context, None)?;
     Ok(pc_ast::Attribute::ShorthandAttribute(
       pc_ast::ShorthandAttribute {
+        id: context.id_generator.new_id(),
         reference,
         range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
       },
@@ -686,6 +688,7 @@ fn parse_attribute_string_value<'a>(
 
       parts.push(pc_ast::AttributeDynamicStringPart::ClassNamePierce(
         pc_ast::AttributeDynamicStringClassNamePierce {
+          id: context.id_generator.new_id(),
           class_name,
           range: pos.range_from(context.tokenizer.scanner.get_u16pos()),
         },
@@ -703,6 +706,7 @@ fn parse_attribute_string_value<'a>(
       .to_string();
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({
         pc_ast::AttributeDynamicStringLiteral {
+          id: context.id_generator.new_id(),
           value,
           range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
         }

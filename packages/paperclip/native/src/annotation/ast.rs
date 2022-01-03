@@ -1,5 +1,5 @@
 use crate::base::ast as base_ast;
-use crate::js::ast as js_ast;
+use crate::script::ast as script_ast;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -21,7 +21,7 @@ pub enum AnnotationProperty {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Declaration {
   pub name: String,
-  pub value: js_ast::Expression,
+  pub value: script_ast::Expression,
   pub raws: base_ast::BasicRaws,
   pub range: base_ast::Range,
 }

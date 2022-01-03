@@ -8,7 +8,7 @@ import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
 import {
-  computeVirtJSObject,
+  computeVirtScriptObject,
   LoadedPCData,
   NodeAnnotations,
   VirtualFrame,

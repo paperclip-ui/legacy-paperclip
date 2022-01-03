@@ -1,7 +1,8 @@
 import * as React from "react";
 import { expect } from "chai";
-import { compileModules } from "./utils";
+import { compile } from "..";
 import * as ez from "enzyme";
+import { compileModules } from "paperclip-compiler-base-jsx/lib/test/utils";
 
 import * as Adapter from "enzyme-adapter-react-16";
 
@@ -29,7 +30,9 @@ describe(__filename + "#", () => {
     ]
   ].forEach(([title, graph, expectedCSS]: any) => {
     it(title, async () => {
-      const modules = await compileModules(graph, {
+      const modules = await compileModules(compile, {
+        react: React
+      })(graph, {
         srcDir: null,
         compilerOptions: {
           outDir: null

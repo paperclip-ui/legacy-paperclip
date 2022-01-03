@@ -1,15 +1,19 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "18.2.16",
-  "private": true,
+  "version": "18.3.0",
   "description": "HTML compiler for Paperclip",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test": "mocha lib/test --timeout=5000",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/preset-env": "^7.16.7",
     "@types/mocha": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
@@ -18,6 +22,10 @@
     "mocha": "^8.0.1"
   },
   "dependencies": {
-    "paperclip-utils": "^18.2.16"
+    "lodash": "^4.17.21",
+    "paperclip-compiler-base-jsx": "^18.3.0",
+    "paperclip-interim": "^18.3.0",
+    "paperclip-utils": "^18.3.0",
+    "source-map": "^0.7.3"
   }
 }

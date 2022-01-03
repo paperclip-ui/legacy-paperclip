@@ -4,9 +4,13 @@ import * as path from "path";
 import * as URL from "url";
 import * as fs from "fs";
 import { getPrettyMessage } from "paperclip-cli-utils";
-import { PaperclipConfig, stripFileProtocol } from "paperclip-utils";
+import {
+  isPaperclipFile,
+  PaperclipConfig,
+  stripFileProtocol
+} from "paperclip-utils";
 import { createEngineDelegate } from "paperclip";
-import { mkdirpSync, outputFile } from "fs-extra";
+import { mkdirpSync } from "fs-extra";
 
 export type BuildOptions = {
   cwd: string;
@@ -35,16 +39,16 @@ export const build = async (options: BuildOptions) => {
 
   builder
     .onFile((outFilePath: string, content: string) => {
-      const ext = outFilePath.replace(/.*?\.pc\./, "");
+      const ext = outFilePath.replace(/.*?(\.pc)?\./, "");
 
       if (options.only && !options.only.includes(ext)) {
         return;
       }
 
       if (options.verbose) {
-        console.log("Compiled %s", path.relative(options.cwd, outFilePath));
+        console.log("Write %s", path.relative(options.cwd, outFilePath));
       }
-      if (options.print) {
+      if (options.print && isPaperclipFile(outFilePath)) {
         console.log(content);
       } else {
         writeFileSync(outFilePath, content, options);

@@ -27,3 +27,4 @@ export * from "./css/style-inspection";
 export * from "./core/module-ast";
 export * from "./css/exports";
 export * from "./html/exports";
+export * from "./core/report";

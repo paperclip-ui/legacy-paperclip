@@ -1,18 +1,13 @@
-import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
-import * as React from "react";
 import { InterimCompiler } from "paperclip-interim";
 import { isPaperclipFile, PaperclipConfig } from "paperclip-utils";
 
-const builtin = {
-  react: React
-};
-
-export const compileModules = async (
-  graph: Record<string, string>,
-  config: PaperclipConfig
-) => {
+export const compileModules = (
+  compile: (...args: any) => any,
+  builtin: any,
+  extensionName = "js"
+) => async (graph: Record<string, string>, config: PaperclipConfig) => {
   const engine = await createEngineDelegate({
     io: {
       readFile: uri => graph[uri],
@@ -30,7 +25,7 @@ export const compileModules = async (
       readFile(filePath) {
         return Buffer.from(graph[filePath]);
       },
-      getFileSize(filePath) {
+      getFileSize() {
         return 0;
       }
     }
@@ -43,7 +38,12 @@ export const compileModules = async (
       modules[path] = () => graph[path];
       continue;
     }
-    const es6 = compile(intermCompiler.parseFile(path), path, config, []).code;
+    const es6 = compile({
+      module: intermCompiler.parseFile(path),
+      fileUrl: path,
+      config,
+      includes: []
+    })["." + extensionName];
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,

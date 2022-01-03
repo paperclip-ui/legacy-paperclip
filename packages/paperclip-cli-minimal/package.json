@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli-minimal",
-  "version": "18.2.16",
+  "version": "18.3.0",
   "description": "Minimal command line tool for Paperclip",
   "main": "lib/cli.js",
   "bin": {
@@ -18,10 +18,10 @@
     "chokidar": "^3.3.1",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "paperclip": "^18.2.16",
-    "paperclip-builder": "^18.2.16",
-    "paperclip-cli-utils": "^18.2.16",
-    "paperclip-utils": "^18.2.16",
+    "paperclip": "^18.3.0",
+    "paperclip-builder": "^18.3.0",
+    "paperclip-cli-utils": "^18.3.0",
+    "paperclip-utils": "^18.3.0",
     "resolve": "^1.15.1",
     "yargs": "^15.1.0"
   },

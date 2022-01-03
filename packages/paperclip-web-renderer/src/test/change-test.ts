@@ -218,7 +218,7 @@ describe(__filename, () => {
           <div data-l />
         `
         },
-        `<div></div><div><style></style></div><div><div class="_17bc3462 _pub-17bc3462"></div></div>`
+        `<div></div><div><style></style></div><div><div class="_17bc3462 _pub-17bc3462" data-l="true"></div></div>`
       ]
     ],
     [

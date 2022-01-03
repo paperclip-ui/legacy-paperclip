@@ -1,7 +1,7 @@
 import {
   NodeAnnotations,
   VirtualFrame,
-  computeVirtJSObject,
+  computeVirtScriptObject,
   VirtualElement,
   VirtualNode,
   VirtualText
@@ -70,7 +70,7 @@ const Frame = memo(
     dispatch
   }: FrameProps) => {
     const annotations: NodeAnnotations =
-      (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
+      (frame.annotations && computeVirtScriptObject(frame.annotations)) || {};
     if (annotations.frame?.visible === false) {
       return null;
     }

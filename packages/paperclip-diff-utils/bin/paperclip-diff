@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+
+const { PaperclipDiff } = require("../lib");
+
+const diff = new PaperclipDiff(process.cwd());
+
+const path = require("path");
+const resolve = require("resolve");
+const chokidar = require("chokidar");
+const {init, devStart} = require("../lib/cli");
+const {build} = require("paperclip-cli-minimal");
+const argv = require("yargs")
+.command("snapshot", "Take snapshots of the current PR", yargs => {
+  // yargs
+  // .option("watch", desc("watch for changes"))
+  // .option("print", desc("Only print compiled output"))
+  // .option("only", desc("Target files to generate"))
+  // .option("silent", desc("silence output information"))
+  // .option("output", desc("output directory of files"))
+  // .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
+}, argv => {
+  build({
+    cwd: process.cwd(),
+    config: argv.config,
+    print: argv.print,
+    output: argv.output,
+    css: argv.css,
+    watch: argv.watch,
+    definition: argv.definition,
+    only: argv.only && argv.only.split(",").map(v => v.trim()),
+    verbose: !argv.silent,
+    dropPcExtension: argv.dropPcExtension,
+    compilerName: argv.compiler,
+    filePatterns: argv.filePattern
+  })
+})
+.command("changes [branch]", "Show changes against a different branch", yargs => {
+  yargs
+  .option("watch", desc("re-run when a PC file changes"));
+  // .option("print", desc("Only print compiled output"))
+  // .option("only", desc("Target files to generate"))
+  // .option("silent", desc("silence output information"))
+  // .option("output", desc("output directory of files"))
+  // .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
+}, argv => {
+  diff.detectChanges(argv.branch, argv.watch);
+})

@@ -1,6 +1,7 @@
 {
   "srcDir": "./src",
   "compilerOptions": {
+    "target": ["react"],
     "outDir": "./lib",
     "assetOutDir": "./lib/assets",
     "embedAssetMaxSize": 0,

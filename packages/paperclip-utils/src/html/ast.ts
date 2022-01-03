@@ -1,6 +1,6 @@
 import {
-  JsExpression,
-  JsExpressionKind,
+  ScriptExpression,
+  ScriptExpressionKind,
   Reference,
   traverseJSExpression
 } from "../script/ast";
@@ -74,7 +74,7 @@ export type TextAnnotation = {
 
 export type DeclarationAnnotation = {
   name: string;
-  value: JsExpression;
+  value: ScriptExpression;
   raws: BasicRaws;
 } & BaseAnnotationProperty<AnnotationPropertyKind.Declaration>;
 
@@ -118,22 +118,26 @@ type BaseAttribute<TKind extends AttributeKind> = {
 };
 
 type ShorthandAttribute = {
-  reference: JsExpression;
+  id: string;
+  reference: ScriptExpression;
   range: StringRange;
 } & BaseAttribute<AttributeKind.ShorthandAttribute>;
 
 type SpreadAttribute = {
-  script: JsExpression;
+  id: string;
+  script: ScriptExpression;
   range: StringRange;
 } & BaseAttribute<AttributeKind.SpreadAttribute>;
 
 type KeyValueAttribute = {
+  id: string;
   name: string;
   value?: AttributeValue;
   range: StringRange;
 } & BaseAttribute<AttributeKind.KeyValueAttribute>;
 
 export type PropertyBoundAttribute = {
+  id: string;
   name: string;
   bindingName: string;
   value: AttributeValue;
@@ -187,7 +191,7 @@ type DynamicStringClassNamePiercePart = {
   DynamicStringAttributeValuePartKind.ClassNamePierce
 >;
 
-type DynamicStringSlotPart = JsExpression &
+type DynamicStringSlotPart = ScriptExpression &
   BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Slot>;
 
 export type DynamicStringAttributeValuePart =
@@ -201,7 +205,7 @@ export type DynamicStringAttributeValue = {
 } & BaseAttributeValue<AttributeValueKind.DyanmicString>;
 
 export type SlotAttributeValue = {
-  script: JsExpression;
+  script: ScriptExpression;
   range: StringRange;
 } & BaseAttributeValue<AttributeValueKind.Slot>;
 
@@ -217,7 +221,7 @@ export type Fragment = {
 } & BaseNode<NodeKind.Fragment>;
 
 export type Slot = {
-  script: JsExpression;
+  script: ScriptExpression;
   range: StringRange;
   raws: BasicRaws;
 } & BaseNode<NodeKind.Slot>;
@@ -235,7 +239,7 @@ export type Expression =
   | Attribute
   | AttributeValue
   | StyleExpression
-  | JsExpression
+  | ScriptExpression
   | DynamicStringAttributeValuePart;
 
 const a: AttributeValue = null;
@@ -292,7 +296,7 @@ export const getChildrenByTagName = (tagName: string, parent: Node) =>
 
 export const findByNamespace = (
   namespace: string,
-  current: Node | JsExpression,
+  current: Node | ScriptExpression,
   allChildrenByNamespace: Element[] = []
 ) => {
   if (isNode(current)) {
@@ -313,7 +317,7 @@ export const findByNamespace = (
         ) {
           if (
             attribute.value.attrValueKind === AttributeValueKind.Slot &&
-            attribute.value.script.jsKind === JsExpressionKind.Node
+            attribute.value.script.scriptKind === ScriptExpressionKind.Node
           ) {
             findByNamespace(
               namespace,
@@ -327,8 +331,8 @@ export const findByNamespace = (
     if (current.nodeKind === NodeKind.Slot) {
       findByNamespace(namespace, current.script, allChildrenByNamespace);
     }
-  } else if (isJsExpression(current)) {
-    if (current.jsKind === JsExpressionKind.Conjunction) {
+  } else if (isScriptExpression(current)) {
+    if (current.scriptKind === ScriptExpressionKind.Conjunction) {
       findByNamespace(namespace, current.left, allChildrenByNamespace);
       findByNamespace(namespace, current.right, allChildrenByNamespace);
     }
@@ -457,10 +461,10 @@ export const isComponentInstance = (
 };
 
 const maybeAddReference = (
-  stmt: JsExpression,
+  stmt: ScriptExpression,
   _statements: [Reference, string][] = []
 ) => {
-  if (stmt.jsKind === JsExpressionKind.Reference) {
+  if (stmt.scriptKind === ScriptExpressionKind.Reference) {
     _statements.push([stmt, null]);
   }
 };
@@ -486,8 +490,8 @@ export const isAttribute = (ast: Expression): ast is Attribute =>
 export const isAttributeValue = (ast: Expression): ast is AttributeValue =>
   AttributeValueKind[(ast as AttributeValue).attrValueKind] != null;
 
-export const isJsExpression = (ast: Expression): ast is JsExpression =>
-  JsExpressionKind[(ast as JsExpression).jsKind] != null;
+export const isScriptExpression = (ast: Expression): ast is ScriptExpression =>
+  ScriptExpressionKind[(ast as ScriptExpression).scriptKind] != null;
 export const isDynamicStringAttributeValuePart = (
   ast: Expression
 ): ast is DynamicStringAttributeValuePart =>
@@ -557,19 +561,21 @@ export const getNestedReferences = (
           attr.value &&
           attr.value.attrValueKind === AttributeValueKind.Slot
         ) {
-          if (attr.value.script.jsKind === JsExpressionKind.Node) {
+          if (attr.value.script.scriptKind === ScriptExpressionKind.Node) {
             getNestedReferences(attr.value.script, _statements);
-          } else if (attr.value.script.jsKind === JsExpressionKind.Reference) {
+          } else if (
+            attr.value.script.scriptKind === ScriptExpressionKind.Reference
+          ) {
             _statements.push([attr.value.script, attr.name]);
           }
         } else if (
           attr.attrKind === AttributeKind.ShorthandAttribute &&
-          attr.reference.jsKind === JsExpressionKind.Reference
+          attr.reference.scriptKind === ScriptExpressionKind.Reference
         ) {
           _statements.push([attr.reference, attr.reference[0]]);
         } else if (
           attr.attrKind === AttributeKind.SpreadAttribute &&
-          attr.script.jsKind === JsExpressionKind.Reference
+          attr.script.scriptKind === ScriptExpressionKind.Reference
         ) {
           _statements.push([attr.script, attr.script[0]]);
         }

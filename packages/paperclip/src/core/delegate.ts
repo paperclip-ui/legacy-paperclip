@@ -15,17 +15,24 @@ import {
   hasAttribute,
   Diagnostic,
   INJECT_STYLES_TAG_NAME,
+  CoverageReport,
   NodeStyleInspection,
   VirtNodeSource,
   Dependency,
   Module,
   DiffedEvent,
-  LoadedPCData
+  LoadedPCData,
+  ExprTextSource
 } from "paperclip-utils";
 import { noop } from "./utils";
 
 export type FileContent = {
   [identifier: string]: string;
+};
+
+export type VirtualNodeSourceInfo = {
+  sourceId: string;
+  textSource: ExprTextSource;
 };
 
 export type ErrorResult = { error: any };
@@ -200,8 +207,16 @@ export class EngineDelegate {
   lint(uri: string): Diagnostic[] {
     return this._native.lint_file(uri);
   }
-  getVirtualNodeSourceInfo(nodePath: number[], uri: string) {
+  getVirtualNodeSourceInfo(
+    nodePath: number[],
+    uri: string
+  ): VirtualNodeSourceInfo {
     return this._native.get_virtual_node_source_info(nodePath, uri);
+  }
+  generateCoverageReport(): CoverageReport {
+    return this._tryCatch(() => {
+      return mapResult(this._native.generate_coverage_report());
+    });
   }
   getLoadedAst(uri: string): DependencyContent {
     return this._tryCatch(() => this._native.get_loaded_ast(uri));
