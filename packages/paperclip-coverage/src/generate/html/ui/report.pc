@@ -261,6 +261,65 @@
 
 
 <!--
+  @frame { title: "File Report", width: 1024, height: 768, x: 1157, y: -8 }
+-->
+<Report okay
+  title="Coverage report"
+  coverage={<fragment>
+    <CoverageInfo title="Statements"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+    <CoverageInfo title="Lines"
+      percentage="83"
+      coveredCount="290"
+      totalCount="300" />
+  </fragment>}
+  breadcrumbs={<fragment>
+    <Breadcrumb href="a">path</Breadcrumb>
+    <Breadcrumb href="a">to</Breadcrumb>
+    <Breadcrumb href="a">directory</Breadcrumb>
+  </fragment>}>
+  <div>
+    <style>
+      margin: 16px;
+    </style>
+    <Line good number="1">I'm code</Line>
+    <Line poor number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+    <Line good number="1">I'm code</Line>
+  </div>
+</Report>
+
+<div component as="LineNumber" class="coverage" class:good="good">
+  <style>
+    background: rgb(230, 230, 230);
+    padding: 0px 8px;
+    padding: 4px 16px;
+    width: 100px;
+    &:within(.poor) {
+      background: transparent;
+    }
+
+  </style>
+  {children}
+</div>
+
+<div export component as="Line" class="coverage" class:poor="poor">
+  <style>
+    display: flex;
+    align-items: center;
+    grid-column-gap: 16px;
+  </style>
+  <LineNumber {good?}>{number}</LineNumber>
+  {children}
+</div>
+
+
+<!--
   @frame { title: "Directory Report" }
 -->
 <Report okay
