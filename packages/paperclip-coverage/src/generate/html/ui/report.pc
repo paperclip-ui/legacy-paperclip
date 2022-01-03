@@ -375,7 +375,8 @@
   <Table>
     <Row header>
       <Cell>file</Cell>
-      <Cell>Statements</Cell>
+      <Cell>HTML</Cell>
+      <Cell>CSS</Cell>
       <Cell>Lines</Cell>
     </Row>
     <Row>
@@ -390,10 +391,20 @@
         percentage="83"
         coveredCount="290"
         totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
     </Row>
     <Row>
       <FileCell good percentage="20">path/to/file.pc</FileCell>
       <PercentCell good
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
         title="Lines"
         percentage="83"
         coveredCount="290"
@@ -416,6 +427,11 @@
         percentage="83"
         coveredCount="290"
         totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
     </Row>
     <Row>
       <FileCell good percentage="100">path/to/file.pc</FileCell>
@@ -429,6 +445,11 @@
         percentage="83"
         coveredCount="290"
         totalCount="300" />
+      <PercentCell poor
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
     </Row>
     <Row>
       <FileCell good percentage="40">path/to/file.pc</FileCell>
@@ -438,6 +459,11 @@
         coveredCount="290"
         totalCount="300" />
       <PercentCell good
+        title="Lines"
+        percentage="83"
+        coveredCount="290"
+        totalCount="300" />
+      <PercentCell poor
         title="Lines"
         percentage="83"
         coveredCount="290"

@@ -7,3 +7,14 @@
   </style>
   {children}
 </div>
+
+<div export component as="test" {a?}>
+  <style>
+    display: flex;
+    grid-column-gap: var(--gap);
+    grid-row-gap: var(--gap);
+  </style>
+  {children}
+</div>
+
+<test class="a" a />

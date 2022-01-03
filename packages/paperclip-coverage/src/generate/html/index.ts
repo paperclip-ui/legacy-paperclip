@@ -83,21 +83,26 @@ const generateCoverageOuter = (
   options: GenerateCoverageHTML,
   children: string
 ) => {
-  const statementsPerc = perc(
-    report.statements.count / report.statements.total
-  );
+  const htmlPerc = perc(report.html.count / report.html.total);
+  const cssPerc = perc(report.html.count / report.html.total);
   const linesPerc = perc(report.lines.count / report.lines.total);
   return pageStyles.default({
     head: generateHead(report, options),
     children: reportStyles.Report({
       title: "Coverage Report",
-      ...colorCodeProps(Math.min(linesPerc, statementsPerc)),
+      ...colorCodeProps(Math.min(linesPerc, htmlPerc, cssPerc)),
       coverage: [
         reportStyles.CoverageInfo({
-          title: "Statements",
-          percentage: statementsPerc,
-          coveredCount: report.statements.count,
-          totalCount: report.statements.total
+          title: "HTML",
+          percentage: htmlPerc,
+          coveredCount: report.html.count,
+          totalCount: report.html.total
+        }),
+        reportStyles.CoverageInfo({
+          title: "CSS",
+          percentage: cssPerc,
+          coveredCount: report.css.count,
+          totalCount: report.css.total
         }),
         reportStyles.CoverageInfo({
           title: "Lines",
@@ -148,15 +153,17 @@ const generateDirectoryReport = (
           header: true,
           children: [
             reportStyles.Cell({ children: "file" }),
-            reportStyles.Cell({ children: "Statements" }),
+            reportStyles.Cell({ children: "HTML" }),
+            reportStyles.Cell({ children: "CSS" }),
             reportStyles.Cell({ children: "Lines" })
           ]
         }),
         ...Object.entries(report.children).map(([key, child]) => {
-          const statementPercentage = perc(
-            child.statements.count / child.statements.total
-          );
-          const linePercentage = perc(child.lines.count / child.lines.total);
+          const cssPerc = perc(child.css.count / child.css.total);
+          const htmlPerc = perc(child.html.count / child.html.total);
+          const linePerc = perc(child.lines.count / child.lines.total);
+
+          const filePerc = Math.min(cssPerc, htmlPerc, linePerc);
 
           const relativePath = [child.path[child.path.length - 1]];
 
@@ -164,18 +171,25 @@ const generateDirectoryReport = (
             children: [
               reportStyles.FileCell({
                 href: getHTMLPathName(relativePath),
+                ...colorCodeProps(htmlPerc),
                 children: relativePath.join("/"),
-                percentage: linePercentage
+                percentage: filePerc
               }),
               reportStyles.PercentCell({
-                percentage: statementPercentage,
-                ...colorCodeProps(statementPercentage),
-                coveredCount: child.statements.count,
-                totalCount: child.statements.total
+                percentage: htmlPerc,
+                ...colorCodeProps(htmlPerc),
+                coveredCount: child.html.count,
+                totalCount: child.html.total
               }),
               reportStyles.PercentCell({
-                percentage: linePercentage,
-                ...colorCodeProps(linePercentage),
+                percentage: cssPerc,
+                ...colorCodeProps(cssPerc),
+                coveredCount: child.css.count,
+                totalCount: child.css.total
+              }),
+              reportStyles.PercentCell({
+                percentage: linePerc,
+                ...colorCodeProps(linePerc),
                 coveredCount: child.lines.count,
                 totalCount: child.lines.total
               })
@@ -187,15 +201,18 @@ const generateDirectoryReport = (
   );
 };
 
-const perc = (value: number) => Math.floor(value * 100);
+const perc = (value: number) => {
+  const v = Math.floor(value * 100);
+  return isNaN(v) ? 100 : v;
+};
 
 const colorCodeProps = (percentage: number) => {
   const props = { okay: false, poor: false, good: false };
 
-  if (percentage < OK_THRESHOLD) {
-    props.okay = true;
-  } else if (percentage < POOR_THRESHOLD) {
+  if (percentage < POOR_THRESHOLD) {
     props.poor = true;
+  } else if (percentage < OK_THRESHOLD) {
+    props.okay = true;
   } else {
     props.good = true;
   }
@@ -212,7 +229,10 @@ const generateFileReport = (
     options,
     reportStyles.FileReportContent({
       children: report.content.split("\n").map((line, i) => {
-        const poor = lineIsInRange(i + 1, report.report.missingStatementRanges);
+        const poor = lineIsInRange(i + 1, [
+          ...report.report.html.missingRanges,
+          ...report.report.css.missingRanges
+        ]);
         return reportStyles.Line({
           number: i + 1,
           poor,

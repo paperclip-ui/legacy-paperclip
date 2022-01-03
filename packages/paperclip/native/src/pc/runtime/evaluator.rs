@@ -1154,6 +1154,7 @@ fn evaluate_attributes(
         };
       }
       ast::Attribute::ShorthandAttribute(sh_attr) => {
+        use_expr_id(&sh_attr.id, context);
         let name = sh_attr.get_name().map_err(|message| RuntimeError {
           uri: context.uri.to_string(),
           message: message.to_string(),

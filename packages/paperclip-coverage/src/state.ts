@@ -15,7 +15,8 @@ export type CoverageInfo = {
 type BaseReport<TKind extends TreeReportKind> = {
   kind: TKind;
   path: string[];
-  statements: CoverageInfo;
+  css: CoverageInfo;
+  html: CoverageInfo;
   lines: CoverageInfo;
 };
 
@@ -34,7 +35,8 @@ export const convertReportToTree = (report: CoverageReport, cwd: string) => {
   const root: TreeDirectoryReport = {
     kind: TreeReportKind.Directory,
     path: [],
-    statements: { count: 0, total: 0 },
+    css: { count: 0, total: 0 },
+    html: { count: 0, total: 0 },
     lines: { count: 0, total: 0 },
     children: {}
   };
@@ -65,9 +67,8 @@ export const convertReportToTree = (report: CoverageReport, cwd: string) => {
 const generateSummary = (tree: TreeReport): TreeReport => {
   let base = {
     ...tree,
-    statements: calcCoverage(
-      flattenReports(tree).map(report => report.statements)
-    ),
+    css: calcCoverage(flattenReports(tree).map(report => report.css)),
+    html: calcCoverage(flattenReports(tree).map(report => report.html)),
     lines: calcCoverage(flattenReports(tree).map(report => report.lines))
   };
 
@@ -111,7 +112,8 @@ const calcCoverage = (coverages: CoverageInfo[]) => {
 const createDirectoryReport = (path: string[]): TreeDirectoryReport => ({
   kind: TreeReportKind.Directory,
   path,
-  statements: { count: 0, total: 0 },
+  css: { count: 0, total: 0 },
+  html: { count: 0, total: 0 },
   lines: { count: 0, total: 0 },
   children: {}
 });
@@ -124,9 +126,13 @@ const createFileReport = (
   kind: TreeReportKind.File,
   path,
   report,
-  statements: {
-    total: report.statementCount,
-    count: report.statementCount - report.missingStatementRanges.length
+  css: {
+    total: report.css.count,
+    count: report.css.count - report.css.missingRanges.length
+  },
+  html: {
+    total: report.html.count,
+    count: report.html.count - report.html.missingRanges.length
   },
   lines: {
     total: report.lineCount,

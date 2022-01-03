@@ -4,10 +4,17 @@ export type CoverageReport = {
   files: FileReport[];
 };
 
+export type ExpressionReport = {
+  missingRanges: StringRange[];
+  count: number;
+};
+
 export type FileReport = {
   uri: string;
-  missingStatementRanges: StringRange[];
+  css: ExpressionReport;
+  html: ExpressionReport;
   missingLines: number[];
   lineCount: number;
-  statementCount: number;
+  cssCount: number;
+  htmlCount: number;
 };

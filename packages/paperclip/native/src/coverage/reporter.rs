@@ -2,6 +2,7 @@ use crate::base::ast as base_ast;
 use crate::core::ast::{Expr, ExprVisitor};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
+use std::collections::hash_map::Entry;
 use crate::css::ast as css_ast;
 use crate::css::runtime::evaluator as css_eval;
 use crate::pc::ast as pc_ast;
@@ -9,10 +10,9 @@ use crate::pc::runtime::evaluator as pc_eval;
 use crate::pc::runtime::inspect_node_styles::{inspect_node_styles, InspectionOptions};
 use crate::pc::runtime::virt as pc_virt;
 use crate::script::ast as script_ast;
-use std::iter::FromIterator;
-use std::io::{BufReader, Cursor, BufRead};
 use crate::core::vfs::VirtualFileSystem;
 use serde::Serialize;
+use std::io::{Cursor, BufRead};
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 
@@ -26,9 +26,33 @@ struct CoverageSummary {
   lines: u32
 }
 
+#[derive(Clone, Hash, Debug, Eq, PartialEq)]
+enum ExprIdKind {
+  CSS,
+  HTML
+}
+
+#[derive(Clone, Debug, PartialEq)]
+struct ExprIdInfo {
+  source_uri: String,
+  kind: ExprIdKind
+}
+
 #[derive(Debug, PartialEq, Serialize)]
 pub struct CoverageReport {
   files: Vec<FileReport>
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct PartReport {
+  #[serde(rename = "missingRanges")]
+  missing_ranges: Vec<base_ast::Range>,
+  count: u32
+}
+
+struct ExprCounts {
+  css: u32,
+  html: u32
 }
 
 
@@ -36,17 +60,14 @@ pub struct CoverageReport {
 struct FileReport {
   uri: String,
 
-  #[serde(rename = "missingStatementRanges")]
-  missing_statement_ranges: Vec<base_ast::Range>,
+  css: PartReport,
+  html: PartReport,
 
   #[serde(rename = "missingLines")]
   missing_lines: HashSet<u32>,
 
   #[serde(rename = "lineCount")]
-  line_count: u32,
-
-  #[serde(rename = "statementCount")]
-  statement_count: u32
+  line_count: u32
 }
 
 struct Source<'a> {
@@ -56,7 +77,7 @@ struct Source<'a> {
 
 struct AnalyzeContext<'a> {
   pub evaluated: &'a BTreeMap<String, DependencyEvalInfo>,
-  pub missed_ids: HashMap<String, String>,
+  pub missed_ids: HashMap<String, ExprIdInfo>,
   pub graph: &'a DependencyGraph
 }
 
@@ -68,7 +89,7 @@ pub async fn generate_coverage_report(
   let source: Source = Source { graph, evaluated };
 
   let coverable_expr_ids = get_coverable_expr_ids(&source);
-  let statement_count = coverable_expr_ids.len();
+  let expr_counts = count_exprs(&coverable_expr_ids);
 
   let mut analyze_context = AnalyzeContext {
     missed_ids: coverable_expr_ids,
@@ -79,27 +100,51 @@ pub async fn generate_coverage_report(
   analyze_graph(&mut analyze_context);
 
   CoverageReport {
-    files: generate_file_reports(&analyze_context.missed_ids, statement_count as u32, graph, vfs).await
+    files: generate_file_reports(&analyze_context.missed_ids, &expr_counts, graph, vfs).await
   }
 }
 
+fn count_exprs(expr_ids: &HashMap<String, ExprIdInfo>) -> HashMap<String, ExprCounts> {
+  let mut expr_counts: HashMap<String, ExprCounts> = HashMap::new();
+
+  for (id, info) in expr_ids {
+
+    
+
+
+    let mut counts = match expr_counts.entry(info.source_uri.to_string()) {
+      Entry::Occupied(e) => e.into_mut(),
+      Entry::Vacant(e) => {
+        e.insert(ExprCounts { css: 0, html: 0 })
+      }
+    };
+
+    match info.kind {
+      ExprIdKind::CSS => counts.css = counts.css + 1,
+      ExprIdKind::HTML => counts.html = counts.html + 1
+    }
+  }
+
+  expr_counts
+}
+
 async fn generate_file_reports(
-  missed_ids: &HashMap<String, String>,
-  statement_count: u32,
+  missed_ids: &HashMap<String, ExprIdInfo>,
+  expr_counts: &HashMap<String, ExprCounts>,
   graph: &DependencyGraph,
   vfs: &mut VirtualFileSystem
 ) -> Vec<FileReport> {
   let mut reports: Vec<FileReport> = vec![];
 
-  let mut file_expr_id_map: HashMap<String, HashSet<String>> = HashMap::new();
+  let mut file_expr_id_map: HashMap<String, HashMap<String, ExprIdInfo>> = HashMap::new();
 
-  for (id, uri) in missed_ids {
-    if let Some(file_ids) = file_expr_id_map.get_mut(uri) {
-      file_ids.insert(id.to_string());
+  for (id, info) in missed_ids {
+    if let Some(file_ids) = file_expr_id_map.get_mut(&info.source_uri) {
+      file_ids.insert(id.to_string(), info.clone());
     } else {
-      let mut ids = HashSet::new();
-      ids.insert(id.to_string());
-      file_expr_id_map.insert(uri.to_string(), ids);
+      let mut ids = HashMap::new();
+      ids.insert(id.to_string(), info.clone());
+      file_expr_id_map.insert(info.source_uri.to_string(), ids);
     }
   }
 
@@ -107,8 +152,8 @@ async fn generate_file_reports(
     reports.push(generate_file_report(
       &uri,
       dep,
-      statement_count,
-      file_expr_id_map.get(uri).unwrap_or(&HashSet::new()),
+      expr_counts.get(uri).unwrap(),
+      file_expr_id_map.get(uri).unwrap_or(&HashMap::new()),
       vfs
     ).await);
   }
@@ -119,15 +164,22 @@ async fn generate_file_reports(
 async fn generate_file_report(
   uri: &String,
   dep: &Dependency,
-  statement_count: u32,
-  missing_ids: &HashSet<String>,
+  counts: &ExprCounts,
+  missing_ids: &HashMap<String, ExprIdInfo>,
   vfs: &mut VirtualFileSystem
 ) -> FileReport {
+  let mut missing_parts: HashMap<ExprIdKind, PartReport> = HashMap::new();
   let mut missing_statement_ranges: Vec<base_ast::Range> = vec![];
 
-  for id in missing_ids {
+  missing_parts.insert(ExprIdKind::HTML, PartReport { count: counts.html, missing_ranges: vec![] });
+  missing_parts.insert(ExprIdKind::CSS, PartReport { count: counts.css, missing_ranges: vec![] });
+
+  for (id, info) in missing_ids {
     if let Some(expr) = dep.get_expression_by_id(id) {
-      missing_statement_ranges.push(expr.get_range().clone());
+      if let Some(part_report) = missing_parts.get_mut(&info.kind) {
+        part_report.missing_ranges.push(expr.get_range().clone());
+        missing_statement_ranges.push(expr.get_range().clone());
+      }
     } else {
       panic!("Expr ID not found");
     }
@@ -138,9 +190,9 @@ async fn generate_file_report(
   FileReport {
     uri: uri.to_string(),
     missing_lines: calc_missed_lines(&missing_statement_ranges),
-    missing_statement_ranges,
     line_count,
-    statement_count,
+    css: missing_parts.get(&ExprIdKind::CSS).unwrap_or(&PartReport { count: 0, missing_ranges: vec![] }).clone(),
+    html: missing_parts.get(&ExprIdKind::HTML).unwrap_or(&PartReport { count: 0, missing_ranges: vec![] }).clone()
   }
 }
 
@@ -169,19 +221,22 @@ fn count_lines(content: &String) -> u32 {
 }
 
 
-fn get_coverable_expr_ids(source: &Source) -> HashMap<String, String> {
-  let mut missed: HashMap<String, String> = HashMap::new();
+fn get_coverable_expr_ids(source: &Source) -> HashMap<String, ExprIdInfo> {
+  let mut missed: HashMap<String, ExprIdInfo> = HashMap::new();
 
   for (uri, dep) in &source.graph.dependencies {
-    for id in get_missed_file_expr_ids(dep) {
-      missed.insert(id.to_string(), uri.to_string());
+    for (id, kind) in get_missed_file_expr_ids(dep) {
+      missed.insert(id.to_string(), ExprIdInfo {
+        source_uri: uri.to_string(),
+        kind
+      });
     }
   }
 
   missed
 }
 
-fn get_missed_file_expr_ids(dep: &Dependency) -> HashSet<String> {
+fn get_missed_file_expr_ids(dep: &Dependency) -> HashMap<String, ExprIdKind> {
   match &dep.content {
     DependencyContent::Node(node) => ExprIdCollector::collect_expr_ids(node),
     DependencyContent::StyleSheet(sheet) => ExprIdCollector::collect_expr_ids(sheet),
@@ -249,16 +304,16 @@ fn analayze_element_styles(uri: &String, path: &Vec<usize>, context: &mut Analyz
 
 
 struct ExprIdCollector {
-  pub expr_ids: HashSet<String>,
+  pub expr_ids: HashMap<String, ExprIdKind>,
 }
 
 impl ExprIdCollector {
-  fn visit_core_expr<'a>(&'a mut self, expr: &'a dyn Expr) {
-    self.expr_ids.insert(expr.get_id().to_string());
+  fn visit_core_expr<'a>(&'a mut self, expr: &'a dyn Expr, kind: ExprIdKind) {
+    self.expr_ids.insert(expr.get_id().to_string(), kind);
   }
-  fn collect_expr_ids(expr: &dyn Expr) -> HashSet<String> {
+  fn collect_expr_ids(expr: &dyn Expr) -> HashMap<String, ExprIdKind> {
     let mut collector = ExprIdCollector {
-      expr_ids: HashSet::new(),
+      expr_ids: HashMap::new(),
     };
 
     expr.walk(&mut collector);
@@ -275,7 +330,7 @@ impl<'a> ExprVisitor<'a> for ExprIdCollector {
 
       },
       _ => {
-        self.visit_core_expr(expr);
+        self.visit_core_expr(expr, ExprIdKind::HTML);
       }
     };
   }
@@ -293,13 +348,13 @@ impl<'a> ExprVisitor<'a> for ExprIdCollector {
       return;
     }
 
-    self.visit_core_expr(expr);
+    self.visit_core_expr(expr, ExprIdKind::HTML);
   }
 
   fn visit_css_rule(&mut self, expr: &'a css_ast::Rule) {
     match expr {
       css_ast::Rule::Style(_) => {
-        self.visit_core_expr(expr);
+        self.visit_core_expr(expr, ExprIdKind::CSS);
       },
       _ => {}
     }
@@ -314,7 +369,7 @@ impl<'a> ExprVisitor<'a> for ExprIdCollector {
   }
 
   fn visit_script_expression(&mut self, expr: &'a script_ast::Expression) {
-    self.visit_core_expr(expr);
+    self.visit_core_expr(expr, ExprIdKind::HTML);
   }
 
   fn should_continue(&self) -> bool {
@@ -329,6 +384,7 @@ mod tests {
   use crate::engine::engine::Engine;
   use crate::engine::test_utils::create_mock_engine;
   use ::futures::executor::block_on;
+  use std::iter::FromIterator;
 
   fn open_all_entries(graph: &HashMap<String, String>, engine: &mut Engine) {
     for (uri, _) in graph {
@@ -351,8 +407,14 @@ mod tests {
           uri: "entry.pc".to_string(),
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 1,
-          statement_count: 2,
-          missing_statement_ranges: vec![],
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          },
+          html: PartReport {
+            count: 2,
+            missing_ranges: vec![]
+          }
         }],
       },
     );
@@ -379,10 +441,16 @@ mod tests {
       CoverageReport {
         files: vec![FileReport {
           uri: "entry.pc".to_string(),
-          missing_statement_ranges: vec![],
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 7,
-          statement_count: 7,
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          },
+          html: PartReport {
+            count: 7,
+            missing_ranges: vec![]
+          }
         }],
       },
     );
@@ -411,11 +479,17 @@ mod tests {
           uri: "entry.pc".to_string(),
           missing_lines: HashSet::from_iter(vec![3].iter().cloned()),
           line_count: 7,
-          missing_statement_ranges: vec![base_ast::Range::new(
-            U16Position::new(51, 3, 17),
-            U16Position::new(58, 3, 24),
-          )],
-          statement_count: 9,
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          },
+          html: PartReport {
+            count: 9,
+            missing_ranges: vec![base_ast::Range::new(
+              U16Position::new(51, 3, 17),
+              U16Position::new(58, 3, 24),
+            )]
+          }
         }],
       },
     );
@@ -446,10 +520,16 @@ mod tests {
       CoverageReport {
         files: vec![FileReport {
           uri: "entry.pc".to_string(),
-          missing_statement_ranges: vec![],
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 11,
-          statement_count: 18,
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          },
+          html: PartReport {
+            count: 18,
+            missing_ranges: vec![]
+          }
         }],
       },
     );
@@ -477,10 +557,16 @@ mod tests {
       CoverageReport {
         files: vec![FileReport {
           uri: "entry.pc".to_string(),
-          missing_statement_ranges: vec![],
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 8,
-          statement_count: 11,
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          },
+          html: PartReport {
+            count: 11,
+            missing_ranges: vec![]
+          }
         }],
       },
     );
@@ -506,21 +592,27 @@ mod tests {
       CoverageReport {
         files: vec![FileReport {
           uri: "entry.pc".to_string(),
-          statement_count: 7,
           missing_lines: HashSet::from_iter(vec![2].iter().cloned()),
           line_count: 6,
-          missing_statement_ranges: vec![base_ast::Range {
-            start: U16Position {
-              pos: 41,
-              line: 2,
-              column: 41,
-            },
-            end: U16Position {
-              pos: 58,
-              line: 2,
-              column: 58,
-            },
-          }],
+          html: PartReport {
+            count: 7,
+            missing_ranges: vec![base_ast::Range {
+              start: U16Position {
+                pos: 41,
+                line: 2,
+                column: 41,
+              },
+              end: U16Position {
+                pos: 58,
+                line: 2,
+                column: 58,
+              },
+            }]
+          },
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          }
         }],
       },
     );
@@ -546,10 +638,16 @@ mod tests {
       CoverageReport {
         files: vec![FileReport {
           uri: "entry.pc".to_string(),
-          missing_statement_ranges: vec![],
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 6,
-          statement_count: 8,
+          html: PartReport {
+            count: 8,
+            missing_ranges: vec![]
+          },
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          }
         }],
       },
     );
@@ -576,11 +674,16 @@ mod tests {
       files: vec![
         FileReport {
           uri: "entry.pc".to_string(),
-          missing_statement_ranges: vec![
-          ],
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 13,
-          statement_count: 5,
+          html: PartReport {
+            count: 3,
+            missing_ranges: vec![]
+          },
+          css: PartReport {
+            count: 2,
+            missing_ranges: vec![]
+          }
         }
       ]
     });
@@ -602,21 +705,27 @@ mod tests {
       files: vec![
         FileReport {
           uri: "entry.pc".to_string(),
-          statement_count: 4,
           missing_lines: HashSet::from_iter(vec![4, 6, 3, 5].iter().cloned()),
           line_count: 8,
-          missing_statement_ranges: vec![base_ast::Range {
-            start: U16Position {
-              pos: 27,
-              line: 3,
-              column: 11,
-            },
-            end: U16Position {
-              pos: 79,
-              line: 6,
-              column: 9,
-            },
-          }]
+          css: PartReport {
+            count: 1,
+            missing_ranges: vec![base_ast::Range {
+              start: U16Position {
+                pos: 27,
+                line: 3,
+                column: 11,
+              },
+              end: U16Position {
+                pos: 79,
+                line: 6,
+                column: 9,
+              },
+            }]
+          },
+          html: PartReport {
+            count: 3,
+            missing_ranges: vec![]
+          }
         }
       ]
     });
@@ -648,28 +757,40 @@ mod tests {
           uri: "atoms.pc".to_string(),
           missing_lines: HashSet::from_iter(vec![7, 8, 9, 10].iter().cloned()),
           line_count: 12,
-          missing_statement_ranges: vec![
-            base_ast::Range {
-              start: U16Position {
-                pos: 109,
-                line: 7,
-                column: 13,
-              },
-              end: U16Position {
-                pos: 140,
-                line: 10,
-                column: 11,
-              },
-            }
-          ],
-          statement_count: 9,
+          css: PartReport {
+            count: 2,
+            missing_ranges: vec![
+              base_ast::Range {
+                start: U16Position {
+                  pos: 109,
+                  line: 7,
+                  column: 13,
+                },
+                end: U16Position {
+                  pos: 140,
+                  line: 10,
+                  column: 11,
+                },
+              }
+            ]
+          },
+          html: PartReport {
+            count: 2,
+            missing_ranges: vec![]
+          }
         },
         FileReport {
           uri: "entry.pc".to_string(),
-          statement_count: 9,
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 4,
-          missing_statement_ranges: vec![],
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          },
+          html: PartReport {
+            count: 5,
+            missing_ranges: vec![]
+          }
         }
       ]
     });
@@ -691,20 +812,153 @@ mod tests {
         <!-- 
           @frame { visible: false }
         -->
-        <Test export component as=\"Test2\" {onClick?}>
+        <Test export component as=\"Test2\" {a?}>
 
         </Test>
-        <Test2 />
+        <Test2 a />
       ".to_string())
     ].iter().cloned().collect();
     assert_graph_report(graph, CoverageReport {
       files: vec![
         FileReport {
           uri: "entry.pc".to_string(),
-          statement_count: 8,
           missing_lines: HashSet::from_iter(vec![].iter().cloned()),
           line_count: 17,
-          missing_statement_ranges: vec![],
+          html: PartReport {
+            count: 11,
+            missing_ranges: vec![]
+          },
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          }
+        }
+      ]
+    });
+  }
+
+
+
+  #[test]
+  fn shows_correct_line_count() {
+    let graph: HashMap<String, String> = [
+      ("entry.pc".to_string(), "
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as=\"default\"
+  {style}
+  {class?}
+  data-label=\"Resizable\"
+  class:scrollable=\"scrollable\"
+  class:disabled=\"disabled\"
+  class:dragging=\"dragging\"
+  class:right=\"right\"
+  class:left=\"left\"
+  class:bottom=\"bottom\"
+  class:fixedSize=\"fixed-size\">
+  <style>
+    --bar-size: 2px;
+    display: flex;
+    flex-shrink: 0;
+    &.dragging {
+      user-select: none;
+    }
+
+    &.bottom, &.top {
+      width: 100%;
+      flex-direction: column;
+      &.fixed-size {
+        height: 300px;
+      }
+    }
+
+    &.right, &.left {
+      height: 100%;
+      &.fixed-size {
+        width: 300px;
+      }
+    }
+
+    &.left {
+      flex-direction: row-reverse;
+    }
+
+
+  </style>
+
+  <!-- bar -->
+  <div data-label=\"Bar\">
+    <style>
+      background: rgba(211, 211, 211);
+      flex-shrink: 0;
+      position: relative;
+      &:within(.right), &:within(.left) {
+        height: 100%;
+        width: var(--bar-size);
+      }
+      &:within(.bottom), &:within(.top) {
+        width: 100%;
+        height: var(--bar-size);
+      }
+    </style>
+
+    <div onMouseDown={onBarDown}>
+      <style>
+        background: transparent;
+        &:within(.disabled) {
+          display: none;
+        }
+        &:within(.right), &:within(.left) {
+          width: 200%;
+          height: 100%;
+          transform: translateX(-50%);
+          cursor: col-resize;
+        }
+        &:hover {
+          background: rgb(66, 164, 255);
+        }
+
+        &:within(.bottom), &:within(.top) {
+          width: 100%;
+          height: 200%;
+          transform: translateY(-50%);
+          cursor: row-resize;
+        }
+      </style>
+    </div>
+  </div>
+  <div data-label=\"Container\">
+    <style>
+      height: 100%;
+      width: 100%;
+      display: flex;
+      &:within(.scrollable) {
+        overflow: scroll;
+      }
+    </style>
+    {children}
+  </div>
+</div>
+      ".to_string())
+    ].iter().cloned().collect();
+    assert_graph_report(graph, CoverageReport {
+      files: vec![
+        FileReport {
+          uri: "entry.pc".to_string(),
+          missing_lines: HashSet::from_iter(vec![].iter().cloned()),
+          line_count: 17,
+          html: PartReport {
+            count: 11,
+            missing_ranges: vec![]
+          },
+          css: PartReport {
+            count: 0,
+            missing_ranges: vec![]
+          }
         }
       ]
     });
