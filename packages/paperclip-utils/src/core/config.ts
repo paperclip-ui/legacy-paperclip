@@ -2,6 +2,9 @@ import * as path from "path";
 import { paperclipSourceGlobPattern } from "./utils";
 
 export type CompilerOptions = {
+  // give room for custom props
+  [identifier: string]: any;
+
   target?: string[];
 
   // where PC files should be compiled to. If undefined, then

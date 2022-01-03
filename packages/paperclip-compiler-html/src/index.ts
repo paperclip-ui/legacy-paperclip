@@ -82,5 +82,5 @@ export const compile = compilers({
     elementType: "string"
   },
   extensionName: (config: PaperclipConfig) =>
-    (config.compilerOptions as any).es5 ? "js" : "mjs"
+    config.compilerOptions?.es5 ? "js" : "mjs"
 });
