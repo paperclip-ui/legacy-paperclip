@@ -27,6 +27,7 @@
     "lodash": "^4.17.19",
     "paperclip": "^18.2.16",
     "paperclip-cli-minimal": "^18.2.16",
+    "paperclip-coverage": "^18.2.16",
     "paperclip-cli-utils": "^18.2.16",
     "paperclip-utils": "^18.2.16",
     "resolve": "^1.15.1",

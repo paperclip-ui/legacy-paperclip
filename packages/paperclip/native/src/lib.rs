@@ -171,6 +171,7 @@ impl NativeEngine {
       },
       &InspectionOptions {
         screen_width: Some(screen_width),
+        include_inherited: true
       },
     );
 

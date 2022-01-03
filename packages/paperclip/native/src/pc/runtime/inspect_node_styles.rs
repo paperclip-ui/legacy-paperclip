@@ -378,6 +378,7 @@ impl NodeInspectionInfo {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InspectionOptions {
   pub screen_width: Option<u32>,
+  pub include_inherited: bool
 }
 
 pub fn inspect_node_styles(
@@ -394,17 +395,20 @@ pub fn inspect_node_styles(
   let mut inspection_info =
     inspect_local_node_styles(element_path, document_uri, all_eval_info, graph, &options);
 
-  add_inherited_properties(
-    &mut inspection_info,
-    element_path,
-    document_uri,
-    all_eval_info,
-    graph,
-    &options,
-  );
+  if options.include_inherited {
+    add_inherited_properties(
+      &mut inspection_info,
+      element_path,
+      document_uri,
+      all_eval_info,
+      graph,
+      &options,
+    );
+  }
 
   inspection_info
 }
+
 
 pub fn inspect_local_node_styles(
   element_path: &Vec<usize>,
@@ -639,7 +643,7 @@ mod tests {
     test_pc_code(
       source,
       vec![0, 0],
-      InspectionOptions { screen_width: None },
+      InspectionOptions { screen_width: None, include_inherited: true },
       NodeInspectionInfo {
         style_rules: vec![],
       },

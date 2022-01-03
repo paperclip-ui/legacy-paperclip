@@ -1,0 +1,10 @@
+<style>
+  :global(:root) {
+    font-family: sans-serif;
+    font-size: 14px;
+  }
+
+  @export {
+
+  }
+</style>

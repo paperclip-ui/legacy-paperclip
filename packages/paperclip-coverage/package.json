@@ -1,12 +1,14 @@
 {
   "name": "paperclip-coverage",
-  "version": "1.0.0",
+  "version": "18.2.20",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.ds.ts",
   "scripts": {
     "build": "yarn build:paperclip && tsc",
     "test": "mocha lib/test",
     "build:paperclip": "paperclip build --only=mjs,mjs.map",
+    "build:definition": "paperclip build --only=d.ts --output=src",
     "build:watch": "concurrently \"tsc --watch\" \"yarn build:paperclip --watch\""
   },
   "author": "",

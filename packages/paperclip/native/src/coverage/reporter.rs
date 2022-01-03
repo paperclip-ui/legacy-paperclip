@@ -90,6 +90,7 @@ async fn generate_file_reports(
   vfs: &mut VirtualFileSystem
 ) -> Vec<FileReport> {
   let mut reports: Vec<FileReport> = vec![];
+
   let mut file_expr_id_map: HashMap<String, HashSet<String>> = HashMap::new();
 
   for (id, uri) in missed_ids {
@@ -234,7 +235,11 @@ fn analayze_node_styles(uri: &String, node: &pc_virt::Node, path: &Vec<usize>, c
 
 fn analayze_element_styles(uri: &String, path: &Vec<usize>, context: &mut AnalyzeContext) {
   let inspection = inspect_node_styles(path, uri, context.evaluated, &context.graph, &InspectionOptions {
-    screen_width: None
+    screen_width: None,
+
+    // omit things like font-family and such. We just want rules that are
+    // attached to the target node
+    include_inherited: false
   });
 
   for rule in inspection.style_rules {

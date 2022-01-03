@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const path = require("path");
 const {init} = require("../lib/cli");
+const {coverage} = require("../lib/coverage");
 const {build} = require("paperclip-cli-minimal");
 const fs = require("fs");
 const  URL = require("url");
@@ -34,6 +35,15 @@ const argv = require("yargs")
 .command("init", "Initialize new paperclip project", yargs => {
 }, argv => {
   init();
+})
+.command("coverage", "Generate coverage report for PC files", yargs => {
+  yargs
+  .option("output", desc("output directory of files"))
+}, argv => {
+  coverage({
+    output: argv.output,
+    cwd: process.cwd()
+  });
 })
 .command("designer", "Starts the designer server", yargs => {
   yargs

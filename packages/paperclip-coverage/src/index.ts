@@ -1,5 +1,2 @@
-import { CoverageReport } from "paperclip-utils";
-
-export const generateCoverageHTML = (report: CoverageReport) => {};
-
-export const printCoverage = (report: CoverageReport) => {};
+export * from "./generate/html";
+export * from "./generate/stdout";
