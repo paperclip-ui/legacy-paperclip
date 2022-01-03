@@ -13,11 +13,9 @@ import {
   TreeReport,
   TreeReportKind
 } from "../../state";
+import { OK_THRESHOLD, POOR_THRESHOLD } from "../../constants";
 
 const entities = new Html5Entities();
-
-const OK_THRESHOLD = 90;
-const POOR_THRESHOLD = 60;
 
 export type GenerateCoverageHTML = {
   output: string;
@@ -84,7 +82,7 @@ const generateCoverageOuter = (
   children: string
 ) => {
   const htmlPerc = perc(report.html.count / report.html.total);
-  const cssPerc = perc(report.html.count / report.html.total);
+  const cssPerc = perc(report.css.count / report.css.total);
   const linesPerc = perc(report.lines.count / report.lines.total);
   return pageStyles.default({
     head: generateHead(report, options),

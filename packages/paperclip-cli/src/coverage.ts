@@ -15,12 +15,12 @@ import {
 const DEFAULT_COVERAGE_DIR = "pc-coverage";
 
 export type CoverageOptions = {
-  output?: string | boolean;
+  output?: string;
+  reportKind: "html" | "stdout";
   cwd: string;
-  save?: boolean;
 };
 
-export const coverage = ({ output, save, cwd }: CoverageOptions) => {
+export const coverage = ({ output, reportKind, cwd }: CoverageOptions) => {
   const [config, url] = resolvePCConfig(fsa)(cwd);
   const engine = createEngineDelegate({
     mode: EngineMode.MultiFrame
@@ -41,14 +41,14 @@ export const coverage = ({ output, save, cwd }: CoverageOptions) => {
 
   const report = engine.generateCoverageReport();
 
-  if (output) {
-    const coverageDir = output === true || save ? DEFAULT_COVERAGE_DIR : output;
+  if (reportKind === "html") {
+    const coverageDir = output || DEFAULT_COVERAGE_DIR;
     const outputDir = path.join(cwd, coverageDir);
 
     fsa.mkdirpSync(outputDir);
     writeCoverageHTML(report, { output: outputDir, cwd });
     console.log(`Write .${outputDir.replace(cwd, "")}`);
   } else {
-    printCoverage(report);
+    printCoverage(report, cwd);
   }
 };
