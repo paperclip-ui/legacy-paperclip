@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "18.3.1",
+  "version": "18.3.2",
   "description": "HTML compiler for Paperclip",
   "main": "lib/index.js",
   "scripts": {
@@ -23,9 +23,9 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "paperclip-compiler-base-jsx": "^18.3.1",
-    "paperclip-interim": "^18.3.1",
-    "paperclip-utils": "^18.3.1",
+    "paperclip-compiler-base-jsx": "^18.3.2",
+    "paperclip-interim": "^18.3.2",
+    "paperclip-utils": "^18.3.2",
     "source-map": "^0.7.3"
   }
 }

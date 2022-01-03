@@ -1,6 +1,6 @@
 {
   "name": "tandem-workspace",
-  "version": "18.3.1",
+  "version": "18.3.2",
   "description": "standalone Docker server",
   "main": "lib/index.js",
   "bin": "./bin/tandem-workspace",
@@ -29,10 +29,10 @@
     "fs-extra": "^10.0.0",
     "get-port": "^5.1.1",
     "glob": "^7.1.7",
-    "paperclip": "^18.3.1",
+    "paperclip": "^18.3.2",
     "paperclip-common": "^18.1.6",
     "sockjs": "^0.3.21",
-    "tandem-common": "^18.3.1",
-    "tandem-designer": "^18.3.1"
+    "tandem-common": "^18.3.2",
+    "tandem-designer": "^18.3.2"
   }
 }
