@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "lint": "eslint src",
-    "test": "mocha lib/test",
+    "test": "mocha lib/test --timeout=5000",
     "build": "tsc",
     "build:watch": "tsc --watch"
   },
