@@ -1,23 +1,24 @@
 #!/usr/bin/env node
 
-const { PaperclipDiff } = require("../lib");
+const { start, detectChanges, snapshot } = require("../lib");
 
-const diff = new PaperclipDiff(process.cwd());
 const yargs = require("yargs");
 
 yargs.command("snapshot", "Take snapshots of the current PR", yargs => {
   yargs
   .option("force", { description: "Force snapshot creation even if there are changes" });
 }, async argv => {
-  diff.start().then(() => diff.snapshot(argv.force)).then(() => diff.close());
+  const provider = await start(process.cwd());
+  await snapshot(provider)(argv.force);
+  provider.close();
 })
 .command("changes [branch]", "Show changes against a different branch", yargs => {
   yargs
   .option("watch", { description: "re-run when a PC file changes" });
 }, async argv => {
-  diff.start().then(() => diff.detectChanges(argv.branch, argv.watch)).then(() => {
-    if (!argv.watch)  {
-      diff.close()
-    }
-  });
+  const provider = await start(process.cwd());
+  await detectChanges(provider)(argv.branch, argv.watch);
+  if (!argv.watch) {
+    provider.close();
+  }
 }).argv;
