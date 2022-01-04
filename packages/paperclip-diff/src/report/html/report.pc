@@ -41,12 +41,27 @@
     grid-row-gap: 4px;
     color: inherit;
     text-decoration: none;
+    width: 200px;
     &:hover > .img-container {
       border-width: 2px;
     }
 
   </style>
-  <div>{title || "Untitled"}</div>
+  <div>
+    <style>
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    </style>
+    <span>
+      <style>
+        text-overflow: ellipsis;
+        display: inline;
+      </style>
+      {title || "Untitled"}
+    </span>
+  </div>
   <div class="img-container {bgClassName?}">
     <style>
       width: 200px;
@@ -186,7 +201,7 @@
   subtitle={<a href="#">path/to/file.pc</a>}
   sidebar={<fragment>
     <Thumbnail href="a"
-      title="Title of frame"
+      title="Title of frame that is super long and may extend"
       path="path/to/file.pc"
       noChanges />
     <Thumbnail bgClassName="$thumb-inner">
