@@ -8,11 +8,12 @@ import { logInfo } from "./utils";
 
 export type SnapshotOptions = {
   cwd: string;
+  force?: boolean;
 };
 
 export const snapshot = async (options: SnapshotOptions) => {
   const provider = await start(options.cwd);
-  await sn.snapshot(provider);
+  await sn.snapshot(provider)(options.force);
   await provider.close();
 };
 
