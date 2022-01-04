@@ -13,7 +13,9 @@ yargs.command("snapshot", "Take snapshots of the current PR", yargs => {
 .command("detect-changes [branch]", "Show changes against a different branch", yargs => {
   yargs
   .option("watch", { description: "re-run when a PC file changes" })
-  .option("html", { description: "Generate HTML report", default: true });
+  .option("html", { description: "Generate HTML report", default: true })
+  .option("output", { description: "output directory for html", default: "pc-diff" })
+  .option("open", { description: "open report after done generating" });
 }, async argv => {
   await detectChanges({...argv, cwd: process.cwd() });
 }).argv;

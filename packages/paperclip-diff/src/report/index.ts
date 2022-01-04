@@ -1,5 +1,5 @@
 import { DetectChangesResult } from "../snapshots";
-import { writeHTMLReport } from "./html";
+import { writeHTMLReport, WriteHTMLReportOptions } from "./html";
 import { writeConsoleReport } from "./stdout";
 
 export type WriteChangesOptions = {
@@ -7,7 +7,7 @@ export type WriteChangesOptions = {
 };
 
 export const writeReport = async (
-  changes: DetectChangesResult,
+  changes: WriteHTMLReportOptions,
   options: WriteChangesOptions
 ) => {
   await writeConsoleReport(changes);

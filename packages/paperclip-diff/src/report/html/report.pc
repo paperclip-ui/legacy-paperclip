@@ -10,16 +10,28 @@
   h1, h2, h3 {
     margin: 0;
   }
+  hr {
+    background: rgb(231, 231, 231);
+    border: none;
+    height: 1px;
+    width: 100%;
+  }
+  :global(a) {
+    color: rgb(115, 159, 255);
+  }
 </style>
 
 
 <!--
   @frame { visible: false }
 -->
-<div export
+<a export
   component
   as="Thumbnail"
-  {onClick?}
+  {id?}
+  {href?}
+  {class?}
+  style="--background: url({src});"
   class:active="active"
   class:hasChanges="has-changes"
   class:noChanges="no-changes">
@@ -27,32 +39,39 @@
     display: flex;
     flex-direction: column;
     grid-row-gap: 4px;
+    color: inherit;
+    text-decoration: none;
+    &:hover > .img-container {
+      border-width: 2px;
+    }
+
   </style>
-  <div>{title}</div>
-  <div>
+  <div>{title || "Untitled"}</div>
+  <div class="img-container {bgClassName?}">
     <style>
       width: 200px;
-      height: 100px;
-      background: rgb(231, 231, 231);
+      height: 150px;
+      background: var(--background);
+      background-size: cover;
       border-radius: 8px;
       flex-shrink: 0;
       cursor: pointer;
       border: 1px solid grey;
       position: relative;
       &:within(.active) {
-        border-width: 4px;
+        && {
+          border-width: 4px;
+        }
       }
       &:within(.no-changes) {
         border-color: rgb(65, 219, 27);
-        background: rgb(226, 253, 226);
       }
       &:within(.has-changes) {
         border-color: rgb(219, 219, 27);
-        background: rgb(253, 253, 226);
       }
     </style>
   </div>
-</div>
+</a>
 
 
 <!--
@@ -72,12 +91,24 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Screenshot">
+<div export component as="Screenshot" class:a="a" class:b="b" class:c="c">
   <style>
     width: 100%;
     display: flex;
     flex-direction: column;
     grid-row-gap: 4px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    font-size: 18px;
+    &.a {
+      color: rgb(219, 27, 27);
+    }
+    &.b {
+      color: rgb(65, 219, 27);
+    }
+    &.c {
+      color: rgb(219, 219, 27);
+    }
   </style>
   <div>{title}</div>
   <div>
@@ -86,6 +117,9 @@
       width: 100%;
       display: flex;
       flex-direction: column;
+      :global(img) {
+        width: 100%;
+      }
     </style>
     {children}
   </div>
@@ -121,6 +155,8 @@
       flex-direction: column;
       width: 100%;
       grid-row-gap: 32px;
+      height: 100%;
+      overflow: scroll;
     </style>
     <div>
       <style>
@@ -136,11 +172,30 @@
   <div />
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 136, y: -101 }
+-->
+<hr export component as="Divider" />
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 19, y: -40 }
+-->
 <Report title="Frame title"
-  subtitle="path/to/file.pc"
+  subtitle={<a href="#">path/to/file.pc</a>}
   sidebar={<fragment>
-    <Thumbnail title="Title of frame" path="path/to/file.pc" noChanges />
-    <Thumbnail />
+    <Thumbnail href="a"
+      title="Title of frame"
+      path="path/to/file.pc"
+      noChanges />
+    <Thumbnail bgClassName="$thumb-inner">
+      <style>
+        .thumb-inner {
+          background-image: url("./thumb1.png");
+        }
+      </style>
+    </Thumbnail>
     <Thumbnail hasChanges />
     <Thumbnail hasChanges active />
     <Thumbnail />
@@ -156,6 +211,12 @@
     <Thumbnail />
   </fragment>}
   content={<fragment>
+    <Comparison>
+      <Screenshot a title="A: dev">A</Screenshot>
+      <Screenshot b title="B: latest">B</Screenshot>
+    </Comparison>
+    <Screenshot c title="Difference">DIFF</Screenshot>
+    <Divider />
     <Comparison>
       <Screenshot title="A: dev">A</Screenshot>
       <Screenshot title="B: latest">B</Screenshot>

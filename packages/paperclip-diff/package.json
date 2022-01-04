@@ -6,8 +6,8 @@
   "scripts": {
     "build": "yarn build:definition && yarn build:paperclip && tsc",
     "build:definition": "paperclip-minimal build --only=d.ts --output=src",
-    "build:paperclip": "paperclip-minimal build --output=src",
-    "build:watch": "tsc --watch"
+    "build:paperclip": "paperclip-minimal build",
+    "build:watch": "concurrently \"tsc --watch\" \"yarn build:definition --watch\" \"yarn build:paperclip --watch\""
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +19,7 @@
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
     "paperclip": "^18.3.2",
+    "html-entities": "^1.2.1",
     "paperclip-minimal": "^18.3.2",
     "paperclip-diff-utils": "^18.3.2",
     "paperclip-utils": "^18.3.2",

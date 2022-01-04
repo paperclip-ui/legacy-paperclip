@@ -20,14 +20,16 @@ export type DetectChangesOptions = {
   cwd: string;
   branch: string;
   html?: boolean;
+  output?: string;
+  open?: boolean;
   watch?: boolean;
 };
 
 export const detectChanges = async (options: DetectChangesOptions) => {
   const provider = await start(options.cwd);
 
-  const run = async () => {
-    await detectChanges2(options, provider);
+  const run = async (open?: boolean) => {
+    await detectChanges2({ ...options, open }, provider);
 
     if (options.watch) {
       logInfo(`Waiting for file changes...`);
@@ -35,12 +37,12 @@ export const detectChanges = async (options: DetectChangesOptions) => {
       const watcher = new PaperclipResourceWatcher(config.srcDir, options.cwd);
       watcher.onChange(() => {
         watcher.dispose();
-        run();
+        run(false);
       });
     }
   };
 
-  await run();
+  await run(options.open);
 
   if (!options.watch) {
     await provider.close();
@@ -52,5 +54,13 @@ const detectChanges2 = async (
   provider: Provider
 ) => {
   const result = await sn.detectChanges(provider)(options.branch);
-  await writeReport(result, options);
+  await writeReport(
+    {
+      ...result,
+      gitDir: provider.gitDir,
+      cwd: options.cwd,
+      open: options.open
+    },
+    options
+  );
 };

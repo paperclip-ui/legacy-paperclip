@@ -1,0 +1,10 @@
+<style>
+  :global(html, body) {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+<html export component as="default">
+  <head>{head}</head>
+  <body>{children}</body>
+</html>

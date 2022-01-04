@@ -1,5 +1,12 @@
 export const MANIFEST_VERSION = 7;
 import { produce } from "immer";
+import * as path from "path";
+
+export const MANIFEST_FILE_NAME = "manifest.json";
+export const DIFF_BOUNDARY = "~";
+export const PC_HIDDEN_DIR = ".paperclip";
+export const DIFF_DIR = PC_HIDDEN_DIR + "/diff";
+export const SCREENSHOTS_DIR = DIFF_DIR + "/screenshots";
 
 export type WindowSize = {
   width: number;
@@ -186,3 +193,6 @@ const insert = <TData>(
   ),
   ...newItems
 ];
+
+export const getScreenshotPath = (gitDir: string, id: string) =>
+  path.join(gitDir, SCREENSHOTS_DIR, id + ".png");

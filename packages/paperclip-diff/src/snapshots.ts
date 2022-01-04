@@ -9,25 +9,22 @@ import * as ora from "ora";
 import {
   addDiffToManifest,
   addFrameSnapshots,
+  DIFF_DIR,
   FrameScreenshot,
   FrameScreenshotDiff,
   FrameSnapshot,
+  getScreenshotPath,
   Manifest,
+  MANIFEST_FILE_NAME,
   MANIFEST_VERSION,
   ProjectSnapshot,
   screenshotEquals,
+  SCREENSHOTS_DIR,
   WindowSize
 } from "./state";
-import { produce } from "immer";
 const PNG = require("pngjs").PNG;
 import { Provider } from "./core";
 const pixelmatch = require("pixelmatch");
-
-export const MANIFEST_FILE_NAME = "manifest.json";
-export const DIFF_BOUNDARY = "~";
-export const PC_HIDDEN_DIR = ".paperclip";
-export const DIFF_DIR = PC_HIDDEN_DIR + "/diff";
-export const SCREENSHOTS_DIR = DIFF_DIR + "/screenshots";
 
 // TODO - need to pull from config
 const WINDOW_SIZES: WindowSize[] = [{ width: 1400, height: 768 }];
@@ -82,7 +79,7 @@ export const detectChanges = (provider: Provider) => async (
   await spinner.stop();
   await timeout(500);
 
-  logInfo(`Diffing against ${deltaCommit}...`);
+  logInfo(`Diffing against commit sha ${chalk.bold(deltaCommit)}...`);
 
   const snapshot = manifest.projectSnapshots.find(
     snapshot => snapshot.version === version
@@ -91,11 +88,21 @@ export const detectChanges = (provider: Provider) => async (
     snapshot => snapshot.version === deltaCommit
   );
 
+  // return {
+  //   manifest,
+  //   currentVersion: snapshot.version,
+  //   deltaVersion: deltaSnapshot.version
+  // };
+
   const snapshotPairs = getSnapshotPairs(snapshot, deltaSnapshot, manifest);
 
   for (const hash in snapshotPairs) {
     const screenshotPairs = snapshotPairs[hash];
     for (const [aid, bid] of screenshotPairs) {
+      // it's a new frame
+      if (!bid) {
+        continue;
+      }
       const apath = getScreenshotPath(gitDir, aid);
       const bpath = getScreenshotPath(gitDir, bid);
       const info = await diffImages(apath, bpath);
@@ -169,21 +176,6 @@ const getSnapshotPairs = (
 /**
  */
 
-const getSnapshotFilePaths = (cwd: string, snapshotDir: string) => {
-  const dir = getSnapshotDir(cwd, snapshotDir);
-  return fsa
-    .readdirSync(dir)
-    .map(fileName => path.join(dir, fileName))
-    .filter(
-      filePath =>
-        /\.png$/.test(filePath) &&
-        !path.basename(filePath).includes(DIFF_BOUNDARY)
-    );
-};
-
-/**
- */
-
 /**
  */
 
@@ -251,6 +243,7 @@ const saveScreenshots = ({ gitDir, cwd, browser }: Provider) => async (
           const filePath = getScreenshotPath(gitDir, id);
           const page = await browser.newPage();
           page.setViewport(size);
+
           await page.setContent(html);
 
           // stop text input focus
@@ -329,12 +322,6 @@ export const saveManigest = (gitDir: string, manifest: Manifest) => {
 /**
  */
 
-const getSnapshotDir = (cwd: string, latestCommit: string) =>
-  path.join(cwd, PC_HIDDEN_DIR, "snapshots", latestCommit);
-
-/**
- */
-
 const getScreenshotsDir = (gitDir: string) =>
   path.join(gitDir, SCREENSHOTS_DIR);
 
@@ -344,6 +331,3 @@ const md5 = (value: string) => {
     .update(value)
     .digest("hex");
 };
-
-const getScreenshotPath = (gitDir: string, id: string) =>
-  path.join(gitDir, SCREENSHOTS_DIR, id + ".png");

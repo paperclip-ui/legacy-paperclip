@@ -33,7 +33,7 @@
 
 
 <!--
-  @frame { title: "Icons", width: 1024, height: 768, x: 167, y: 169 }
+  @frame { visible: false, title: "Icons", width: 1024, height: 768, x: 166, y: 168 }
 -->
 <div>
   <Icon dots />

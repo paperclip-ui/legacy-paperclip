@@ -48,6 +48,10 @@
   <div class="input">{children}</div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div>{children}</div>
 
 <!--

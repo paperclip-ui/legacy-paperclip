@@ -23,15 +23,10 @@ import * as crypto from "crypto";
 export type RunOptions = {
   cwd: string;
   keepEmpty?: boolean;
-  skipHidden?: boolean;
   snapshotNameTemplate?: string;
 };
 
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
-
-// max size for frame
-const MAX_FRAME_WIDTH = 2000;
-const MAX_CONCURRENT = 10;
 
 export type EachFrameInfo = {
   id: string;
@@ -48,7 +43,6 @@ export const eachFrame = async (
   {
     cwd = process.cwd(),
     keepEmpty,
-    skipHidden = true,
     snapshotNameTemplate = "{frameFilePath}: {frameTitle}"
   }: Partial<RunOptions> = {},
   each: (info: EachFrameInfo) => Promise<void>
@@ -115,10 +109,7 @@ export const eachFrame = async (
 
       const html = getPCDocumentHTML(root);
       const isDocEmpty = !keepEmpty && isEmpty(html);
-      const shouldSkip =
-        (skipHidden && annotations.frame?.visible === false) ||
-        annotations.visualRegresionTest === false ||
-        isDocEmpty;
+      const shouldSkip = annotations.visualRegresionTest === false;
 
       const data = {
         frameFilePath: relativePath,

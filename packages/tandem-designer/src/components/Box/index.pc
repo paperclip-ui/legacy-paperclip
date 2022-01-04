@@ -1,4 +1,8 @@
 <import src="tandem-design-system/src/atoms.pc" as="atoms" />
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default" {class?}>
   <style>
     display: flex;
@@ -8,6 +12,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="test" {a?}>
   <style>
     display: flex;
@@ -17,4 +25,8 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <test class="a" a />

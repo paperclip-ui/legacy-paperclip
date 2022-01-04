@@ -3,7 +3,7 @@ import { PaperclipConfig } from "paperclip-utils";
 
 const CODE_PREFLIGHT = `
 
-const encode = (value) => value.replace(/['\\u00A0-\u9999<>\\&]/gim, function(i) {
+const encode = (value) => value.replace(/['<>\\u00A0-\u9999<>\\&]/gim, function(i) {
   return '&#'+i.charCodeAt(0)+';';
 });
 
@@ -16,7 +16,7 @@ const flatten = v => v.reduce((ary, v) => {
   return ary;
 }, []);
 
-const VOID_TAGS = ["br", "img"];
+const VOID_TAGS = ["br", "img", "hr"];
 
 const isVoid = (v) => VOID_TAGS.includes(v);
 

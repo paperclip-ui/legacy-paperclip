@@ -29,3 +29,4 @@ paperclip-html.tmLanguage.json
 *.tgz
 *.mjs
 pc-coverage
+pc-diff

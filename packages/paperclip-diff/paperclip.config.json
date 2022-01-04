@@ -3,7 +3,8 @@
     "target": ["html"],
     "outDir": "lib",
     "assetOutDir": "lib/assets",
-    "mainCSSFileName": "main.css"
+    "mainCSSFileName": "main.css",
+    "es5": true
   },
   "srcDir": "./src"
 }
