@@ -1,3 +1,6 @@
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default">
   <style>
     position: relative;
@@ -15,6 +18,10 @@
   <div>{children}</div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <default export component as="Preview">
   <img src="./logo-outline-5.png" />
 </default>

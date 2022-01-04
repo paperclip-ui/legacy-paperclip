@@ -9,7 +9,6 @@
 <import src="./WindowResizer/index.pc" as="WindowResizer" />
 
 <!--
-
   @frame { visible: false }
 -->
 <div export
@@ -61,7 +60,6 @@
   </style>
   {children}
 </div>
-
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: -54, y: -1303 }

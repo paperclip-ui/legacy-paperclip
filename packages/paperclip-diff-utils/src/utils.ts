@@ -18,34 +18,34 @@ import {
   EvaluatedDataKind
 } from "paperclip";
 import { embedAssets, getPCDocumentHTML } from "./pc-document";
+import * as crypto from "crypto";
 
 export type RunOptions = {
   cwd: string;
   keepEmpty?: boolean;
-  skipHidden?: boolean;
   snapshotNameTemplate?: string;
 };
 
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 
-// max size for frame
-const MAX_FRAME_WIDTH = 2000;
-const MAX_CONCURRENT = 10;
+export type EachFrameInfo = {
+  id: string;
+  filePath: string;
+  html: string;
+  annotations: NodeAnnotations;
+  title: string;
+  uniqueTitle: string;
+  assets: Record<string, string>;
+};
 
 export const eachFrame = async (
   sourceDirectory: string,
   {
     cwd = process.cwd(),
     keepEmpty,
-    skipHidden = true,
     snapshotNameTemplate = "{frameFilePath}: {frameTitle}"
   }: Partial<RunOptions> = {},
-  each: (
-    html: string,
-    annotations: NodeAnnotations,
-    title: string,
-    assets: Record<string, string>
-  ) => Promise<void>
+  each: (info: EachFrameInfo) => Promise<void>
 ) => {
   const paperclipFilePaths = glob.sync(
     paperclipSourceGlobPattern(sourceDirectory),
@@ -79,6 +79,8 @@ export const eachFrame = async (
       ? preview.children
       : [preview]) as VirtualFrame[];
 
+    const used: Record<string, number> = {};
+
     for (let i = 0, { length } = frames; i < length; i++) {
       const frame = frames[i];
 
@@ -94,18 +96,24 @@ export const eachFrame = async (
         kind: VirtualNodeKind.Fragment
       };
 
-      const frameLabel = annotations.frame?.title || `Untitled ${i}`;
+      let frameLabel = annotations.frame?.title || `Untitled`;
+
+      let uniqueFramelabel = frameLabel;
+
+      if (used[frameLabel]) {
+        uniqueFramelabel = frameLabel + " " + used[frameLabel];
+        used[frameLabel]++;
+      } else {
+        used[frameLabel] = 1;
+      }
 
       const html = getPCDocumentHTML(root);
       const isDocEmpty = !keepEmpty && isEmpty(html);
-      const shouldSkip =
-        (skipHidden && annotations.frame?.visible === false) ||
-        annotations.visualRegresionTest === false ||
-        isDocEmpty;
+      const shouldSkip = annotations.visualRegresionTest === false;
 
       const data = {
         frameFilePath: relativePath,
-        frameTitle: frameLabel
+        frameTitle: uniqueFramelabel
       };
 
       const snapshotName = snapshotNameTemplate.replace(
@@ -126,7 +134,17 @@ export const eachFrame = async (
         return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
       });
 
-      promises.push(each(fixedHTML, annotations, snapshotName, assetPaths));
+      promises.push(
+        each({
+          html: fixedHTML,
+          annotations,
+          title: uniqueFramelabel,
+          uniqueTitle: snapshotName,
+          assets: assetPaths,
+          filePath,
+          id: md5(snapshotName)
+        })
+      );
     }
 
     await Promise.all(promises);
@@ -145,4 +163,11 @@ const createStyle = (sheet: any): VirtualStyleElement => {
     sheet,
     kind: VirtualNodeKind.StyleElement
   };
+};
+
+const md5 = (value: string) => {
+  return crypto
+    .createHash("md5")
+    .update(value)
+    .digest("hex");
 };

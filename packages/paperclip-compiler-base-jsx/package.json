@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-base-jsx",
-  "version": "18.3.2",
+  "version": "18.3.3",
   "description": "HTML compiler for Paperclip",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
     "lodash": "^4.17.21",
-    "paperclip-interim": "^18.3.2",
+    "paperclip-interim": "^18.3.3",
     "paperclip-utils": "^18.3.2",
     "source-map": "^0.7.3"
   }

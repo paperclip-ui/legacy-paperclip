@@ -76,11 +76,11 @@
 
 
 <!--
-  @frame { title: "Spinner /light", width: 177, height: 113, x: 465, y: 333 }
+  @frame { visible: false, title: "Spinner /light", width: 177, height: 113, x: 465, y: 333 }
 -->
 <Preview light />
 
 <!--
-  @frame { title: "Spinner /dark", width: 243, height: 169, x: 746, y: 292 }
+  @frame { visible: false, title: "Spinner /dark", width: 243, height: 169, x: 746, y: 292 }
 -->
 <Preview dark />
