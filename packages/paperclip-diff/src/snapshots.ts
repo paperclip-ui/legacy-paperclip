@@ -229,7 +229,7 @@ const saveScreenshots = ({ gitDir, cwd, browser }: Provider) => async (
 
   await eachFrame(
     ".",
-    { cwd, skipHidden: true },
+    { cwd },
     async ({ id: frameHash, html, title, filePath }) => {
       return limit(async () => {
         const browserVersion = await browser.version();
