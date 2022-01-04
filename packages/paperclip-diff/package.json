@@ -4,7 +4,9 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "yarn build:definition && yarn build:paperclip && tsc",
+    "build:definition": "paperclip-minimal build --only=d.ts --output=src",
+    "build:paperclip": "paperclip-minimal build --output=src",
     "build:watch": "tsc --watch"
   },
   "author": "",
@@ -17,6 +19,7 @@
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
     "paperclip": "^18.3.2",
+    "paperclip-minimal": "^18.3.2",
     "paperclip-diff-utils": "^18.3.2",
     "paperclip-utils": "^18.3.2",
     "pixelmatch": "^5.2.1",
@@ -25,5 +28,9 @@
     "sift": "^15.1.3",
     "simple-git": "^2.48.0",
     "yargs": "^17.3.0"
+  },
+  "devDependencies": {
+    "paperclip": "^18.3.2",
+    "paperclip-compiler-html": "^18.3.2"
   }
 }

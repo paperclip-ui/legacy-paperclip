@@ -1,4 +1,4 @@
-import chalk from "chalk";
+const chalk = require("chalk");
 import { DetectChangesResult } from "../../snapshots";
 import { getChanges, getDiffFrame } from "../../state";
 import { logWarn } from "../../utils";

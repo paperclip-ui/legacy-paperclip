@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": ["html"],
+    "outDir": "lib",
+    "assetOutDir": "lib/assets",
+    "mainCSSFileName": "main.css"
+  },
+  "srcDir": "./src"
+}
