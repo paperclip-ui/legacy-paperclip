@@ -6,24 +6,18 @@ const diff = new PaperclipDiff(process.cwd());
 const yargs = require("yargs");
 
 yargs.command("snapshot", "Take snapshots of the current PR", yargs => {
-  // yargs
-  // .option("watch", desc("watch for changes"))
-  // .option("print", desc("Only print compiled output"))
-  // .option("only", desc("Target files to generate"))
-  // .option("silent", desc("silence output information"))
-  // .option("output", desc("output directory of files"))
-  // .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
+  yargs
+  .option("force", { description: "Force snapshot creation even if there are changes" });
 }, async argv => {
-  diff.start().then(() => diff.snapshot()).then(() => diff.close());
+  diff.start().then(() => diff.snapshot(argv.force)).then(() => diff.close());
 })
 .command("changes [branch]", "Show changes against a different branch", yargs => {
   yargs
   .option("watch", { description: "re-run when a PC file changes" });
-  // .option("print", desc("Only print compiled output"))
-  // .option("only", desc("Target files to generate"))
-  // .option("silent", desc("silence output information"))
-  // .option("output", desc("output directory of files"))
-  // .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
 }, async argv => {
-  diff.start().then(() => diff.detectChanges(argv.branch, argv.watch)).then(() => diff.close());
+  diff.start().then(() => diff.detectChanges(argv.branch, argv.watch)).then(() => {
+    if (!argv.watch)  {
+      diff.close()
+    }
+  });
 }).argv;
