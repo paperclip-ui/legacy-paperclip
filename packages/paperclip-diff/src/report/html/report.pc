@@ -3,22 +3,98 @@
     font-family: sans-serif;
   }
 
+  * {
+    box-sizing: border-box;
+  }
+
   h1, h2, h3 {
     margin: 0;
   }
 </style>
 
-<div export component as="Thumbnail" {onClick?}>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Thumbnail"
+  {onClick?}
+  class:active="active"
+  class:hasChanges="has-changes"
+  class:noChanges="no-changes">
   <style>
-    width: 200px;
-    height: 100px;
-    background: rgb(231, 231, 231);
-    border-radius: 8px;
-    flex-shrink: 0;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    grid-row-gap: 4px;
   </style>
+  <div>{title}</div>
+  <div>
+    <style>
+      width: 200px;
+      height: 100px;
+      background: rgb(231, 231, 231);
+      border-radius: 8px;
+      flex-shrink: 0;
+      cursor: pointer;
+      border: 1px solid grey;
+      position: relative;
+      &:within(.active) {
+        border-width: 4px;
+      }
+      &:within(.no-changes) {
+        border-color: rgb(65, 219, 27);
+        background: rgb(226, 253, 226);
+      }
+      &:within(.has-changes) {
+        border-color: rgb(219, 219, 27);
+        background: rgb(253, 253, 226);
+      }
+    </style>
+  </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Comparison">
+  <style>
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    grid-column-gap: 32px;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Screenshot">
+  <style>
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    grid-row-gap: 4px;
+  </style>
+  <div>{title}</div>
+  <div>
+    <style>
+      background: rgb(240, 240, 240);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    </style>
+    {children}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Report">
   <style>
     display: flex;
@@ -30,31 +106,21 @@
       border-right: 1px solid rgb(194, 194, 194);
       padding: 32px;
       display: flex;
+      flex-shrink: 0;
       flex-direction: column;
       grid-row-gap: 32px;
       overflow: scroll;
       background: rgb(247, 247, 247);
     </style>
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
-    <Thumbnail />
+    {sidebar}
   </div>
   <div>
     <style>
       padding: 32px;
       display: flex;
+      flex-direction: column;
+      width: 100%;
+      grid-row-gap: 32px;
     </style>
     <div>
       <style>
@@ -62,9 +128,37 @@
         grid-row-gap: 8px;
         flex-direction: column;
       </style>
-      <h1>Title of frame</h1>
-      <span>path/to/screenshot.png</span>
+      <h1>{title}</h1>
+      <span>{subtitle}</span>
     </div>
+    {content}
   </div>
   <div />
 </div>
+
+<Report title="Frame title"
+  subtitle="path/to/file.pc"
+  sidebar={<fragment>
+    <Thumbnail title="Title of frame" path="path/to/file.pc" noChanges />
+    <Thumbnail />
+    <Thumbnail hasChanges />
+    <Thumbnail hasChanges active />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+  </fragment>}
+  content={<fragment>
+    <Comparison>
+      <Screenshot title="A: dev">A</Screenshot>
+      <Screenshot title="B: latest">B</Screenshot>
+    </Comparison>
+    <Screenshot title="Difference">DIFF</Screenshot>
+  </fragment>} />
