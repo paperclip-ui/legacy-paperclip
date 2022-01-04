@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { DetectChangesResult } from "../../snapshots";
 import { getChanges, getDiffFrame } from "../../state";
-import { logInfo } from "../../utils";
+import { logWarn } from "../../utils";
 
 export const writeConsoleReport = async ({
   currentVersion,
@@ -12,7 +12,7 @@ export const writeConsoleReport = async ({
   for (const change of changes) {
     if (change.changeCount) {
       const frame = getDiffFrame(change, manifest);
-      logInfo(
+      logWarn(
         `Change detected in ${chalk.bold(
           `${frame.sourceFilePath} : ${frame.title}`
         )}`
