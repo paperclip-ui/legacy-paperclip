@@ -1,1 +1,70 @@
-<div export component as="Report" />
+<style>
+  :global(:root) {
+    font-family: sans-serif;
+  }
+
+  h1, h2, h3 {
+    margin: 0;
+  }
+</style>
+
+<div export component as="Thumbnail" {onClick?}>
+  <style>
+    width: 200px;
+    height: 100px;
+    background: rgb(231, 231, 231);
+    border-radius: 8px;
+    flex-shrink: 0;
+    cursor: pointer;
+  </style>
+</div>
+
+<div export component as="Report">
+  <style>
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+  </style>
+  <div>
+    <style>
+      border-right: 1px solid rgb(194, 194, 194);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      grid-row-gap: 32px;
+      overflow: scroll;
+      background: rgb(247, 247, 247);
+    </style>
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+    <Thumbnail />
+  </div>
+  <div>
+    <style>
+      padding: 32px;
+      display: flex;
+    </style>
+    <div>
+      <style>
+        display: flex;
+        grid-row-gap: 8px;
+        flex-direction: column;
+      </style>
+      <h1>Title of frame</h1>
+      <span>path/to/screenshot.png</span>
+    </div>
+  </div>
+  <div />
+</div>
