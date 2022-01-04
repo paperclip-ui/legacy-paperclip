@@ -21,8 +21,7 @@
     "p-limit": "^2.0.0",
     "paperclip": "^18.3.3",
     "paperclip-diff-utils": "^18.3.3",
-    "paperclip-minimal": "^18.3.2",
-    "paperclip-utils": "^18.3.2",
+    "paperclip-utils": "^18.3.3",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
     "puppeteer": "^13.0.0",
@@ -31,7 +30,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "paperclip": "^18.3.2",
+    "paperclip-minimal": "^18.3.3",
     "paperclip-compiler-html": "^18.3.3"
   }
 }
