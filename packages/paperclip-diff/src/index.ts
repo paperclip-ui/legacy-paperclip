@@ -17,6 +17,7 @@ import {
 } from "./state";
 import { PaperclipResourceWatcher } from "paperclip";
 import { resolvePCConfig } from "paperclip-utils";
+import { produce } from "immer";
 const PNG = require("pngjs").PNG;
 import * as pupetter from "puppeteer";
 const pixelmatch = require("pixelmatch");
@@ -24,6 +25,8 @@ const pixelmatch = require("pixelmatch");
 export const MANIFEST_FILE_NAME = "manifest.json";
 export const DIFF_BOUNDARY = "~";
 export const PC_HIDDEN_DIR = ".paperclip";
+export const DIFF_DIR = PC_HIDDEN_DIR + "/diff";
+export const SCREENSHOTS_DIR = DIFF_DIR + "/screenshots";
 
 // TODO - need to pull from config
 const WINDOW_SIZES: WindowSize[] = [{ width: 1400, height: 768 }];
@@ -91,38 +94,82 @@ export const detectChanges = (provider: Provider) => async (
   let spinner = ora(
     `Generating latest ${chalk.bold(currentBranch)} snapshots...`
   ).start();
-  manifest = await saveScreenshots(provider)(
-    currentBranch,
-    currentBranch + "@latest"
-  );
+
+  const version = currentBranch;
+
+  manifest = await saveScreenshots(provider)(version, version + "@latest");
   await spinner.stop();
   await timeout(500);
 
   logInfo(`Diffing against ${deltaCommit}...`);
 
   const snapshot = manifest.snapshots.find(
-    snapshot => snapshot.version === currentBranch
+    snapshot => snapshot.version === version
   );
   const deltaSnapshot = manifest.snapshots.find(
     snapshot => snapshot.version === deltaCommit
   );
 
-  const frameSnapshotPairs: Record<string, string[]> = {};
+  const snapshotPairs = getSnapshotPairs(snapshot, deltaSnapshot);
 
-  for (const frame of snapshot.frames) {
-    frameSnapshotPairs;
+  logInfo(`Diffing against ${deltaCommit}...`);
+
+  for (const title in snapshotPairs) {
+    const screenshotPairs = snapshotPairs[title];
+    for (const [ahash, bhash] of screenshotPairs) {
+      const apath = getScreenshotPath(gitDir, ahash);
+      const bpath = getScreenshotPath(gitDir, bhash);
+      const info = await diffImages(apath, bpath);
+      if (info.changeCount) {
+        logInfo(
+          `Changed ${title} in ${
+            snapshot.frames.find(frame => frame.title === title).sourceFilePath
+          }`
+        );
+      }
+      await saveDiffScreenshot(gitDir, ahash, bhash, info);
+      manifest = addDiffToManifest(version, ahash, bhash, manifest);
+    }
   }
 };
 
-const addSnapshotPairs = (
-  snapshot: ProjectSnapshot,
-  frameSnapshotPairs: Record<string, string[]>
+const addDiffToManifest = (
+  version: string,
+  ahash: string,
+  bhash: string,
+  manifest: Manifest
 ) => {
-  for (const frame of snapshot.frames) {
-    for (const screenshot of frame.screenshots) {
-      // if (!frameSnapshotPairs[frame.title])
+  manifest = {};
+
+  return manifest;
+};
+
+const getSnapshotPairs = (a: ProjectSnapshot, b: ProjectSnapshot) => {
+  const framePairs = {};
+
+  for (const aframe of a.frames) {
+    const bframe = b.frames.find(frame => frame.title === aframe.title);
+
+    const screenshotPairs: Array<string[]> = [];
+
+    for (const ascreenshot of aframe.screenshots) {
+      const pairIds: string[] = [ascreenshot.hash];
+      const bscreenshot =
+        bframe &&
+        bframe.screenshots.find(
+          screenshot => screenshot.hash === ascreenshot.hash
+        );
+
+      if (bscreenshot) {
+        pairIds.push(bscreenshot.hash);
+      }
+
+      screenshotPairs.push(pairIds);
     }
+
+    framePairs[aframe.title] = screenshotPairs;
   }
+  return framePairs;
 };
 
 /**
@@ -166,10 +213,10 @@ const addSnapshotPairs = (
 
 //     const deltaSnapshotPath = deltaBranchSnapshotsByFileName[fileName];
 //     if (deltaSnapshotPath) {
-//       const info = diffSnapshots(snapshotFilePath, deltaSnapshotPath);
+//       const info = diffImages(snapshotFilePath, deltaSnapshotPath);
 //       if (info.changeCount) {
 //         logInfo(`Changed ${snapshotFilePath}`);
-//         saveDiffSnapshot(snapshotFilePath, deltaCommit, info);
+//         saveDiffScreenshot(snapshotFilePath, deltaCommit, info);
 //       }
 //     } else {
 //       // NEW SNAPSHOT
@@ -208,18 +255,17 @@ const getSnapshotFilePaths = (cwd: string, snapshotDir: string) => {
 /**
  */
 
-const saveDiffSnapshot = (
-  snapshotFilePath: string,
-  deltaCommit: string,
+/**
+ */
+
+const saveDiffScreenshot = (
+  gitDir: string,
+  ahash: string,
+  bhash: string,
   { diff }
 ) => {
-  const fileName = path.basename(snapshotFilePath);
-  const diffFileName =
-    fileName.replace(/\.png$/, "") + DIFF_BOUNDARY + deltaCommit + ".png";
-  fsa.writeFileSync(
-    path.join(path.dirname(snapshotFilePath), diffFileName),
-    PNG.sync.write(diff)
-  );
+  const filePath = getScreenshotPath(gitDir, md5(ahash + bhash));
+  fsa.writeFileSync(filePath, PNG.sync.write(diff));
 };
 
 /**
@@ -231,9 +277,9 @@ const timeout = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
  */
 
 const getManifestPath = (cwd: string) =>
-  path.join(cwd, PC_HIDDEN_DIR, MANIFEST_FILE_NAME);
-export const getManifest = (projectDir: string): Manifest => {
-  const filePath = getManifestPath(projectDir);
+  path.join(cwd, DIFF_DIR, MANIFEST_FILE_NAME);
+export const getManifest = (gitDir: string): Manifest => {
+  const filePath = getManifestPath(gitDir);
   if (fsa.existsSync(filePath)) {
     const manifest = JSON.parse(fsa.readFileSync(filePath, "utf-8"));
 
@@ -256,9 +302,7 @@ const saveScreenshots = ({ gitDir, cwd, browser }: Provider) => async (
   version: string,
   tag?: string
 ) => {
-  const snapshotDir = getSnapshotDir(gitDir, version);
-
-  await fsa.mkdirp(snapshotDir);
+  await fsa.mkdirp(getScreenshotsDir(gitDir));
   const limit = pLimit(10);
 
   const frameSnapshots: FrameSnapshot[] = [];
@@ -266,20 +310,21 @@ const saveScreenshots = ({ gitDir, cwd, browser }: Provider) => async (
   await eachFrame(
     ".",
     { cwd, skipHidden: true },
-    async (html, annotations, title, assets) => {
+    async ({ html, title, filePath }) => {
       return limit(async () => {
         const screenshots: FrameScreenshot[] = [];
 
         frameSnapshots.push({
           title,
-          sourceFilePath: null,
-          screenshots,
-          diffs: []
+          sourceFilePath: path.relative(gitDir, filePath),
+          screenshots
         });
 
+        const browserVersion = await browser.version();
+
         for (const size of WINDOW_SIZES) {
-          const id = md5(title + size.width + size.height);
-          const filePath = path.join(snapshotDir, id + ".png");
+          const hash = md5(title + browserVersion + size.width + size.height);
+          const filePath = getScreenshotPath(gitDir, hash);
           const page = await browser.newPage();
           page.setViewport(size);
           await page.setContent(html);
@@ -288,8 +333,9 @@ const saveScreenshots = ({ gitDir, cwd, browser }: Provider) => async (
           });
           screenshots.push({
             size,
-            id,
-            browser: await browser.version()
+            hash,
+            browser: browserVersion,
+            diffs: []
           });
         }
       });
@@ -306,30 +352,26 @@ const saveScreenshots = ({ gitDir, cwd, browser }: Provider) => async (
 
 const saveFrameSnapshots = async (
   projectSnapshot: ProjectSnapshot,
-  projectDir: string,
+  gitDir: string,
   version: string,
   tagName?: string
 ) => {
-  let manifest = getManifest(projectDir);
-  manifest = {
-    ...manifest,
-    commitAliases: {
-      ...manifest.commitAliases,
-      [tagName]: version
-    },
-    snapshots: [
+  let manifest = getManifest(gitDir);
+  manifest = produce(manifest, newManifest => {
+    newManifest.commitAliases[tagName] = version;
+    newManifest.snapshots = [
       projectSnapshot,
-      ...manifest.snapshots.filter(snapshot => snapshot.version !== version)
-    ]
-  };
-  saveManigest(projectDir, manifest);
+      ...newManifest.snapshots.filter(snapshot => snapshot.version !== version)
+    ];
+  });
+  saveManigest(gitDir, manifest);
   return manifest;
 };
 
 /**
  */
 
-const diffSnapshots = (snapshotFilePath: string, deltaSnapshotPath: string) => {
+const diffImages = (snapshotFilePath: string, deltaSnapshotPath: string) => {
   const img1 = PNG.sync.read(fsa.readFileSync(snapshotFilePath));
   const img2 = PNG.sync.read(fsa.readFileSync(deltaSnapshotPath));
   const { width, height } = img1;
@@ -351,8 +393,8 @@ const diffSnapshots = (snapshotFilePath: string, deltaSnapshotPath: string) => {
 /**
  */
 
-export const saveManigest = (projectDir: string, manifest: Manifest) => {
-  const filePath = getManifestPath(projectDir);
+export const saveManigest = (gitDir: string, manifest: Manifest) => {
+  const filePath = getManifestPath(gitDir);
   fsa.writeFileSync(filePath, JSON.stringify(manifest, null, 2));
 };
 
@@ -361,6 +403,12 @@ export const saveManigest = (projectDir: string, manifest: Manifest) => {
 
 const getSnapshotDir = (cwd: string, latestCommit: string) =>
   path.join(cwd, PC_HIDDEN_DIR, "snapshots", latestCommit);
+
+/**
+ */
+
+const getScreenshotsDir = (gitDir: string) =>
+  path.join(gitDir, SCREENSHOTS_DIR);
 
 /**
  */
@@ -374,3 +422,6 @@ const md5 = (value: string) => {
     .update(value)
     .digest("hex");
 };
+
+const getScreenshotPath = (gitDir: string, hash: string) =>
+  path.join(gitDir, SCREENSHOTS_DIR, hash + ".png");

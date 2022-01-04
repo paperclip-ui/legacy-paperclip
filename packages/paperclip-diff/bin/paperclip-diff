@@ -12,7 +12,7 @@ yargs.command("snapshot", "Take snapshots of the current PR", yargs => {
   await snapshot(provider)(argv.force);
   provider.close();
 })
-.command("changes [branch]", "Show changes against a different branch", yargs => {
+.command("detect-changes [branch]", "Show changes against a different branch", yargs => {
   yargs
   .option("watch", { description: "re-run when a PC file changes" });
 }, async argv => {

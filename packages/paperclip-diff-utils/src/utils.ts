@@ -18,6 +18,7 @@ import {
   EvaluatedDataKind
 } from "paperclip";
 import { embedAssets, getPCDocumentHTML } from "./pc-document";
+import * as crypto from "crypto";
 
 export type RunOptions = {
   cwd: string;
@@ -32,6 +33,15 @@ const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 const MAX_FRAME_WIDTH = 2000;
 const MAX_CONCURRENT = 10;
 
+export type EachFrameInfo = {
+  id: string;
+  filePath: string;
+  html: string;
+  annotations: NodeAnnotations;
+  title: string;
+  assets: Record<string, string>;
+};
+
 export const eachFrame = async (
   sourceDirectory: string,
   {
@@ -40,12 +50,7 @@ export const eachFrame = async (
     skipHidden = true,
     snapshotNameTemplate = "{frameFilePath}: {frameTitle}"
   }: Partial<RunOptions> = {},
-  each: (
-    html: string,
-    annotations: NodeAnnotations,
-    title: string,
-    assets: Record<string, string>
-  ) => Promise<void>
+  each: (info: EachFrameInfo) => Promise<void>
 ) => {
   const paperclipFilePaths = glob.sync(
     paperclipSourceGlobPattern(sourceDirectory),
@@ -126,7 +131,16 @@ export const eachFrame = async (
         return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
       });
 
-      promises.push(each(fixedHTML, annotations, snapshotName, assetPaths));
+      promises.push(
+        each({
+          html: fixedHTML,
+          annotations,
+          title: snapshotName,
+          assets: assetPaths,
+          filePath,
+          id: md5(snapshotName)
+        })
+      );
     }
 
     await Promise.all(promises);
@@ -145,4 +159,11 @@ const createStyle = (sheet: any): VirtualStyleElement => {
     sheet,
     kind: VirtualNodeKind.StyleElement
   };
+};
+
+const md5 = (value: string) => {
+  return crypto
+    .createHash("md5")
+    .update(value)
+    .digest("hex");
 };

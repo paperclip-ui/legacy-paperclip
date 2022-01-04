@@ -1,26 +1,26 @@
-export const MANIFEST_VERSION = 2;
+export const MANIFEST_VERSION = 4;
 
 export type WindowSize = {
   width: number;
   height: number;
 };
 
-export type FrameScreenshot = {
-  browser: string;
-  id: string;
-  size: WindowSize;
+export type FrameScreenshotDiff = {
+  hash: string;
+  otherHash: string;
 };
 
-export type FrameDiff = {
-  id: string;
-  deltaFrameScreenshotId: string;
+export type FrameScreenshot = {
+  browser: string;
+  hash: string;
+  size: WindowSize;
+  diffs: FrameScreenshotDiff[];
 };
 
 export type FrameSnapshot = {
   title: string;
   sourceFilePath: string;
   screenshots: FrameScreenshot[];
-  diffs: FrameDiff[];
 };
 
 export type ProjectSnapshot = {
