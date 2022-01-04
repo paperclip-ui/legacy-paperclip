@@ -143,7 +143,7 @@ const generateComparison = (
       children: [
         styles.Screenshot({
           a: true,
-          title: `A: ${info.currentVersion}`,
+          title: `A: ${info.deltaVersion}`,
           children: `<img src="./${diff.screnshotId}.png" />`
         }),
         styles.Screenshot({
