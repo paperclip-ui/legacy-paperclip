@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli-utils",
-  "version": "18.3.2",
+  "version": "18.3.3",
   "description": "CLI utils for Paperclip",
   "main": "lib/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
-    "paperclip": "^18.3.2",
+    "paperclip": "^18.3.3",
     "paperclip-utils": "^18.3.2",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",

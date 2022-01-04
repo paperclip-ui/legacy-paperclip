@@ -1,6 +1,6 @@
 {
   "name": "paperclip-diff",
-  "version": "18.3.2",
+  "version": "18.3.3",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -15,13 +15,13 @@
     "execa": "^6.0.0",
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",
+    "html-entities": "^1.2.1",
     "immer": "^9.0.7",
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
-    "paperclip": "^18.3.2",
-    "html-entities": "^1.2.1",
+    "paperclip": "^18.3.3",
+    "paperclip-diff-utils": "^18.3.3",
     "paperclip-minimal": "^18.3.2",
-    "paperclip-diff-utils": "^18.3.2",
     "paperclip-utils": "^18.3.2",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
@@ -32,6 +32,6 @@
   },
   "devDependencies": {
     "paperclip": "^18.3.2",
-    "paperclip-compiler-html": "^18.3.2"
+    "paperclip-compiler-html": "^18.3.3"
   }
 }
