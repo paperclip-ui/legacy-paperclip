@@ -8,17 +8,12 @@ yargs.command("snapshot", "Take snapshots of the current PR", yargs => {
   yargs
   .option("force", { description: "Force snapshot creation even if there are changes" });
 }, async argv => {
-  const provider = await start(process.cwd());
-  await snapshot(provider)(argv.force);
-  provider.close();
+  await snapshot({...argv, cwd: process.cwd() });
 })
 .command("detect-changes [branch]", "Show changes against a different branch", yargs => {
   yargs
-  .option("watch", { description: "re-run when a PC file changes" });
+  .option("watch", { description: "re-run when a PC file changes" })
+  .option("html", { description: "Generate HTML report", default: true });
 }, async argv => {
-  const provider = await start(process.cwd());
-  await detectChanges(provider)(argv.branch, argv.watch);
-  if (!argv.watch) {
-    provider.close();
-  }
+  await detectChanges({...argv, cwd: process.cwd() });
 }).argv;

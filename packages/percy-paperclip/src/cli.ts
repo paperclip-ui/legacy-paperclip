@@ -46,7 +46,12 @@ export const run = async (
   await await eachFrame(
     sourceDirectory,
     options,
-    async ({ html, annotations, title: snapshotName, assets: assetPaths }) => {
+    async ({
+      html,
+      annotations,
+      uniqueTitle: snapshotName,
+      assets: assetPaths
+    }) => {
       const resources = [
         {
           url: "/",

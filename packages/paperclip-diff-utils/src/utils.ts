@@ -39,6 +39,7 @@ export type EachFrameInfo = {
   html: string;
   annotations: NodeAnnotations;
   title: string;
+  uniqueTitle: string;
   assets: Record<string, string>;
 };
 
@@ -84,6 +85,8 @@ export const eachFrame = async (
       ? preview.children
       : [preview]) as VirtualFrame[];
 
+    const used: Record<string, number> = {};
+
     for (let i = 0, { length } = frames; i < length; i++) {
       const frame = frames[i];
 
@@ -99,7 +102,16 @@ export const eachFrame = async (
         kind: VirtualNodeKind.Fragment
       };
 
-      const frameLabel = annotations.frame?.title || `Untitled ${i}`;
+      let frameLabel = annotations.frame?.title || `Untitled`;
+
+      let uniqueFramelabel = frameLabel;
+
+      if (used[frameLabel]) {
+        uniqueFramelabel = frameLabel + " " + used[frameLabel];
+        used[frameLabel]++;
+      } else {
+        used[frameLabel] = 1;
+      }
 
       const html = getPCDocumentHTML(root);
       const isDocEmpty = !keepEmpty && isEmpty(html);
@@ -110,7 +122,7 @@ export const eachFrame = async (
 
       const data = {
         frameFilePath: relativePath,
-        frameTitle: frameLabel
+        frameTitle: uniqueFramelabel
       };
 
       const snapshotName = snapshotNameTemplate.replace(
@@ -135,7 +147,8 @@ export const eachFrame = async (
         each({
           html: fixedHTML,
           annotations,
-          title: snapshotName,
+          title: uniqueFramelabel,
+          uniqueTitle: snapshotName,
           assets: assetPaths,
           filePath,
           id: md5(snapshotName)
