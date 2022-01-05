@@ -39,11 +39,11 @@ const argv = require("yargs")
 .command("coverage", "Generate coverage report for PC files", yargs => {
   yargs
   .option("output", desc("output directory of files"))
-  .option("report", desc("report kind"))
+  .option("html", desc("generate HTML output"))
+  .option("open", desc("Open after generation"))
 }, argv => {
   coverage({
-    output: argv.output,
-    reportKind: argv.report,
+    ...argv,
     cwd: process.cwd()
   });
 })
