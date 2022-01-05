@@ -2,10 +2,12 @@ import * as path from "path";
 const chalk = require("chalk");
 const pLimit = require("p-limit");
 const crypto = require("crypto");
+import * as URL from "url";
 import { eachFrame } from "paperclip-diff-utils";
 import * as fsa from "fs-extra";
 import { logInfo, logWarn } from "./utils";
 import * as ora from "ora";
+import * as mime from "mime-types";
 import {
   addDiffToManifest,
   addFrameSnapshots,
@@ -227,9 +229,16 @@ const saveScreenshots = ({ gitDir, cwd, browser, git }: Provider) => async (
   const allFrameSnapshots: FrameSnapshot[] = [];
   const allScreenshots: FrameScreenshot[] = [];
 
+  const resolveAsset = (filePath: string) => {
+    // console.log(`data:${mime.lookup(filePath)};base64,${fsa.readFileSync(filePath).toString("base64")}`);
+    return `data:${mime.lookup(filePath)};base64,${fsa
+      .readFileSync(filePath)
+      .toString("base64")}`;
+  };
+
   await eachFrame(
     ".",
-    { cwd },
+    { cwd, resolveAsset },
     async ({ id: frameHash, html, title, filePath }) => {
       return limit(async () => {
         const browserVersion = await browser.version();
@@ -248,6 +257,9 @@ const saveScreenshots = ({ gitDir, cwd, browser, git }: Provider) => async (
 
           // stop text input focus
           await page.focus("body");
+
+          // wait for content to load
+          await page.waitForNetworkIdle();
 
           // TODO - wait for transition end
 
