@@ -30,4 +30,3 @@ paperclip-html.tmLanguage.json
 *.mjs
 pc-coverage
 pc-diff
-test-diff.pc
