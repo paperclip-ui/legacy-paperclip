@@ -1,6 +1,6 @@
 {
   "name": "paperclip-diff",
-  "version": "18.3.4",
+  "version": "18.3.5",
   "description": "",
   "main": "lib/index.js",
   "bin": {
@@ -24,7 +24,7 @@
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
     "paperclip": "^18.3.3",
-    "paperclip-diff-utils": "^18.3.4",
+    "paperclip-diff-utils": "^18.3.5",
     "paperclip-utils": "^18.3.2",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
