@@ -13,6 +13,8 @@ export const installOptionalModule = async (
   try {
     const resolvedModulePath = resolve.sync(moduleName, { basedir: cwd });
     return require(resolvedModulePath);
+
+    // eslint-disable-next-line
   } catch (e) {}
 
   const { install } = await prompt({
