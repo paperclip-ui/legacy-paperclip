@@ -125,7 +125,12 @@
       color: rgb(219, 219, 27);
     }
   </style>
-  <div>{title}</div>
+  <div>
+    <style>
+      word-break: break-all;
+    </style>
+    {title}
+  </div>
   <div>
     <style>
       background: rgb(240, 240, 240);
@@ -195,7 +200,7 @@
 
 
 <!--
-  @frame { width: 1024, height: 768, x: 19, y: -40 }
+  @frame { width: 810, height: 768, x: 233, y: -40 }
 -->
 <Report title="Frame title"
   subtitle={<a href="#">path/to/file.pc</a>}
@@ -227,7 +232,10 @@
   </fragment>}
   content={<fragment>
     <Comparison>
-      <Screenshot a title="A: dev">A</Screenshot>
+      <Screenshot a
+        title="A: devffsklfdsfdsfsdfjsdfskdfsdjkflsdfjkjklfsjnfdskl">
+        A
+      </Screenshot>
       <Screenshot b title="B: latest">B</Screenshot>
     </Comparison>
     <Screenshot c title="Difference">DIFF</Screenshot>

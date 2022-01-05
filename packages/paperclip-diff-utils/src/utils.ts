@@ -26,7 +26,7 @@ export type RunOptions = {
   cwd: string;
   keepEmpty?: boolean;
   snapshotNameTemplate?: string;
-  filter: (filePaths: string[]) => Promise<string[]>;
+  resolveAsset?: (filePath: string) => string;
 };
 
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
@@ -49,7 +49,7 @@ export const eachFrame = async (
     cwd = process.cwd(),
     keepEmpty,
     snapshotNameTemplate = "{frameFilePath}: {frameTitle}",
-    filter = defaultFilter
+    resolveAsset
   }: Partial<RunOptions> = {},
   each: (info: EachFrameInfo) => Promise<void>
 ) => {
@@ -57,8 +57,6 @@ export const eachFrame = async (
     paperclipSourceGlobPattern(sourceDirectory),
     { cwd, absolute: true, gitignore: true }
   );
-
-  paperclipFilePaths = await filter(paperclipFilePaths);
 
   const engine = await createEngineDelegate({
     mode: EngineMode.MultiFrame
@@ -145,9 +143,13 @@ export const eachFrame = async (
 
       const assetPaths: Record<string, string> = {};
 
-      const fixedHTML = embedAssets(html, filePath => {
-        return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
-      });
+      const fixedHTML = embedAssets(
+        html,
+        resolveAsset ||
+          (filePath => {
+            return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
+          })
+      );
 
       promises.push(
         each({
