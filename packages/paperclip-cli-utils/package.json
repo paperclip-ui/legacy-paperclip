@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli-utils",
-  "version": "18.3.3",
+  "version": "18.3.4",
   "description": "CLI utils for Paperclip",
   "main": "lib/index.js",
   "scripts": {
