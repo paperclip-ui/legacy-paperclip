@@ -46,7 +46,7 @@ export type PaperclipConfig = {
   moduleDirs?: string[];
 
   // options for the output settings
-  compilerOptions?: CompilerOptions;
+  compilerOptions?: CompilerOptions | CompilerOptions[];
 
   lintOptions?: LintOptions;
 
@@ -68,17 +68,24 @@ export const getPaperclipConfigIncludes = (
   return [path.join(paperclipSourceGlobPattern(cwd))];
 };
 
+export const getCompilerOptions = (config: PaperclipConfig) =>
+  config.compilerOptions
+    ? Array.isArray(config.compilerOptions)
+      ? config.compilerOptions
+      : [config.compilerOptions]
+    : [];
+
 export const getOutputFile = (
   filePath: string,
   config: PaperclipConfig,
   cwd: string
 ) => {
-  const outFilePath = config.compilerOptions?.outDir
-    ? filePath.replace(
-        path.join(cwd, config.srcDir),
-        path.join(cwd, config.compilerOptions.outDir)
-      )
-    : filePath;
-
-  return outFilePath;
+  return getCompilerOptions(config).map(options => {
+    return options.outDir
+      ? filePath.replace(
+          path.join(cwd, config.srcDir),
+          path.join(cwd, options.outDir)
+        )
+      : filePath;
+  });
 };
