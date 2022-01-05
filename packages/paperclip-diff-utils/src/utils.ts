@@ -1,7 +1,7 @@
 // Inspiration: https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/commands/upload.js
 // https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/resources.js
 
-import * as globby from "globby";
+const globby = require("globby");
 import * as path from "path";
 import * as fs from "fs";
 import * as url from "url";
