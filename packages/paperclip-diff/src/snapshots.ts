@@ -217,7 +217,7 @@ export const getManifest = (gitDir: string): Manifest => {
 /**
  */
 
-const saveScreenshots = ({ gitDir, cwd, browser }: Provider) => async (
+const saveScreenshots = ({ gitDir, cwd, browser, git }: Provider) => async (
   version: string,
   tag?: string
 ) => {

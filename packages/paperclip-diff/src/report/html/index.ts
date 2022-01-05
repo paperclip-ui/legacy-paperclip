@@ -7,7 +7,6 @@ import {
   FrameScreenshotDiff,
   FrameSnapshot,
   getFrameScreenshots,
-  getProjectDiffs,
   getProjectFrames,
   getProjectScreenshots,
   getProjectSnapshot,
@@ -144,14 +143,14 @@ const generateComparison = (
         styles.Screenshot({
           a: true,
           title: `A: ${info.deltaVersion}`,
-          children: `<img src="./${diff.screnshotId}.png" />`
+          children: diff
+            ? `<img src="./${diff.otherScreenshotId}.png" />`
+            : `No screenshot found`
         }),
         styles.Screenshot({
           b: true,
           title: `B: ${info.currentVersion}`,
-          children: diff
-            ? `<img src="./${diff.otherScreenshotId}.png" />`
-            : `No screenshot found`
+          children: `<img src="./${screenshot.id}.png" />`
         })
       ]
     }),
