@@ -9,7 +9,7 @@ import * as ora from "ora";
 import {
   addDiffToManifest,
   addFrameSnapshots,
-  DIFF_DIR,
+  DATA_DIR,
   FrameScreenshot,
   FrameScreenshotDiff,
   FrameSnapshot,
@@ -193,7 +193,7 @@ const timeout = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
  */
 
 const getManifestPath = (cwd: string) =>
-  path.join(cwd, DIFF_DIR, MANIFEST_FILE_NAME);
+  path.join(cwd, DATA_DIR, MANIFEST_FILE_NAME);
 export const getManifest = (gitDir: string): Manifest => {
   const filePath = getManifestPath(gitDir);
   if (fsa.existsSync(filePath)) {

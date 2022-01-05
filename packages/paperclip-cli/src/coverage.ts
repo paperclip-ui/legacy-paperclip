@@ -14,7 +14,7 @@ import {
   EngineErrorKind
 } from "paperclip-utils";
 
-const DEFAULT_COVERAGE_DIR = "pc-coverage";
+const DEFAULT_COVERAGE_DIR = ".paperclip/cov";
 
 export type CoverageOptions = {
   output?: string;

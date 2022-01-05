@@ -45,3 +45,54 @@ paperclip build --only=d.ts,css --watch
 
 Start the [visual tooling](visual-tooling.md). 
 
+## `paperclip coverage`
+
+Generage a coverage report about HTML & CSS that is covered for **visual regressions**.
+
+![alt coverage report](./assets/coverage-report.png)
+
+**Options**
+
+- `--html` - generate HTML report
+- `--open` - open the HTML report after generating
+- `--output` - directory where to generate coverage report. Default is `.paperclip/cov`
+
+```sh
+
+# Generate coverage report and open
+paperclip coverage --html --open
+
+# Generate coverage report and output to ./civ
+paperclip coverage --html --output=cov
+```
+
+## paperclip snapshot
+
+Generates a base snapshot of the current branch for visual regression testing. Snapshots are saved to `.paperclip/`
+
+**Options**
+
+- `--force` - force snapshot if there are unstaged changes.
+
+## paperclip diff [branch]
+
+Generates a report of visual changes against a different version of your
+application.
+
+![alt diff screenshot](./assets/visual-regression-ui.png)
+
+**Options**
+
+- `--open` - open HTML report when emitted.
+- `--html` - emit HTML report
+- `--watch` - run differ in watch mode, re-run when files change.
+
+```sh
+
+# diff against master, generate HTML report, and re-run when the current branch changes
+paperclip diff master --html --watch --open
+
+# diff changes against snapshot of this brnach
+paperclip diff --html --watch --open
+```
+

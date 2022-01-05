@@ -6,7 +6,8 @@ export const MANIFEST_FILE_NAME = "manifest.json";
 export const DIFF_BOUNDARY = "~";
 export const PC_HIDDEN_DIR = ".paperclip";
 export const DIFF_DIR = PC_HIDDEN_DIR + "/diff";
-export const SCREENSHOTS_DIR = DIFF_DIR + "/screenshots";
+export const DATA_DIR = DIFF_DIR + "/data";
+export const SCREENSHOTS_DIR = DATA_DIR + "/screenshots";
 
 export type WindowSize = {
   width: number;

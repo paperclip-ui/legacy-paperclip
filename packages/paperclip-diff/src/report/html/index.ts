@@ -19,7 +19,7 @@ import { logInfo } from "../../utils";
 import { Html5Entities } from "html-entities";
 const entities = new Html5Entities();
 
-const DEFAULT_OUTPUT_DIR = "pc-diff";
+const DEFAULT_OUTPUT_DIR = ".paperclip/diff/report";
 const MAIN_CSS_PATH = path.join(__dirname, "../../assets/main.css");
 
 export type WriteHTMLReportOptions = {
