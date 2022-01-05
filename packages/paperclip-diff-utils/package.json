@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "glob": "^7.2.0",
-    "globby": "^12.0.2",
+    "globby": "^11.0.4",
     "paperclip": "^18.3.3",
     "paperclip-cli-utils": "^18.3.4",
     "paperclip-utils": "^18.3.2"

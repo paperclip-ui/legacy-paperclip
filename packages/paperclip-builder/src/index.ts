@@ -1,3 +1,4 @@
+import * as globby from "globby";
 import { glob } from "glob";
 import * as URL from "url";
 import * as path from "path";
@@ -16,6 +17,7 @@ import {
   getPaperclipConfigIncludes,
   isPaperclipResourceFile,
   isCSSFile,
+  buildCompilerOptions,
   getOutputFile,
   isPaperclipFile,
   getScopedCSSFilePath
@@ -23,6 +25,7 @@ import {
 
 type BaseOptions = {
   config: PaperclipConfig;
+  gitignore?: boolean;
   cwd: string;
 };
 
@@ -48,7 +51,15 @@ class DirectoryBuilder {
       this.options.cwd
     );
 
-    const filePaths = flatten(sources.map(inc => glob.sync(inc)));
+    const filePaths = flatten(
+      await Promise.all(
+        sources.map(inc =>
+          globby(inc, {
+            gitignore: this.options.gitignore !== false ? true : false
+          })
+        )
+      )
+    );
 
     await Promise.all(filePaths.map(this._buildFile));
     if (!this.options.watch) {
@@ -76,8 +87,11 @@ class DirectoryBuilder {
       const outFilePath = getOutputFile(
         filePath,
         this.options.config,
+        this.options.config.compilerOptions,
         this.options.cwd
       );
+
+      console.log(this.options.cwd);
 
       for (const ext in result.translations) {
         const content = result.translations[ext];
@@ -218,8 +232,8 @@ export const buildFile = async (
   if (isPaperclipFile(filePath)) {
     const includes: string[] = [];
 
-    if (options.config.compilerOptions.importAssetsAsModules) {
-      if (options.config.compilerOptions.mainCSSFileName) {
+    if (options.config.compilerOptions?.importAssetsAsModules) {
+      if (options.config.compilerOptions?.mainCSSFileName) {
         includes.push(
           path.resolve(
             path.dirname(filePath),
@@ -230,6 +244,7 @@ export const buildFile = async (
         includes.push("./" + path.basename(filePath) + ".css");
       }
     }
+
     translations = targetCompilers.reduce((files, compiler) => {
       return Object.assign(
         files,
@@ -283,10 +298,9 @@ const requireTargetCompilers = (
     for (const moduleName of fs.readdirSync(possibleDir)) {
       if (/paperclip-compiler-/.test(moduleName) && !compilers[moduleName]) {
         if (
-          !config.compilerOptions.target ||
-          config.compilerOptions.target.includes(
+          !config.compilerOptions?.target ||
+          config.compilerOptions?.target ===
             moduleName.substring("paperclip-compiler-".length)
-          )
         ) {
           compilers[moduleName] = require(path.join(possibleDir, moduleName));
         }

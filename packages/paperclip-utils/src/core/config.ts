@@ -1,11 +1,12 @@
 import * as path from "path";
 import { paperclipSourceGlobPattern } from "./utils";
+const omit = require("lodash/omit");
 
 export type CompilerOptions = {
   // give room for custom props
   [identifier: string]: any;
 
-  target?: string[];
+  target?: string;
 
   // where PC files should be compiled to. If undefined, then
   // srcDir is used
@@ -30,6 +31,32 @@ export type CompilerOptions = {
   useAssetHashNames?: boolean;
 };
 
+export type CompilerOptionsTemplate = {
+  // base?: boolean;
+} & CompilerOptions;
+
+/*
+
+[
+  [
+    { base: true, target: ["react"] },
+    { outDir: "src" }
+  ],
+  [
+    { base: true, target: ["html"] }
+  ]
+]
+
+*/
+
+// export type CompilerOptionTemplates = CompilerOptionsTemplate | CompilerOptionsTemplate[] | CompilerOptionTemplates[];
+export type CompilerOptionTemplates =
+  | CompilerOptionsTemplate
+  | CompilerOptionsTemplate[];
+
+/**
+ */
+
 type LintOptions = {
   // flag CSS code that is not currently used
   noUnusedStyles?: boolean;
@@ -46,7 +73,7 @@ export type PaperclipConfig = {
   moduleDirs?: string[];
 
   // options for the output settings
-  compilerOptions?: CompilerOptions | CompilerOptions[];
+  compilerOptions?: CompilerOptionTemplates;
 
   lintOptions?: LintOptions;
 
@@ -68,24 +95,58 @@ export const getPaperclipConfigIncludes = (
   return [path.join(paperclipSourceGlobPattern(cwd))];
 };
 
-export const getCompilerOptions = (config: PaperclipConfig) =>
-  config.compilerOptions
-    ? Array.isArray(config.compilerOptions)
-      ? config.compilerOptions
-      : [config.compilerOptions]
-    : [];
+/**
+ */
+
+export const buildCompilerOptions = (
+  config: PaperclipConfig
+): CompilerOptions => {
+  return buildCompilerOptionsFromTemplates(config.compilerOptions);
+};
+
+/**
+ */
+
+const buildCompilerOptionsFromTemplates = (
+  templates?: CompilerOptionTemplates,
+  parentBase?: CompilerOptionsTemplate
+): CompilerOptions[] => {
+  if (!templates) {
+    return [];
+  }
+
+  if (!Array.isArray(templates)) {
+    templates = Array.isArray(templates) ? templates : [templates];
+  }
+
+  // const base = templates.find(template => !Array.isArray(template) && template.base) as CompilerOptionsTemplate;
+
+  return templates.reduce((configs, template) => {
+    let config = template;
+
+    // if (base) {
+    //   config = extendBaseCompilerOptions(template, base);
+    // }
+
+    configs.push(config);
+
+    return configs;
+  }, []);
+};
+
+/**
+ */
 
 export const getOutputFile = (
   filePath: string,
   config: PaperclipConfig,
+  compilerOptions: CompilerOptions | null,
   cwd: string
 ) => {
-  return getCompilerOptions(config).map(options => {
-    return options.outDir
-      ? filePath.replace(
-          path.join(cwd, config.srcDir),
-          path.join(cwd, options.outDir)
-        )
-      : filePath;
-  });
+  return compilerOptions?.outDir
+    ? filePath.replace(
+        path.join(cwd, config.srcDir),
+        path.join(cwd, compilerOptions.outDir)
+      )
+    : filePath;
 };
