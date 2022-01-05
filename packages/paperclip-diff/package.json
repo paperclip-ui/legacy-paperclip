@@ -3,6 +3,9 @@
   "version": "18.3.3",
   "description": "",
   "main": "lib/index.js",
+  "bin": {
+    "paperclip-diff": "./bin/paperclip-diff"
+  },
   "scripts": {
     "build": "yarn build:definition && yarn build:paperclip && tsc",
     "build:definition": "paperclip-minimal build --only=d.ts --output=src",
