@@ -9,6 +9,11 @@ type Details = {
   message: string;
 };
 
+export const getPrettyMessageFromError = (e, code, uri, cwd) => {
+  const info = e.info || e;
+  return info.range ? getPrettyMessage(info, code, uri, cwd) : null;
+};
+
 export const getPrettyMessage = (
   { range, message }: Details,
   code: string,

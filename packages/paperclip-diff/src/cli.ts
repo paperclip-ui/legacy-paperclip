@@ -1,8 +1,6 @@
 import * as sn from "./snapshots";
-import * as fs from "fs";
 import { writeReport } from "./report";
 import { Provider, start } from "./core";
-import { resolvePCConfig } from "paperclip-utils";
 import { PaperclipResourceWatcher } from "paperclip";
 import { logInfo } from "./utils";
 
@@ -34,8 +32,7 @@ export const detectChanges = async (options: DetectChangesOptions) => {
 
     if (options.watch) {
       logInfo(`Waiting for file changes...`);
-      const [config] = resolvePCConfig(fs)(options.cwd);
-      const watcher = new PaperclipResourceWatcher(config.srcDir, options.cwd);
+      const watcher = new PaperclipResourceWatcher(".", options.cwd);
       watcher.onChange(() => {
         watcher.dispose();
         run(false);

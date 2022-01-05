@@ -7,7 +7,6 @@ import {
   FrameScreenshotDiff,
   FrameSnapshot,
   getFrameScreenshots,
-  getProjectDiffs,
   getProjectFrames,
   getProjectScreenshots,
   getProjectSnapshot,
@@ -20,7 +19,7 @@ import { logInfo } from "../../utils";
 import { Html5Entities } from "html-entities";
 const entities = new Html5Entities();
 
-const DEFAULT_OUTPUT_DIR = "pc-diff";
+const DEFAULT_OUTPUT_DIR = ".paperclip/diff/report";
 const MAIN_CSS_PATH = path.join(__dirname, "../../assets/main.css");
 
 export type WriteHTMLReportOptions = {
@@ -144,14 +143,14 @@ const generateComparison = (
         styles.Screenshot({
           a: true,
           title: `A: ${info.deltaVersion}`,
-          children: `<img src="./${diff.screnshotId}.png" />`
+          children: diff
+            ? `<img src="./${diff.otherScreenshotId}.png" />`
+            : `No screenshot found`
         }),
         styles.Screenshot({
           b: true,
           title: `B: ${info.currentVersion}`,
-          children: diff
-            ? `<img src="./${diff.otherScreenshotId}.png" />`
-            : `No screenshot found`
+          children: `<img src="./${screenshot.id}.png" />`
         })
       ]
     }),

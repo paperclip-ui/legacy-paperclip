@@ -1,6 +1,6 @@
 {
   "name": "paperclip-coverage",
-  "version": "18.3.3",
+  "version": "18.3.4",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.ds.ts",
@@ -17,7 +17,7 @@
     "cli-table": "^0.3.11",
     "html-entities": "^1.2.1",
     "paperclip": "^18.3.3",
-    "paperclip-cli-minimal": "^18.3.3",
+    "paperclip-cli-minimal": "^18.3.4",
     "paperclip-compiler-html": "^18.3.3",
     "paperclip-utils": "^18.3.2",
     "typescript": "^4.2.3"

@@ -1,6 +1,8 @@
 import { printCoverage, writeCoverageHTML } from "paperclip-coverage";
 import * as fsa from "fs-extra";
 import * as path from "path";
+const chalk = require("chalk");
+import { exec } from "child_process";
 import * as glob from "glob";
 import * as URL from "url";
 import { createEngineDelegate, EngineMode } from "paperclip";
@@ -12,15 +14,16 @@ import {
   EngineErrorKind
 } from "paperclip-utils";
 
-const DEFAULT_COVERAGE_DIR = "pc-coverage";
+const DEFAULT_COVERAGE_DIR = ".paperclip/cov";
 
 export type CoverageOptions = {
   output?: string;
-  reportKind: "html" | "stdout";
+  html?: boolean;
+  open?: boolean;
   cwd: string;
 };
 
-export const coverage = ({ output, reportKind, cwd }: CoverageOptions) => {
+export const coverage = ({ output, html, cwd, open }: CoverageOptions) => {
   const [config, url] = resolvePCConfig(fsa)(cwd);
   const engine = createEngineDelegate({
     mode: EngineMode.MultiFrame
@@ -41,14 +44,21 @@ export const coverage = ({ output, reportKind, cwd }: CoverageOptions) => {
 
   const report = engine.generateCoverageReport();
 
-  if (reportKind === "html") {
+  printCoverage(report, cwd);
+
+  if (html) {
     const coverageDir = output || DEFAULT_COVERAGE_DIR;
     const outputDir = path.join(cwd, coverageDir);
 
     fsa.mkdirpSync(outputDir);
     writeCoverageHTML(report, { output: outputDir, cwd });
-    console.log(`Write .${outputDir.replace(cwd, "")}`);
-  } else {
-    printCoverage(report, cwd);
+    console.log(
+      chalk.bold.cyan(
+        `\nWrite HTML coverage to .${outputDir.replace(cwd, "")}\n`
+      )
+    );
+    if (open) {
+      exec(`open ${outputDir}/index.html`);
+    }
   }
 };

@@ -1,8 +1,9 @@
 // Inspiration: https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/commands/upload.js
 // https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/resources.js
 
-import * as glob from "glob";
+import * as globby from "globby";
 import * as path from "path";
+import * as fs from "fs";
 import * as url from "url";
 import {
   createEngineDelegate,
@@ -18,12 +19,14 @@ import {
   EvaluatedDataKind
 } from "paperclip";
 import { embedAssets, getPCDocumentHTML } from "./pc-document";
+import { getPrettyMessageFromError } from "paperclip-cli-utils";
 import * as crypto from "crypto";
 
 export type RunOptions = {
   cwd: string;
   keepEmpty?: boolean;
   snapshotNameTemplate?: string;
+  filter: (filePaths: string[]) => Promise<string[]>;
 };
 
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
@@ -38,19 +41,24 @@ export type EachFrameInfo = {
   assets: Record<string, string>;
 };
 
+const defaultFilter = (filePaths: string[]) => Promise.resolve(filePaths);
+
 export const eachFrame = async (
   sourceDirectory: string,
   {
     cwd = process.cwd(),
     keepEmpty,
-    snapshotNameTemplate = "{frameFilePath}: {frameTitle}"
+    snapshotNameTemplate = "{frameFilePath}: {frameTitle}",
+    filter = defaultFilter
   }: Partial<RunOptions> = {},
   each: (info: EachFrameInfo) => Promise<void>
 ) => {
-  const paperclipFilePaths = glob.sync(
+  let paperclipFilePaths = await globby(
     paperclipSourceGlobPattern(sourceDirectory),
-    { cwd, absolute: true }
+    { cwd, absolute: true, gitignore: true }
   );
+
+  paperclipFilePaths = await filter(paperclipFilePaths);
 
   const engine = await createEngineDelegate({
     mode: EngineMode.MultiFrame
@@ -62,11 +70,18 @@ export const eachFrame = async (
     const relativePath = path.relative(cwd, filePath);
     let result: LoadedData;
 
+    const uri = url.pathToFileURL(filePath).href;
     try {
-      result = await engine.open(url.pathToFileURL(filePath).href);
+      result = await engine.open(uri);
     } catch (e) {
-      console.error(e);
-      process.exit(1);
+      const inf = getPrettyMessageFromError(
+        e,
+        fs.readFileSync(filePath, "utf-8"),
+        uri,
+        cwd
+      );
+      console.error(inf || e);
+      continue;
     }
 
     if (result.kind !== EvaluatedDataKind.PC) {
