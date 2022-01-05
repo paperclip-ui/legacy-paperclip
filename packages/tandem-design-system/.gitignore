@@ -1,3 +1,4 @@
 *.pc.js
 *.pc.js.map
 *.pc.css
+node_modules

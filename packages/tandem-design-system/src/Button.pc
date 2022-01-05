@@ -24,7 +24,7 @@
 
 
 <!--
-  @frame { width: 1024, height: 768, x: -25, y: -35 }
+  @frame { title: "Buttons", width: 1024, height: 768, x: -25, y: -35 }
 -->
 <atoms.Preview padded>
   <style>
