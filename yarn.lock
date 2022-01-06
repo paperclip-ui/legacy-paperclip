@@ -12171,30 +12171,6 @@ paged-request@^2.0.1:
   dependencies:
     axios "^0.21.1"
 
-paperclip-cli@18.3.3:
-  version "18.3.3"
-  resolved "https://registry.yarnpkg.com/paperclip-cli/-/paperclip-cli-18.3.3.tgz#c930391a2870dda10e10d6189211368aa3d6fa73"
-  integrity sha512-x/i+/sej6Qf+HdkSrfT5T+D0Of5uAJ1kvgY8vKIr4xidfakX1DLaAdgHzxQJ7EkEjW4PcUZpRHUz5stHZhbBtg==
-  dependencies:
-    "@types/inquirer" "^6.5.0"
-    "@types/shelljs" "^0.8.8"
-    chalk "^4.1.0"
-    chokidar "^3.3.1"
-    dedent "^0.7.0"
-    fs-extra "^9.0.1"
-    glob "^7.1.6"
-    inquirer "^7.3.0"
-    lodash "^4.17.19"
-    paperclip "^18.3.3"
-    paperclip-cli-minimal "^18.3.3"
-    paperclip-cli-utils "^18.3.3"
-    paperclip-coverage "^18.3.3"
-    paperclip-utils "^18.3.2"
-    resolve "^1.15.1"
-    shelljs "^0.8.4"
-    tandem-workspace "^18.3.3"
-    yargs "^15.1.0"
-
 param-case@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/param-case/-/param-case-3.0.4.tgz#7d17fe4aa12bde34d4a77d91acfb6219caad01c5"
