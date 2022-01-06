@@ -286,7 +286,7 @@ const assertRequireCompilerTarget = (
   config: PaperclipConfig,
   targetOptions: CompilerOptions
 ) => {
-  const targetCompilers = requireTargetCompilers(cwd, config, targetOptions);
+  const targetCompilers = requireTargetCompilers(cwd, targetOptions);
 
   if (!targetCompilers.length) {
     // Throw courtesy error so that the developer knows what to do
@@ -381,7 +381,6 @@ const createInterimCompiler = (
 
 const requireTargetCompilers = (
   cwd: string,
-  config: PaperclipConfig,
   options: CompilerOptions
 ): TargetCompiler[] => {
   const localDirs = cwd
