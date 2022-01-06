@@ -1,3 +1,4 @@
 {
+  "compilerOptions": [{ "generate": ["d.ts"] }],
   "srcDir": "./src"
 }
