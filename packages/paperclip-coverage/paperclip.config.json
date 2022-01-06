@@ -1,10 +1,17 @@
 {
-  "compilerOptions": {
-    "target": ["html"],
-    "outDir": "lib",
-    "mainCSSFileName": "main.css",
-    "assetOutDir": "lib/assets",
-    "es5": true
-  },
+  "compilerOptions": [
+    {
+      "target": "html",
+      "outDir": "lib",
+      "mainCSSFileName": "main.css",
+      "assetOutDir": "lib/assets",
+      "es5": true,
+      "emit": ["js", "js.map", "css"]
+    },
+    {
+      "target": "html",
+      "emit": ["d.ts"]
+    }
+  ],
   "srcDir": "./src"
 }

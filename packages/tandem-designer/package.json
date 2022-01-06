@@ -4,9 +4,9 @@
   "description": "Visual designer for Paperclip files",
   "main": "lib/index.js",
   "scripts": {
-    "build": "npm run build:definitions && tsc && webpack",
-    "build:watch": "concurrently \"webpack --watch\" \"tsc --watch --preserveWatchOutput\" \"paperclip-minimal build --only=d.ts --watch\"",
-    "build:definitions": "paperclip-minimal build --verbose --only=d.ts"
+    "build": "yarn build:paperclip && tsc && webpack",
+    "build:watch": "concurrently \"webpack --watch\" \"tsc --watch --preserveWatchOutput\" \"paperclip-minimal build --watch\"",
+    "build:paperclip": "paperclip-minimal build --silent"
   },
   "author": "",
   "license": "GPLv3",

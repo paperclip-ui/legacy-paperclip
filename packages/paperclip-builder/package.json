@@ -11,16 +11,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "4",
     "chokidar": "^3.5.2",
     "crc32": "^0.2.2",
     "fs-extra": "^10.0.0",
-    "glob": "^7.2.0",
     "globby": "11.0.4",
     "paperclip": "^18.3.3",
     "paperclip-interim": "^18.3.3",
     "paperclip-utils": "^18.3.2"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.0",
     "@types/mocha": "^8.0.0",
     "chai": "^4.3.4",
     "lodash": "^4.17.21",

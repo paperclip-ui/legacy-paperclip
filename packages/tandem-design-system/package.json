@@ -4,10 +4,9 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "yarn build:definition && yarn build:pc && tsc",
-    "build:definition": "paperclip-minimal build --only=d.ts --output=src --verbose",
-    "build:pc": "paperclip-minimal build --verbose",
-    "build:watch": "paperclip-minimal build --watch"
+    "build": "yarn build:pc && tsc",
+    "build:pc": "paperclip-minimal build --silent",
+    "build:watch": "concurrently \"yarn build:pc --watch\" \"tsc --watch\""
   },
   "author": "",
   "license": "ISC",

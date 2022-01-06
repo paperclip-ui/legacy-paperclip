@@ -4,10 +4,10 @@
   "description": "",
   "main": "esm/main.js",
   "scripts": {
-    "build": "yarn build:definition && yarn build:webpack",
+    "build": "yarn build:paperclip && yarn build:webpack",
     "build:webpack": "webpack -c webpack/webpack.config.js",
-    "build:watch": "concurrently \"yarn build:definition --watch\" \"webpack serve -c webpack/webpack.config-web.js\"",
-    "build:definition": "paperclip build --only=d.ts"
+    "build:watch": "concurrently \"yarn build:paperclip --watch\" \"webpack serve -c webpack/webpack.config-web.js\"",
+    "build:paperclip": "paperclip build"
   },
   "author": "",
   "license": "ISC",

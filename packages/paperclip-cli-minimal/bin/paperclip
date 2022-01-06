@@ -6,26 +6,16 @@ const argv = require("yargs")
 .command("build [file-pattern]", "Compiles paperclip files to target language", yargs => {
   yargs
   .option("watch", desc("watch for changes"))
-  .option("only", desc("Target files to generate"))
-  .option("output", desc("Output directory"))
-  .option("print", desc("Only print output"))
-  .option("verbose", desc("Write verbose information"))
-  .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
-  .option("definition", desc("Write typed definition type"))
+  .option("print", desc("Only print emitted output"))
+  .option("silent", desc("Silent logs"))
+  .option("silent", desc("Run in silent mode"))
 }, argv => {
   build({
     cwd: process.cwd(),
     config: argv.config,
     print: argv.print,
-    css: argv.css,
-    output: argv.output,
     watch: argv.watch,
-    definition: argv.definition,
-    only: argv.only && argv.only.split(",").map(v => v.trim()),
-    verbose: argv.verbose,
-    dropPcExtension: argv.dropPcExtension,
-    compilerName: argv.compiler,
-    filePatterns: argv.filePattern
+    verbose: !argv.silent
   })
 }).argv;
 

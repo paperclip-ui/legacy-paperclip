@@ -9,7 +9,7 @@ export type CompilerOptions = {
   target?: string;
 
   // [d.ts, js, ]
-  generate?: string[];
+  emit?: string[];
 
   // where PC files should be compiled to. If undefined, then
   // srcDir is used
@@ -43,11 +43,11 @@ export type CompilerOptionsTemplate = Omit<CompilerOptions, "outDir"> & {
 
 [
   [
-    { base: true, target: ["react"] },
+    { base: true, target: "target" },
     { outDir: "src" }
   ],
   [
-    { base: true, target: ["html"] }
+    { base: true, target: "html" }
   ]
 ]
 

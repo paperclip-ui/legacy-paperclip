@@ -1,12 +1,18 @@
 {
   "srcDir": "./src",
-  "compilerOptions": {
-    "target": ["react"],
-    "outDir": "./lib",
-    "assetOutDir": "./lib/assets",
-    "embedAssetMaxSize": 0,
-    "mainCSSFileName": "main.css"
-  },
+  "compilerOptions": [
+    {
+      "target": "react",
+      "outDir": "./lib",
+      "assetOutDir": "./lib/assets",
+      "embedAssetMaxSize": 0,
+      "mainCSSFileName": "main.css"
+    },
+    {
+      "target": "react",
+      "emit": ["d.ts"]
+    }
+  ],
   "lintOptions": {
     "enforceVars": [
       "font-family",

@@ -1,4 +1,8 @@
 {
+  "compilerOptions": {
+    "target": "react",
+    "emit": ["d.ts"]
+  },
   "srcDir": "./src",
   "lintOptions": {
     "enforceVars": [
