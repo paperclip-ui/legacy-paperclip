@@ -1,8 +1,11 @@
 {
   "srcDir": "./src",
-  "compilerOptions": {
-    "target": ["react"]
-  },
+  "compilerOptions": [
+    {
+      "target": "react",
+      "emit": ["d.ts"]
+    }
+  ],
   "lintOptions": {
     "enforceVars": [
       "font-family",

@@ -33,7 +33,7 @@ import {
 import { Html5Entities } from "html-entities";
 import { Context } from "./utils";
 import { SourceNode } from "source-map";
-import { PaperclipConfig } from "paperclip-utils";
+import { CompilerOptions, PaperclipConfig } from "paperclip-utils";
 
 const entities = new Html5Entities();
 
@@ -319,7 +319,7 @@ export const codeCompiler = ({
     if (
       attrName === "src" &&
       !element.isInstance &&
-      context.config.compilerOptions?.importAssetsAsModules === true &&
+      context.targetOptions.importAssetsAsModules === true &&
       parts.length === 1 &&
       parts[0].kind === InterimAttributeValuePartKind.Static
     ) {
@@ -453,6 +453,7 @@ export const codeCompiler = ({
     module: InterimModule,
     filePath: string,
     config: PaperclipConfig,
+    targetOptions: CompilerOptions,
     includes: string[]
   ) => {
     const context = writeSourceNode(
@@ -474,7 +475,7 @@ export const codeCompiler = ({
         compileComponents,
         "\n\n"
       ])
-    )(createTranslateContext(module, filePath, config));
+    )(createTranslateContext(module, filePath, config, targetOptions));
     return (context.buffer[0] as SourceNode).toStringWithSourceMap();
   };
 };

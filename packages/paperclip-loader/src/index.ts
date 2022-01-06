@@ -6,6 +6,7 @@ import {
   createEngineDelegate,
   PaperclipConfig,
   stringifyCSSSheet,
+  buildCompilerOptions,
   PC_CONFIG_FILE_NAME
 } from "paperclip";
 import { getPrettyMessage } from "paperclip-cli-utils";
@@ -56,20 +57,19 @@ async function pcLoader(
   let files: Record<string, string> = {};
 
   try {
+    const targetOptions = buildCompilerOptions(config)[0];
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
     const result = await buildFile(resourceUrl, engine, {
-      config: {
-        ...config,
-        compilerOptions: {
-          ...(config.compilerOptions || {}),
-          importAssetsAsModules: true,
-          assetOutDir: null,
-
-          // leave this stuff up to Webpack
-          embedAssetMaxSize: 0,
-          assetPrefix: null
-        }
+      config,
+      targetCompilerOptions: {
+        ...targetOptions,
+        emit: null,
+        importAssetsAsModules: true,
+        assetOutDir: null,
+        outDir: null,
+        embedAssetMaxSize: 0,
+        assetPrefix: null
       },
       cwd: process.cwd()
     });

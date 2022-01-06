@@ -13,7 +13,8 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "examples/*"
     ],
     "nohoist": [
       "**/@docusaurus",

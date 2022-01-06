@@ -1,25 +1,19 @@
-// import { expect } from "chai";
-// import { $$buildFile } from "..";
-// import { createMockEngine } from "paperclip/lib/test/utils";
+import { expect } from "chai";
+import { saveTmpFixtureFiles } from "./utils";
 
-// describe(__filename + "#", () => {
-//   it(`can compile a simple PC file`, () => {
-//     const files = $$buildFile(
-//       "/test.pc",
-//       {
-//         compilerOptions: { name: "paperclip-compiler-react" },
-//         sourceDirectory: ""
-//       },
-//       { cwd: null },
-//       createMockEngine({
-//         "/test.pc": `<div export component as="Test">
-//         <style>
-//           color: red;
-//         </style>
-//       </div>`
-//       })
-//     );
-
-//     console.log(files);
-//   });
-// });
+describe(__filename + "#", () => {
+  it(`Throws an error if no target compiler is found`, async () => {
+    const tmp = saveTmpFixtureFiles(`throws-error-test`, {
+      "src/test.pc": "Hello",
+      "paperclip.config.json": JSON.stringify({
+        compilerOptions: {
+          target: "does-not-exist"
+        }
+      })
+    });
+    const e = await tmp.buildFiles().catch(e => e);
+    expect(e?.message).to.eql(
+      `Paperclip compiler target "does-not-exist" not found`
+    );
+  });
+});

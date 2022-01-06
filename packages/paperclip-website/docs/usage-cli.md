@@ -36,9 +36,6 @@ paperclip build
 
 # Starts watcher & writes them whenever they change
 paperclip build --watch
-
-# Build and only emit the target files
-paperclip build --only=d.ts,css --watch
 ```
 
 ### `paperclip dev`

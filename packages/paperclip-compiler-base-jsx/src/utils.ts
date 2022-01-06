@@ -2,7 +2,11 @@ import { camelCase } from "lodash";
 import * as path from "path";
 import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
 import { InterimModule } from "paperclip-interim";
-import { PaperclipConfig, StringPosition } from "paperclip-utils";
+import {
+  CompilerOptions,
+  PaperclipConfig,
+  StringPosition
+} from "paperclip-utils";
 import { SourceNode } from "source-map";
 
 export type Context = {
@@ -12,6 +16,7 @@ export type Context = {
   buffer: any[];
   depth: number;
   isNewLine: boolean;
+  targetOptions: CompilerOptions;
   indent: string;
 };
 
@@ -20,12 +25,14 @@ const DEFAULT_TAG_NAME = "$$Default";
 export const createTranslateContext = (
   module: InterimModule,
   filePath: string,
-  config: PaperclipConfig
+  config: PaperclipConfig,
+  targetOptions: CompilerOptions
 ): Context => ({
   module,
   filePath,
   config,
   buffer: [],
+  targetOptions,
   depth: 0,
   isNewLine: true,
   indent: "  "

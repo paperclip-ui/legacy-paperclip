@@ -73,7 +73,7 @@ module.exports = {
           items: [
             {
               label: "Installation",
-              to: "docs/getting-started-installation"
+              to: "docs/installation"
             },
             {
               label: "VS Code",

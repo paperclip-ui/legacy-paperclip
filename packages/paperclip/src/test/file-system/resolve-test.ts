@@ -4,7 +4,7 @@ import * as url from "url";
 import { expect } from "chai";
 import { TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
 import { resolveAllPaperclipFiles } from "../../core/utils";
-import { resolveImportFile, resolveImportUri } from "paperclip-utils";
+import { resolveImportUri } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("returns nested module when resolving", async () => {
@@ -34,17 +34,6 @@ describe(__filename + "#", () => {
       "module-a/src/module.pc",
       "module-a/src/test.pc"
     ]);
-  });
-
-  it("can resolve local file with the output directory", async () => {
-    const outputPath = resolveImportFile(fs)(
-      path.join(TEST_FIXTURE_SRC_DIRECTORY, "nested-mod-import.pc"),
-      "@nested/in/a/folder/src/component.pc",
-      true
-    );
-    expect(outputPath).to.contain(
-      "test-fixtures/modules/@nested/in/a/folder/lib/component.pc"
-    );
   });
 
   it("traverses parent to resolve module", async () => {

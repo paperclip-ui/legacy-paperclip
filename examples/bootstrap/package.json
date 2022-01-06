@@ -1,6 +1,6 @@
 {
   "name": "bootstrap",
-  "version": "1.0.0",
+  "version": "18.3.8",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -9,6 +9,11 @@
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "paperclip-cli": "^18.3.8",
+    "paperclip-compiler-react": "^18.3.8",
+    "paperclip-loader": "^18.3.8"
+  },
   "dependencies": {
     "bootstrap": "3"
   }

@@ -476,12 +476,7 @@ const compilePC = async (filePath: string) => {
   // Note that since we're compiling to JS directly, we need to drop the *.pc extension
   // so that the file can be loaded into NodeJS. (*.pc.js doesn't work since require("./*.pc") loads the *.pc file instead)
   await exec(`./node_modules/.bin/paperclip`, [filePath], cwd, false);
-  await exec(
-    `./node_modules/.bin/paperclip`,
-    [filePath, "--only=d.ts"],
-    cwd,
-    false
-  );
+  await exec(`./node_modules/.bin/paperclip`, [filePath], cwd, false);
 };
 
 const downloadFonts = async (

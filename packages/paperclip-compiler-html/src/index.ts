@@ -1,5 +1,5 @@
 import { compilers } from "paperclip-compiler-base-jsx";
-import { PaperclipConfig } from "paperclip-utils";
+import { CompilerOptions, PaperclipConfig } from "paperclip-utils";
 
 const CODE_PREFLIGHT = `
 
@@ -81,6 +81,6 @@ export const compile = compilers({
     imports: "",
     elementType: "string"
   },
-  extensionName: (config: PaperclipConfig) =>
-    config.compilerOptions?.es5 ? "js" : "mjs"
+  extensionName: (targetOptions: CompilerOptions) =>
+    targetOptions.es5 ? "js" : "mjs"
 });

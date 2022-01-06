@@ -14,8 +14,7 @@ import {
   AttributeKind,
   AttributeValueKind,
   isNode,
-  NodeKind,
-  isPaperclipFile
+  NodeKind
 } from "paperclip-utils";
 import { InterimCompilerOptions } from "./options";
 import { InterimAsset } from "../state/assets";
@@ -30,10 +29,10 @@ export const getAssets = (
   engine: EngineDelegate,
   options: InterimCompilerOptions
 ): InterimAsset[] => {
-  const outModulePath = options.config.compilerOptions?.outDir
+  const outModulePath = options.targetOptions.outDir
     ? modulePath.replace(
         path.join(options.cwd, options.config.srcDir),
-        path.join(options.cwd, options.config.compilerOptions.outDir)
+        path.join(options.cwd, options.targetOptions.outDir)
       )
     : modulePath;
 
@@ -44,12 +43,11 @@ export const getAssets = (
     ...css.map(
       mapAsset(
         modulePath,
-        options.config.compilerOptions?.mainCSSFileName
+        options.targetOptions.mainCSSFileName
           ? path.join(
               options.cwd,
-              options.config.compilerOptions.assetOutDir ||
-                options.config.compilerOptions.outDir,
-              options.config.compilerOptions.mainCSSFileName
+              options.targetOptions.assetOutDir || options.targetOptions.outDir,
+              options.targetOptions.mainCSSFileName
             )
           : outModulePath,
         engine,
@@ -79,21 +77,18 @@ const mapAsset = (
 
   const fileSize = options.io.getFileSize(filePath);
   if (
-    fileSize <= options.config.compilerOptions?.embedAssetMaxSize ||
-    options.config.compilerOptions?.embedAssetMaxSize === -1
+    fileSize <= options.targetOptions.embedAssetMaxSize ||
+    options.targetOptions.embedAssetMaxSize === -1
   ) {
     moduleContent =
       `data:${mime.getType(filePath)};base64,` +
       options.io.readFile(filePath).toString("base64");
-  } else if (options.config.compilerOptions.assetOutDir) {
+  } else if (options.targetOptions.assetOutDir) {
     const srcDir = path.join(options.cwd, options.config.srcDir);
 
-    const outputDir = path.join(
-      options.cwd,
-      options.config.compilerOptions.assetOutDir
-    );
+    const outputDir = path.join(options.cwd, options.targetOptions.assetOutDir);
 
-    if (options.config.compilerOptions?.useAssetHashNames !== false) {
+    if (options.targetOptions.useAssetHashNames !== false) {
       const buffer = options.io.readFile(filePath);
       const md5Name = crypto
         .createHash("md5")
@@ -103,9 +98,9 @@ const mapAsset = (
     } else {
       outputFilePath = path.join(outputDir, filePath.replace(srcDir, ""));
     }
-    if (options.config.compilerOptions?.assetPrefix) {
+    if (options.targetOptions.assetPrefix) {
       moduleContent =
-        options.config.compilerOptions?.assetPrefix +
+        options.targetOptions.assetPrefix +
         path.relative(options.cwd, outputFilePath);
     } else {
       moduleContent = resolvePath(outModulePath, outputFilePath);

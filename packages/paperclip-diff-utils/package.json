@@ -1,6 +1,6 @@
 {
   "name": "paperclip-diff-utils",
-  "version": "18.3.7",
+  "version": "18.3.8",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -11,9 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "glob": "^7.2.0",
-    "globby": "^12.0.2",
-    "paperclip": "^18.3.3",
-    "paperclip-cli-utils": "^18.3.4",
-    "paperclip-utils": "^18.3.2"
+    "globby": "^11.0.4",
+    "paperclip": "^18.3.8",
+    "paperclip-cli-utils": "^18.3.8",
+    "paperclip-utils": "^18.3.8"
   }
 }

@@ -9,6 +9,7 @@ import * as path from "path";
 import * as fs from "fs";
 import chalk from "chalk";
 import { kebabCase } from "lodash";
+import { installDep } from "./utils";
 
 const readPackage = (cwd: string) => {
   const pkgPath = path.join(cwd, "package.json");
@@ -90,13 +91,11 @@ export const node = {
     return {
       [GeneratorKind.Node]: {
         ...params,
-        devDependencies: ["paperclip-cli", "concurrently"],
+        devDependencies: [],
         scripts: params.useTypescript
           ? {
-              build: ["paperclip build --only=d.ts"],
-              start: ["paperclip build --only=d.ts --watch"],
-              "build:watch": ["paperclip build --only=d.ts --watch"],
-              "build:definitions": ["paperclip build --only=d.ts"]
+              build: ["paperclip build"],
+              start: ["paperclip build --watch"]
             }
           : {}
       }
@@ -144,14 +143,7 @@ export const node = {
     await this._installDeps(pm, devDependencies, true, cwd);
   },
   _installDeps(pm, dependencies, dev, cwd) {
-    return shell.exec(
-      `${pm} ${pm === "npm" ? "install" : "add"} ${dependencies.join(" ")}${
-        dev ? " --save-dev" : " --save"
-      }`,
-      {
-        cwd
-      }
-    );
+    return installDep(dependencies, cwd, pm, dev);
   },
   async postinstall(
     { cwd, packageManager },

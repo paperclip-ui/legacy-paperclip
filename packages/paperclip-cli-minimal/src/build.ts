@@ -1,5 +1,9 @@
 import * as resolve from "resolve";
-import { buildDirectory } from "paperclip-builder";
+import {
+  buildDirectory,
+  TargetNotFoundError,
+  DirectoryBuilder
+} from "paperclip-builder";
 import * as path from "path";
 import * as URL from "url";
 import * as fs from "fs";
@@ -16,35 +20,38 @@ export type BuildOptions = {
   cwd: string;
   config?: string;
   print: boolean;
-  output?: string;
-  only?: string[];
   watch: boolean;
   compilerName?: string;
   sourceDirectory?: string;
-  outputDirectory?: string;
   verbose: boolean;
 };
 
 export const build = async (options: BuildOptions) => {
   const config = loadConfig(options);
   const engine = createEngineDelegate({});
-  const builder = buildDirectory(
-    {
-      watch: options.watch,
-      cwd: options.cwd,
-      config
-    },
-    engine
-  );
+
+  let builder: DirectoryBuilder;
+
+  try {
+    builder = buildDirectory(
+      {
+        watch: options.watch,
+        cwd: options.cwd,
+        config
+      },
+      engine
+    );
+  } catch (error) {
+    if (error instanceof TargetNotFoundError) {
+      console.error(error.message);
+    } else {
+      console.error(error);
+    }
+    return;
+  }
 
   builder
     .onFile((outFilePath: string, content: string) => {
-      const ext = outFilePath.replace(/.*?(\.pc)?\./, "");
-
-      if (options.only && !options.only.includes(ext)) {
-        return;
-      }
-
       if (options.verbose) {
         console.log("Write %s", path.relative(options.cwd, outFilePath));
       }
@@ -82,28 +89,15 @@ const writeFileSync = (
 };
 
 const loadConfig = (options: BuildOptions): PaperclipConfig => {
-  let localConfig: Partial<PaperclipConfig> = {};
-
   try {
-    localConfig = require(resolve2(
+    return require(resolve2(
       options.config || path.join(options.cwd, "/paperclip.config")
     ));
 
     // eslint-disable-next-line
-  } catch (e) {}
-
-  const srcDir = options.outputDirectory || localConfig.srcDir;
-  const outDir =
-    options.output || localConfig.compilerOptions?.outDir || srcDir;
-
-  return {
-    ...localConfig,
-    compilerOptions: {
-      ...(localConfig.compilerOptions || {}),
-      outDir
-    },
-    srcDir
-  };
+  } catch (e) {
+    return {};
+  }
 };
 
 const resolve2 = module => {

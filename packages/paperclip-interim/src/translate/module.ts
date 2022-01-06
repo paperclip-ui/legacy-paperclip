@@ -120,10 +120,7 @@ const translateImports = (
       const src = getAttributeStringValue("src", imp);
 
       // do not include css
-      if (
-        isCSSFile(src) &&
-        !options.config.compilerOptions.importAssetsAsModules
-      ) {
+      if (isCSSFile(src) && !options.targetOptions.importAssetsAsModules) {
         return null;
       }
 

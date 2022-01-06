@@ -1,6 +1,6 @@
 {
   "name": "tailwind",
-  "version": "1.0.0",
+  "version": "18.3.8",
   "main": "index.js",
   "license": "MIT",
   "private": true,
@@ -11,11 +11,12 @@
     "build:pc": "paperclip build",
     "build:css": "tailwindcss -i ./src/tailwind.scss -o ./src/styles/tailwind.css"
   },
-  "dependencies": {},
   "devDependencies": {
     "concurrently": "^6.5.1",
-    "paperclip": "^18.2.14",
-    "paperclip-cli": "^18.2.14",
+    "paperclip": "^18.3.8",
+    "paperclip-cli": "^18.3.8",
+    "paperclip-compiler-react": "^18.3.8",
+    "paperclip-loader": "^18.3.8",
     "tailwindcss": "^3.0.7"
   }
 }

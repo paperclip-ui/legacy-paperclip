@@ -1,5 +1,6 @@
 import { EngineDelegate } from "paperclip";
 import {
+  CompilerOptions,
   EngineDelegateChanged,
   PaperclipConfig,
   StringifySheetOptions
@@ -15,6 +16,7 @@ export type FIO = {
 export type InterimCompilerOptions = {
   cwd: string;
   config: PaperclipConfig;
+  targetOptions: CompilerOptions;
   io?: FIO;
 };
 

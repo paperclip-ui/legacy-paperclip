@@ -8,7 +8,7 @@ import {
   writeJoin
 } from "./utils";
 import { InterimComponent, InterimModule } from "paperclip-interim";
-import { PaperclipConfig } from "paperclip-utils";
+import { CompilerOptions, PaperclipConfig } from "paperclip-utils";
 
 export type DefinitionCompilerOptions = {
   imports: string;
@@ -132,9 +132,15 @@ export const definitionCompiler = ({
   return (
     module: InterimModule,
     filePath: string,
-    config: PaperclipConfig
+    config: PaperclipConfig,
+    targetOptions: CompilerOptions
   ): string => {
-    const context = createTranslateContext(module, filePath, config);
+    const context = createTranslateContext(
+      module,
+      filePath,
+      config,
+      targetOptions
+    );
     return translateRoot(context).buffer.join("");
   };
 };

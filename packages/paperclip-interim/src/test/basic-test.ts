@@ -237,15 +237,15 @@ describe(__filename + "#", () => {
         const interim = new InterimCompiler(engine, {
           cwd: "/",
           config: {
-            srcDir,
-            compilerOptions: {
-              outDir,
-              importAssetsAsModules,
-              assetPrefix,
-              embedAssetMaxSize,
-              assetOutDir,
-              useAssetHashNames
-            }
+            srcDir
+          },
+          targetOptions: {
+            outDir,
+            importAssetsAsModules,
+            assetPrefix,
+            embedAssetMaxSize,
+            assetOutDir,
+            useAssetHashNames
           },
           io: {
             readFile(filePath) {

@@ -21,6 +21,9 @@ export const compileModules = (
   const intermCompiler = new InterimCompiler(engine, {
     config,
     cwd: "/",
+    targetOptions: {
+      outDir: null
+    },
     io: {
       readFile(filePath) {
         return Buffer.from(graph[filePath]);
@@ -41,6 +44,7 @@ export const compileModules = (
     const es6 = compile({
       module: intermCompiler.parseFile(path),
       fileUrl: path,
+      targetOptions: config.compilerOptions || {},
       config,
       includes: []
     })["." + extensionName];
