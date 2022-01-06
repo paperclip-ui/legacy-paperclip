@@ -9,7 +9,7 @@ sidebar_label: Syntax
 You can use regular HTML & CSS in Paperclip. For example:
 
 
-```html height=260px
+```html live height=260px
 <style>
   div {
     color: purple;
@@ -201,7 +201,6 @@ Style mixins are useful for defining a bundle of style declarations (like `color
  **Example**:
 
 ```html height=670px
-// file: mixin-demo.pc
 <style>
   :global(:root) {
     --font-family-default: Quotes Script;
@@ -253,7 +252,7 @@ div {
 
 **Example**:
 
-```html height=500px
+```html live height=500px
 // file: main.pc
 <import src="./breakpoints.pc" as="breakpoints" />
 
