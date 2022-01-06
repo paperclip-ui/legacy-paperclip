@@ -37,10 +37,13 @@ export type BuildDirectoryOptions = BaseOptions & {
 class Compiler {
   private _cssContents: Array<[string, string]>;
   private _compiledInitially: boolean;
+
+  /**
+   */
   constructor(
     private _em: EventEmitter,
     private _engine: EngineDelegate,
-    private _compilerOptions: CompilerOptions,
+    private _targetOptions: CompilerOptions,
     private _builderOptions: BuildDirectoryOptions
   ) {
     this._cssContents = [];
@@ -54,13 +57,13 @@ class Compiler {
         filePath,
         this._engine,
         this._builderOptions,
-        this._compilerOptions
+        this._targetOptions
       );
 
       const outFilePath = getOutputFile(
         filePath,
         this._builderOptions.config,
-        this._compilerOptions,
+        this._targetOptions,
         this._builderOptions.cwd
       );
 
@@ -68,28 +71,28 @@ class Compiler {
         const content = result.translations[ext];
         if (content) {
           let newFilePath = outFilePath + ext;
-          this._em.emit("file", newFilePath, content);
+          this._emitFile(newFilePath, content, true);
         }
       }
 
-      if (this._compilerOptions?.mainCSSFileName) {
+      if (this._targetOptions?.mainCSSFileName) {
         this._addCSSContent(filePath, result.css);
       } else {
         if (isCSSFile(outFilePath)) {
-          this._em.emit("file", getScopedCSSFilePath(outFilePath), result.css);
+          this._emitFile(getScopedCSSFilePath(outFilePath), result.css, true);
         } else {
-          this._em.emit("file", outFilePath + ".css", result.css);
+          this._emitFile(outFilePath + ".css", result.css, true);
         }
       }
 
       for (const asset of result.assets) {
-        if (!asset.outputFilePath) {
+        if (!asset.outputFilePath || asset.outputFilePath === asset.filePath) {
           continue;
         }
-        this._em.emit(
-          "file",
+        this._emitFile(
           asset.outputFilePath,
-          fs.readFileSync(asset.filePath)
+          fs.readFileSync(asset.filePath),
+          false
         );
       }
     } catch (e) {
@@ -99,6 +102,22 @@ class Compiler {
   async wrap() {
     this._compiledInitially = true;
     this._maybeEmitMainCSSFile();
+  }
+
+  private _emitFile(
+    filePath: string,
+    content: string | Buffer,
+    isGeneratedFromPC: boolean
+  ) {
+    if (this._targetOptions.generate && isGeneratedFromPC) {
+      // strip PC extension (looks like file.pc.js) so that we're just left with "js"
+      const ext = filePath.replace(/.*?(\.pc)?\./, "");
+      if (!this._targetOptions.generate.includes(ext)) {
+        return;
+      }
+    }
+
+    this._em.emit("file", filePath, content);
   }
 
   private _addCSSContent(modulePath: string, cssContent: string) {
@@ -122,7 +141,7 @@ class Compiler {
   }
 
   private _maybeEmitMainCSSFile() {
-    if (!this._compilerOptions.mainCSSFileName) {
+    if (!this._targetOptions.mainCSSFileName) {
       return;
     }
     const mainContent = this._cssContents.reduce(
@@ -138,7 +157,7 @@ class Compiler {
       getMainCSSFilePath(
         this._builderOptions.cwd,
         this._builderOptions.config,
-        this._compilerOptions
+        this._targetOptions
       ),
       mainContent.join("\n")
     );
@@ -155,8 +174,7 @@ class DirectoryBuilder {
   ) {
     this._em = new EventEmitter();
     this._compilers = buildCompilerOptions(options.config).map(
-      compilerOptions =>
-        new Compiler(this._em, engine, compilerOptions, options)
+      targetOptions => new Compiler(this._em, engine, targetOptions, options)
     );
   }
 
@@ -251,12 +269,12 @@ function watch(cwd, filesGlob, compileFile) {
 const getMainCSSFilePath = (
   cwd: string,
   config: PaperclipConfig,
-  compilerOptions: CompilerOptions
+  targetOptions: CompilerOptions
 ) => {
   return path.join(
     cwd,
-    compilerOptions.assetOutDir || compilerOptions.outDir || config.srcDir,
-    compilerOptions.mainCSSFileName
+    targetOptions.assetOutDir || targetOptions.outDir || config.srcDir,
+    targetOptions.mainCSSFileName
   );
 };
 
@@ -268,19 +286,19 @@ export const buildFile = async (
   filePath: string,
   engine: EngineDelegate,
   options: BaseOptions,
-  compilerOptions: CompilerOptions
+  targetOptions: CompilerOptions
 ) => {
   const fileUrl =
     filePath.indexOf("file://") === 0
       ? filePath
       : URL.pathToFileURL(filePath).href;
 
-  const interimCompiler = createInterimCompiler(engine, options);
+  const interimCompiler = createInterimCompiler(engine, options, targetOptions);
   const interimModule = interimCompiler.parseFile(fileUrl);
   const targetCompilers = requireTargetCompilers(
     options.cwd,
     options.config,
-    compilerOptions
+    targetOptions
   );
 
   let translations: Record<string, string> = {};
@@ -288,12 +306,12 @@ export const buildFile = async (
   if (isPaperclipFile(filePath)) {
     const includes: string[] = [];
 
-    if (compilerOptions?.importAssetsAsModules) {
-      if (compilerOptions?.mainCSSFileName) {
+    if (targetOptions?.importAssetsAsModules) {
+      if (targetOptions?.mainCSSFileName) {
         includes.push(
           path.resolve(
             path.dirname(filePath),
-            getMainCSSFilePath(options.cwd, options.config, compilerOptions)
+            getMainCSSFilePath(options.cwd, options.config, targetOptions)
           )
         );
       } else {
@@ -324,11 +342,13 @@ export const buildFile = async (
 
 const createInterimCompiler = (
   engine: EngineDelegate,
-  { config, cwd }: BaseOptions
+  { config, cwd }: BaseOptions,
+  targetOptions: CompilerOptions
 ) =>
   new InterimCompiler(engine, {
     cwd,
-    config
+    config,
+    targetOptions
   });
 
 const requireTargetCompilers = (

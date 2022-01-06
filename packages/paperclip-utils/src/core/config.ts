@@ -13,7 +13,7 @@ export type CompilerOptions = {
 
   // where PC files should be compiled to. If undefined, then
   // srcDir is used
-  outDir?: string;
+  outDir: string;
 
   // treat assets as modules
   importAssetsAsModules?: boolean;
@@ -34,9 +34,10 @@ export type CompilerOptions = {
   useAssetHashNames?: boolean;
 };
 
-export type CompilerOptionsTemplate = {
+export type CompilerOptionsTemplate = Omit<CompilerOptions, "outDir"> & {
+  outDir?: string;
   // base?: boolean;
-} & CompilerOptions;
+};
 
 /*
 
@@ -103,19 +104,19 @@ export const getPaperclipConfigIncludes = (
 
 export const buildCompilerOptions = (
   config: PaperclipConfig
-): CompilerOptions => {
-  return buildCompilerOptionsFromTemplates(config.compilerOptions);
+): CompilerOptions[] => {
+  return buildCompilerOptionsFromTemplates(config, config.compilerOptions);
 };
 
 /**
  */
 
 const buildCompilerOptionsFromTemplates = (
-  templates?: CompilerOptionTemplates,
-  parentBase?: CompilerOptionsTemplate
+  config: PaperclipConfig,
+  templates?: CompilerOptionTemplates
 ): CompilerOptions[] => {
   if (!templates) {
-    return [];
+    return [{ outDir: config.srcDir }];
   }
 
   if (!Array.isArray(templates)) {
@@ -124,16 +125,15 @@ const buildCompilerOptionsFromTemplates = (
 
   // const base = templates.find(template => !Array.isArray(template) && template.base) as CompilerOptionsTemplate;
 
-  return templates.reduce((configs, template) => {
-    let config = template;
+  return templates.reduce((allCompilerOptions, template) => {
+    let compilerOptions = template;
 
-    // if (base) {
-    //   config = extendBaseCompilerOptions(template, base);
-    // }
+    allCompilerOptions.push({
+      outDir: config.srcDir,
+      ...compilerOptions
+    });
 
-    configs.push(config);
-
-    return configs;
+    return allCompilerOptions;
   }, []);
 };
 

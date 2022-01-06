@@ -39,12 +39,6 @@ export const build = async (options: BuildOptions) => {
 
   builder
     .onFile((outFilePath: string, content: string) => {
-      const ext = outFilePath.replace(/.*?(\.pc)?\./, "");
-
-      if (options.only && !options.only.includes(ext)) {
-        return;
-      }
-
       if (options.verbose) {
         console.log("Write %s", path.relative(options.cwd, outFilePath));
       }

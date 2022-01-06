@@ -3,12 +3,6 @@ import { expect } from "chai";
 
 describe(__filename + "#", () => {
   describe("Compiler options", () => {
-    it(`Undefined compilerOptions results in an empty array`, () => {
-      const options = buildCompilerOptions({
-        srcDir: "./src"
-      });
-      expect(options).to.eql([]);
-    });
     it(`can be built from non-array config`, () => {
       const options = buildCompilerOptions({
         srcDir: "./src",
@@ -45,6 +39,19 @@ describe(__filename + "#", () => {
         ]
       });
       expect(options).to.eql([{ outDir: "b" }, { outDir: "c" }]);
+    });
+    it(`generates compiler options anyways if not specified `, () => {
+      const options = buildCompilerOptions({
+        srcDir: "./src"
+      });
+      expect(options).to.eql([{ outDir: "./src" }]);
+    });
+    it(`sets outdir as srcDir is not specified`, () => {
+      const options = buildCompilerOptions({
+        srcDir: "./src",
+        compilerOptions: {}
+      });
+      expect(options).to.eql([{ outDir: "./src" }]);
     });
   });
 });

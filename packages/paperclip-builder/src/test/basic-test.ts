@@ -57,12 +57,60 @@ describe((__filename = "#"), () => {
           }
         })
       },
-      [
-        "src/entry.pc.css",
-        "src/entry.pc.d.ts",
-        "src/entry.pc.js",
-        "src/entry.pc.js.map"
-      ]
+      ["src/entry.pc.css", "src/entry.pc.d.ts", "src/entry.pc.js"]
+    ],
+    [
+      `assets are included outside of generate field`,
+      {
+        "src/entry.pc": `<div>
+          <img src="./test.png" />
+        </div>`,
+        "src/test.png": "hello",
+        "paperclip.config.json": JSON.stringify({
+          srcDir: "src",
+          compilerOptions: {
+            target: "react",
+            generate: ["js"],
+            assetOutDir: "lib"
+          }
+        })
+      },
+      ["lib/5d41402abc4b2a76b9719d911017c592.png", "src/entry.pc.js"]
+    ],
+    [
+      `Does not emit assets if outDir is srcDir`,
+      {
+        "src/entry.pc": `<div>
+          <img src="./test.png" />
+        </div>`,
+        "src/test.png": "hello",
+        "paperclip.config.json": JSON.stringify({
+          srcDir: "src",
+          compilerOptions: {
+            target: "react",
+            generate: ["js"]
+          }
+        })
+      },
+      ["src/entry.pc.js"]
+    ],
+    [
+      `Emits assets to outDir if specified`,
+      {
+        "src/entry.pc": `<div>
+          <img src="./test.png" />
+        </div>`,
+        "src/test.png": "hello",
+        "paperclip.config.json": JSON.stringify({
+          srcDir: "src",
+          compilerOptions: {
+            target: "react",
+            generate: ["js"],
+            outDir: "lib"
+          }
+        })
+      },
+      ["lib/entry.pc.js"]
     ]
   ].forEach(([title, files, expectedFilePaths]: [any, any, any]) => {
     const testDir = path.join(TMP_FIXTURE_DIR, kebabCase(title));
