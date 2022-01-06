@@ -31,7 +31,7 @@ export const installOptionalModule = async (
 
   await installModule(moduleName, cwd);
 
-  return resolve.sync(moduleName, { basedir: cwd });
+  return require(resolve.sync(moduleName, { basedir: cwd }));
 };
 
 const installModule = (moduleName: string, cwd: string) => {
