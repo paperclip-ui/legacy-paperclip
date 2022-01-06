@@ -170,7 +170,7 @@ The compiler should _only_ handle HTML. No need to worry about CSS, that's compi
 After your compiler is done, you should symlink your package into your `node_modules` directory, which will expose it for Paperclip. Finally, just run:
 
 ```
-npx paperclip-cli build --only=my-extension
+npx paperclip-cli build
 ```
 
 And you should have compiled code!
