@@ -12171,10 +12171,10 @@ paged-request@^2.0.1:
   dependencies:
     axios "^0.21.1"
 
-paperclip-cli@18.2.14:
-  version "18.2.14"
-  resolved "https://registry.yarnpkg.com/paperclip-cli/-/paperclip-cli-18.2.14.tgz#1c1d5a000457c245fbbbff76f58c31164af3cc25"
-  integrity sha512-zYkfpfK1JLwm1s/xluw7tWcrQxv47tQuXaDAQWp0dgpa/VnCTV3FXcUQ/O3iimL/bniHwF2MVVDJApXwY3UM+Q==
+paperclip-cli@18.3.3:
+  version "18.3.3"
+  resolved "https://registry.yarnpkg.com/paperclip-cli/-/paperclip-cli-18.3.3.tgz#c930391a2870dda10e10d6189211368aa3d6fa73"
+  integrity sha512-x/i+/sej6Qf+HdkSrfT5T+D0Of5uAJ1kvgY8vKIr4xidfakX1DLaAdgHzxQJ7EkEjW4PcUZpRHUz5stHZhbBtg==
   dependencies:
     "@types/inquirer" "^6.5.0"
     "@types/shelljs" "^0.8.8"
@@ -12185,49 +12185,15 @@ paperclip-cli@18.2.14:
     glob "^7.1.6"
     inquirer "^7.3.0"
     lodash "^4.17.19"
-    paperclip "^18.2.14"
-    paperclip-cli-minimal "^18.2.14"
-    paperclip-cli-utils "^18.2.14"
-    paperclip-utils "^18.2.14"
+    paperclip "^18.3.3"
+    paperclip-cli-minimal "^18.3.3"
+    paperclip-cli-utils "^18.3.3"
+    paperclip-coverage "^18.3.3"
+    paperclip-utils "^18.3.2"
     resolve "^1.15.1"
     shelljs "^0.8.4"
-    tandem-workspace "^18.2.14"
+    tandem-workspace "^18.3.3"
     yargs "^15.1.0"
-
-paperclip-compiler-react@^18.3.5:
-  version "18.3.3"
-  dependencies:
-    crc32 "^0.2.2"
-    html-entities "^1.2.1"
-    lodash "^4.17.15"
-    paperclip "^18.3.3"
-    paperclip-compiler-base-jsx "^18.3.3"
-    paperclip-interim "^18.3.3"
-    source-map "^0.7.3"
-
-paperclip-loader@^18.3.5:
-  version "18.3.4"
-  dependencies:
-    "@types/node" "^13.7.7"
-    loader-utils "^1.2.3"
-    paperclip "^18.3.3"
-    paperclip-builder "^18.3.3"
-    paperclip-cli-utils "^18.3.4"
-    paperclip-interim "^18.3.3"
-    resolve "^1.15.1"
-    webpack-virtual-modules-fix-refresh "^0.4.6"
-
-paperclip@18.2.14:
-  version "18.2.14"
-  resolved "https://registry.yarnpkg.com/paperclip/-/paperclip-18.2.14.tgz#e414f17dacd518c10918e4b0d7aad455ef99e747"
-  integrity sha512-Qe674LZq3reUWKhBJJQGCiKmlOoAe0AioYXk2D3TLoKszZzVkSf6Ovza49PmorQgx2w2UomaifXspzV/2HKoiA==
-  dependencies:
-    "@types/mocha" "^5.2.7"
-    chai "^4.2.0"
-    crc32 "^0.2.2"
-    mocha "^7.0.1"
-    paperclip-utils "^18.2.14"
-    url "^0.11.0"
 
 param-case@^3.0.4:
   version "3.0.4"
