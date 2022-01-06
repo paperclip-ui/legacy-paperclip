@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-utils": "^18.3.8"
   },
   "devDependencies": {

@@ -16,7 +16,7 @@
   "dependencies": {
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-builder": "^18.3.8",
     "paperclip-cli-utils": "^18.3.8",
     "paperclip-interim": "^18.3.8",

@@ -29,7 +29,7 @@
     "fs-extra": "^10.0.0",
     "get-port": "^5.1.1",
     "glob": "^7.1.7",
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-common": "^18.3.8",
     "sockjs": "^0.3.21",
     "tandem-common": "^18.3.8",

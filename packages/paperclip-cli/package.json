@@ -25,7 +25,7 @@
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
     "lodash": "^4.17.19",
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-cli-minimal": "^18.3.8",
     "paperclip-cli-utils": "^18.3.8",
     "paperclip-coverage": "^18.3.8",

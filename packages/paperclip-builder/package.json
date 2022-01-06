@@ -16,7 +16,7 @@
     "crc32": "^0.2.2",
     "fs-extra": "^10.0.0",
     "globby": "11.0.4",
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-interim": "^18.3.8",
     "paperclip-utils": "^18.3.8"
   },

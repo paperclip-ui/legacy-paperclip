@@ -33,7 +33,7 @@
     "lru-cache": "^5.1.1",
     "mime": "^2.4.5",
     "ora": "^4.0.4",
-    "paperclip": "^15.1.1",
+    "@paperclipui/core": "^15.1.1",
     "paperclip-cli": "^15.1.1",
     "prettier": "^2.0.5",
     "progress": "^2.0.3",

@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "inquirer": "^7.3.0",
-    "paperclip": "^18.0.2",
+    "@paperclipui/core": "^18.0.2",
     "paperclip-loader": "^18.0.2"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",

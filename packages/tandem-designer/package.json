@@ -30,7 +30,7 @@
     "monaco-editor": "^0.28.1",
     "mousetrap": "^1.6.5",
     "os-browserify": "^0.3.0",
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-common": "^18.3.8",
     "paperclip-monaco": "^18.3.8",
     "paperclip-source-writer": "^18.3.8",

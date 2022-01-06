@@ -9,7 +9,7 @@
     "build": "paperclip build"
   },
   "devDependencies": {
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-cli": "^18.3.9",
     "paperclip-compiler-react": "^18.3.8"
   },

@@ -1,6 +1,7 @@
 {
-  "name": "paperclip",
+  "name": "@paperclipui/core",
   "version": "18.3.8",
+  "private": false,
   "description": "A hybrid approach to design & code",
   "main": "./index.js",
   "typings": "index.d.ts",

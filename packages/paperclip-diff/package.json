@@ -22,7 +22,7 @@
     "mime-types": "^2.1.34",
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
-    "paperclip": "^18.3.8",
+    "@paperclipui/core": "^18.3.8",
     "paperclip-diff-utils": "^18.3.8",
     "paperclip-utils": "^18.3.8",
     "pixelmatch": "^5.2.1",

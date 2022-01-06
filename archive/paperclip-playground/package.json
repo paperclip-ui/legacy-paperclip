@@ -23,7 +23,7 @@
     "mime-types": "^2.1.28",
     "monaco-editor": "^0.28.1",
     "nodemon": "^2.0.7",
-    "paperclip": "^18.0.2",
+    "@paperclipui/core": "^18.0.2",
     "paperclip-monaco": "^18.0.2",
     "paperclip-source-writer": "^18.0.2",
     "paperclip-utils": "^18.0.2",
