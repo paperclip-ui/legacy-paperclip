@@ -1,32 +1,43 @@
 import * as fsa from "fs-extra";
 import chalk from "chalk";
 import * as path from "path";
-import { FILES_DIR } from "./utils";
+import { FILES_DIR, installDep } from "./utils";
 import { GeneratorKind } from "./base";
 import { prompt } from "inquirer";
 import { PaperclipConfig } from "paperclip";
-import * as shell from "shelljs";
 
 const HELLO_WORLD_CONTENT = fsa.readFileSync(
   path.join(FILES_DIR, "hello-paperclip.pc"),
   "utf8"
 );
 
+type Params = {
+  cwd: string;
+  outDir: string;
+  srcDir: string;
+  compilerName: string;
+};
+
 export const root = {
   kind: GeneratorKind.Root,
-  async getParams({ cwd, isNewDirectory }) {
-    const { sourceDirectory, compilerName } = await prompt([
+  async getParams({ cwd, isNewDirectory }): Promise<[Params, any]> {
+    const { srcDir, outDir, compilerName } = await prompt([
       {
-        name: "sourceDirectory",
-        message: "Source directory where your *.pc files live",
+        name: "srcDir",
+        message: "Paperclip source directory",
         default: "./src"
+      },
+      {
+        name: "outDir",
+        message: "Paperclip compile directory",
+        default: "./lib"
       },
       {
         name: "compilerName",
         type: "list",
         message: "Is there a compiler that you'd like to use?",
         choices: [
-          { name: "None", value: null },
+          { name: "None", value: undefined },
           { name: "React", value: "paperclip-compiler-react" },
           { name: "HTML", value: "paperclip-compiler-html" }
         ]
@@ -36,7 +47,8 @@ export const root = {
     return [
       {
         cwd,
-        sourceDirectory,
+        srcDir,
+        outDir,
         compilerName
       },
       []
@@ -53,29 +65,19 @@ export const root = {
     };
   },
   async install({ compilerName, cwd }: any) {
+    await installDep(["paperclip", "paperclip-cli"], cwd, null, true);
     if (compilerName) {
-      const npmClient = fsa.existsSync(path.join(cwd, "yarn.lock"))
-        ? "yarn"
-        : "npm";
-      const inPackage = fsa.existsSync(path.join(cwd, "package.json"));
-
-      let cmd = `npm i ${compilerName} -g`;
-
-      if (inPackage) {
-        if (npmClient === "yarn") {
-          cmd = `yarn add ${compilerName} --dev`;
-        } else {
-          cmd = `npm i ${compilerName} --save-dev`;
-        }
-      }
-
-      console.info(cmd);
-
-      await shell.exec(cmd);
+      await installDep([compilerName], cwd, null, true);
     }
   },
-  async generate({ sourceDirectory: srcDir, cwd }: any) {
+  async generate({ srcDir, outDir, compilerName, cwd }: Params) {
     const config: PaperclipConfig = {
+      compilerOptions: [
+        {
+          target: compilerName,
+          outDir
+        }
+      ],
       srcDir
     };
 
