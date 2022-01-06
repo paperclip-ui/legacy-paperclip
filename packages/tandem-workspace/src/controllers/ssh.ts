@@ -1,7 +1,7 @@
 import * as fsa from "fs-extra";
 import * as path from "path";
 import { exec } from "child_process";
-import { Logger, ok } from "tandem-common";
+import { Logger, ok } from "@tandemui/common";
 
 const ID_RSA_FILE = `/root/.ssh/id_rsa`;
 

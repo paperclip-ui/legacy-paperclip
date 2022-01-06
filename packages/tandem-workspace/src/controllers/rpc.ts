@@ -1,10 +1,10 @@
 import { SocketIo } from "./socket";
 import sockjs from "sockjs";
-import { channels } from "tandem-designer";
-import { Directory, FSItemKind } from "tandem-designer/lib/state";
+import { channels } from "@tandemui/designer";
+import { Directory, FSItemKind } from "@tandemui/designer/lib/state";
 import { sockAdapter, Channel } from "@paperclipui/common";
 import { Workspace } from "./workspace";
-import { isPlainTextFile, Logger } from "tandem-common";
+import { isPlainTextFile, Logger } from "@tandemui/common";
 import * as URL from "url";
 import * as path from "path";
 import * as fs from "fs";

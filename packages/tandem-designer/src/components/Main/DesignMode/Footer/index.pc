@@ -1,4 +1,4 @@
-<import src="tandem-design-system/src/atoms.pc" inject-styles />
+<import src="@tandemui/design-system/src/atoms.pc" inject-styles />
 <import src="./Breadcrumbs/index.pc" as="Breadcrums" />
 <import src="./Layers/index.pc" as="Layers" />
 <import src="components/ResizableContainer/index.pc" as="ResizableContainer" />

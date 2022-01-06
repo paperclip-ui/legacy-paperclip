@@ -1,4 +1,4 @@
-import * as ve from "tandem-designer/src/state";
+import * as ve from "@tandemui/designer/src/state";
 import { isPaperclipFile, memoize, SourceLocation } from "@paperclipui/utils";
 import * as qs from "querystring";
 import mime from "mime-types";

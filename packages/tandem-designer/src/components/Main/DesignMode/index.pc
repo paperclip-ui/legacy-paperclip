@@ -5,7 +5,7 @@
 <import src="./RightSidebar/index.pc" as="RightSidebar" />
 <import src="./Footer/index.pc" as="Footer" />
 <import src="./MediaPreview/index.pc" as="MediaPreview" />
-<import src="tandem-design-system/src/atoms.pc" inject-styles />
+<import src="@tandemui/design-system/src/atoms.pc" inject-styles />
 <import src="./WindowResizer/index.pc" as="WindowResizer" />
 
 <!--

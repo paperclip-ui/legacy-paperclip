@@ -1,4 +1,4 @@
-<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="@tandemui/design-system/src/atoms.pc" as="atoms" inject-styles />
 <import src="styles/utils.pc" as="utils" />
 
 <style>

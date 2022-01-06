@@ -4,7 +4,7 @@ import {
   globalZKeyDown,
   globalYKeyDown,
   globalSaveKeyPress
-} from "tandem-designer/src/actions";
+} from "@tandemui/designer/src/actions";
 
 // Can't import, otherwise the react monaco editor breaks :(
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";

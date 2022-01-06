@@ -1,7 +1,7 @@
 import { AppState } from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
-import history from "tandem-designer/src/dom-history";
-import * as vea from "tandem-designer/src/actions";
+import history from "@tandemui/designer/src/dom-history";
+import * as vea from "@tandemui/designer/src/actions";
 import {
   AccountConnected,
   ActionType,

@@ -12,7 +12,7 @@ import {
 import {
   clientConnected,
   ActionType as VEActionType
-} from "tandem-designer/src/actions";
+} from "@tandemui/designer/src/actions";
 
 export function* handleEngine() {
   yield fork(startEngine);

@@ -4937,7 +4937,7 @@ paged-request@^2.0.1:
     @paperclipui/utils "^18.2.14"
     resolve "^1.15.1"
     shelljs "^0.8.4"
-    tandem-workspace "^18.2.14"
+    @tandemui/workspace "^18.2.14"
     yargs "^15.1.0"
 
 @paperclipui/common@^18.1.6:
@@ -6430,9 +6430,9 @@ supports-color@^8.0.0, supports-color@^8.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-tandem-common@^18.2.14:
+@tandemui/common@^18.2.14:
   version "18.2.14"
-  resolved "https://registry.npmjs.org/tandem-common/-/tandem-common-18.2.14.tgz"
+  resolved "https://registry.npmjs.org/@tandemui/common/-/@tandemui/common-18.2.14.tgz"
   integrity sha512-xsNPeUOVA2aZuX6UdedoGjfABZDHFWtM3LaGF299jrmjOVERdxkE3Rsy+V1XDHPltEJqCdEExVCWKg1M+GAf2Q==
   dependencies:
     express "^4.17.1"
@@ -6440,14 +6440,14 @@ tandem-common@^18.2.14:
     node-fetch "^2.6.1"
     @paperclipui/utils "^18.2.14"
 
-tandem-design-system@^18.2.14:
+@tandemui/design-system@^18.2.14:
   version "18.2.14"
-  resolved "https://registry.npmjs.org/tandem-design-system/-/tandem-design-system-18.2.14.tgz"
+  resolved "https://registry.npmjs.org/@tandemui/design-system/-/@tandemui/design-system-18.2.14.tgz"
   integrity sha512-t+TMjaE+VFol2WILicFmHahBAxUE83fo92Jj3PHkZiEzaUcWV6zNBixcfA0ubcIjvZ5DOu8zPlhii0X/sGajgA==
 
-tandem-designer@^18.2.14:
+@tandemui/designer@^18.2.14:
   version "18.2.14"
-  resolved "https://registry.npmjs.org/tandem-designer/-/tandem-designer-18.2.14.tgz"
+  resolved "https://registry.npmjs.org/@tandemui/designer/-/@tandemui/designer-18.2.14.tgz"
   integrity sha512-XRr2yAjkZC3rWfwqKVob9g9OQhTWdlk1X16ZMsZp40BnczSmGL2pnvToDRJR+aYVKWg+6QC8MdcgRJntA058kA==
   dependencies:
     "@monaco-editor/loader" "^1.2.0"
@@ -6482,12 +6482,12 @@ tandem-designer@^18.2.14:
     redux-saga "^1.1.3"
     sockjs "^0.3.21"
     sockjs-client "^1.5.0"
-    tandem-common "^18.2.14"
-    tandem-design-system "^18.2.14"
+    @tandemui/common "^18.2.14"
+    @tandemui/design-system "^18.2.14"
 
-tandem-workspace@^18.2.14:
+@tandemui/workspace@^18.2.14:
   version "18.2.14"
-  resolved "https://registry.npmjs.org/tandem-workspace/-/tandem-workspace-18.2.14.tgz"
+  resolved "https://registry.npmjs.org/@tandemui/workspace/-/@tandemui/workspace-18.2.14.tgz"
   integrity sha512-OGTDpxkLuGqup92gcuWzKrRx/LUIwwRC5dDu5G02JG89G6mk+S58jwqLppKIwYt2/Q2sMBDFw2DGoVmLTeQUXg==
   dependencies:
     buffer "^6.0.3"
@@ -6498,8 +6498,8 @@ tandem-workspace@^18.2.14:
     paperclip "^18.2.14"
     @paperclipui/common "^18.1.6"
     sockjs "^0.3.21"
-    tandem-common "^18.2.14"
-    tandem-designer "^18.2.14"
+    @tandemui/common "^18.2.14"
+    @tandemui/designer "^18.2.14"
 
 tapable@^2.0.0, tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.1"

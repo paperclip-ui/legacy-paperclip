@@ -10,7 +10,7 @@ import {
   zoomInputChanged,
   popoutButtonClicked
 } from "../../../../actions";
-import { useTextInput } from "tandem-design-system";
+import { useTextInput } from "@tandemui/design-system";
 import { isExpanded } from "../../../../state";
 
 const WIN_ENV =

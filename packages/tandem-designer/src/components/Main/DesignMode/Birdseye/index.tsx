@@ -28,7 +28,7 @@ import {
 } from "@paperclipui/utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useMultipleFrames } from "../Canvas/Frames";
-import { useTextInput } from "tandem-design-system";
+import { useTextInput } from "@tandemui/design-system";
 import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";

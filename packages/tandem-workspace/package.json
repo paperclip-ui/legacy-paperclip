@@ -1,9 +1,9 @@
 {
-  "name": "tandem-workspace",
+  "name": "@tandemui/workspace",
   "version": "18.3.8",
   "description": "standalone Docker server",
   "main": "lib/index.js",
-  "bin": "./bin/tandem-workspace",
+  "bin": "./bin/@tandemui/workspace",
   "scripts": {
     "build": "tsc",
     "build:docker": "docker build .",
@@ -32,7 +32,7 @@
     "@paperclipui/core": "^18.3.8",
     "@paperclipui/common": "^18.3.8",
     "sockjs": "^0.3.21",
-    "tandem-common": "^18.3.8",
-    "tandem-designer": "^18.3.8"
+    "@tandemui/common": "^18.3.8",
+    "@tandemui/designer": "^18.3.8"
   }
 }

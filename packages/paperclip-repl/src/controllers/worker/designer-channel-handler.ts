@@ -5,8 +5,8 @@ import {
   engineDelegateChanged,
   VirtNodeSource
 } from "@paperclipui/utils";
-import { Channels } from "tandem-designer/src/sagas/rpc/channels";
-import { FSItemKind } from "tandem-designer/src/state";
+import { Channels } from "@tandemui/designer/src/sagas/rpc/channels";
+import { FSItemKind } from "@tandemui/designer/src/state";
 import { REPLChannels } from "../channels";
 
 export class DesignerChannelHandler {

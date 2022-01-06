@@ -8,7 +8,7 @@ import {
   WorkerInitialized
 } from "../actions";
 import { loadEngineDelegate } from "@paperclipui/core/browser";
-import * as vea from "tandem-designer/src/actions";
+import * as vea from "@tandemui/designer/src/actions";
 import {
   astEmitted,
   BasicPaperclipActionType,
@@ -21,7 +21,7 @@ import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "@paperclipui/core";
 import { EngineDelegateEvent } from "@paperclipui/core";
 import * as url from "url";
-import { RedirectRequested } from "tandem-designer/src/actions";
+import { RedirectRequested } from "@tandemui/designer/src/actions";
 import { PCSourceWriter } from "@paperclipui/source-writer";
 import { isPaperclipFile, engineDelegateChanged } from "@paperclipui/utils";
 

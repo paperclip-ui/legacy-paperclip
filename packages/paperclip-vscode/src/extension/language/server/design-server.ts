@@ -16,7 +16,7 @@ import {
   start as startWorkspace,
   Workspace,
   Project
-} from "tandem-workspace/lib/server";
+} from "@tandemui/workspace/lib/server";
 import { ExprSource } from "@paperclipui/utils";
 import { ContentChange } from "@paperclipui/source-writer";
 

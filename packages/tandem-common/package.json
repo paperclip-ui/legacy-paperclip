@@ -1,5 +1,5 @@
 {
-  "name": "tandem-common",
+  "name": "@tandemui/common",
   "version": "18.3.8",
   "description": "",
   "main": "index.js",

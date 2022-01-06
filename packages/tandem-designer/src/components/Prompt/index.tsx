@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from "react";
-import { Button, TextInput } from "tandem-design-system";
+import { Button, TextInput } from "@tandemui/design-system";
 import { Modal } from "../Modal";
 
 export type PromptProps = {

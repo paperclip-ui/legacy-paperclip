@@ -6,7 +6,7 @@ import * as styles from "./index.pc";
 import { Birdseye } from "./Birdseye";
 import { ErrorBanner } from "./ErrorBanner";
 import { useAppStore } from "../../../hooks/useAppStore";
-import { isMediaFile } from "tandem-common/lib/mime";
+import { isMediaFile } from "@tandemui/common/lib/mime";
 import { RightSidebar } from "./RightSidebar";
 import { MediaPreview } from "./MediaPreview";
 import { isPaperclipFile } from "@paperclipui/utils";

@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useRef, useState } from "react";
-import { MainBase as DesignModeMainBase } from "tandem-designer/src/components/Main";
-import history from "tandem-designer/src/dom-history";
+import { MainBase as DesignModeMainBase } from "@tandemui/designer/src/components/Main";
+import history from "@tandemui/designer/src/dom-history";
 import { withAppStore } from "../../hocs/withAppStore";
 import { useAppStore } from "../../hooks/useAppStore";
 import { MainToolbar } from "./Toolbar";

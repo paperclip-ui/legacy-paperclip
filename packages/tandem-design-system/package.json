@@ -1,5 +1,5 @@
 {
-  "name": "tandem-design-system",
+  "name": "@tandemui/design-system",
   "version": "18.3.8",
   "description": "",
   "main": "lib/index.js",

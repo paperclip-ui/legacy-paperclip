@@ -1,9 +1,9 @@
 import React, { memo, useMemo, useRef, useState } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
-import TextInput from "tandem-design-system/src/TextInput.pc";
-import { useTextInput } from "tandem-design-system";
-import { useSelect } from "tandem-designer/src/components/Select";
+import TextInput from "@tandemui/design-system/src/TextInput.pc";
+import { useTextInput } from "@tandemui/design-system";
+import { useSelect } from "@tandemui/designer/src/components/Select";
 
 import {
   fileItemClicked,

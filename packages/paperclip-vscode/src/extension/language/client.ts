@@ -15,7 +15,7 @@ import {
 } from "vscode-languageclient";
 import * as path from "path";
 import { $$EVENT } from "./server/constants";
-// import { PCEngineCrashed } from "tandem-designer/lib/server/services/pc-engine";
+// import { PCEngineCrashed } from "@tandemui/designer/lib/server/services/pc-engine";
 
 /**
  * Spins up language server

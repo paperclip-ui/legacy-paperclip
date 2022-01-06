@@ -1,4 +1,4 @@
-import { Logger } from "tandem-common";
+import { Logger } from "@tandemui/common";
 import * as path from "path";
 import * as url from "url";
 import { getProjectId, Project } from "./project";

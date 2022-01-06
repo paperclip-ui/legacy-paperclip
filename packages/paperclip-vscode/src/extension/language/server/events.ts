@@ -1,6 +1,6 @@
 import { ExprSource } from "@paperclipui/utils";
 import { WorkspaceFolder } from "vscode-languageserver";
-import { Project } from "tandem-workspace/lib/server";
+import { Project } from "@tandemui/workspace/lib/server";
 import { ContentChange } from "@paperclipui/source-writer";
 
 export class RevealSourceRequested {

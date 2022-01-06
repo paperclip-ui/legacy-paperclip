@@ -1,4 +1,4 @@
-import { IConnection } from "tandem-designer/src/sagas/rpc/connection";
+import { IConnection } from "@tandemui/designer/src/sagas/rpc/connection";
 import { EventEmitter } from "events";
 
 export class WindowConnection implements IConnection {

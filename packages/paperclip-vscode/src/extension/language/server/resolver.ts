@@ -21,7 +21,7 @@ import {
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "@paperclipui/language-service";
-// import { PCEngineInitialized } from "tandem-designer/lib/server/services/pc-engine";
+// import { PCEngineInitialized } from "@tandemui/designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
 import * as parseColor from "color";
