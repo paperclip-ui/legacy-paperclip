@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "yarn build:definition && concurrently \"webpack serve\" \"yarn build:definition --watch\"",
-    "build:definition": "paperclip build --only=d.ts"
+    "start": "yarn build:paperclip && concurrently \"webpack serve\" \"yarn build:paperclip --watch\"",
+    "build:paperclip": "paperclip build"
   },
   "author": "",
   "license": "ISC",

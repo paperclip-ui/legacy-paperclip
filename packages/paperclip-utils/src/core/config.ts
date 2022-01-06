@@ -71,7 +71,7 @@ type LintOptions = {
 
 export type PaperclipConfig = {
   // source directory where *.pc files live
-  srcDir: string;
+  srcDir?: string;
 
   // directories where modules are stored
   moduleDirs?: string[];

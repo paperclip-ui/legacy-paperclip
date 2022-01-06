@@ -36,17 +36,6 @@ describe(__filename + "#", () => {
     ]);
   });
 
-  it("can resolve local file with the output directory", async () => {
-    const outputPath = resolveImportFile(fs)(
-      path.join(TEST_FIXTURE_SRC_DIRECTORY, "nested-mod-import.pc"),
-      "@nested/in/a/folder/src/component.pc",
-      true
-    );
-    expect(outputPath).to.contain(
-      "test-fixtures/modules/@nested/in/a/folder/lib/component.pc"
-    );
-  });
-
   it("traverses parent to resolve module", async () => {
     const outputPath = resolveImportUri(fs)(
       path.join(

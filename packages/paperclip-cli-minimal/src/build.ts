@@ -16,12 +16,9 @@ export type BuildOptions = {
   cwd: string;
   config?: string;
   print: boolean;
-  output?: string;
-  only?: string[];
   watch: boolean;
   compilerName?: string;
   sourceDirectory?: string;
-  outputDirectory?: string;
   verbose: boolean;
 };
 
@@ -76,28 +73,15 @@ const writeFileSync = (
 };
 
 const loadConfig = (options: BuildOptions): PaperclipConfig => {
-  let localConfig: Partial<PaperclipConfig> = {};
-
   try {
-    localConfig = require(resolve2(
+    return require(resolve2(
       options.config || path.join(options.cwd, "/paperclip.config")
     ));
 
     // eslint-disable-next-line
-  } catch (e) {}
-
-  const srcDir = options.outputDirectory || localConfig.srcDir;
-  const outDir =
-    options.output || localConfig.compilerOptions?.outDir || srcDir;
-
-  return {
-    ...localConfig,
-    compilerOptions: {
-      ...(localConfig.compilerOptions || {}),
-      outDir
-    },
-    srcDir
-  };
+  } catch (e) {
+    return {};
+  }
 };
 
 const resolve2 = module => {

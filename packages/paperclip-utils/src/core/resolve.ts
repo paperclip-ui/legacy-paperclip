@@ -4,27 +4,19 @@ import { stripFileProtocol } from "./utils";
 import { PC_CONFIG_FILE_NAME } from "./constants";
 import { PaperclipConfig } from "./config";
 
-export const resolveImportUri = fs => (
-  fromPath: string,
-  toPath: string,
-  resolveOutput?: boolean
-) => {
-  const filePath = resolveImportFile(fs)(fromPath, toPath, resolveOutput);
+export const resolveImportUri = fs => (fromPath: string, toPath: string) => {
+  const filePath = resolveImportFile(fs)(fromPath, toPath);
   return filePath;
 };
 
-export const resolveImportFile = fs => (
-  fromPath: string,
-  toPath: string,
-  resolveOutput?: boolean
-) => {
+export const resolveImportFile = fs => (fromPath: string, toPath: string) => {
   try {
     if (/\w+:\/\//.test(toPath)) {
       return toPath;
     }
 
     if (toPath.charAt(0) !== ".") {
-      const uri = resolveModule(fs)(fromPath, toPath, resolveOutput);
+      const uri = resolveModule(fs)(fromPath, toPath);
       if (!uri) {
         throw new Error(`module ${toPath} not found`);
       }
@@ -59,11 +51,7 @@ export const resolvePCConfig = fs => (
   return [readJSONSync(fs)(uri), configUrl];
 };
 
-const resolveModule = fs => (
-  fromPath: string,
-  moduleRelativePath: string,
-  resolveOutput: boolean
-) => {
+const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
   // need to parse each time in case config changed.
   const [config, configUrl] = resolvePCConfig(fs)(fromPath) || [];
 
@@ -95,23 +83,9 @@ const resolveModule = fs => (
         moduleName
       );
       const modulePath = path.join(moduleDirectory, srcPath);
-      const moduleConfigUrl = findPCConfigUrl(fs)(modulePath);
 
       if (fs.existsSync(modulePath)) {
-        const moduleConfig: PaperclipConfig = readJSONSync(fs)(
-          new URL(moduleConfigUrl) as any
-        );
-        const sourceDir = path.join(
-          path.dirname(url.fileURLToPath(moduleConfigUrl)),
-          moduleConfig.srcDir
-        );
-        const outputDir = path.join(
-          path.dirname(url.fileURLToPath(moduleConfigUrl)),
-          moduleConfig.compilerOptions?.outDir || moduleConfig.srcDir
-        );
-        const actualPath = resolveOutput
-          ? modulePath.replace(sourceDir, outputDir)
-          : fs.realpathSync(modulePath);
+        const actualPath = fs.realpathSync(modulePath);
 
         return url.pathToFileURL(actualPath).href;
       }
