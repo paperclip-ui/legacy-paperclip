@@ -53,7 +53,7 @@ describe((__filename = "#"), () => {
           srcDir: "src",
           compilerOptions: {
             target: "react",
-            emit: ["d.ts", ""]
+            generate: ["d.ts", "js", "css"]
           }
         })
       },

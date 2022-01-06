@@ -20,7 +20,8 @@ import {
   buildCompilerOptions,
   getOutputFile,
   isPaperclipFile,
-  getScopedCSSFilePath
+  getScopedCSSFilePath,
+  CompilerOptions
 } from "paperclip-utils";
 
 type BaseOptions = {
@@ -33,65 +34,35 @@ export type BuildDirectoryOptions = BaseOptions & {
   watch?: boolean;
 };
 
-class DirectoryBuilder {
-  private _em: EventEmitter;
-  private _compiledInitially: boolean;
+class Compiler {
   private _cssContents: Array<[string, string]>;
-
+  private _compiledInitially: boolean;
   constructor(
-    readonly engine: EngineDelegate,
-    readonly options: BuildDirectoryOptions
+    private _em: EventEmitter,
+    private _engine: EngineDelegate,
+    private _compilerOptions: CompilerOptions,
+    private _builderOptions: BuildDirectoryOptions
   ) {
     this._cssContents = [];
-    this._em = new EventEmitter();
   }
-  async start() {
-    const sources = getPaperclipConfigIncludes(
-      this.options.config,
-      this.options.cwd
-    );
-
-    const filePaths = flatten(
-      await Promise.all(
-        sources.map(inc =>
-          globby(inc, {
-            gitignore: this.options.gitignore !== false ? true : false
-          })
-        )
-      )
-    );
-
-    await Promise.all(filePaths.map(this._buildFile));
-    if (!this.options.watch) {
-      this._em.emit("end");
-    }
-    this._compiledInitially = true;
-    this._maybeEmitMainCSSFile();
-
-    if (this.options.watch) {
-      sources.forEach(source =>
-        watch(this.options.cwd, source, this._buildFile)
-      );
-    } else {
-      this._em.emit("end");
-    }
-    return this;
-  }
-  _buildFile = async (filePath: string) => {
+  async buildFile(filePath: string) {
     if (!isPaperclipResourceFile(filePath)) {
       return;
     }
     try {
-      const result = await buildFile(filePath, this.engine, this.options);
+      const result = await buildFile(
+        filePath,
+        this._engine,
+        this._builderOptions,
+        this._compilerOptions
+      );
 
       const outFilePath = getOutputFile(
         filePath,
-        this.options.config,
-        this.options.config.compilerOptions,
-        this.options.cwd
+        this._builderOptions.config,
+        this._compilerOptions,
+        this._builderOptions.cwd
       );
-
-      console.log(this.options.cwd);
 
       for (const ext in result.translations) {
         const content = result.translations[ext];
@@ -101,7 +72,7 @@ class DirectoryBuilder {
         }
       }
 
-      if (this.options.config.compilerOptions?.mainCSSFileName) {
+      if (this._compilerOptions?.mainCSSFileName) {
         this._addCSSContent(filePath, result.css);
       } else {
         if (isCSSFile(outFilePath)) {
@@ -124,24 +95,10 @@ class DirectoryBuilder {
     } catch (e) {
       this._em.emit("error", e, filePath);
     }
-  };
-  private _maybeEmitMainCSSFile() {
-    if (!this.options.config.compilerOptions?.mainCSSFileName) {
-      return;
-    }
-    const mainContent = this._cssContents.reduce(
-      (mainContent, [_filePath, content]) => {
-        mainContent.push(content);
-        return mainContent;
-      },
-      []
-    );
-
-    this._em.emit(
-      "file",
-      getMainCSSFilePath(this.options.cwd, this.options.config),
-      mainContent.join("\n")
-    );
+  }
+  async wrap() {
+    this._compiledInitially = true;
+    this._maybeEmitMainCSSFile();
   }
 
   private _addCSSContent(modulePath: string, cssContent: string) {
@@ -163,6 +120,98 @@ class DirectoryBuilder {
 
     this._maybeEmitMainCSSFile();
   }
+
+  private _maybeEmitMainCSSFile() {
+    if (!this._compilerOptions.mainCSSFileName) {
+      return;
+    }
+    const mainContent = this._cssContents.reduce(
+      (mainContent, [_filePath, content]) => {
+        mainContent.push(content);
+        return mainContent;
+      },
+      []
+    );
+
+    this._em.emit(
+      "file",
+      getMainCSSFilePath(
+        this._builderOptions.cwd,
+        this._builderOptions.config,
+        this._compilerOptions
+      ),
+      mainContent.join("\n")
+    );
+  }
+}
+
+class DirectoryBuilder {
+  private _compilers: Compiler[];
+  private _em: EventEmitter;
+
+  constructor(
+    readonly engine: EngineDelegate,
+    readonly options: BuildDirectoryOptions
+  ) {
+    this._em = new EventEmitter();
+    this._compilers = buildCompilerOptions(options.config).map(
+      compilerOptions =>
+        new Compiler(this._em, engine, compilerOptions, options)
+    );
+  }
+
+  /**
+   */
+
+  async start() {
+    const sources = getPaperclipConfigIncludes(
+      this.options.config,
+      this.options.cwd
+    );
+
+    const filePaths = flatten(
+      await Promise.all(
+        sources.map(inc =>
+          globby(inc, {
+            gitignore: this.options.gitignore !== false ? true : false
+          })
+        )
+      )
+    );
+
+    await Promise.all(filePaths.map(this._buildFile));
+    if (!this.options.watch) {
+      this._em.emit("end");
+    }
+
+    await this._wrap();
+
+    if (this.options.watch) {
+      sources.forEach(source =>
+        watch(this.options.cwd, source, this._buildFile)
+      );
+    } else {
+      this._em.emit("end");
+    }
+    return this;
+  }
+
+  /**
+   */
+  _buildFile = async (filePath: string) => {
+    for (const compiler of this._compilers) {
+      await compiler.buildFile(filePath);
+    }
+  };
+
+  /**
+   */
+
+  _wrap = async () => {
+    for (const compiler of this._compilers) {
+      await compiler.wrap();
+    }
+  };
 
   onFile(cb: (file: string, content: string) => void) {
     this._em.on("file", cb);
@@ -199,13 +248,15 @@ function watch(cwd, filesGlob, compileFile) {
   });
 }
 
-const getMainCSSFilePath = (cwd: string, config: PaperclipConfig) => {
+const getMainCSSFilePath = (
+  cwd: string,
+  config: PaperclipConfig,
+  compilerOptions: CompilerOptions
+) => {
   return path.join(
     cwd,
-    config.compilerOptions.assetOutDir ||
-      config.compilerOptions.outDir ||
-      config.srcDir,
-    config.compilerOptions.mainCSSFileName
+    compilerOptions.assetOutDir || compilerOptions.outDir || config.srcDir,
+    compilerOptions.mainCSSFileName
   );
 };
 
@@ -216,7 +267,8 @@ const getMainCSSFilePath = (cwd: string, config: PaperclipConfig) => {
 export const buildFile = async (
   filePath: string,
   engine: EngineDelegate,
-  options: BaseOptions
+  options: BaseOptions,
+  compilerOptions: CompilerOptions
 ) => {
   const fileUrl =
     filePath.indexOf("file://") === 0
@@ -225,19 +277,23 @@ export const buildFile = async (
 
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
-  const targetCompilers = requireTargetCompilers(options.cwd, options.config);
+  const targetCompilers = requireTargetCompilers(
+    options.cwd,
+    options.config,
+    compilerOptions
+  );
 
   let translations: Record<string, string> = {};
 
   if (isPaperclipFile(filePath)) {
     const includes: string[] = [];
 
-    if (options.config.compilerOptions?.importAssetsAsModules) {
-      if (options.config.compilerOptions?.mainCSSFileName) {
+    if (compilerOptions?.importAssetsAsModules) {
+      if (compilerOptions?.mainCSSFileName) {
         includes.push(
           path.resolve(
             path.dirname(filePath),
-            getMainCSSFilePath(options.cwd, options.config)
+            getMainCSSFilePath(options.cwd, options.config, compilerOptions)
           )
         );
       } else {
@@ -277,7 +333,8 @@ const createInterimCompiler = (
 
 const requireTargetCompilers = (
   cwd: string,
-  config: PaperclipConfig
+  config: PaperclipConfig,
+  options: CompilerOptions
 ): TargetCompiler[] => {
   const localDirs = cwd
     .split("/")
@@ -298,9 +355,7 @@ const requireTargetCompilers = (
     for (const moduleName of fs.readdirSync(possibleDir)) {
       if (/paperclip-compiler-/.test(moduleName) && !compilers[moduleName]) {
         if (
-          !config.compilerOptions?.target ||
-          config.compilerOptions?.target ===
-            moduleName.substring("paperclip-compiler-".length)
+          options.target === moduleName.substring("paperclip-compiler-".length)
         ) {
           compilers[moduleName] = require(path.join(possibleDir, moduleName));
         }

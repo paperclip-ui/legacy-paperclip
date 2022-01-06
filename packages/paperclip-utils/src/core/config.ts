@@ -8,6 +8,9 @@ export type CompilerOptions = {
 
   target?: string;
 
+  // [d.ts, js, ]
+  generate?: string[];
+
   // where PC files should be compiled to. If undefined, then
   // srcDir is used
   outDir?: string;
