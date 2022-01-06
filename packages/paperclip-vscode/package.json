@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-vscode",
+  "name": "@paperclipui/vscode",
   "displayName": "Paperclip",
   "version": "18.3.8",
   "electronVersion": "7.1.10",
@@ -29,7 +29,7 @@
   },
   "activationEvents": [
     "onLanguage:paperclip",
-    "onWebviewPanel:paperclip-preview"
+    "onWebviewPanel:@paperclipui/preview"
   ],
   "categories": [
     "Programming Languages"
@@ -94,25 +94,25 @@
         "extensions": [
           ".pc"
         ],
-        "configuration": "./languages/paperclip-html-language-configuration.json"
+        "configuration": "./languages/@paperclipui/html-language-configuration.json"
       },
       {
         "id": "pcss",
         "aliases": [
-          "paperclip-css",
-          "paperclip-css"
+          "@paperclipui/css",
+          "@paperclipui/css"
         ],
         "extensions": [
           ".pcss"
         ],
-        "configuration": "./languages/paperclip-css-language-configuration.json"
+        "configuration": "./languages/@paperclipui/css-language-configuration.json"
       }
     ],
     "grammars": [
       {
         "language": "paperclip",
-        "scopeName": "text.html.paperclip-html",
-        "path": "./syntaxes/paperclip-html.tmLanguage.json",
+        "scopeName": "text.html.@paperclipui/html",
+        "path": "./syntaxes/@paperclipui/html.tmLanguage.json",
         "embeddedLanguages": {
           "source.pcss": "pcss",
           "source.js": "javascript"
@@ -121,14 +121,14 @@
       {
         "language": "pcss",
         "scopeName": "source.pcss",
-        "path": "./syntaxes/paperclip-css.json"
+        "path": "./syntaxes/@paperclipui/css.json"
       }
     ]
   },
   "scripts": {
     "build": "tsc && npm run build:syntaxes",
     "build:syntaxes": "node lib/scripts/build",
-    "build:syntaxes:watch": "nodemon --exec \"node lib/scripts/build\" --watch ./syntaxes/paperclip-html.yaml",
+    "build:syntaxes:watch": "nodemon --exec \"node lib/scripts/build\" --watch ./syntaxes/@paperclipui/html.yaml",
     "xtest": "node lib/test/run",
     "lint": "eslint src",
     "build:watch": "concurrently \"tsc --watch --preserveWatchOutput\" \"npm run build:syntaxes:watch\"",
@@ -169,12 +169,12 @@
     "mousetrap": "^1.6.5",
     "p-limit": "^3.0.2",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-autocomplete": "^18.3.8",
-    "paperclip-common": "^18.3.8",
-    "paperclip-language-service": "^18.3.8",
-    "paperclip-source-writer": "^18.3.8",
-    "paperclip-utils": "^18.3.8",
-    "paperclip-web-renderer": "^18.3.8",
+    "@paperclipui/autocomplete": "^18.3.8",
+    "@paperclipui/common": "^18.3.8",
+    "@paperclipui/language-service": "^18.3.8",
+    "@paperclipui/source-writer": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8",
+    "@paperclipui/web-renderer": "^18.3.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tandem-designer": "^18.3.8",

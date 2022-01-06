@@ -47,7 +47,7 @@ exports.config = {
       },
       {
         test: /\.pc$/,
-        loader: "paperclip-loader",
+        loader: "@paperclipui/loader",
         include: [path.resolve(BASE_DIR, "src"), path.resolve("..")],
         options: {
           config: require("../paperclip.config.json")

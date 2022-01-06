@@ -3,7 +3,7 @@ import {
   PCExports,
   stringifyCSSSheet,
   VirtSheet
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { InterimCSS } from "../state";
 import { InterimAsset } from "../state/assets";
 

@@ -1,6 +1,6 @@
 {
   "name": "Paperclip Template",
-  "scopeName": "text.html.@paperclipui/html",
+  "scopeName": "text.html.paperclip-html",
   "fileTypes": [],
   "uuid": "3e3ce414-c385-42ea-a2ba-451a37ca6fd1",
   "patterns": [
@@ -11,9 +11,6 @@
   "repository": {
     "topNodes": {
       "patterns": [
-        {
-          "include": "#slots"
-        },
         {
           "include": "#nodes"
         }
@@ -32,13 +29,16 @@
         },
         {
           "include": "#entities"
+        },
+        {
+          "include": "#slots"
         }
       ]
     },
     "elements": {
       "patterns": [
         {
-          "begin": "(<)(meta|import|input)",
+          "begin": "(<)(meta|import)",
           "beginCaptures": {
             "1": {
               "name": "punctuation.definition.tag.begin.html"
@@ -99,15 +99,58 @@
           ]
         },
         {
-          "match": "(<)([\\w\\-\\.]+)(>)",
-          "captures": {
+          "begin": "(?=(<)([\\w\\-\\.]+)(?=((<\\s*)|(\\s+))(?!\\?)|\\/?>))",
+          "end": "(/>)|((</)([\\w\\-\\.]+)(>))",
+          "endCaptures": {
             "1": {
+              "name": "punctuation.definition.tag.end.html"
+            },
+            "3": {
               "name": "punctuation.definition.tag.begin.html"
             },
-            "2": {
+            "4": {
               "name": "entity.name.tag.html"
+            },
+            "5": {
+              "name": "punctuation.definition.tag.end.html"
             }
-          }
+          },
+          "patterns": [
+            {
+              "begin": "(<)([\\w\\-\\.]+)(?=((<\\s*)|(\\s+))(?!\\?)|\\/?>)",
+              "end": "(?=[/]?>)",
+              "beginCaptures": {
+                "1": {
+                  "name": "punctuation.definition.tag.begin.html"
+                },
+                "2": {
+                  "name": "entity.name.tag.html"
+                },
+                "3": {
+                  "name": "punctuation.definition.tag.end.html"
+                }
+              },
+              "patterns": [
+                {
+                  "include": "#attribute"
+                }
+              ]
+            },
+            {
+              "begin": "(>)",
+              "beginCaptures": {
+                "1": {
+                  "name": "punctuation.definition.tag.end.html"
+                }
+              },
+              "end": "(?=</)",
+              "patterns": [
+                {
+                  "include": "#nodes"
+                }
+              ]
+            }
+          ]
         }
       ]
     },

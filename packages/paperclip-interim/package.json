@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-interim",
+  "name": "@paperclipui/interim",
   "version": "18.3.8",
   "description": "",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
     "crc32": "^0.2.2",
     "mime": "^3.0.0",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-utils": "^18.3.8"
+    "@paperclipui/utils": "^18.3.8"
   },
   "devDependencies": {
     "@types/mocha": "^8.0.0",

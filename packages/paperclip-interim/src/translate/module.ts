@@ -18,7 +18,7 @@ import {
   ModuleKind,
   CSSExports,
   isCSSExports
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";

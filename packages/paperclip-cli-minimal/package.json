@@ -1,10 +1,10 @@
 {
-  "name": "paperclip-cli-minimal",
+  "name": "@paperclipui/cli-minimal",
   "version": "18.3.8",
   "description": "Minimal command line tool for Paperclip",
   "main": "lib/cli.js",
   "bin": {
-    "paperclip-minimal": "./bin/paperclip"
+    "@paperclipui/minimal": "./bin/paperclip"
   },
   "scripts": {
     "build": "tsc",
@@ -19,9 +19,9 @@
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-builder": "^18.3.8",
-    "paperclip-cli-utils": "^18.3.8",
-    "paperclip-utils": "^18.3.8",
+    "@paperclipui/builder": "^18.3.8",
+    "@paperclipui/cli-utils": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8",
     "resolve": "^1.15.1",
     "yargs": "^15.1.0"
   },

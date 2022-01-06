@@ -7,8 +7,8 @@ import {
   endBlock,
   writeJoin
 } from "./utils";
-import { InterimComponent, InterimModule } from "paperclip-interim";
-import { CompilerOptions, PaperclipConfig } from "paperclip-utils";
+import { InterimComponent, InterimModule } from "@paperclipui/interim";
+import { CompilerOptions, PaperclipConfig } from "@paperclipui/utils";
 
 export type DefinitionCompilerOptions = {
   imports: string;

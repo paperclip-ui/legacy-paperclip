@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-diff-utils",
+  "name": "@paperclipui/diff-utils",
   "version": "18.3.8",
   "description": "",
   "main": "lib/index.js",
@@ -13,7 +13,7 @@
     "glob": "^7.2.0",
     "globby": "^11.0.4",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-cli-utils": "^18.3.8",
-    "paperclip-utils": "^18.3.8"
+    "@paperclipui/cli-utils": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8"
   }
 }

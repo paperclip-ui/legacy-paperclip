@@ -1,14 +1,14 @@
 {
-  "name": "paperclip-diff",
+  "name": "@paperclipui/diff",
   "version": "18.3.8",
   "description": "",
   "main": "lib/index.js",
   "bin": {
-    "paperclip-diff": "./bin/paperclip-diff"
+    "@paperclipui/diff": "./bin/@paperclipui/diff"
   },
   "scripts": {
     "build": "yarn build:paperclip && tsc",
-    "build:paperclip": "paperclip-minimal build",
+    "build:paperclip": "@paperclipui/minimal build",
     "build:watch": "concurrently \"tsc --watch\" \"yarn build:paperclip --watch\""
   },
   "author": "",
@@ -23,8 +23,8 @@
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-diff-utils": "^18.3.8",
-    "paperclip-utils": "^18.3.8",
+    "@paperclipui/diff-utils": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
     "puppeteer": "^13.0.0",
@@ -32,7 +32,7 @@
     "simple-git": "^2.48.0"
   },
   "devDependencies": {
-    "paperclip-cli-minimal": "^18.3.8",
-    "paperclip-compiler-html": "^18.3.8"
+    "@paperclipui/cli-minimal": "^18.3.8",
+    "@paperclipui/compiler-html": "^18.3.8"
   }
 }

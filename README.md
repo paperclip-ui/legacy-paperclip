@@ -6,7 +6,7 @@
   <img src="assets/logo-outline-5.png" width="400">
 </div>
 
-> **Installation**: `npx paperclip-cli init` in your project directory.
+> **Installation**: `npx @paperclipui/cli init` in your project directory.
 
 
 Paperclip allows you to write _durable_ HTML & CSS that can be used in just about any codebase. Here's what it looks like:
@@ -64,7 +64,7 @@ Currently Paperclip compiles to vanilla React code. Other compiler targets for l
 
 ![VS Code extension](assets/design-system.gif)
 
-> The [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) comes with syntax highlighting, code completion, and embeds the [visual tooling](https://paperclip.dev/docs/visual-tooling) that you can use to build UIs in realtime.
+> The [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.@paperclipui/vscode) comes with syntax highlighting, code completion, and embeds the [visual tooling](https://paperclip.dev/docs/visual-tooling) that you can use to build UIs in realtime.
 
 And more to come. Here's what's next:
 

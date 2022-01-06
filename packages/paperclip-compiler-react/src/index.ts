@@ -1,4 +1,4 @@
-import { compilers } from "paperclip-compiler-base-jsx";
+import { compilers } from "@paperclipui/compiler-base-jsx";
 
 export const compile = compilers({
   code: {

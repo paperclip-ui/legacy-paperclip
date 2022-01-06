@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { createMockEngineDelegate } from "paperclip-test-utils";
+import { createMockEngineDelegate } from "@paperclipui/test-utils";
 import { PaperclipLanguageService } from "../language-service";
 import { TAG_NAME_COMPLETION_ITEMS } from "../completion-items";
 import { addCompletionItemData } from "../utils";

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-// import { App as REPLApp } from "paperclip-repl/src/app";
+// import { App as REPLApp } from "@paperclipui/repl/src/app";
 
 import CodeBlock from "@theme-init/CodeBlock";
 
@@ -31,7 +31,7 @@ const loadPlayground = () => {
     _playgroundPromise ||
     (_playgroundPromise = new Promise(resolve => {
       const script = document.createElement("script");
-      script.src = "/paperclip-playground-main.js";
+      script.src = "/@paperclipui/playground-main.js";
       document.head.appendChild(script);
       script.onload = resolve;
     }))
@@ -81,7 +81,7 @@ const LiveEditor = ({
 
     // app.init();
 
-    import("paperclip-repl/src/app").then(module => {
+    import("@paperclipui/repl/src/app").then(module => {
       const app = new module.App(
         {
           files: graph,
@@ -93,7 +93,7 @@ const LiveEditor = ({
 
       app.init();
     });
-    // import("paperclip-repl/src/app").then((module) => {
+    // import("@paperclipui/repl/src/app").then((module) => {
     //   console.log(module);
     // });
 

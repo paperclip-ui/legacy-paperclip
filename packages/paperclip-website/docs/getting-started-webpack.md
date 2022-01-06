@@ -9,7 +9,7 @@ sidebar_label: Webpack
 Paperclip works with Webpack 4 and 5. To get started, install these dependencies:
 
 ```
-npm i paperclip-compiler-react paperclip-loader --save-dev
+npm i @paperclipui/compiler-react @paperclipui/loader --save-dev
 ```
 
 Next, in the same directory as `webpack.config.js`, copy this content to `paperclip.config.json`:
@@ -35,7 +35,7 @@ module.exports = {
 
       {
         test: /\.pc$/,
-        loader: "paperclip-loader",
+        loader: "@paperclipui/loader",
         options: {
 
           // config for your Paperclip files
@@ -68,7 +68,7 @@ module.exports = {
 };
 ```
 
-> If you want to see an example of this, check out the [Paperclip playground webpack.config.js](https://github.com/paperclipui/paperclip/blob/master/packages/paperclip-playground/webpack.config.js#L62)
+> If you want to see an example of this, check out the [Paperclip playground webpack.config.js](https://github.com/paperclipui/paperclip/blob/master/packages/@paperclipui/playground/webpack.config.js#L62)
 
 Paperclip requires that you use [css-loader](https://webpack.js.org/loaders/css-loader/) in order to work, and either the [style-loader](https://webpack.js.org/loaders/style-loader/), or [mini-css-extract-plugin](https://webpack.js.org/plugins/mini-css-extract-plugin/) to go with that. It's also recommended that you include [url-loader](https://webpack.js.org/loaders/url-loader/) or [file-loader](https://webpack.js.org/loaders/file-loader/) in your webpack config so that you can import images, and other assets into your Paperclip files.
 

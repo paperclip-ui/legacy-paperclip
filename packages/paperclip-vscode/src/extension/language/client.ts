@@ -4,7 +4,7 @@ import {
   eventHandlers,
   Observable,
   Observer
-} from "paperclip-common";
+} from "@paperclipui/common";
 import { workspace, ExtensionContext } from "vscode";
 
 import {

@@ -12,7 +12,7 @@ import {
   Reference,
   Slot,
   Text
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import {
   InterimElement,
   InterimSlotNode,

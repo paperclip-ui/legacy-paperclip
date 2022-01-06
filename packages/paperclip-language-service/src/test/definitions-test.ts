@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { collectASTInfo } from "../collect-ast-info";
-import { createMockEngineDelegate } from "paperclip-test-utils";
+import { createMockEngineDelegate } from "@paperclipui/test-utils";
 import { createEngineDelegate } from "paperclip";
 
 describe(__filename + "#", () => {

@@ -15,7 +15,7 @@ import {
   DependencyNodeContent,
   getPCNodeAnnotations,
   getNodeById
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { editString } from "./string-editor";
 
 export type ContentChange = {

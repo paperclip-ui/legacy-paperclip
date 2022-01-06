@@ -2,7 +2,7 @@ import {
   Element,
   ScriptExpression,
   ScriptExpressionKind
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import {
   InterimConjunctionOperator,
   InterimScriptExpressionKind,

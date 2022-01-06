@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-docco",
+  "name": "@paperclipui/docco",
   "version": "17.4.10",
   "private": true,
   "description": "Paperclip documentation generator - very much a WIP",

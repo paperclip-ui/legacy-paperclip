@@ -101,7 +101,7 @@ module.exports = {
       },
       {
         test: /\.pc$/,
-        loader: "paperclip-loader",
+        loader: "@paperclipui/loader",
         include: [
           path.resolve(__dirname, "src"),
           path.resolve(__dirname, "..")

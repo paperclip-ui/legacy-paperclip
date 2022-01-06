@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-test-utils",
+  "name": "@paperclipui/test-utils",
   "version": "18.3.8",
   "description": "",
   "main": "index.js",

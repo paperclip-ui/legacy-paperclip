@@ -28,7 +28,7 @@
     "build:esm": "tsc --build tsconfig.esm.json",
     "build:wasm:bundler": "cd native && wasm-pack build --release --target bundler --out-dir bundler",
     "build:wasm:browser": "cd native && wasm-pack build --release --target browser --out-dir browser",
-    "build:wasm:web": "cd native && wasm-pack build --release --target web --out-dir web &&  cat web/paperclip.js | sed 's/import.meta.url/_NOOP_/g' > web/paperclip-no-import-meta.js && cd .. && mkdir -p dist && cp native/web/paperclip_bg.wasm dist/paperclip_bg.wasm",
+    "build:wasm:web": "cd native && wasm-pack build --release --target web --out-dir web &&  cat web/paperclip.js | sed 's/import.meta.url/_NOOP_/g' > web/@paperclipui/no-import-meta.js && cd .. && mkdir -p dist && cp native/web/paperclip_bg.wasm dist/paperclip_bg.wasm",
     "build:wasm:node": "cd native && wasm-pack build --release --target nodejs --out-dir node"
   },
   "author": "",
@@ -38,7 +38,7 @@
     "chai": "^4.2.0",
     "crc32": "^0.2.2",
     "mocha": "^7.0.1",
-    "paperclip-utils": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8",
     "url": "^0.11.0"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",

@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-web-renderer",
+  "name": "@paperclipui/web-renderer",
   "version": "18.3.8",
   "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
@@ -16,8 +16,8 @@
     "events": "^3.2.0",
     "html-entities": "^1.2.1",
     "immer": "^9.0.5",
-    "paperclip-common": "^18.3.8",
-    "paperclip-utils": "^18.3.8"
+    "@paperclipui/common": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8"
   },
   "devDependencies": {
     "@types/cssom": "^0.4.1",

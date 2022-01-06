@@ -7,7 +7,7 @@ import plist = require("plist");
 import { languages } from "vscode";
 
 enum Language {
-  Paperclip = "paperclip-html"
+  Paperclip = "@paperclipui/html"
 }
 
 enum Extension {

@@ -38,8 +38,8 @@ export const root = {
         message: "Is there a compiler that you'd like to use?",
         choices: [
           { name: "None", value: undefined },
-          { name: "React", value: "paperclip-compiler-react" },
-          { name: "HTML", value: "paperclip-compiler-html" }
+          { name: "React", value: "@paperclipui/compiler-react" },
+          { name: "HTML", value: "@paperclipui/compiler-html" }
         ]
       }
     ]);
@@ -65,7 +65,7 @@ export const root = {
     };
   },
   async install({ compilerName, cwd }: any) {
-    await installDep(["paperclip", "paperclip-cli"], cwd, null, true);
+    await installDep(["paperclip", "@paperclipui/cli"], cwd, null, true);
     if (compilerName) {
       await installDep([compilerName], cwd, null, true);
     }
@@ -74,7 +74,7 @@ export const root = {
     const config: PaperclipConfig = {
       compilerOptions: [
         {
-          target: compilerName.replace("paperclip-compiler-", ""),
+          target: compilerName.replace("@paperclipui/compiler-", ""),
           outDir
         }
       ],
@@ -98,7 +98,7 @@ export const root = {
       console.info(
         chalk.cyanBright(
           "Next just run " +
-            chalk.underline("npx paperclip-cli build") +
+            chalk.underline("npx @paperclipui/cli build") +
             " to generate code! More docs on this can be found here: \n\n" +
             chalk.underline(`https://paperclip.dev/docs/`)
         )

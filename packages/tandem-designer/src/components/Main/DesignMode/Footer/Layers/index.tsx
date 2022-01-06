@@ -2,7 +2,11 @@ import React, { useCallback } from "react";
 import { identity } from "lodash";
 import { AppState, getCurrentPreview } from "../../../../../state";
 import { useDispatch, useSelector } from "react-redux";
-import { getNodeByPath, nodePathToAry, VirtualElement } from "paperclip-utils";
+import {
+  getNodeByPath,
+  nodePathToAry,
+  VirtualElement
+} from "@paperclipui/utils";
 import { Element } from "./Element";
 import * as styles from "./index.pc";
 import {

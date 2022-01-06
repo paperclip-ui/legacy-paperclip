@@ -1,4 +1,4 @@
-import { resolvePCConfig } from "paperclip-utils";
+import { resolvePCConfig } from "@paperclipui/utils";
 import * as path from "path";
 import * as fsa from "fs-extra";
 import { buildDirectory } from "../index";

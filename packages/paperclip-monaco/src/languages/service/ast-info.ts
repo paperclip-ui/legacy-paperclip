@@ -12,7 +12,7 @@ import {
   StyleDeclarationKind,
   StyleElement,
   StyleRule
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 
 import * as parseColor from "color";
 

@@ -1,10 +1,10 @@
 import { remoteChannel } from "tandem-common/lib/rpc";
-import { ContentChange, PCMutation } from "paperclip-source-writer";
+import { ContentChange, PCMutation } from "@paperclipui/source-writer";
 import {
   NodeStyleInspection,
   VirtNodeSource,
   LoadedData
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { Directory, VirtualNodeSourceInfo, WorkspaceState } from "../state";
 
 export const inspectNodeStyleChannel = remoteChannel<

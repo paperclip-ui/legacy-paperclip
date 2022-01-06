@@ -15,15 +15,15 @@ import {
   EvaluatedDataKind,
   LoadedData,
   loadedDataEmitted
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
 import { EngineDelegateEvent } from "paperclip";
 import * as url from "url";
 import { RedirectRequested } from "tandem-designer/src/actions";
-import { PCSourceWriter } from "paperclip-source-writer";
-import { isPaperclipFile, engineDelegateChanged } from "paperclip-utils";
+import { PCSourceWriter } from "@paperclipui/source-writer";
+import { isPaperclipFile, engineDelegateChanged } from "@paperclipui/utils";
 
 const init = async () => {
   let _state: WorkerState;

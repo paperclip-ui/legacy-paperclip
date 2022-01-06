@@ -5,8 +5,8 @@ import {
   VirtualElement,
   VirtualNode,
   VirtualText
-} from "paperclip-utils";
-import { getFrameBounds } from "paperclip-web-renderer";
+} from "@paperclipui/utils";
+import { getFrameBounds } from "@paperclipui/web-renderer";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { Dispatch } from "redux";

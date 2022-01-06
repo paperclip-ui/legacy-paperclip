@@ -5,7 +5,7 @@ import {
   FramesRendererState,
   getFrameBounds,
   getFrameVirtualNode
-} from "paperclip-web-renderer";
+} from "@paperclipui/web-renderer";
 import { memo, useEffect, useMemo } from "react";
 import mime from "mime-types";
 import {
@@ -24,14 +24,14 @@ import {
   LoadedData,
   EngineDelegateEvent,
   LoadedPCData
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import * as styles from "./index.pc";
 import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
 import { debounce } from "lodash";
 import { AppState, isExpanded } from "../../../../../state";
-import { ImmutableStore } from "paperclip-common";
-import { UrlResolver } from "paperclip-web-renderer/lib/native-renderer";
+import { ImmutableStore } from "@paperclipui/common";
+import { UrlResolver } from "@paperclipui/web-renderer/lib/native-renderer";
 
 type FramesProps = {
   expandedFrameIndex?: number;

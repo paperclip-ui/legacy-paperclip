@@ -13,7 +13,7 @@ import {
   removeFileClicked,
   syncPanelsClicked
 } from "../../../../actions";
-import { isPaperclipFile } from "paperclip-utils";
+import { isPaperclipFile } from "@paperclipui/utils";
 import { canUpload, FSItemKind, getNewFilePath } from "../../../../state";
 
 export const Toolbar = () => {

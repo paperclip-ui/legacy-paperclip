@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-builder",
+  "name": "@paperclipui/builder",
   "version": "18.3.8",
   "description": "",
   "main": "lib/index.js",
@@ -17,8 +17,8 @@
     "fs-extra": "^10.0.0",
     "globby": "11.0.4",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-interim": "^18.3.8",
-    "paperclip-utils": "^18.3.8"
+    "@paperclipui/interim": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",

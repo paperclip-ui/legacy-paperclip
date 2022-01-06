@@ -1,5 +1,5 @@
 import { EngineIO } from "paperclip/src/core/delegate";
-import { fileURLToPath, pathToFileURL } from "paperclip-utils/lib/core/url";
+import { fileURLToPath, pathToFileURL } from "@paperclipui/utils/lib/core/url";
 import * as path from "path";
 import { REPLChannels } from "../channels";
 

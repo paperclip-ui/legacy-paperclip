@@ -20,7 +20,7 @@ import Automerge from "automerge";
 import { updateShared } from "tandem-designer/src/state";
 import { historyReducer } from "tandem-designer/src/reducers/history";
 import mime from "mime-types";
-import { isPaperclipFile } from "paperclip-utils";
+import { isPaperclipFile } from "@paperclipui/utils";
 
 export const reducer = (state: AppState, action: Action) => {
   state = veReducer(state, action as VEAction) as AppState;

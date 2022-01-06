@@ -1,12 +1,12 @@
 {
-  "name": "paperclip-coverage",
+  "name": "@paperclipui/coverage",
   "version": "18.3.8",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.ds.ts",
   "scripts": {
     "build": "yarn build:paperclip && tsc",
-    "build:paperclip": "paperclip-minimal build",
+    "build:paperclip": "@paperclipui/minimal build",
     "build:watch": "yarn build:paperclip && concurrently \"tsc --watch\" \"yarn build:paperclip --watch\" "
   },
   "author": "",
@@ -16,13 +16,13 @@
     "cli-table": "^0.3.11",
     "html-entities": "^1.2.1",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-cli-minimal": "^18.3.8",
-    "paperclip-compiler-html": "^18.3.8",
-    "paperclip-utils": "^18.3.8",
+    "@paperclipui/cli-minimal": "^18.3.8",
+    "@paperclipui/compiler-html": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8",
     "typescript": "^4.2.3"
   },
   "devDependencies": {
     "concurrently": "^6.5.1",
-    "paperclip-compiler-html": "^18.3.0"
+    "@paperclipui/compiler-html": "^18.3.0"
   }
 }

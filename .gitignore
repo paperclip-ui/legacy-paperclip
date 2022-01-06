@@ -12,7 +12,7 @@ tmp/
 *.vsix
 *.DS_Store
 lerna-debug.log
-paperclip-html.tmLanguage.json
+@paperclipui/html.tmLanguage.json
 
 
 

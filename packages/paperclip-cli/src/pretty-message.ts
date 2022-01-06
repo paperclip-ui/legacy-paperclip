@@ -1,1 +1,1 @@
-export * from "paperclip-cli-utils";
+export * from "@paperclipui/cli-utils";

@@ -1,7 +1,7 @@
 import {
   PaperclipResourceWatcher,
   ChangeKind
-} from "paperclip-utils/lib/node/source-watcher";
+} from "@paperclipui/utils/lib/node/source-watcher";
 export * from "./sync-delegate";
 export * from "./async-delegate";
 

@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-cli-utils",
+  "name": "@paperclipui/cli-utils",
   "version": "18.3.8",
   "description": "CLI utils for Paperclip",
   "main": "lib/index.js",
@@ -21,7 +21,7 @@
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-utils": "^18.3.8",
+    "@paperclipui/utils": "^18.3.8",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
     "yargs": "^15.1.0"

@@ -20,8 +20,8 @@ import { useAppStore } from "../../../hooks/useAppStore";
 import { slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
 import { canEditFile } from "../../../state";
-import { active as activatePaperclipExtension } from "paperclip-monaco";
-import { StringRange } from "paperclip-utils";
+import { active as activatePaperclipExtension } from "@paperclipui/monaco";
+import { StringRange } from "@paperclipui/utils";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();

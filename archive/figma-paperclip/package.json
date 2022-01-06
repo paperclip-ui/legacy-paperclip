@@ -34,7 +34,7 @@
     "mime": "^2.4.5",
     "ora": "^4.0.4",
     "@paperclipui/core": "^15.1.1",
-    "paperclip-cli": "^15.1.1",
+    "@paperclipui/cli": "^15.1.1",
     "prettier": "^2.0.5",
     "progress": "^2.0.3",
     "yargs": "^15.3.1"

@@ -16,7 +16,7 @@ There are two options currently for getting started locally:
 
 ## VS Code extension
 
-I highly recommend using the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) since you can launch previews directly from the IDE, and changes appear _as you type_.  
+I highly recommend using the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.@paperclipui/vscode) since you can launch previews directly from the IDE, and changes appear _as you type_.  
 
 
 ![alt Realtime editing](/img/vscode-measure.gif)

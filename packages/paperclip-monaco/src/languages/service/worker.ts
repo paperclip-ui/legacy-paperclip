@@ -6,11 +6,11 @@ import {
   DependencyContent,
   loadedDataRequested,
   LoadedDataEmitted
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { collectASTInfo } from "./ast-info";
 import * as channels from "./channel";
 import { getSuggestions } from "./autocomplete";
-import { workerAdapter } from "paperclip-common";
+import { workerAdapter } from "@paperclipui/common";
 
 const init = () => {
   const channel = new BroadcastChannel("paperclip");

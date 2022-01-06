@@ -26,8 +26,8 @@
 //   const pkg = JSON.parse(fs.readFileSync(packagePath, "utf8"));
 
 //   const pcCLIVersion =
-//     (pkg.devDependencies || {})["paperclip-cli"] ||
-//     (pkg.dependencies || {})["paperclip-cli"];
+//     (pkg.devDependencies || {})["@paperclipui/cli"] ||
+//     (pkg.dependencies || {})["@paperclipui/cli"];
 
 //   // paperclip not installed
 //   if (!pcCLIVersion) {

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Frame } from "paperclip-web-renderer";
+import { Frame } from "@paperclipui/web-renderer";
 import { memo, useEffect } from "react";
 import { noop } from "lodash";
 

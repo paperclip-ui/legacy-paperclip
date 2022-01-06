@@ -20,20 +20,20 @@ import {
 } from "vscode-languageserver";
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { PaperclipLanguageService } from "paperclip-language-service";
+import { PaperclipLanguageService } from "@paperclipui/language-service";
 // import { PCEngineInitialized } from "tandem-designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
 import * as parseColor from "color";
-import { BaseEvent, Observable } from "paperclip-common";
-import { stripFileProtocol } from "paperclip-utils";
+import { BaseEvent, Observable } from "@paperclipui/common";
+import { stripFileProtocol } from "@paperclipui/utils";
 import {
   DesignServerStarted,
   DesignServerUpdated,
   DesignServerUpdating,
   ProjectStarted
 } from "./events";
-import { SourceLinted } from "paperclip-language-service";
+import { SourceLinted } from "@paperclipui/language-service";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;

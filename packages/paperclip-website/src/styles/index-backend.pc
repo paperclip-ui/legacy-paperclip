@@ -432,7 +432,7 @@
       </button.Anchor>
       <!-- <button.Anchor secondary class="$typography.semi-bold">Check out on GitHub</button.Anchor> -->
     </fragment>}
-    preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
+    preview={<video src="../../static/vid/@paperclipui/fast-demo.mp4"
       autoplay
       loop />} />
 

@@ -16,7 +16,7 @@ import {
 } from "../actions";
 import * as api from "../api";
 import { request } from "./utils";
-import { isPaperclipFile } from "paperclip-utils";
+import { isPaperclipFile } from "@paperclipui/utils";
 
 export function* handleAPI() {
   yield fork(handleAccountConnected);

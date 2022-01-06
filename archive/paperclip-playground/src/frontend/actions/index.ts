@@ -9,9 +9,9 @@ import {
   WorkerState
 } from "../state";
 import { actionCreator } from "./base";
-import { ContentChange } from "paperclip-source-writer";
+import { ContentChange } from "@paperclipui/source-writer";
 import { KeyComboPressed } from "tandem-designer/src/actions";
-import { AstEmitted } from "paperclip-utils";
+import { AstEmitted } from "@paperclipui/utils";
 
 export type BaseAction<TType extends ActionType, TPayload = undefined> = {
   type: TType;

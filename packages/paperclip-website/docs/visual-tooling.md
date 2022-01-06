@@ -7,12 +7,12 @@ sidebar_label: Visual Tools
 Paperclip comes with visual tooling that enables you to build your UIs in realtime. The quickest way to start using the visual tools is to run:
 
 ```
-npx paperclip-cli designer
+npx @paperclipui/cli designer
 ```
 
 In your project directory where your Paperclip files live. Here's what you should see:
 
-![demo](assets/paperclip-dev.gif)
+![demo](assets/@paperclipui/dev.gif)
 
 You can run this window in tandem with your text editor, and changes that you make will instantly appear when you save.
 

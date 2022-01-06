@@ -1,7 +1,7 @@
-import { ExprSource } from "paperclip-utils";
+import { ExprSource } from "@paperclipui/utils";
 import { WorkspaceFolder } from "vscode-languageserver";
 import { Project } from "tandem-workspace/lib/server";
-import { ContentChange } from "paperclip-source-writer";
+import { ContentChange } from "@paperclipui/source-writer";
 
 export class RevealSourceRequested {
   static TYPE = "RevealSourceRequested";

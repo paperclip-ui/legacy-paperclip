@@ -21,7 +21,7 @@ window["createPaperclipPlayground"] = createPlayground;
 
 // cheap check for embeddded doc 😅
 // Better to have an explicit mount element
-const mainMount = document.getElementById("paperclip-playground");
+const mainMount = document.getElementById("@paperclipui/playground");
 if (mainMount) {
   const mount = createPlayground();
   mainMount.appendChild(mount);

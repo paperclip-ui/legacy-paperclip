@@ -9,7 +9,7 @@ import { useAppStore } from "../../../hooks/useAppStore";
 import { isMediaFile } from "tandem-common/lib/mime";
 import { RightSidebar } from "./RightSidebar";
 import { MediaPreview } from "./MediaPreview";
-import { isPaperclipFile } from "paperclip-utils";
+import { isPaperclipFile } from "@paperclipui/utils";
 import { useDragger } from "../../../hooks/useDragger";
 import { Point } from "../../../state";
 import { WindowResizer } from "./WindowResizer";

@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-compiler-react",
+  "name": "@paperclipui/compiler-react",
   "version": "18.3.8",
   "description": "React compiler for Paperclip",
   "main": "index.js",
@@ -12,8 +12,8 @@
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
     "@paperclipui/core": "^18.3.8",
-    "paperclip-compiler-base-jsx": "^18.3.8",
-    "paperclip-interim": "^18.3.8",
+    "@paperclipui/compiler-base-jsx": "^18.3.8",
+    "@paperclipui/interim": "^18.3.8",
     "source-map": "^0.7.3"
   },
   "scripts": {

@@ -5,24 +5,24 @@
       "name": "Paperclip",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "${execPath}/packages/paperclip-vscode",
+      "runtimeExecutable": "${execPath}/packages/@paperclipui/vscode",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode"
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/@paperclipui/vscode"
       ]
     },
     {
       "name": "Paperclip Tests",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "${execPath}/packages/paperclip-vscode",
+      "runtimeExecutable": "${execPath}/packages/@paperclipui/vscode",
 
       "args": [
-        "${workspaceFolder}/packages/paperclip-vscode/src/test/all/fixtures",
-        "--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode",
-        "--extensionTestsPath=${workspaceFolder}/packages/paperclip-vscode/lib/test"
+        "${workspaceFolder}/packages/@paperclipui/vscode/src/test/all/fixtures",
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/@paperclipui/vscode",
+        "--extensionTestsPath=${workspaceFolder}/packages/@paperclipui/vscode/lib/test"
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/paperclip-vscode/lib/test/**/*-test.js"
+        "${workspaceFolder}/packages/@paperclipui/vscode/lib/test/**/*-test.js"
       ]
     }
   ]

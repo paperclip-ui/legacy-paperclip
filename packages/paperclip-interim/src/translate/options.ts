@@ -4,7 +4,7 @@ import {
   EngineDelegateChanged,
   PaperclipConfig,
   StringifySheetOptions
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { InterimImport } from "..";
 import { InterimAsset } from "../state/assets";
 

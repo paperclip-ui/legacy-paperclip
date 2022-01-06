@@ -9,7 +9,7 @@ import {
   LoadedEvent,
   LoadedData,
   EvaluatedDataKind
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 
 export type Graph = {
   [identifier: string]: string;

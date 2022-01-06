@@ -14,14 +14,14 @@ import {
   CSSAtRuleSuggestionContext,
   CSSFunctionSuggestionContext,
   HTMLCloseTagNameSuggestionContext
-} from "paperclip-autocomplete";
+} from "@paperclipui/autocomplete";
 
 import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
 import {
   ComponentExport,
   EvaluatedDataKind,
   LoadedPCData
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import {
   stringArrayToAutoCompleteItems,
   addCompletionItemData,
