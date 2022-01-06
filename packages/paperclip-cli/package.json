@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "18.3.8",
+  "version": "18.3.9",
   "description": "Command line tools for Paperclip",
   "main": "lib/cli.js",
   "bin": {
