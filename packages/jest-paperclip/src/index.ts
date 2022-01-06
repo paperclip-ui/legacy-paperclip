@@ -22,7 +22,7 @@ module.exports = {
       fs.readFileSync(url.fileURLToPath(pcUrl), "utf8")
     );
 
-    const result = engine.open(fileUri);
+    engine.open(fileUri);
     const { js } = buildFile(fileUri, engine, { config });
     return babel.transformSync(js, {
       presets: ["@babel/env"],

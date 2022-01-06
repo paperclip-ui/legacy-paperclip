@@ -327,6 +327,7 @@ export const buildFile = async (
           fileUrl,
           includes,
           config: options.config,
+          targetOptions,
           cwd: options.cwd
         })
       );

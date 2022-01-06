@@ -1,7 +1,7 @@
 import * as path from "path";
 import { paperclipSourceGlobPattern } from "./utils";
-const omit = require("lodash/omit");
 
+// TODO - ability to include vendor in extension
 export type CompilerOptions = {
   // give room for custom props
   [identifier: string]: any;
@@ -126,7 +126,7 @@ const buildCompilerOptionsFromTemplates = (
   // const base = templates.find(template => !Array.isArray(template) && template.base) as CompilerOptionsTemplate;
 
   return templates.reduce((allCompilerOptions, template) => {
-    let compilerOptions = template;
+    const compilerOptions = template;
 
     allCompilerOptions.push({
       outDir: config.srcDir,
