@@ -289,6 +289,7 @@ const assertRequireCompilerTarget = (
   const targetCompilers = requireTargetCompilers(cwd, config, targetOptions);
 
   if (!targetCompilers.length) {
+    // Throw courtesy error so that the developer knows what to do
     if (targetOptions.target) {
       throw new TargetNotFoundError(
         `Paperclip compiler target "${targetOptions.target}" not found`

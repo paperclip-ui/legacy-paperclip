@@ -75,18 +75,6 @@ async function pcLoader(
     });
     files = { ...result.translations };
     files[".css"] = result.css;
-    console.log(
-      {
-        ...targetOptions,
-        emit: null,
-        importAssetsAsModules: true,
-        assetOutDir: null,
-        outDir: null,
-        embedAssetMaxSize: 0,
-        assetPrefix: null
-      },
-      files
-    );
   } catch (e) {
     // eesh 🙈
     const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
