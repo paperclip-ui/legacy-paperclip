@@ -1,4 +1,4 @@
-import { EngineDelegate } from "paperclip";
+import { EngineDelegate } from "@paperclipui/core";
 import { PCMutation, PCSourceWriter } from "@paperclipui/source-writer";
 import {
   isPaperclipFile,

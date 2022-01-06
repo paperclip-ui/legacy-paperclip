@@ -1,4 +1,4 @@
-import { createEngineDelegate } from "paperclip";
+import { createEngineDelegate } from "@paperclipui/core";
 import * as babel from "@babel/core";
 import { InterimCompiler } from "@paperclipui/interim";
 import { isPaperclipFile, PaperclipConfig } from "@paperclipui/utils";

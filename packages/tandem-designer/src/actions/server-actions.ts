@@ -1,4 +1,4 @@
-import { LoadedData } from "paperclip";
+import { LoadedData } from "@paperclipui/core";
 import { ContentChange } from "@paperclipui/source-writer";
 import {
   ExprSource,

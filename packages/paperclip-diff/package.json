@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "yarn build:paperclip && tsc",
-    "build:paperclip": "@paperclipui/minimal build",
+    "build:paperclip": "paperclip-minimal build",
     "build:watch": "concurrently \"tsc --watch\" \"yarn build:paperclip --watch\""
   },
   "author": "",

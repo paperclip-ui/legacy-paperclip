@@ -3,7 +3,7 @@ import * as path from "path";
 import * as fsa from "fs-extra";
 import { buildDirectory } from "../index";
 import { kebabCase } from "lodash";
-import { createEngineDelegate } from "paperclip";
+import { createEngineDelegate } from "@paperclipui/core";
 
 const TMP_FIXTURE_DIR = path.join(
   __dirname,

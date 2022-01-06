@@ -4,7 +4,7 @@ import {
   trimWS
 } from "./utils";
 import { expect } from "chai";
-import { EngineMode } from "paperclip";
+import { EngineMode } from "@paperclipui/core";
 
 describe(__filename + "#", () => {
   it("can render a simple frame", async () => {

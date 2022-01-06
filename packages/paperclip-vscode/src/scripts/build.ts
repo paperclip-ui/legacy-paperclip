@@ -4,10 +4,9 @@ import fs = require("fs");
 import path = require("path");
 import yaml = require("js-yaml");
 import plist = require("plist");
-import { languages } from "vscode";
 
 enum Language {
-  Paperclip = "@paperclipui/html"
+  Paperclip = "paperclip-html"
 }
 
 enum Extension {

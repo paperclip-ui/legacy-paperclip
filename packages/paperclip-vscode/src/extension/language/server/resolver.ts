@@ -106,7 +106,7 @@ export class LanguageRequestResolver {
     if (event.type === SourceLinted.TYPE) {
       const { uri, content, diagnostics } = event as SourceLinted;
       let textDocument = this._documents.getDocument(uri);
-      textDocument = TextDocument.create(uri, "paperclip", 0, content);
+      textDocument = TextDocument.create(uri, "@paperclipui/core", 0, content);
       this._connection.sendDiagnostics({
         uri: uri,
         diagnostics: diagnostics.map(diagnostic => {
@@ -202,7 +202,7 @@ export class LanguageRequestResolver {
             this._documents.getDocument(sourceUri) ||
             TextDocument.create(
               sourceUri,
-              "paperclip",
+              "@paperclipui/core",
               null,
               fs.readFileSync(stripFileProtocol(sourceUri), "utf8")
             );

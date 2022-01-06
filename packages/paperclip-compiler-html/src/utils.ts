@@ -1,6 +1,10 @@
 import { camelCase } from "lodash";
 import * as path from "path";
-import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
+import {
+  Element,
+  AS_ATTR_NAME,
+  getAttributeStringValue
+} from "@paperclipui/core";
 import { InterimModule } from "@paperclipui/interim";
 import { PaperclipConfig, StringPosition } from "@paperclipui/utils";
 import { SourceNode } from "source-map";

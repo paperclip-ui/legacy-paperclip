@@ -5,7 +5,7 @@ const chalk = require("chalk");
 import { exec } from "child_process";
 import * as glob from "glob";
 import * as URL from "url";
-import { createEngineDelegate, EngineMode } from "paperclip";
+import { createEngineDelegate, EngineMode } from "@paperclipui/core";
 import {
   resolvePCConfig,
   PaperclipConfig,

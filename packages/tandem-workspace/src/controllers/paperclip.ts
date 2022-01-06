@@ -9,7 +9,7 @@ import {
   EngineDelegateEvent,
   paperclipSourceGlobPattern,
   isPaperclipFile
-} from "paperclip";
+} from "@paperclipui/core";
 import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "tandem-common";

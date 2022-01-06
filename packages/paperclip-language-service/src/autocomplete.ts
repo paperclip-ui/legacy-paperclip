@@ -16,7 +16,10 @@ import {
   HTMLCloseTagNameSuggestionContext
 } from "@paperclipui/autocomplete";
 
-import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
+import {
+  resolveAllPaperclipFiles,
+  resolveAllAssetFiles
+} from "@paperclipui/core";
 import {
   ComponentExport,
   EvaluatedDataKind,
@@ -39,10 +42,10 @@ import {
   TAG_NAME_COMPLETION_ITEMS,
   AT_RULE_COMPLETION_ITEMS
 } from "./completion-items";
-import { DEFAULT_PART_ID } from "paperclip";
-import { LoadedData } from "paperclip";
+import { DEFAULT_PART_ID } from "@paperclipui/core";
+import { LoadedData } from "@paperclipui/core";
 import { memoize } from "lodash";
-import { LoadedDataDetails } from "paperclip/src/core/delegate";
+import { LoadedDataDetails } from "@paperclipui/core/src/core/delegate";
 
 const EMPTY_ARRAY = [];
 

@@ -1,4 +1,4 @@
-import { EngineMode, createEngineDelegate } from "paperclip";
+import { EngineMode, createEngineDelegate } from "@paperclipui/core";
 import * as path from "path";
 
 export const mockDOMFactory: any = {

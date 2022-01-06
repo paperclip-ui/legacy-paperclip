@@ -1,4 +1,10 @@
-import { Node, getParts, Element, infer, EngineDelegate } from "paperclip";
+import {
+  Node,
+  getParts,
+  Element,
+  infer,
+  EngineDelegate
+} from "@paperclipui/core";
 import {
   AttributeKind,
   AttributeValue,

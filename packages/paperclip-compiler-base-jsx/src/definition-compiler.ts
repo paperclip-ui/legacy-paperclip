@@ -1,4 +1,4 @@
-import { ShapeProperty, InferenceKind, Inference } from "paperclip";
+import { ShapeProperty, InferenceKind, Inference } from "@paperclipui/core";
 import {
   createTranslateContext,
   Context,

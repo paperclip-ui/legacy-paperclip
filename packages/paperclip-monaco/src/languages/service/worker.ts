@@ -13,7 +13,7 @@ import { getSuggestions } from "./autocomplete";
 import { workerAdapter } from "@paperclipui/common";
 
 const init = () => {
-  const channel = new BroadcastChannel("paperclip");
+  const channel = new BroadcastChannel("@paperclipui/core");
   const asts: Record<string, DependencyContent> = {};
   let _resolveAst: (content: any) => any = () => {};
   let _resolveLoadedData: (content: any) => any = () => {};

@@ -45,9 +45,9 @@ export class PaperclipLanguageClient implements Disposable {
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
       // Register the server for plain text documents
-      documentSelector: [{ scheme: "file", language: "paperclip" }],
+      documentSelector: [{ scheme: "file", language: "@paperclipui/core" }],
       synchronize: {
-        configurationSection: ["paperclip", "credentials"],
+        configurationSection: ["@paperclipui/core", "credentials"],
         // Notify the server about file changes to '.clientrc files contained in the workspace
         fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
       }

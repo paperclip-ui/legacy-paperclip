@@ -1,4 +1,4 @@
-import { Inference, ShapeInference } from "paperclip";
+import { Inference, ShapeInference } from "@paperclipui/core";
 import { NodeKind, StringRange } from "@paperclipui/utils";
 import { InterimScriptExpression, InterimScriptExpressionKind } from "./script";
 

@@ -9,7 +9,7 @@ Considerations:
 
 */
 
-import { EngineDelegate, getEngineImports } from "paperclip";
+import { EngineDelegate, getEngineImports } from "@paperclipui/core";
 import { Observable } from "@paperclipui/common";
 import { AutocompleteService } from "./autocomplete";
 import { collectASTInfo, ColorInfo } from "./collect-ast-info";

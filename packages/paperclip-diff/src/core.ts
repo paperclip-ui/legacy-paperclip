@@ -1,4 +1,4 @@
-import { PaperclipResourceWatcher } from "paperclip";
+import { PaperclipResourceWatcher } from "@paperclipui/core";
 import { resolvePCConfig } from "@paperclipui/utils";
 import { produce } from "immer";
 const PNG = require("pngjs").PNG;

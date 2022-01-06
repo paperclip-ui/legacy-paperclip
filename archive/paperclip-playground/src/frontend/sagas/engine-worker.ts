@@ -7,7 +7,7 @@ import {
   engineLoaded,
   WorkerInitialized
 } from "../actions";
-import { loadEngineDelegate } from "paperclip/browser";
+import { loadEngineDelegate } from "@paperclipui/core/browser";
 import * as vea from "tandem-designer/src/actions";
 import {
   astEmitted,
@@ -18,8 +18,8 @@ import {
 } from "@paperclipui/utils";
 import { WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
-import { EngineDelegate } from "paperclip";
-import { EngineDelegateEvent } from "paperclip";
+import { EngineDelegate } from "@paperclipui/core";
+import { EngineDelegateEvent } from "@paperclipui/core";
 import * as url from "url";
 import { RedirectRequested } from "tandem-designer/src/actions";
 import { PCSourceWriter } from "@paperclipui/source-writer";
@@ -38,7 +38,7 @@ const init = async () => {
   // open a line for any web workers that need access to the engine. Note that
   // this is _one way_ since whatever's controlling the engine worker needs to also control its state since
   // the engine worker handler may be the source of truth for that state.
-  const channel = new BroadcastChannel("paperclip");
+  const channel = new BroadcastChannel("@paperclipui/core");
 
   const dispatch = (action: Action) => {
     channel.postMessage(action);

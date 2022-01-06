@@ -4,7 +4,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { EventEmitter } from "events";
 import * as chokidar from "chokidar";
-import { EngineDelegate } from "paperclip";
+import { EngineDelegate } from "@paperclipui/core";
 import { flatten } from "lodash";
 import { InterimCompiler, CompileOptions } from "@paperclipui/interim";
 import {

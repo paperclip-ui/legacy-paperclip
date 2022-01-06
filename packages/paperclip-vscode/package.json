@@ -1,5 +1,5 @@
 {
-  "name": "@paperclipui/vscode",
+  "name": "paperclip-vscode",
   "displayName": "Paperclip",
   "version": "18.3.8",
   "electronVersion": "7.1.10",
@@ -29,7 +29,7 @@
   },
   "activationEvents": [
     "onLanguage:paperclip",
-    "onWebviewPanel:@paperclipui/preview"
+    "onWebviewPanel:paperclip-preview"
   ],
   "categories": [
     "Programming Languages"
@@ -94,25 +94,25 @@
         "extensions": [
           ".pc"
         ],
-        "configuration": "./languages/@paperclipui/html-language-configuration.json"
+        "configuration": "./languages/paperclip-html-language-configuration.json"
       },
       {
         "id": "pcss",
         "aliases": [
-          "@paperclipui/css",
-          "@paperclipui/css"
+          "paperclip-css",
+          "paperclip-css"
         ],
         "extensions": [
           ".pcss"
         ],
-        "configuration": "./languages/@paperclipui/css-language-configuration.json"
+        "configuration": "./languages/paperclip-css-language-configuration.json"
       }
     ],
     "grammars": [
       {
         "language": "paperclip",
-        "scopeName": "text.html.@paperclipui/html",
-        "path": "./syntaxes/@paperclipui/html.tmLanguage.json",
+        "scopeName": "text.html.paperclip-html",
+        "path": "./syntaxes/paperclip-html.tmLanguage.json",
         "embeddedLanguages": {
           "source.pcss": "pcss",
           "source.js": "javascript"
@@ -121,14 +121,14 @@
       {
         "language": "pcss",
         "scopeName": "source.pcss",
-        "path": "./syntaxes/@paperclipui/css.json"
+        "path": "./syntaxes/paperclip-css.json"
       }
     ]
   },
   "scripts": {
     "build": "tsc && npm run build:syntaxes",
     "build:syntaxes": "node lib/scripts/build",
-    "build:syntaxes:watch": "nodemon --exec \"node lib/scripts/build\" --watch ./syntaxes/@paperclipui/html.yaml",
+    "build:syntaxes:watch": "nodemon --exec \"node lib/scripts/build\" --watch ./syntaxes/paperclip-html.yaml",
     "xtest": "node lib/test/run",
     "lint": "eslint src",
     "build:watch": "concurrently \"tsc --watch --preserveWatchOutput\" \"npm run build:syntaxes:watch\"",

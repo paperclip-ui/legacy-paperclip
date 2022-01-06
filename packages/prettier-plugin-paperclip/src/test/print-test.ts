@@ -21,7 +21,7 @@ describe(__dirname + "#", () => {
       const outExpected = fs.readFileSync(out, "utf-8");
       const input = fs.readFileSync(fixture, "utf-8");
       const output = format(input, {
-        parser: "paperclip",
+        parser: "@paperclipui/core",
         plugins: [require.resolve("../../lib")],
         tabWidth: 2,
         useTabs: false,

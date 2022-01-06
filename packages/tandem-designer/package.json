@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "yarn build:paperclip && tsc && webpack",
-    "build:watch": "concurrently \"webpack --watch\" \"tsc --watch --preserveWatchOutput\" \"@paperclipui/minimal build --watch\"",
-    "build:paperclip": "@paperclipui/minimal build --silent"
+    "build:watch": "concurrently \"webpack --watch\" \"tsc --watch --preserveWatchOutput\" \"paperclip-minimal build --watch\"",
+    "build:paperclip": "paperclip-minimal build --silent"
   },
   "author": "",
   "license": "GPLv3",

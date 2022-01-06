@@ -1,16 +1,16 @@
 import { Parser, Printer, SupportLanguage } from "prettier";
 import { print } from "./print";
-import { createEngineDelegate } from "paperclip";
+import { createEngineDelegate } from "@paperclipui/core";
 
 export const languages: Partial<SupportLanguage>[] = [
   {
-    name: "paperclip",
-    parsers: ["paperclip"],
+    name: "@paperclipui/core",
+    parsers: ["@paperclipui/core"],
 
     // DO NOT SET THIS UNTIL THIS MODULE IS WORKING!!
     extensions: [".pc"],
     // extensions: [],
-    vscodeLanguageIds: ["paperclip"]
+    vscodeLanguageIds: ["@paperclipui/core"]
   }
 ];
 

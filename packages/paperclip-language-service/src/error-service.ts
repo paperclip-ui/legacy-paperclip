@@ -13,7 +13,7 @@ import {
   StringRange
 } from "@paperclipui/utils";
 import { Observable } from "@paperclipui/common";
-import { EngineDelegate } from "paperclip";
+import { EngineDelegate } from "@paperclipui/core";
 import { SourceLinted } from "./events";
 
 /**

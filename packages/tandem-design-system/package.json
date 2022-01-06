@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "yarn build:pc && tsc",
-    "build:pc": "@paperclipui/minimal build --silent",
+    "build:pc": "paperclip-minimal build --silent",
     "build:watch": "concurrently \"yarn build:pc --watch\" \"tsc --watch\""
   },
   "author": "",

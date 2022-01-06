@@ -4,7 +4,7 @@ import * as path from "path";
 import { FILES_DIR, installDep } from "./utils";
 import { GeneratorKind } from "./base";
 import { prompt } from "inquirer";
-import { PaperclipConfig } from "paperclip";
+import { PaperclipConfig } from "@paperclipui/core";
 
 const HELLO_WORLD_CONTENT = fsa.readFileSync(
   path.join(FILES_DIR, "hello-paperclip.pc"),
@@ -65,7 +65,12 @@ export const root = {
     };
   },
   async install({ compilerName, cwd }: any) {
-    await installDep(["paperclip", "@paperclipui/cli"], cwd, null, true);
+    await installDep(
+      ["@paperclipui/core", "@paperclipui/cli"],
+      cwd,
+      null,
+      true
+    );
     if (compilerName) {
       await installDep([compilerName], cwd, null, true);
     }

@@ -4,7 +4,7 @@
   "description": "Minimal command line tool for Paperclip",
   "main": "lib/cli.js",
   "bin": {
-    "@paperclipui/minimal": "./bin/paperclip"
+    "paperclip-minimal": "./bin/paperclip"
   },
   "scripts": {
     "build": "tsc",

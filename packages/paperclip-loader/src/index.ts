@@ -8,7 +8,7 @@ import {
   stringifyCSSSheet,
   buildCompilerOptions,
   PC_CONFIG_FILE_NAME
-} from "paperclip";
+} from "@paperclipui/core";
 import { getPrettyMessage } from "@paperclipui/cli-utils";
 import * as path from "path";
 import * as loaderUtils from "loader-utils";

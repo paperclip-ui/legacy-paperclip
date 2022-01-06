@@ -1,4 +1,9 @@
-import { EngineDelegate, Node, VirtSheet, isErrorResult } from "paperclip";
+import {
+  EngineDelegate,
+  Node,
+  VirtSheet,
+  isErrorResult
+} from "@paperclipui/core";
 import * as path from "path";
 import * as fs from "fs";
 import * as URL from "url";

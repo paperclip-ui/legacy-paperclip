@@ -1,4 +1,4 @@
-import { PaperclipConfig } from "paperclip";
+import { PaperclipConfig } from "@paperclipui/core";
 import { CompilerOptions } from "@paperclipui/utils";
 import { InterimModule } from ".";
 

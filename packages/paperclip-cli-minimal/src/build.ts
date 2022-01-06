@@ -13,7 +13,7 @@ import {
   PaperclipConfig,
   stripFileProtocol
 } from "@paperclipui/utils";
-import { createEngineDelegate } from "paperclip";
+import { createEngineDelegate } from "@paperclipui/core";
 import { mkdirpSync } from "fs-extra";
 
 export type BuildOptions = {
