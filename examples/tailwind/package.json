@@ -15,7 +15,9 @@
   "devDependencies": {
     "concurrently": "^6.5.1",
     "paperclip": "^18.2.14",
-    "paperclip-cli": "^18.2.14",
+    "paperclip-cli": "^18.3.5",
+    "paperclip-compiler-react": "^18.3.3",
+    "paperclip-loader": "^18.3.4",
     "tailwindcss": "^3.0.7"
   }
 }
