@@ -58,7 +58,7 @@ class Compiler {
       return;
     }
     try {
-      const result = await buildFile(filePath, this._engine, {
+      const result = buildFile(filePath, this._engine, {
         ...this._builderOptions,
         targetCompilerOptions: this._targetOptions
       });
@@ -306,7 +306,7 @@ const assertRequireCompilerTarget = (
  * Builds from Paperclip config.
  */
 
-export const buildFile = async (
+export const buildFile = (
   filePath: string,
   engine: EngineDelegate,
   { config, cwd, targetCompilerOptions: targetOptions }: BuildFileOptions

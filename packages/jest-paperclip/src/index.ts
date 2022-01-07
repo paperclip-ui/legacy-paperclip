@@ -23,7 +23,7 @@ module.exports = {
     );
 
     engine.open(fileUri);
-    const { js } = buildFile(fileUri, engine, { config });
+    const { js } = buildFile(fileUri, engine, { config }).translations[".js"];
     return babel.transformSync(js, {
       presets: ["@babel/env"],
       configFile: false
