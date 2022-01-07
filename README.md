@@ -3,7 +3,7 @@
 <br />
 
 <div style="text-align: left; margin-bottom: 32px;">
-  <img src="assets/logo-outline-5.png" width="400">
+  <img src="assets/logo-outline-5-beta.png" width="420">
 </div>
 
 > **Installation**: `npx @paperclipui/cli init` in your project directory.

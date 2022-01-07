@@ -155,9 +155,10 @@
       width: 100%;
     }
 
-    @include mobile {
+    @media screen and (max-width: 1400px) {
       flex-direction: column;
     }
+
 
     :global(.prism-code, ._code-preview) {
       && {
@@ -187,6 +188,7 @@
   <style>
     width: 100%;
     height: 100%;
+    min-width: 600px;
     min-height: 200px;
     background: rgb(221, 221, 221);
     border-radius: 6px;
@@ -381,6 +383,9 @@
   <style>
     border-top: 1px solid rgb(255, 255, 255);
     border-bottom: 1px solid rgb(226, 226, 226);
+    @media screen and (max-width: 600px) {
+      flex-direction: column;
+    }
   </style>
   {children}
 </div>
@@ -402,6 +407,9 @@
     @include mobile {
       margin-left: 0;
     }
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
 
     &:first-child {
       margin-left: 0;
@@ -421,6 +429,12 @@
         align-items: flex-start;
         margin-bottom: 20px;
         @include typography.text-secondary {}
+        @media screen and (max-width: 1400px) {
+          height: 50px;
+        }
+        @media screen and (max-width: 900px) {
+          height: auto;
+        }
       </style>
       <span>{title}</span>
     </div>
@@ -525,7 +539,7 @@
 
 
 <!--
-  @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -91, y: -54 }
+  @frame { title: "Website / Desktop", width: 1304, height: 4194, x: -91, y: -54 }
 -->
 <Home component as="Preview">
   <!--

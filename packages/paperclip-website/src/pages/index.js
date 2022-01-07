@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import clsx from "clsx";
+import React from "react";
 import Layout from "@theme/Layout";
-// import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import IMPORT_CODE_DEMO_SOURCE from "../demos/import-code";
 import PRIMITIVE_UI_EXAMPLE from "../demos/simple-pc";
@@ -10,10 +8,6 @@ import CodeBlock from "@theme-init/CodeBlock";
 import * as styles from "../styles/index.pc";
 import * as buttonStyles from "../styles/button.pc";
 import * as typography from "../styles/typography.pc";
-
-// const Editor = createComponentClass({ React, useState, useEffect, useRef });
-
-// const DEMO_URL = Object.keys(MAIN_DEMO_GRAPH)[0];
 
 function Home() {
   const context = useDocusaurusContext();
@@ -30,9 +24,9 @@ function Home() {
           <styles.Header
             title={
               <>
-                Paperclip is a tiny language that brings{" "}
-                <strong>scalable</strong> HTML & CSS to any kind of web
-                application.
+                Paperclip is a UI layer that brings <strong>scalable</strong>{" "}
+                HTML & CSS to any kind of web application
+                {/* Paperclip is a fast, scalable UI layer that brings <strong>scoped CSS</strong> to any kind of web application. */}
               </>
             }
             cta={
@@ -77,31 +71,40 @@ function Home() {
           />
 
           <styles.Summary
-            title="No more leaky styles"
-            text="Maintaining HTML & CSS is hard, especially with global CSS. Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about accidentally styling elements again."
+            // title="No more leaky styles"
+            // text="Paperclip is a UI layer without the frills. No logic, just pure focus the appearance of your application, with tools to help you write that stuff more quickly, and precisely. Your designers will love you. ❤️"
+            // text="Paperclip is a UI layer that help you focus on just the HTML & CSS for your application, with tools to help you do that more quickly, and accurately. Your designers will love you. ❤️"
+            text={
+              <>
+                Writing scalable HTML and CSS is hard, especially with global
+                styles, slow developer tooling, and lack of automation for
+                catching visual regressions. Paperclip focuses purely on these
+                problems, with features to help you build scalable UIs more
+                quickly, and accurately.
+              </>
+            }
           />
 
           <styles.VariousFeatures>
             <styles.VariousFeatureItem
               iconName="shapes"
-              title="Just the UI"
+              title="Fast and scalable"
               description="Paperclip just covers the appearance of your application, and exposes presentational components that you can throughout your application."
             />
             <styles.VariousFeatureItem
-              iconName="grow"
-              title="Incrementally adoptable"
-              description={
-                <>
-                  Presentational components can be used in your existing
-                  codebase, and they're helpful in wrangling any current CSS
-                  that you have.
-                </>
-              }
+              iconName="hammer"
+              title="Rich developer tooling"
+              description="Paperclip comes with tools such as a visual editor, linter, and visual regression tool to help you write clean HTML & CSS, and keep it that way."
             />
             <styles.VariousFeatureItem
-              iconName="hammer"
-              title="Productivity tools"
-              description="Paperclip comes with tools such as a visual editor, linter, and visual regression tool to help you write clean HTML & CSS, and keep it that way."
+              iconName="grow"
+              title="Compliments your existing codebase"
+              description={
+                <>
+                  Paperclip can be used in whatever kind of codebase you want,
+                  and helps you start writing
+                </>
+              }
             />
           </styles.VariousFeatures>
 
