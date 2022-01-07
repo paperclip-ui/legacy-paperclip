@@ -1,6 +1,6 @@
 {
   "name": "@tandemui/design-system",
-  "version": "18.4.0",
+  "version": "18.4.1",
   "description": "",
   "main": "lib/index.js",
   "publishConfig": {
@@ -14,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@paperclipui/cli-minimal": "^18.4.0",
-    "@paperclipui/compiler-react": "^18.4.0",
-    "@paperclipui/core": "^18.4.0"
+    "@paperclipui/cli-minimal": "^18.4.1",
+    "@paperclipui/compiler-react": "^18.4.1",
+    "@paperclipui/core": "^18.4.1"
   }
 }

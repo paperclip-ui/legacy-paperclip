@@ -1,6 +1,6 @@
 {
   "name": "@paperclipui/interim",
-  "version": "18.4.0",
+  "version": "18.4.1",
   "description": "",
   "main": "lib/index.js",
   "publishConfig": {
@@ -14,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclipui/core": "^18.4.1",
+    "@paperclipui/utils": "^18.4.1",
     "crc32": "^0.2.2",
     "mime": "^3.0.0"
   },

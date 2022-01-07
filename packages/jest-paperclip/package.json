@@ -1,6 +1,6 @@
 {
   "name": "jest-paperclip",
-  "version": "18.4.0",
+  "version": "18.4.1",
   "description": "Jest Paperclip plugin",
   "main": "lib/index.js",
   "publishConfig": {
@@ -15,8 +15,8 @@
   "dependencies": {
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
-    "@paperclipui/builder": "^18.4.0",
-    "@paperclipui/core": "^18.4.0",
+    "@paperclipui/builder": "^18.4.1",
+    "@paperclipui/core": "^18.4.1",
     "resolve": "^1.17.0",
     "typescript": "^4.2.3"
   },

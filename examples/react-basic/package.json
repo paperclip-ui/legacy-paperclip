@@ -1,6 +1,6 @@
 {
   "name": "@paperclipui/examples-react-basic",
-  "version": "18.4.0",
+  "version": "18.4.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -11,9 +11,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@paperclipui/cli": "^18.4.0",
-    "@paperclipui/compiler-react": "^18.4.0",
-    "@paperclipui/loader": "^18.4.0",
+    "@paperclipui/cli": "^18.4.1",
+    "@paperclipui/compiler-react": "^18.4.1",
+    "@paperclipui/loader": "^18.4.1",
     "@webpack-cli/init": "^1.1.3",
     "@webpack-cli/serve": "^1.6.0",
     "concurrently": "^6.5.1",

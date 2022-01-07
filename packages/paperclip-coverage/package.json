@@ -1,6 +1,6 @@
 {
   "name": "@paperclipui/coverage",
-  "version": "18.4.0",
+  "version": "18.4.1",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.ds.ts",
@@ -15,10 +15,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/cli-minimal": "^18.4.0",
-    "@paperclipui/compiler-html": "^18.4.0",
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclipui/cli-minimal": "^18.4.1",
+    "@paperclipui/compiler-html": "^18.4.1",
+    "@paperclipui/core": "^18.4.1",
+    "@paperclipui/utils": "^18.4.1",
     "chalk": "2.0.0",
     "cli-table": "^0.3.11",
     "html-entities": "^1.2.1",

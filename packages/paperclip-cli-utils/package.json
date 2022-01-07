@@ -1,6 +1,6 @@
 {
   "name": "@paperclipui/cli-utils",
-  "version": "18.4.0",
+  "version": "18.4.1",
   "description": "CLI utils for Paperclip",
   "main": "lib/index.js",
   "publishConfig": {
@@ -15,8 +15,8 @@
   "license": "MIT",
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclipui/core": "^18.4.1",
+    "@paperclipui/utils": "^18.4.1",
     "@types/inquirer": "^6.5.0",
     "@types/shelljs": "^0.8.8",
     "chalk": "^4.1.0",
