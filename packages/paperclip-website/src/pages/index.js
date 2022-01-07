@@ -171,8 +171,9 @@ function Home() {
               <>
                 No more waiting for code to compile in order to see how your UI
                 looks. Paperclip comes with a visual editor that allows you to
-                build your UIs in <strong>realtime</strong>, directly within
-                your IDE (currently supporting VS Code for beta).{" "}
+                build your UIs in <strong>realtime</strong>, directly within VS
+                Code. Not using VS Code? No worries, you launch the visual
+                editor directly from Terminal.
               </>
             }
             ctaText="Learn about the visual tools"
