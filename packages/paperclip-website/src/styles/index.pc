@@ -579,7 +579,7 @@
   <BigFeature title="Live editing"
     ctaText="learn more"
     description="Paperclip comes with visual tools that enable to build your UIs in realtime."
-    preview={<video src="../../static/vid/@paperclipui/fast-demo.mp4"
+    preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
       autoplay
       loop />} />
 

@@ -1,6 +1,6 @@
 {
   "name": "Paperclip Template",
-  "scopeName": "text.html.@paperclipui/html",
+  "scopeName": "text.html.paperclip-html",
   "fileTypes": [],
   "uuid": "3e3ce414-c385-42ea-a2ba-451a37ca6fd1",
   "patterns": [

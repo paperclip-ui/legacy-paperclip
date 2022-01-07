@@ -26,12 +26,12 @@ export const parsers: Record<string, Parser> = {
     locEnd(node) {
       return node.end;
     },
-    astFormat: "@paperclipui/ast"
+    astFormat: "paperclip-ast"
   }
 };
 
 export const printers: Record<string, Printer> = {
-  "@paperclipui/ast": {
+  "paperclip-ast": {
     print
   }
 };

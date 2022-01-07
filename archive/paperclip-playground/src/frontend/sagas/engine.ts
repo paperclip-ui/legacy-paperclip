@@ -21,7 +21,7 @@ export function* handleEngine() {
 
 function* startEngine() {
   const worker = new Worker(new URL("./engine-worker.ts", import.meta.url));
-  const channel = new BroadcastChannel("@paperclipui/core");
+  const channel = new BroadcastChannel("paperclip");
 
   let _state: WorkerState = getWorkerState(yield select());
   const incomming = eventChannel(emit => {

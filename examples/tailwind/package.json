@@ -1,5 +1,5 @@
 {
-  "name": "tailwind",
+  "name": "@paperclipui/paperclip-tailwind",
   "version": "18.3.9",
   "main": "index.js",
   "license": "MIT",

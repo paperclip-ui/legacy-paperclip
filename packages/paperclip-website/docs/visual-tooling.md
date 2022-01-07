@@ -12,7 +12,7 @@ npx @paperclipui/cli designer
 
 In your project directory where your Paperclip files live. Here's what you should see:
 
-![demo](assets/@paperclipui/dev.gif)
+![demo](assets/paperclip-dev.gif)
 
 You can run this window in tandem with your text editor, and changes that you make will instantly appear when you save.
 

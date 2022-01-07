@@ -5,7 +5,7 @@ sidebar_label: VS Code Extension
 ---
 
 
-The [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.@paperclipui/vscode) provides a richer experience for Paperclp that includes code highlighting, intellisense, and realtime visual development.
+The [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) provides a richer experience for Paperclp that includes code highlighting, intellisense, and realtime visual development.
 
 ![alt Realtime editing](/img/vscode-measure.gif)
 

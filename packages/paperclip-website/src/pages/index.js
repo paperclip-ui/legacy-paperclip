@@ -157,7 +157,7 @@ function Home() {
             ctaText="Learn about the visual tools"
             ctaHref="/docs/visual-tooling"
             preview={
-              <video src="vid/@paperclipui/fast-demo.mp4" autoPlay loop muted />
+              <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
             }
             // ctaText="View the docs"
             // ctaHref={"https://paperclip.dev/docs/configure-percy"}

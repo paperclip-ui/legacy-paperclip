@@ -38,7 +38,7 @@ const init = async () => {
   // open a line for any web workers that need access to the engine. Note that
   // this is _one way_ since whatever's controlling the engine worker needs to also control its state since
   // the engine worker handler may be the source of truth for that state.
-  const channel = new BroadcastChannel("@paperclipui/core");
+  const channel = new BroadcastChannel("paperclip");
 
   const dispatch = (action: Action) => {
     channel.postMessage(action);
