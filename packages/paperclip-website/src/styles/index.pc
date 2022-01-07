@@ -14,6 +14,9 @@
   :root {
     --row-max-width: 1800px;
   }
+  * > :global(strong) {
+    font-weight: 600;
+  }
   @export {
     ._emoji {}
   }
@@ -603,6 +606,74 @@
       autoplay
       loop />}
     ctaText="View the API" />
+
+  <div>
+    <style>
+      text-align: center;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 700px;
+      margin: 0px auto;
+    </style>
+    <div>
+      <style>
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      </style>
+      Easy setup
+    </div>
+    <div>
+      <style>
+        padding-bottom: 16px;
+      </style>
+      Paperclip currently supports <strong>React</strong> and <strong>
+        static HTML
+      </strong> out of the box. Want to try it out? Just check out the <a href="/repl">
+        playground
+      </a>, or run one of the following commands in your existing codebase. You
+      can easily opt-out whenever you want.
+    </div>
+
+    <!-- TODO: have two options -->
+    <div>
+      <style>
+        display: flex;
+        flex-direction: column;
+        grid-row-gap: 18px;
+      </style>
+
+      <div>
+        Via NPX:
+        <div>
+          <style>
+            background: rgb(224, 224, 224);
+            border: 1px solid grey;
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+          </style>
+          npx @paperclip/cli init
+        </div>
+      </div>
+
+      <div>
+        Via Yarn:
+        <div>
+          <style>
+            background: rgb(224, 224, 224);
+            border: 1px solid grey;
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+          </style>
+          yarn add @paperclip/cli --dev && yarn @paperclip/cli init
+        </div>
+      </div>
+    </div>
+  </div>
 
   <Footer />
 </Home>

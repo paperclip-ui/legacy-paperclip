@@ -78,9 +78,10 @@ function Home() {
               <>
                 Writing scalable HTML and CSS is hard, especially with global
                 styles, slow developer tooling, and lack of automation for
-                catching visual regressions. Paperclip focuses purely on these
-                problems, with features to help you build scalable UIs more
-                quickly, and accurately.
+                catching visual regressions. Paperclip is a tiny language that
+                focuses purely on these problems, with features to help you
+                build scalable UIs more quickly, and accurately. Your users will
+                love you. ❤️
               </>
             }
           />
@@ -89,61 +90,52 @@ function Home() {
             <styles.VariousFeatureItem
               iconName="shapes"
               title="Fast and scalable"
-              description="Paperclip just covers the appearance of your application, and exposes presentational components that you can throughout your application."
+              description={
+                <>
+                  Paperclip compiles to plain, readable code, that also keeps{" "}
+                  <strong>CSS scoped</strong>, you can write maintainable CSS
+                  that never leaks again.{" "}
+                </>
+              }
             />
             <styles.VariousFeatureItem
               iconName="hammer"
               title="Rich developer tooling"
-              description="Paperclip comes with tools such as a visual editor, linter, and visual regression tool to help you write clean HTML & CSS, and keep it that way."
+              description={
+                <>
+                  Paperclip comes with a <strong>visual editor</strong> to help
+                  you build UIs quickly, and{" "}
+                  <strong>visual regression tooling</strong> to help you catch
+                  every visual change before shipping to production.{" "}
+                </>
+              }
             />
             <styles.VariousFeatureItem
               iconName="grow"
-              title="Compliments your existing codebase"
+              title="Compiles to any language"
               description={
                 <>
-                  Paperclip can be used in whatever kind of codebase you want,
-                  and helps you start writing
+                  Paperclip is designed to be compiled into whatever language
+                  you're using, and currently supports React and vanilla HTML
+                  out of the box. You can even use Paperclip to{" "}
+                  <strong>compliment your existing codebase</strong>.
                 </>
               }
             />
           </styles.VariousFeatures>
 
           <styles.BigFeature
-            title="Compiles to plain code"
-            noShadow
-            smallerPreview
-            description={[
-              "Paperclip is designed to be compiled into whatever language you're using, and currently supports React out of the box. You can even build a compiler that fits your specific needs."
-            ]}
-            ctaText="Learn about compilers"
-            ctaHref="/docs/guide-compilers"
-            preview={<img src="img/compile-to-many-2.png" />}
-          />
-
-          <styles.BigFeature
-            title="Pairs well with third-party CSS"
-            description={[
-              "Paperclip enhances your third-pary CSS by keeping it scoped, so you have explicit control over how it's used in your app."
-            ]}
-            ctaText="Learn how to use third-party CSS"
-            ctaHref="/docs/guide-third-party-libraries"
-            preview={
-              <CodeBlock className="language-html">
-                {THIRD_PART_CSS_EXAMPLE}
-              </CodeBlock>
-            }
-          />
-
-          <styles.BigFeature
-            title="Better coverage for UI bugs"
+            title="Catch all CSS bugs"
             description={
               <>
-                Paperclip files are automatically covered for visual
-                regressions. Just set up the Percy integration and you're good
-                to go.
+                Paperclip UIs are <strong>automatically</strong> covered for
+                visual regressions, so you can confidently make big changes
+                knowing that you'll be aware how those change affect every other
+                part of your application across different browsers and screen
+                sizes.
               </>
             }
-            ctaText="Learn how to set up Percy"
+            ctaText="Learn about visual regression tooling"
             ctaHref="/docs/configure-percy"
             preview={
               <video
@@ -154,11 +146,49 @@ function Home() {
               />
             }
           />
+
           <styles.BigFeature
-            title="Build UIs more quickly"
-            description="Paperclip's visual editor allows you to build your primitive components in realtime, and also comes with tools to help you build UIs more accurately."
+            title="Complete control over CSS frameworks"
+            description={[
+              "No more worrying about CSS frameworks accidentally overriding styles. Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. "
+              // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
+              // "Paperclip keeps CSS frameworks scoped, so you have complete control over how they're used in your application. No more lock-in."
+              // "No more global CSS with. Paperclip gives you complete control over how they're used throughout your application."
+              // "Paperclip enhances your third-pary CSS by keeping it scoped, so you have explicit control over how it's used in your app."
+            ]}
+            ctaText="Learn more"
+            ctaHref="/docs/guide-third-party-libraries"
+            preview={
+              <CodeBlock className="language-html">
+                {THIRD_PART_CSS_EXAMPLE}
+              </CodeBlock>
+            }
+          />
+
+          <styles.BigFeature
+            title="UI development in your IDE"
+            description={
+              <>
+                No more waiting for code to compile in order to see how your UI
+                looks. Paperclip comes with a visual editor that allows you to
+                build your UIs in <strong>realtime</strong>, directly within
+                your IDE (currently supporting VS Code for beta).{" "}
+              </>
+            }
             ctaText="Learn about the visual tools"
             ctaHref="/docs/visual-tooling"
+            preview={
+              <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
+            }
+            // ctaText="View the docs"
+            // ctaHref={"https://paperclip.dev/docs/configure-percy"}
+          />
+
+          <styles.BigFeature
+            title="Down to try it out?"
+            description="Installation is an easy process. "
+            ctaText="Get started"
+            ctaHref="/docs/installation"
             preview={
               <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
             }
