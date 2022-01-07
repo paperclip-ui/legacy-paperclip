@@ -4,7 +4,7 @@ title: Configuration
 sidebar_label: Configuring
 ---
 
-The `paperclip.config.json` contains information about linting rules, compiler options, and such. Here's the typed definition:
+The `paperclip.config.json` contains information about linting rules, compiler options, and such. Here are all of the options you can use:
 
 ```typescript
 type PaperclipConfig = {
