@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkpaperclip_website=self.webpackChunkpaperclip_website||[]).push([[2535],{45641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Introducing Paperclip","permalink":"/blog/introducing-paperclip"}]}')}}]);
