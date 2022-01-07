@@ -1,6 +1,6 @@
 {
   "name": "@paperclipui/web-renderer",
-  "version": "18.3.8",
+  "version": "18.4.0",
   "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
   "scripts": {
@@ -13,13 +13,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@paperclipui/common": "^18.4.0",
+    "@paperclipui/utils": "^18.4.0",
     "events": "^3.2.0",
     "html-entities": "^1.2.1",
-    "immer": "^9.0.5",
-    "@paperclipui/common": "^18.3.8",
-    "@paperclipui/utils": "^18.3.8"
+    "immer": "^9.0.5"
   },
   "devDependencies": {
+    "@paperclipui/core": "^18.4.0",
     "@types/cssom": "^0.4.1",
     "@types/lodash": "^4.14.157",
     "@types/mocha": "^5.2.7",
@@ -29,8 +30,7 @@
     "cssom": "^0.4.4",
     "eslint": "^7.4.0",
     "lodash": "^4.17.19",
-    "mocha": "^7.0.1",
-    "@paperclipui/core": "^18.3.8"
+    "mocha": "^7.0.1"
   },
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a"
 }

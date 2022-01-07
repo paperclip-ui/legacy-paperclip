@@ -1,6 +1,6 @@
 {
   "name": "@paperclipui/example-basics",
-  "version": "18.3.9",
+  "version": "18.4.0",
   "description": "",
   "main": "src/index.js",
   "private": true,
@@ -9,9 +9,9 @@
     "build": "paperclip build"
   },
   "devDependencies": {
-    "@paperclipui/core": "^18.3.8",
-    "@paperclipui/cli": "^18.3.9",
-    "@paperclipui/compiler-react": "^18.3.8"
+    "@paperclipui/cli": "^18.4.0",
+    "@paperclipui/compiler-react": "^18.4.0",
+    "@paperclipui/core": "^18.4.0"
   },
   "keywords": []
 }
