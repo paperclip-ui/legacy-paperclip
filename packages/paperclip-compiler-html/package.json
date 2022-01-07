@@ -9,6 +9,9 @@
     "build": "tsc",
     "build:watch": "tsc --watch"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {

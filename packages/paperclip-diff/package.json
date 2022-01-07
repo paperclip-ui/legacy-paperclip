@@ -11,6 +11,9 @@
     "build:paperclip": "paperclip-minimal build",
     "build:watch": "concurrently \"tsc --watch\" \"yarn build:paperclip --watch\""
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

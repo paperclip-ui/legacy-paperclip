@@ -3,6 +3,9 @@
   "version": "18.4.0",
   "description": "Internal utils for Paperclip",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",

@@ -6,6 +6,9 @@
   "publisher": "crcn",
   "preview": true,
   "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "React",
     "CSS",

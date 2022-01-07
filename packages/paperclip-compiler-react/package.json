@@ -16,6 +16,9 @@
     "lodash": "^4.17.15",
     "source-map": "^0.7.3"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",

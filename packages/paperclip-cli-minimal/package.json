@@ -3,6 +3,9 @@
   "version": "18.4.0",
   "description": "Minimal command line tool for Paperclip",
   "main": "lib/cli.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "paperclip-minimal": "./bin/paperclip"
   },

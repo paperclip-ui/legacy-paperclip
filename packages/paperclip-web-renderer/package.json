@@ -3,6 +3,9 @@
   "version": "18.4.0",
   "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "mocha ./lib/test --timeout=5000",
     "build": "tsc",

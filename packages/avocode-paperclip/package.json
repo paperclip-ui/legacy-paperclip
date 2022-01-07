@@ -3,6 +3,9 @@
   "version": "18.3.8",
   "description": "",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "echo ''"
   },

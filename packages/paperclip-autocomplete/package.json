@@ -3,6 +3,9 @@
   "version": "18.4.0",
   "description": "Internal Autocomplete helper util for language clients",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",

@@ -15,6 +15,9 @@
     "live",
     "realtime"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "npm run test:node && cd native && cargo test",
     "lint": "eslint src",

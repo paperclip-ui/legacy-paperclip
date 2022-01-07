@@ -7,6 +7,9 @@
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

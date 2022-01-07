@@ -4,6 +4,9 @@
   "description": "Percy integration for Paperclip",
   "main": "index.js",
   "bin": "./bin/percy-paperclip",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",

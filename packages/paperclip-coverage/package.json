@@ -4,6 +4,9 @@
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.ds.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "yarn build:paperclip && tsc",
     "build:paperclip": "paperclip-minimal build",

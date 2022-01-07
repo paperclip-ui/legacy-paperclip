@@ -4,6 +4,9 @@
   "description": "standalone Docker server",
   "main": "lib/index.js",
   "bin": "./bin/@tandemui/workspace",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:docker": "docker build .",
