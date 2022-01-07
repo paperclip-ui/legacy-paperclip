@@ -1,5 +1,5 @@
-import { PaperclipConfig } from "paperclip";
-import { CompilerOptions } from "paperclip-utils";
+import { PaperclipConfig } from "@paperclipui/core";
+import { CompilerOptions } from "@paperclipui/utils";
 import { InterimModule } from ".";
 
 export type CompileOptions = {
@@ -10,3 +10,7 @@ export type CompileOptions = {
   targetOptions: CompilerOptions;
   cwd: string;
 };
+
+export type TargetCompiler = (
+  options: CompileOptions
+) => Record<string, string>;

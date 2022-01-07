@@ -1,9 +1,9 @@
 {
-  "name": "tandem-workspace",
-  "version": "18.3.8",
+  "name": "@tandemui/workspace",
+  "version": "18.4.0",
   "description": "standalone Docker server",
   "main": "lib/index.js",
-  "bin": "./bin/tandem-workspace",
+  "bin": "./bin/@tandemui/workspace",
   "scripts": {
     "build": "tsc",
     "build:docker": "docker build .",
@@ -24,15 +24,15 @@
     "yargs": "^17.1.1"
   },
   "dependencies": {
+    "@paperclipui/common": "^18.4.0",
+    "@paperclipui/core": "^18.4.0",
+    "@tandemui/common": "^18.4.0",
+    "@tandemui/designer": "^18.4.0",
     "buffer": "^6.0.3",
     "execa": "^5.1.1",
     "fs-extra": "^10.0.0",
     "get-port": "^5.1.1",
     "glob": "^7.1.7",
-    "paperclip": "^18.3.8",
-    "paperclip-common": "^18.3.8",
-    "sockjs": "^0.3.21",
-    "tandem-common": "^18.3.8",
-    "tandem-designer": "^18.3.8"
+    "sockjs": "^0.3.21"
   }
 }

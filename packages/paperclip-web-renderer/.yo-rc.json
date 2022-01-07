@@ -1,5 +1,5 @@
 {
-  "paperclip-web-renderer": {
+  "@paperclipui/web-renderer": {
     "configuration": {
       "config": {
         "configName": "config",

@@ -1,5 +1,5 @@
 <import src="styles/utils.pc" as="utils" />
-<import src="tandem-design-system/src/TextInput.pc" as="TextInput" />
+<import src="@tandemui/design-system/src/TextInput.pc" as="TextInput" />
 
 <!--
   @frame { visible: false }

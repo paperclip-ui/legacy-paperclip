@@ -1,4 +1,4 @@
-import { init as initDesigner } from "tandem-designer/src/app";
+import { init as initDesigner } from "@tandemui/designer/src/app";
 import { ParentController } from "../parent";
 import { createMemoryHistory } from "history";
 import { Options } from "../../app";

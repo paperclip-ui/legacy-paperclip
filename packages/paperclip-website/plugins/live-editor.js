@@ -4,7 +4,7 @@ const webpack = require("webpack");
 
 module.exports = function(context, options) {
   return {
-    name: "paperclip-live-editor",
+    name: "@paperclipui/live-editor",
     getThemePath() {
       return path.resolve(__dirname, "./theme");
     },
@@ -15,7 +15,7 @@ module.exports = function(context, options) {
         //     {
         //       from: path.resolve(
         //         __dirname,
-        //         "../../paperclip-repl/dist"
+        //         "../../@paperclipui/repl/dist"
         //       ),
         //       to: ".",
         //       globOptions: {

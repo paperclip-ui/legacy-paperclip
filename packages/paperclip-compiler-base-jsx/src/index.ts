@@ -1,5 +1,5 @@
-import { CompileOptions } from "paperclip-interim";
-import { CompilerOptions } from "paperclip-utils";
+import { CompileOptions, TargetCompiler } from "@paperclipui/interim";
+import { CompilerOptions } from "@paperclipui/utils";
 import { codeCompiler, CodeCompilerOptions } from "./code-compiler";
 import * as babel from "@babel/core";
 import {
@@ -17,7 +17,7 @@ export const compilers = ({
   code,
   definition,
   extensionName
-}: CompilersOptions) => {
+}: CompilersOptions): TargetCompiler => {
   const compile2Code = codeCompiler(code);
   const compile2Defition = definitionCompiler(definition);
 

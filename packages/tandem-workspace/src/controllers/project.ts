@@ -1,10 +1,10 @@
 import { Repository } from "./git";
 import * as URL from "url";
 import * as crypto from "crypto";
-import { Logger } from "tandem-common";
+import { Logger } from "@tandemui/common";
 import execa from "execa";
 import { Package } from "./package";
-import { EngineDelegateEvent } from "paperclip";
+import { EngineDelegateEvent } from "@paperclipui/core";
 import { PaperclipProject } from "./paperclip";
 import { VFS } from "./vfs";
 import { Workspace } from "./workspace";

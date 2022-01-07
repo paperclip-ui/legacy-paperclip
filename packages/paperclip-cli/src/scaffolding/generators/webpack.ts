@@ -22,7 +22,7 @@ export const webpack = {
         devDependencies: [
           "webpack",
           "webpack-dev-server",
-          "paperclip-loader",
+          "@paperclipui/loader",
           "html-webpack-plugin",
           "webpack-cli",
           "css-loader",

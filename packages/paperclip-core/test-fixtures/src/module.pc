@@ -1,0 +1,5 @@
+<!--
+  @frame { title: "Test / module" }
+-->
+
+<div export component as="SecretMessage">I'm a secret!</div>

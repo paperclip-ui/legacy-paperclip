@@ -1,4 +1,4 @@
-import { Logger, startHTTPServer } from "tandem-common";
+import { Logger, startHTTPServer } from "@tandemui/common";
 import { Designer } from "./controllers/designer";
 import { SSHKeys } from "./controllers/ssh";
 import { Workspace } from "./controllers/workspace";

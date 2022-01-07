@@ -1,8 +1,8 @@
-<!-- <import src="tandem-designer/src/components/Theme/index.pc" as="Theme" /> -->
-<import src="tandem-design-system/src/atoms.pc" inject-styles />
-<import src="tandem-designer/src/styles/utils.pc" as="utils" />
-<import src="tandem-designer/src/components/Select/index2.pc" as="Select" />
-<import src="tandem-design-system/src/TextInput.pc" as="TextInput" />
+<!-- <import src="  @tandemui/designer/src/components/Theme/index.pc" ""="Theme" /> -->
+<import src="@tandemui/design-system/src/atoms.pc" inject-styles />
+<import src="@tandemui/designer/src/styles/utils.pc" as="utils" />
+<import src="@tandemui/designer/src/components/Select/index2.pc" as="Select" />
+<import src="@tandemui/design-system/src/TextInput.pc" as="TextInput" />
 
 <!--
   @frame { visible: false }

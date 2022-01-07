@@ -1,0 +1,7 @@
+<import src="component.pc" as="component" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<component>something</component>

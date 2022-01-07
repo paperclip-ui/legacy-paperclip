@@ -4,9 +4,9 @@ import * as path from "path";
 import * as fs from "fs";
 import { EventEmitter } from "events";
 import * as chokidar from "chokidar";
-import { EngineDelegate } from "paperclip";
+import { EngineDelegate } from "@paperclipui/core";
 import { flatten } from "lodash";
-import { InterimCompiler, CompileOptions } from "paperclip-interim";
+import { InterimCompiler, CompileOptions } from "@paperclipui/interim";
 import {
   PaperclipConfig,
   getPaperclipConfigIncludes,
@@ -17,7 +17,7 @@ import {
   isPaperclipFile,
   getScopedCSSFilePath,
   CompilerOptions
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { TargetNotFoundError } from "./errors";
 
 type BaseOptions = {
@@ -286,7 +286,7 @@ const assertRequireCompilerTarget = (
   config: PaperclipConfig,
   targetOptions: CompilerOptions
 ) => {
-  const targetCompilers = requireTargetCompilers(cwd, config, targetOptions);
+  const targetCompilers = requireTargetCompilers(cwd, targetOptions);
 
   if (!targetCompilers.length) {
     // Throw courtesy error so that the developer knows what to do
@@ -381,17 +381,19 @@ const createInterimCompiler = (
 
 const requireTargetCompilers = (
   cwd: string,
-  config: PaperclipConfig,
   options: CompilerOptions
 ): TargetCompiler[] => {
   const localDirs = cwd
     .split("/")
     .map((part, index, parts) =>
-      [...parts.slice(0, index + 1), "node_modules"].join("/")
+      [...parts.slice(0, index + 1), "node_modules", "@paperclipui"].join("/")
     )
     .filter(dir => dir !== "node_modules");
 
-  const possibleDirs = [...localDirs, "/usr/local/lib/node_modules"];
+  const possibleDirs = [
+    ...localDirs,
+    "/usr/local/lib/node_modules/@paperclipui"
+  ];
 
   const compilers: Record<string, TargetCompiler> = {};
 
@@ -401,10 +403,10 @@ const requireTargetCompilers = (
     }
 
     for (const moduleName of fs.readdirSync(possibleDir)) {
-      if (/paperclip-compiler-/.test(moduleName) && !compilers[moduleName]) {
+      if (/compiler-/.test(moduleName) && !compilers[moduleName]) {
         if (
           !options.target ||
-          options.target === moduleName.substring("paperclip-compiler-".length)
+          options.target === moduleName.substring("compiler-".length)
         ) {
           compilers[moduleName] = require(path.join(possibleDir, moduleName));
         }

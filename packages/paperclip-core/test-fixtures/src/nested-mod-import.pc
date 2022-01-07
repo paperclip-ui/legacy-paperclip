@@ -1,0 +1,8 @@
+<import src="@nested/in/a/folder/src/component.pc" as="component" />
+
+<!--
+  @frame { title: "Test / nested-mod-import" }
+-->
+
+
+<component />

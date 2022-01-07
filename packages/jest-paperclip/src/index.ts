@@ -6,8 +6,8 @@ import {
   PC_CONFIG_FILE_NAME,
   findPCConfigUrl,
   PaperclipConfig
-} from "paperclip";
-import { buildFile } from "paperclip-builder";
+} from "@paperclipui/core";
+import { buildFile } from "@paperclipui/builder";
 
 const engine = createEngineDelegate();
 

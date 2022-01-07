@@ -1,6 +1,6 @@
 import { window, WebviewPanel, ViewColumn } from "vscode";
 import * as path from "path";
-import { ImmutableStore } from "paperclip-common";
+import { ImmutableStore } from "@paperclipui/common";
 import { EventEmitter } from "events";
 import * as qs from "querystring";
 
@@ -22,7 +22,7 @@ export type LiveWindowState = {
 };
 
 export class LiveWindow {
-  static TYPE = "paperclip-preview";
+  static TYPE = "@paperclipui/preview";
   private _store: ImmutableStore<LiveWindowState>;
   private _em: EventEmitter;
 

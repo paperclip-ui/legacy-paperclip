@@ -11,9 +11,9 @@ import {
   LoadedEvent,
   RuntimeErrorEvent,
   StringRange
-} from "paperclip-utils";
-import { Observable } from "paperclip-common";
-import { EngineDelegate } from "paperclip";
+} from "@paperclipui/utils";
+import { Observable } from "@paperclipui/common";
+import { EngineDelegate } from "@paperclipui/core";
 import { SourceLinted } from "./events";
 
 /**

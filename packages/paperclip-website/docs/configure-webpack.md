@@ -9,7 +9,7 @@ sidebar_label: Webpack
 You can use Paperclip with [Webpack](https://webpack.js.org/) by installing the loader:
 
 ```sh
-npm install paperclip-loader --save-dev
+npm install @paperclipui/loader --save-dev
 ```
 
 Also, be sure that you also have the following dependencies installed (If you're using [NextJS](https://nextjs.org/), then you can skip this step):
@@ -21,15 +21,15 @@ npm install style-loader css-loader file-loader --save-dev
 > Paperclip emits CSS files that need to be loaded, so this is why you need to install additional dependencies.
 
 
-After that, you can can include `paperclip-loader` in your webpack config rules:
+After that, you can can include `@paperclipui/loader` in your webpack config rules:
 
 ```javascript
 {
   test: /\.pc$/,
-  loader: "paperclip-loader",
+  loader: "@paperclipui/loader",
   options: {
     
-    // paperclip.config.json can be generated via the paperclip-cli tool
+    // paperclip.config.json can be generated via the @paperclipui/cli tool
     config: require("./paperclip.config.json")
   }
 }
@@ -53,15 +53,15 @@ module.exports = {
     rules: [
       {
         test: /\.pc$/,
-        loader: "paperclip-loader",
+        loader: "@paperclipui/loader",
         options: {
           
-          // paperclip.config.json can be generated via the paperclip-cli tool
+          // paperclip.config.json can be generated via the @paperclipui/cli tool
           config: require("./paperclip.config.json")
         }
       },
 
-      // Required since paperclip-loader emits
+      // Required since @paperclipui/loader emits
       // CSS files
       {
         test: /\.css$/,

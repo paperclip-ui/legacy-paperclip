@@ -1,5 +1,5 @@
-import { ContentChange } from "paperclip-source-writer";
-import { ExprSource } from "paperclip-utils";
+import { ContentChange } from "@paperclipui/source-writer";
+import { ExprSource } from "@paperclipui/utils";
 
 export type ProjectOptions = {
   installDependencies?: boolean;

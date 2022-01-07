@@ -1,10 +1,10 @@
-import { EngineDelegate } from "paperclip";
+import { EngineDelegate } from "@paperclipui/core";
 import {
   CompilerOptions,
   EngineDelegateChanged,
   PaperclipConfig,
   StringifySheetOptions
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { InterimImport } from "..";
 import { InterimAsset } from "../state/assets";
 

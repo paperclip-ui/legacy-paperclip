@@ -4,7 +4,7 @@ import {
   publicActionCreator,
   BaseRequestStateChanged
 } from "./base";
-import { ContentChange, PCMutation } from "paperclip-source-writer";
+import { ContentChange, PCMutation } from "@paperclipui/source-writer";
 import {
   VirtualNode,
   BasicPaperclipAction,
@@ -15,7 +15,7 @@ import {
   Action,
   ExprSource,
   VirtNodeSource
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import {
   Box,
   Directory,

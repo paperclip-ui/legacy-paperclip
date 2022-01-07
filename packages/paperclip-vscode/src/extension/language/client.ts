@@ -4,7 +4,7 @@ import {
   eventHandlers,
   Observable,
   Observer
-} from "paperclip-common";
+} from "@paperclipui/common";
 import { workspace, ExtensionContext } from "vscode";
 
 import {
@@ -15,7 +15,7 @@ import {
 } from "vscode-languageclient";
 import * as path from "path";
 import { $$EVENT } from "./server/constants";
-// import { PCEngineCrashed } from "tandem-designer/lib/server/services/pc-engine";
+// import { PCEngineCrashed } from "@tandemui/designer/lib/server/services/pc-engine";
 
 /**
  * Spins up language server
@@ -45,9 +45,9 @@ export class PaperclipLanguageClient implements Disposable {
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
       // Register the server for plain text documents
-      documentSelector: [{ scheme: "file", language: "paperclip" }],
+      documentSelector: [{ scheme: "file", language: "@paperclipui/core" }],
       synchronize: {
-        configurationSection: ["paperclip", "credentials"],
+        configurationSection: ["@paperclipui/core", "credentials"],
         // Notify the server about file changes to '.clientrc files contained in the workspace
         fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
       }

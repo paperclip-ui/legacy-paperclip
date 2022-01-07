@@ -1,0 +1,9 @@
+<import src="module-a/src/component.pc" as="component" />
+
+
+<!--
+  @frame { title: "Test / mod-a-import" }
+-->
+
+
+<component />

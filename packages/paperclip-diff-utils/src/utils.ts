@@ -17,9 +17,9 @@ import {
   computeVirtScriptObject,
   NodeAnnotations,
   EvaluatedDataKind
-} from "paperclip";
+} from "@paperclipui/core";
 import { embedAssets, getPCDocumentHTML } from "./pc-document";
-import { getPrettyMessageFromError } from "paperclip-cli-utils";
+import { getPrettyMessageFromError } from "@paperclipui/cli-utils";
 import * as crypto from "crypto";
 
 export type RunOptions = {

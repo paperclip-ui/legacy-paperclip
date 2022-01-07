@@ -1,8 +1,0 @@
-
-
-
-<!--
-  @frame { title: "Test / bad import" }
--->
-
-<import src="./Module.pc" />

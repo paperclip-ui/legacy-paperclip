@@ -1,0 +1,9 @@
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div export component as="default">from test.pc</div>
+<!--
+  @frame { visible: false }
+-->
+
+fsdfs fdsfsd

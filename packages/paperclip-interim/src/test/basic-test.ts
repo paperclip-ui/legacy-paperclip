@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { createMockEngine } from "paperclip/lib/test/utils";
+import { createMockEngine } from "@paperclipui/core/lib/test/utils";
 import { InterimCompiler } from "..";
 import { stringifyInterimModule } from "./utils";
 

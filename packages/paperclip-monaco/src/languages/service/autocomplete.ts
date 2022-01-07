@@ -2,12 +2,12 @@ import {
   DependencyContent,
   LoadedData,
   LoadedDataEmitted
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import {
   getSuggestionContext,
   SuggestContextKind,
   HTMLAttributeStringValueContext
-} from "paperclip-autocomplete";
+} from "@paperclipui/autocomplete";
 import { Suggestion } from "./base";
 
 type Content = {

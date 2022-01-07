@@ -1,12 +1,12 @@
 import { WebviewPanel, window } from "vscode";
-import { eventHandlers, Observable, Observer } from "paperclip-common";
+import { eventHandlers, Observable, Observer } from "@paperclipui/common";
 import { LiveWindow, LiveWindowState } from "./live-window";
 import { DesignServerStarted } from "../language/server/events";
-// import { HTTPServerStarted } from "tandem-designer/lib/server/services/http-server";
+// import { HTTPServerStarted } from "@tandemui/designer/lib/server/services/http-server";
 // import {
 //   ActionType,
 //   LocationChanged
-// } from "../../../../paperclip-designer/lib";
+// } from "../../../../@paperclipui/designer/lib";
 
 export class LiveWindowManager implements Observer {
   readonly events: Observable;

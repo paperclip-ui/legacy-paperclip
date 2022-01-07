@@ -11429,9 +11429,9 @@ pako@~1.0.5:
   resolved "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
 
-paperclip-cli-utils@^15.1.1:
+@paperclipui/cli-utils@^15.1.1:
   version "15.1.1"
-  resolved "https://registry.npmjs.org/paperclip-cli-utils/-/paperclip-cli-utils-15.1.1.tgz#30572a25febef3243814fb5718268426b5d187c4"
+  resolved "https://registry.npmjs.org/@paperclipui/cli-utils/-/@paperclipui/cli-utils-15.1.1.tgz#30572a25febef3243814fb5718268426b5d187c4"
   integrity sha512-BvDz9U5tidJrNilIYjXlGe1AhqyB6sliKaA1ZwA9GouE6aw1Z5dbGbSEEtvyzqW0Nzw++wOfsiDOHDF5Gjr8kQ==
   dependencies:
     "@types/inquirer" "^6.5.0"
@@ -11443,14 +11443,14 @@ paperclip-cli-utils@^15.1.1:
     glob "^7.1.6"
     inquirer "^7.3.0"
     paperclip "^15.1.1"
-    paperclip-utils "^15.0.21"
+    @paperclipui/utils "^15.0.21"
     resolve "^1.15.1"
     shelljs "^0.8.4"
     yargs "^15.1.0"
 
-paperclip-cli@^15.1.1:
+@paperclipui/cli@^15.1.1:
   version "15.1.1"
-  resolved "https://registry.npmjs.org/paperclip-cli/-/paperclip-cli-15.1.1.tgz#5dc0969b2488f30c766c5a207d35f808b4dbda9b"
+  resolved "https://registry.npmjs.org/@paperclipui/cli/-/@paperclipui/cli-15.1.1.tgz#5dc0969b2488f30c766c5a207d35f808b4dbda9b"
   integrity sha512-/3fSPNN+9zje3N6GRJNBIsUJoumLERDUKGn2umeDpfxIuuG6YH2/qZPZ3XoNOh56UY8E99SejcS1Wr740GJ1Zw==
   dependencies:
     "@types/inquirer" "^6.5.0"
@@ -11462,15 +11462,15 @@ paperclip-cli@^15.1.1:
     glob "^7.1.6"
     inquirer "^7.3.0"
     paperclip "^15.1.1"
-    paperclip-cli-utils "^15.1.1"
-    paperclip-utils "^15.0.21"
+    @paperclipui/cli-utils "^15.1.1"
+    @paperclipui/utils "^15.0.21"
     resolve "^1.15.1"
     shelljs "^0.8.4"
     yargs "^15.1.0"
 
-paperclip-utils@^15.0.21:
+@paperclipui/utils@^15.0.21:
   version "15.0.21"
-  resolved "https://registry.npmjs.org/paperclip-utils/-/paperclip-utils-15.0.21.tgz#0ade213e27259e6a7c47302db5d0101db31b2c6e"
+  resolved "https://registry.npmjs.org/@paperclipui/utils/-/@paperclipui/utils-15.0.21.tgz#0ade213e27259e6a7c47302db5d0101db31b2c6e"
   integrity sha512-IKwZTmutJM+wn4zpEyG2hRdTbiejeYufhooxavHhjSrGal1FXXFiO8LyVJXYXbCX4GG+hL0RYDBBamP3BiPKOw==
   dependencies:
     "@types/mocha" "^5.2.7"
@@ -11481,14 +11481,14 @@ paperclip-utils@^15.0.21:
 
 paperclip@^15.1.1:
   version "15.1.1"
-  resolved "https://registry.npmjs.org/paperclip/-/paperclip-15.1.1.tgz#f1c6f3e8290de6a9c3c31a55020721bb4bd1c4ec"
+  resolved "https://registry.npmjs.org/paperclip/-/@paperclipui/15.1.1.tgz#f1c6f3e8290de6a9c3c31a55020721bb4bd1c4ec"
   integrity sha512-dJtdbHJ7A5IeD1kr2hewnVfl3IrxmF9HuxWCLF9QRsrn0HiHgPq1B4hpji7v7grOL75mDvTK194GeAdiXMtrHg==
   dependencies:
     "@types/mocha" "^5.2.7"
     chai "^4.2.0"
     crc32 "^0.2.2"
     mocha "^7.0.1"
-    paperclip-utils "^15.0.21"
+    @paperclipui/utils "^15.0.21"
     typescript "^3.8.2"
 
 parallel-transform@^1.1.0:

@@ -1,6 +1,6 @@
 import React from "react";
 import * as styles from "./index.pc";
-import { EngineErrorEvent, EngineErrorKind } from "paperclip-utils";
+import { EngineErrorEvent, EngineErrorKind } from "@paperclipui/utils";
 import { Dispatch } from "redux";
 import { Action, errorBannerClicked } from "../../../../actions";
 

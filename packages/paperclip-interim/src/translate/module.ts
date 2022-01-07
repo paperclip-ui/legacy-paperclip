@@ -1,4 +1,9 @@
-import { EngineDelegate, Node, VirtSheet, isErrorResult } from "paperclip";
+import {
+  EngineDelegate,
+  Node,
+  VirtSheet,
+  isErrorResult
+} from "@paperclipui/core";
 import * as path from "path";
 import * as fs from "fs";
 import * as URL from "url";
@@ -18,7 +23,7 @@ import {
   ModuleKind,
   CSSExports,
   isCSSExports
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";

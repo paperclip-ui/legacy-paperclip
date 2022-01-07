@@ -1,6 +1,6 @@
 // TODO - identify yarn lock
 import execa from "execa";
-import { Logger } from "tandem-common";
+import { Logger } from "@tandemui/common";
 
 // TODO - add ident script for repo type
 export class Package {

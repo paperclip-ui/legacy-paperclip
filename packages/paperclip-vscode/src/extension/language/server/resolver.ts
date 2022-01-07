@@ -20,20 +20,20 @@ import {
 } from "vscode-languageserver";
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { PaperclipLanguageService } from "paperclip-language-service";
-// import { PCEngineInitialized } from "tandem-designer/lib/server/services/pc-engine";
+import { PaperclipLanguageService } from "@paperclipui/language-service";
+// import { PCEngineInitialized } from "@tandemui/designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
 import * as parseColor from "color";
-import { BaseEvent, Observable } from "paperclip-common";
-import { stripFileProtocol } from "paperclip-utils";
+import { BaseEvent, Observable } from "@paperclipui/common";
+import { stripFileProtocol } from "@paperclipui/utils";
 import {
   DesignServerStarted,
   DesignServerUpdated,
   DesignServerUpdating,
   ProjectStarted
 } from "./events";
-import { SourceLinted } from "paperclip-language-service";
+import { SourceLinted } from "@paperclipui/language-service";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
@@ -106,7 +106,7 @@ export class LanguageRequestResolver {
     if (event.type === SourceLinted.TYPE) {
       const { uri, content, diagnostics } = event as SourceLinted;
       let textDocument = this._documents.getDocument(uri);
-      textDocument = TextDocument.create(uri, "paperclip", 0, content);
+      textDocument = TextDocument.create(uri, "@paperclipui/core", 0, content);
       this._connection.sendDiagnostics({
         uri: uri,
         diagnostics: diagnostics.map(diagnostic => {
@@ -202,7 +202,7 @@ export class LanguageRequestResolver {
             this._documents.getDocument(sourceUri) ||
             TextDocument.create(
               sourceUri,
-              "paperclip",
+              "@paperclipui/core",
               null,
               fs.readFileSync(stripFileProtocol(sourceUri), "utf8")
             );

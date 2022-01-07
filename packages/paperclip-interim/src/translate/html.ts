@@ -1,4 +1,10 @@
-import { Node, getParts, Element, infer, EngineDelegate } from "paperclip";
+import {
+  Node,
+  getParts,
+  Element,
+  infer,
+  EngineDelegate
+} from "@paperclipui/core";
 import {
   AttributeKind,
   AttributeValue,
@@ -12,7 +18,7 @@ import {
   Reference,
   Slot,
   Text
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import {
   InterimElement,
   InterimSlotNode,

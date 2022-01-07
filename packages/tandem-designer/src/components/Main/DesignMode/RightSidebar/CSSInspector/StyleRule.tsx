@@ -7,7 +7,7 @@ import {
   TargetSelectorInfo,
   ClassSelectorInfo,
   BaseSelectorInfo
-} from "paperclip-utils";
+} from "@paperclipui/utils";
 import * as styles from "./index.pc";
 import * as path from "path";
 import { StyleDeclaration } from "./Declaration";
@@ -16,7 +16,7 @@ import {
   styleRuleFileNameClicked,
   virtualStyleDeclarationValueChanged
 } from "../../../../../actions";
-import { SelectorScopeKind } from "paperclip-utils";
+import { SelectorScopeKind } from "@paperclipui/utils";
 
 export type StyleRuleProps = {
   dispatch: any;

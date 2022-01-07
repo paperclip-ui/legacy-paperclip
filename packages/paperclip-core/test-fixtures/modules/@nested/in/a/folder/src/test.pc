@@ -1,0 +1,10 @@
+<!--
+  @frame { visible: false, title: "Test / from PC", width: 1024, height: 768, x: -292, y: -57 }
+-->
+
+<div export component as="default">from test.pc</div>
+<!--
+  @frame { visible: false, title: "Test / random", width: 1024, height: 768, x: 235, y: 159 }
+-->
+
+fsdfs fdsfsd

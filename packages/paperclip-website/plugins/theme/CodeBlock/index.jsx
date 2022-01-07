@@ -1,9 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-// import { App as REPLApp } from "paperclip-repl/src/app";
-
+import React, { useEffect, useRef, useMemo } from "react";
 import CodeBlock from "@theme-init/CodeBlock";
-
-// const Editor = createComponentClass({ React, useState, useEffect, useRef });
 
 export default props => {
   // const prismTheme = usePrismTheme();
@@ -24,20 +20,6 @@ export default props => {
   return <CodeBlock {...props} />;
 };
 
-let _playgroundPromise;
-
-const loadPlayground = () => {
-  return (
-    _playgroundPromise ||
-    (_playgroundPromise = new Promise(resolve => {
-      const script = document.createElement("script");
-      script.src = "/paperclip-playground-main.js";
-      document.head.appendChild(script);
-      script.onload = resolve;
-    }))
-  );
-};
-
 const LiveEditor = ({
   children,
   height = 400,
@@ -47,9 +29,6 @@ const LiveEditor = ({
 }) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
-  const [playgroundLoaded, setPlaygroundLoaded] = useState();
-
-  useEffect(() => loadPlayground().then(() => setPlaygroundLoaded(true)), []);
 
   useEffect(() => {
     if (!mountRef.current || typeof window === "undefined") {
@@ -71,17 +50,7 @@ const LiveEditor = ({
 
     Object.assign(mountRef.current.style, extStyle);
 
-    // const app = new module.App(
-    //   {
-    //     files: graph,
-    //     entry: Object.keys(graph)[0]
-    //   },
-    //   mountRef.current
-    // );
-
-    // app.init();
-
-    import("paperclip-repl/src/app").then(module => {
+    import("@paperclipui/repl/src/app").then(module => {
       const app = new module.App(
         {
           files: graph,
@@ -93,20 +62,7 @@ const LiveEditor = ({
 
       app.init();
     });
-    // import("paperclip-repl/src/app").then((module) => {
-    //   console.log(module);
-    // });
-
-    // mountRef.current.appendChild(
-    //   window["createPaperclipPlayground"]({
-    //     compact: true,
-    //     documents: graph,
-    //     activeFrameIndex: expanded !== false ? 0 : undefined,
-    //     height: height,
-    //     slim: true
-    //   })
-    // );
-  }, [playgroundLoaded, mountRef.current]);
+  }, [mountRef.current]);
 
   return <div ref={mountRef}></div>;
 };

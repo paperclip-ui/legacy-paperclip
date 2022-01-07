@@ -1,5 +1,5 @@
 <import src="components/icons/index.pc" as="Icon" />
-<import src="tandem-design-system/src/Button.pc" as="Button" />
+<import src="@tandemui/design-system/src/Button.pc" as="Button" />
 
 <style>
   @keyframes spin {

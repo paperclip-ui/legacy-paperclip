@@ -1,4 +1,4 @@
-import { Observable } from "paperclip-common";
+import { Observable } from "@paperclipui/common";
 import { PaperclipLanguageServerConnection } from "./connection";
 import { PaperclipDesignServer } from "./design-server";
 

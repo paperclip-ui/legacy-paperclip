@@ -1,7 +1,7 @@
-import { IConnection } from "tandem-designer/src/sagas/rpc/connection";
-import { Channels as DesignerChannels } from "tandem-designer/src/sagas/rpc/channels";
+import { IConnection } from "@tandemui/designer/src/sagas/rpc/connection";
+import { Channels as DesignerChannels } from "@tandemui/designer/src/sagas/rpc/channels";
 import { PaperclipController } from "./paperclip";
-import { EngineIO } from "paperclip/src/core/delegate";
+import { EngineIO } from "@paperclipui/core/src/core/delegate";
 import { REPLChannels } from "../channels";
 import { ReplEngineIO } from "./io";
 import { DesignerChannelHandler } from "./designer-channel-handler";

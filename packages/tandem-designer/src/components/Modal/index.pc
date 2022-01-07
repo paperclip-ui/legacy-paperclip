@@ -1,7 +1,7 @@
-<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
-<import src="tandem-design-system/src/Button.pc" as="Button" />
+<import src="@tandemui/design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="@tandemui/design-system/src/Button.pc" as="Button" />
 <import src="components/Box/index.pc" as="Box" />
-<import src="tandem-design-system/src/TextInput.pc" as="Input" />
+<import src="@tandemui/design-system/src/TextInput.pc" as="Input" />
 
 <div export component as="Container" class="font-regular">
   <style>
