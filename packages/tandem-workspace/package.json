@@ -3,7 +3,7 @@
   "version": "18.4.0",
   "description": "standalone Docker server",
   "main": "lib/index.js",
-  "bin": "./bin/@tandemui/workspace",
+  "bin": "./bin/tandem-workspace",
   "publishConfig": {
     "access": "public"
   },

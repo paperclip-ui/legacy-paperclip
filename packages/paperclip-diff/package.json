@@ -3,9 +3,6 @@
   "version": "18.4.0",
   "description": "",
   "main": "lib/index.js",
-  "bin": {
-    "@paperclipui/diff": "./bin/@paperclipui/diff"
-  },
   "scripts": {
     "build": "yarn build:paperclip && tsc",
     "build:paperclip": "paperclip-minimal build",
