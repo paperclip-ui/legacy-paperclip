@@ -125,7 +125,7 @@ function Home() {
           </styles.VariousFeatures>
 
           <styles.BigFeature
-            title="Catch all CSS bugs"
+            title="Catch most CSS bugs"
             description={
               <>
                 Paperclip UIs are <strong>automatically</strong> covered for
@@ -148,7 +148,7 @@ function Home() {
           />
 
           <styles.BigFeature
-            title="Complete control over CSS frameworks"
+            title="Total control over CSS frameworks"
             description={[
               "No more worrying about CSS frameworks accidentally overriding styles. Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. "
               // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
@@ -173,7 +173,7 @@ function Home() {
                 looks. Paperclip comes with a visual editor that allows you to
                 build your UIs in <strong>realtime</strong>, directly within VS
                 Code. Not using VS Code? No worries, you launch the visual
-                editor directly from Terminal.
+                editor using the CLI command.
               </>
             }
             ctaText="Learn about the visual tools"
