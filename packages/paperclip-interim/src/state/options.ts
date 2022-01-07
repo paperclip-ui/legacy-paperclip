@@ -10,3 +10,7 @@ export type CompileOptions = {
   targetOptions: CompilerOptions;
   cwd: string;
 };
+
+export type TargetCompiler = (
+  options: CompileOptions
+) => Record<string, string>;

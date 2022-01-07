@@ -1,5 +1,6 @@
 import { compilers } from "@paperclipui/compiler-base-jsx";
-import { CompilerOptions, PaperclipConfig } from "@paperclipui/utils";
+import { CompilerOptions } from "@paperclipui/utils";
+import { TargetCompiler } from "@paperclipui/interim";
 
 const CODE_PREFLIGHT = `
 
@@ -71,7 +72,7 @@ const _vanilla = {
 
 `.trim();
 
-export const compile = compilers({
+export const compile: TargetCompiler = compilers({
   code: {
     imports: `import React from "react";\n`,
     preflight: CODE_PREFLIGHT,
