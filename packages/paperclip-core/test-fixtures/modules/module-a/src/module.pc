@@ -4,9 +4,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 26, y: -12 }
 -->
-<export component as="default">
-  something
-</export>
+<export component as="default">something</export>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 334, y: -144 }
@@ -17,7 +15,4 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 37, y: 776 }
 -->
-<div>
-  <span>okay</span>
-</div>
-
+<div><span>okay</span></div>

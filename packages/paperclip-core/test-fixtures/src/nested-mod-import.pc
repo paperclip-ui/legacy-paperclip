@@ -1,4 +1,3 @@
-
 <import src="@nested/in/a/folder/src/component.pc" as="component" />
 
 <!--

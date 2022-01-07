@@ -1,6 +1,3 @@
-
-
-
 <!--
   @frame { title: "Test / bad import" }
 -->

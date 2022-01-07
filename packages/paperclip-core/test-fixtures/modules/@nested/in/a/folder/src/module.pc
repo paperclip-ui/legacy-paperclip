@@ -4,6 +4,4 @@
 <!--
   @frame { visible: false }
 -->
-<component>
-  something
-</component>
+<component>something</component>
