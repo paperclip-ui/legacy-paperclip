@@ -28,6 +28,7 @@ export const installDep = (
     cmd = "npm install";
     saveFlags = dev ? "--save-dev" : "--save";
   } else {
+    cmd = "yarn add";
     saveFlags = "--dev";
   }
 
