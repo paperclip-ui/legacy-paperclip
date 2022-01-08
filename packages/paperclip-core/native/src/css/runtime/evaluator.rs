@@ -1190,6 +1190,11 @@ fn get_document_scope_selector(context: &Context) -> String {
   format!("._{}", get_document_scope(context))
 }
 
+fn get_host_selector(context: &Context) -> String {
+  let document_scope = get_document_scope(context);
+  format!("._{}:not(._{} ._{})", document_scope, document_scope, document_scope)
+}
+
 fn get_scope_selector(context: &Context, is_global: bool) -> String {
   if is_global {
     "[class]".to_string()
@@ -1268,9 +1273,15 @@ fn write_element_selector(
       }
     }
     ast::Selector::Element(element) => {
-      emitter.push_target(element.tag_name.to_string());
-      if is_target {
-        emitter.push_target(get_scope_selector(context, is_global));
+
+      // https://github.com/paperclipui/paperclip/issues/966
+      if (element.tag_name == "html" || element.tag_name == "body") && !is_global { 
+        emitter.push_target(get_host_selector(context));
+      } else {
+        emitter.push_target(element.tag_name.to_string());
+        if is_target {
+          emitter.push_target(get_scope_selector(context, is_global));
+        }
       }
     }
     ast::Selector::Descendent(selector) => {
@@ -1310,7 +1321,11 @@ fn write_element_selector(
         if is_global {
           emitter.push_target(":root".to_string());
         } else {
-          emitter.push_target(get_document_scope_selector(context));
+          let document_scope = get_document_scope(context);
+
+          // Ensure that only top-most selector is selected
+          // https://jsfiddle.net/q6a74fnj/
+          emitter.push_target(get_host_selector(context));
         }
       } else {
         if is_target {

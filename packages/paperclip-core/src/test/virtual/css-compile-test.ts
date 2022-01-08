@@ -231,7 +231,11 @@ describe(__filename + "#", () => {
       `._406d2856._406d2856 > ._80f4925f { color:red; }`,
       true
     ],
-    [`:root { color: red; }`, `._80f4925f { color:red; }`, false],
+    [
+      `:root { color: red; }`,
+      `._80f4925f:not(._80f4925f ._80f4925f) { color:red; }`,
+      false
+    ],
     [`:global(:root) { color: red; }`, `:root { color:red; }`, false],
 
     // https://github.com/paperclipui/paperclip/issues/573
@@ -307,7 +311,7 @@ describe(__filename + "#", () => {
 
     [
       `@export { :root { color: red; }}`,
-      `._pub-80f4925f { color:red; }`,
+      `._pub-80f4925f:not(._pub-80f4925f ._pub-80f4925f) { color:red; }`,
       false
     ],
 
@@ -317,7 +321,14 @@ describe(__filename + "#", () => {
       false
     ],
 
-    [`.a\\:b { color: red; }`, `[class]._80f4925f_a\\:b { color:red; }`, false]
+    [`.a\\:b { color: red; }`, `[class]._80f4925f_a\\:b { color:red; }`, false],
+
+    // fix https://github.com/paperclipui/paperclip/issues/966
+    [
+      `html, body { color: red; }`,
+      `._80f4925f:not(._80f4925f ._80f4925f) { color:red; } ._80f4925f:not(._80f4925f ._80f4925f) { color:red; }`,
+      false
+    ]
 
     // group, selector
   ].forEach(([input, output, scoped]) => {

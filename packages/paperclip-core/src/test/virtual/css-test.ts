@@ -994,7 +994,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@media screen and (max-width: 900px) { ._376a18c0 a._80f4925f:nth-child(2n) { color:red; } ._376a18c0 a._80f4925f { } }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _376a18c0"></div>`
+      `<style>@media screen and (max-width: 900px) { ._376a18c0 a._80f4925f:nth-child(2n) { color:red; } ._376a18c0 a._80f4925f { } }</style><div class="_80f4925f _pub-80f4925f _376a18c0"></div>`
     );
   });
 
@@ -1036,7 +1036,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@media screen and (max-width: 900px) { a._80f4925f b._80f4925f c._80f4925f { background:blue; } a._80f4925f b._80f4925f c._80f4925f ee._80f4925f { color:red; } a._80f4925f b._80f4925f c._80f4925f._80f4925f_ff { color:orange; } a._80f4925f ee._80f4925f { color:red; } a._80f4925f._80f4925f_ff { color:orange; } a._80f4925f { background:blue; } }</style><Test class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></Test>`
+      `<style>@media screen and (max-width: 900px) { a._80f4925f b._80f4925f c._80f4925f { background:blue; } a._80f4925f b._80f4925f c._80f4925f ee._80f4925f { color:red; } a._80f4925f b._80f4925f c._80f4925f._80f4925f_ff { color:orange; } a._80f4925f ee._80f4925f { color:red; } a._80f4925f._80f4925f_ff { color:orange; } a._80f4925f { background:blue; } }</style><Test class="_80f4925f _pub-80f4925f"></Test>`
     );
   });
 
@@ -1097,7 +1097,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_a._80f4925f_hover { color:blue; } [class]._80f4925f_a:not(:disabled):not(._80f4925f_transparent)._80f4925f_hover { color:red; }</style><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f">I'm red</div><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_transparent _pub-80f4925f_transparent transparent _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f">I'm blue</div>`
+      `<style>[class]._80f4925f_a._80f4925f_hover { color:blue; } [class]._80f4925f_a:not(:disabled):not(._80f4925f_transparent)._80f4925f_hover { color:red; }</style><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm red</div><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_transparent _pub-80f4925f_transparent transparent _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm blue</div>`
     );
   });
 
@@ -1124,7 +1124,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856 [class]._80f4925f__button[class]._80f4925f__button[class]._80f4925f__button { color:red; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"><div class="_80f4925f__button _pub-80f4925f__button _button _80f4925f _pub-80f4925f">I'm a button</div></div>`
+      `<style>._406d2856 [class]._80f4925f__button[class]._80f4925f__button[class]._80f4925f__button { color:red; }</style><div class="_80f4925f _pub-80f4925f _406d2856"><div class="_80f4925f__button _pub-80f4925f__button _button _80f4925f _pub-80f4925f">I'm a button</div></div>`
     );
   });
 
@@ -1154,7 +1154,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:blue; } ._406d2856._406d2856 [class]._80f4925f__button._406d2856._406d2856 [class]._80f4925f__button { color:red; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"><div class="_80f4925f__button _pub-80f4925f__button _button _80f4925f _pub-80f4925f">I'm a button</div></div>`
+      `<style>._406d2856._406d2856 { color:blue; } ._406d2856._406d2856 [class]._80f4925f__button._406d2856._406d2856 [class]._80f4925f__button { color:red; }</style><div class="_80f4925f _pub-80f4925f _406d2856"><div class="_80f4925f__button _pub-80f4925f__button _button _80f4925f _pub-80f4925f">I'm a button</div></div>`
     );
   });
 
@@ -1178,7 +1178,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:red; } ._406d2856._406d2856 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:red; } ._406d2856._406d2856 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1202,7 +1202,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:red; } [class]._80f4925f_variant ._406d2856._406d2856 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:red; } [class]._80f4925f_variant ._406d2856._406d2856 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1233,7 +1233,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._9e7e6af9._9e7e6af9 { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_a { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9 [class]._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>._9e7e6af9._9e7e6af9 { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_a { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9 [class]._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1259,7 +1259,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_a { color:blue; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_a { color:blue; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1283,7 +1283,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>.variant ._9e7e6af9._9e7e6af9 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>.variant ._9e7e6af9._9e7e6af9 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1311,7 +1311,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9:empty { display:block; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._9e7e6af9._9e7e6af9 { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9:empty { display:block; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._9e7e6af9._9e7e6af9 { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1337,7 +1337,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; } [class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>[class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; } [class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1362,7 +1362,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._9e7e6af9._9e7e6af9:empty { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>._9e7e6af9._9e7e6af9:empty { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1386,7 +1386,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { ._406d2856._406d2856 { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>@media screen and (min-width: 100px) { ._406d2856._406d2856 { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1409,7 +1409,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { ._406d2856._406d2856:empty { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>@media screen and (min-width: 100px) { ._406d2856._406d2856:empty { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1432,7 +1432,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { ._80f4925f:empty ._406d2856._406d2856 { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>@media screen and (min-width: 100px) { ._80f4925f:empty ._406d2856._406d2856 { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1454,7 +1454,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856._80f4925f_red { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856._80f4925f_red { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1475,7 +1475,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856._406d2856._406d2856 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856._406d2856._406d2856 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1497,7 +1497,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856 { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856 { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1520,7 +1520,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue ._406d2856._406d2856._80f4925f_variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>[class]._80f4925f_blue ._406d2856._406d2856._80f4925f_variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1543,7 +1543,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue ._406d2856._406d2856._80f4925f_variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>[class]._80f4925f_blue ._406d2856._406d2856._80f4925f_variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1564,7 +1564,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856 div._80f4925f { background:url(var(--test)); }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856 div._80f4925f { background:url(var(--test)); }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1588,7 +1588,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._pub-8f1a5142_test { color:red; }</style><div class="_pub-8f1a5142_test test _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"> Hello world </div>`
+      `<style>[class]._pub-8f1a5142_test { color:red; }</style><div class="_pub-8f1a5142_test test _80f4925f _pub-80f4925f"> Hello world </div>`
     );
   });
 
@@ -1704,7 +1704,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
+      `<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div class="_80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1731,7 +1731,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
+      `<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } }</style><div class="_80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1753,7 +1753,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
+      `<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div class="_80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1827,7 +1827,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 _80f4925f_sm:p-3.5 _pub-80f4925f_sm:p-3.5 sm:p-3.5 _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
+      `<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 _80f4925f_sm:p-3.5 _pub-80f4925f_sm:p-3.5 sm:p-3.5 _80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1871,7 +1871,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_80f4925f_test _pub-80f4925f_test _pub-b8a55827_test test _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _pub-b8a55827 _host_pub-b8a55827"></div>`
+      `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_80f4925f_test _pub-80f4925f_test _pub-b8a55827_test test _80f4925f _pub-80f4925f _pub-b8a55827"></div>`
     );
   });
 
@@ -1912,7 +1912,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._ae63497a._ae63497a { display:flex; } @media screen and (max-width: 500px) { ._ae63497a._ae63497a { width:100%; } }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _ae63497a"></div>`
+      `<style>._ae63497a._ae63497a { display:flex; } @media screen and (max-width: 500px) { ._ae63497a._ae63497a { width:100%; } }</style><div class="_80f4925f _pub-80f4925f _ae63497a"></div>`
     );
   });
 
@@ -1933,7 +1933,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>div._pub-b8a55827 { color:red; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _pub-b8a55827 _host_pub-b8a55827"></div>`
+      `<style>div._pub-b8a55827 { color:red; }</style><div class="_80f4925f _pub-80f4925f _pub-b8a55827"></div>`
     );
 
     engine.updateVirtualFileContent(
@@ -1948,7 +1948,7 @@ describe(__filename + "#", () => {
     const result2 = engine.getLoadedData("/entry.pc");
 
     expect(stringifyLoadResult(result2)).to.eql(
-      `<style>div._pub-b8a55827 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _pub-b8a55827 _host_pub-b8a55827"></div>`
+      `<style>div._pub-b8a55827 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _pub-b8a55827"></div>`
     );
   });
 });
