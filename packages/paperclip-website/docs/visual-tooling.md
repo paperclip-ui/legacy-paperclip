@@ -1,7 +1,7 @@
 ---
 id: visual-tooling
-title: Visual tools
-sidebar_label: Visual tools
+title: Reltime Development Preview
+sidebar_label: Realtime preview
 ---
 
 Paperclip comes with visual tooling that enables you to build your UIs in realtime. The quickest way to start using the visual tools is to run:

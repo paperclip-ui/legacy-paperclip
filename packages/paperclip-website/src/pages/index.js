@@ -104,7 +104,7 @@ function Home() {
               title="Rich developer tooling"
               description={
                 <>
-                  Paperclip comes with a <strong>visual editor</strong> to help
+                  Paperclip provides a<strong>realtime preview</strong> to help
                   you build UIs quickly, and{" "}
                   <strong>visual regression tooling</strong> to help you catch
                   every visual change before shipping to production.{" "}
@@ -119,7 +119,7 @@ function Home() {
                   Paperclip is designed to be compiled into whatever language
                   you're using, and currently supports React and vanilla HTML
                   out of the box. You can use Paperclip to compliment your
-                  existing codebase, and add an extra layer of safety.
+                  existing codebase to an extra layer of safety.
                 </>
               }
             />
@@ -171,10 +171,10 @@ function Home() {
             description={
               <>
                 No more waiting for code to compile in order to see how your UI
-                looks. Paperclip comes with a visual editor that allows you to
+                looks. Paperclip comes with preview tooling that allows you to
                 build your UIs in <strong>realtime</strong>, directly within VS
-                Code. Not using VS Code? No worries, you launch the visual
-                editor using the CLI command.
+                Code. Not using VS Code? No worries, you can also launch the
+                realtime preview using the CLI command.
               </>
             }
             ctaText="Learn about the visual tools"
