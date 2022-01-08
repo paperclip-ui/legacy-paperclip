@@ -4,5 +4,6 @@
       "outDir": "./lib"
     }
   ],
-  "srcDir": "./src"
+  "srcDir": "./src",
+  "moduleDirs": ["css-modules"]
 }

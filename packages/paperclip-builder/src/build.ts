@@ -170,6 +170,7 @@ class Compiler {
 export class DirectoryBuilder {
   private _compilers: Compiler[];
   private _em: EventEmitter;
+  private _watchers: chokidar.FSWatcher[];
 
   constructor(
     readonly engine: EngineDelegate,
@@ -200,26 +201,41 @@ export class DirectoryBuilder {
       )
     );
 
+    if (this.options.watch) {
+      this._watchers = sources.map(source =>
+        watch(this.options.cwd, source, this._buildFile)
+      );
+    }
+
     await Promise.all(filePaths.map(this._buildFile));
+
+    await this._wrap();
+
     if (!this.options.watch) {
       this._em.emit("end");
     }
 
-    await this._wrap();
-
-    if (this.options.watch) {
-      sources.forEach(source =>
-        watch(this.options.cwd, source, this._buildFile)
-      );
-    } else {
-      this._em.emit("end");
-    }
     return this;
   }
 
   /**
    */
+
+  stop() {
+    if (this._watchers) {
+      for (const watcher of this._watchers) {
+        watcher.close();
+      }
+    }
+  }
+
+  /**
+   */
   _buildFile = async (filePath: string) => {
+    this.engine.updateVirtualFileContent(
+      URL.pathToFileURL(filePath).href,
+      fs.readFileSync(filePath, "utf-8")
+    );
     for (const compiler of this._compilers) {
       await compiler.buildFile(filePath);
     }
@@ -267,6 +283,8 @@ function watch(cwd, filesGlob, compileFile) {
   watcher.on("change", file => {
     compileFile(path.join(cwd, file));
   });
+
+  return watcher;
 }
 
 const getMainCSSFilePath = (

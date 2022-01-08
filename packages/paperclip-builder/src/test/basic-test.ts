@@ -15,5 +15,31 @@ describe(__filename + "#", () => {
     expect(e?.message).to.eql(
       `Paperclip compiler target "does-not-exist" not found`
     );
+    tmp.dispose();
+  });
+
+  it(`Can recover from a build error`, async () => {
+    const tmp = saveTmpFixtureFiles(
+      `recovers-from-build-error`,
+      {
+        "src/test.pc": "<div>broke",
+        "paperclip.config.json": JSON.stringify({
+          compilerOptions: {
+            emit: ["css"]
+          }
+        })
+      },
+      { watch: true }
+    );
+    const e = await tmp.buildFiles().catch(e => e);
+    expect(e).not.to.eql(undefined);
+    tmp.saveFiles({
+      "src/test.pc": "<div>fixed</div>"
+    });
+
+    const emittedFiles = await tmp.emittedFiles;
+    await new Promise(resolve => setTimeout(resolve, 200));
+    expect(Object.keys(emittedFiles)).to.eql(["src/test.pc.css"]);
+    tmp.dispose();
   });
 });
