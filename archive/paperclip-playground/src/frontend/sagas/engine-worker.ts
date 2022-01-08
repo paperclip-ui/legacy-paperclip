@@ -7,23 +7,23 @@ import {
   engineLoaded,
   WorkerInitialized
 } from "../actions";
-import { loadEngineDelegate } from "@paperclipui/core/browser";
-import * as vea from "@tandemui/designer/src/actions";
+import { loadEngineDelegate } from "@paperclip-ui/core/browser";
+import * as vea from "@tandem-ui/designer/src/actions";
 import {
   astEmitted,
   BasicPaperclipActionType,
   EvaluatedDataKind,
   LoadedData,
   loadedDataEmitted
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
-import { EngineDelegate } from "@paperclipui/core";
-import { EngineDelegateEvent } from "@paperclipui/core";
+import { EngineDelegate } from "@paperclip-ui/core";
+import { EngineDelegateEvent } from "@paperclip-ui/core";
 import * as url from "url";
-import { RedirectRequested } from "@tandemui/designer/src/actions";
-import { PCSourceWriter } from "@paperclipui/source-writer";
-import { isPaperclipFile, engineDelegateChanged } from "@paperclipui/utils";
+import { RedirectRequested } from "@tandem-ui/designer/src/actions";
+import { PCSourceWriter } from "@paperclip-ui/source-writer";
+import { isPaperclipFile, engineDelegateChanged } from "@paperclip-ui/utils";
 
 const init = async () => {
   let _state: WorkerState;

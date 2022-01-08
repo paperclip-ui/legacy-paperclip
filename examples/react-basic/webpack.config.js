@@ -33,7 +33,7 @@ module.exports = {
       },
       {
         test: /\.pc$/,
-        loader: "@paperclipui/loader",
+        loader: "paperclip-loader",
         include: [path.resolve(__dirname, "src")],
         options: {
           config: require("./paperclip.config.json")

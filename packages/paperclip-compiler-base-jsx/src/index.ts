@@ -1,5 +1,5 @@
-import { CompileOptions, TargetCompiler } from "@paperclipui/interim";
-import { CompilerOptions } from "@paperclipui/utils";
+import { CompileOptions, TargetCompiler } from "@paperclip-ui/interim";
+import { CompilerOptions } from "@paperclip-ui/utils";
 import { codeCompiler, CodeCompilerOptions } from "./code-compiler";
 import * as babel from "@babel/core";
 import {

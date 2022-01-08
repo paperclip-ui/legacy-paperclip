@@ -2,7 +2,7 @@ import * as React from "react";
 import { expect } from "chai";
 import { compile } from "..";
 import * as ez from "enzyme";
-import { compileModules } from "@paperclipui/compiler-base-jsx/lib/test/utils";
+import { compileModules } from "@paperclip-ui/compiler-base-jsx/lib/test/utils";
 
 import * as Adapter from "enzyme-adapter-react-16";
 

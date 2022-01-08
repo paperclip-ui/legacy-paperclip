@@ -9,10 +9,10 @@ import {
   EngineDelegateEvent,
   paperclipSourceGlobPattern,
   isPaperclipFile
-} from "@paperclipui/core";
+} from "@paperclip-ui/core";
 import * as fs from "fs";
 import * as path from "path";
-import { Logger } from "@tandemui/common";
+import { Logger } from "@tandem-ui/common";
 import * as glob from "glob";
 import * as url from "url";
 import { VFS } from "./vfs";

@@ -1,4 +1,4 @@
-import { Spinner } from "@tandemui/designer/src/components/Spinner";
+import { Spinner } from "@tandem-ui/designer/src/components/Spinner";
 import { eventNames } from "process";
 import React, { memo, useEffect, useRef, useState } from "react";
 import { shareModalClosed } from "../../../actions";

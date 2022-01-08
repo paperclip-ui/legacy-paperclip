@@ -1,4 +1,4 @@
-import { sockAdapter } from "@paperclipui/common";
+import { sockAdapter } from "@paperclip-ui/common";
 import SockJSClient from "sockjs-client";
 
 export function connect(onMessage, onClient) {

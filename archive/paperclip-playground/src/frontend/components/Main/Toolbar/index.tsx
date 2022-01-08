@@ -1,7 +1,7 @@
 import { APP_LOCATIONS } from "../../../state";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
-import { useSelect } from "@tandemui/designer/src/components/Select";
+import { useSelect } from "@tandem-ui/designer/src/components/Select";
 import {
   logoutButtonClicked,
   saveButtonClicked,

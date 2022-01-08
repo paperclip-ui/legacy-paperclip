@@ -3,12 +3,12 @@
     "packages/*",
     "examples/*"
   ],
-  "version": "18.4.0",
+  "version": "18.4.2",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "nohoist": [
     "@docusaurus/*",
     "paperclip-vscode/*",
-    "@paperclipui/website/*"
+    "@paperclip-ui/website/*"
   ]
 }

@@ -6,7 +6,7 @@
   <img src="assets/logo-outline-5-beta.png" width="420">
 </div>
 
-> **Installation**: `npx @paperclipui/cli init` in your project directory.
+> **Installation**: `npx @paperclip-ui/cli init` in your project directory.
 
 
 Paperclip allows you to write _durable_ HTML & CSS that can be used in just about any codebase. Here's what it looks like:

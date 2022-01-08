@@ -11,7 +11,7 @@ This is a very basic guide to getting started with compilers.
 Compilers should be written in JavaScript (this will be expanded in the future). Here's the general structure of one:
 
 ```
-@paperclipui/compiler-[NAME]/
+@paperclip-ui/compiler-[NAME]/
   src/
     compile.ts
     index.ts
@@ -21,7 +21,7 @@ Compilers should be written in JavaScript (this will be expanded in the future).
 We'll look at the main entry point into the compiler: `index.ts`.
 
 ```tsx
-import { InterimModule, CompileOptions } from "@paperclipui/interim";
+import { InterimModule, CompileOptions } from "@paperclip-ui/interim";
 import { compile as compile2Code } from "./code-compiler";
 
 /**
@@ -39,7 +39,7 @@ export const compile = ({module}: CompileOptions) => {
 };
 ```
 
-Paperclip looks for compilers with the `@paperclipui/compiler-` prefix, so be sure to add that. Also, your package will need to expose a `compile` function that has a similar interface to the one above.
+Paperclip looks for compilers with the `@paperclip-ui/compiler-` prefix, so be sure to add that. Also, your package will need to expose a `compile` function that has a similar interface to the one above.
 
 The `module` passed into the `compile` function is the JSON representation of the Paperclip file being compiled. For example, if we look at this:
 
@@ -52,7 +52,7 @@ The `module` passed into the `compile` function is the JSON representation of th
 </div>
 ```
 
-The [InterimModule](https://github.com/paperclipui/paperclip/blob/master/packages/@paperclipui/interim/src/state/module.ts) representation of this would be something like:
+The [InterimModule](https://github.com/paperclipui/paperclip/blob/master/packages/@paperclip-ui/interim/src/state/module.ts) representation of this would be something like:
 
 ```javascript
 {
@@ -90,7 +90,7 @@ import {
   InterimComponent,
   InterimText,
   Interim
-} from "@paperclipui/interim";
+} from "@paperclip-ui/interim";
 
 export const compile = (
   module: InterimModule
@@ -170,7 +170,7 @@ The compiler should _only_ handle HTML. No need to worry about CSS, that's compi
 After your compiler is done, you should symlink your package into your `node_modules` directory, which will expose it for Paperclip. Finally, just run:
 
 ```
-npx @paperclipui/cli build
+npx @paperclip-ui/cli build
 ```
 
 And you should have compiled code!

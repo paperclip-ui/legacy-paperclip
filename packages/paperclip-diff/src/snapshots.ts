@@ -3,7 +3,7 @@ const chalk = require("chalk");
 const pLimit = require("p-limit");
 const crypto = require("crypto");
 import * as URL from "url";
-import { eachFrame } from "@paperclipui/diff-utils";
+import { eachFrame } from "@paperclip-ui/diff-utils";
 import * as fsa from "fs-extra";
 import { logInfo, logWarn } from "./utils";
 import * as ora from "ora";

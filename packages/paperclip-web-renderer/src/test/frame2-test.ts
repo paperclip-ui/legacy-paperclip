@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { EngineMode } from "@paperclipui/core";
-import { LoadedPCData } from "@paperclipui/utils";
+import { EngineMode } from "@paperclip-ui/core";
+import { LoadedPCData } from "@paperclip-ui/utils";
 import { FramesRenderer } from "../frame-renderer";
 import { createMockFramesRenderer, createMockEngineDelegate } from "./utils";
 

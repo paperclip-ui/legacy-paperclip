@@ -1,4 +1,4 @@
-import { StringRange } from "@paperclipui/utils";
+import { StringRange } from "@paperclip-ui/utils";
 
 export type Color = {
   red: number;

@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { nodePathToAry, VirtualText } from "@paperclipui/utils";
+import { nodePathToAry, VirtualText } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
 
 export type TextProps = {

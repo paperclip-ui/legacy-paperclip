@@ -1,8 +1,11 @@
 {
-  "name": "@paperclipui/cli-utils",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/cli-utils",
+  "version": "18.4.2",
   "description": "CLI utils for Paperclip",
   "main": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput",
@@ -12,8 +15,8 @@
   "license": "MIT",
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclip-ui/core": "^18.4.2",
+    "@paperclip-ui/utils": "^18.4.2",
     "@types/inquirer": "^6.5.0",
     "@types/shelljs": "^0.8.8",
     "chalk": "^4.1.0",

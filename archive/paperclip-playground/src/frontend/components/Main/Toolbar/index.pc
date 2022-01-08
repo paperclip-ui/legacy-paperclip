@@ -1,6 +1,6 @@
 <import src="frontend/components/Button/index.pc" as="Button" />
-<import src="@tandemui/designer/src/styles/utils.pc" as="utils" />
-<import src="@tandemui/designer/src/components/Select/index2.pc" as="Select" />
+<import src="@tandem-ui/designer/src/styles/utils.pc" as="utils" />
+<import src="@tandem-ui/designer/src/components/Select/index2.pc" as="Select" />
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 19, y: 918 }

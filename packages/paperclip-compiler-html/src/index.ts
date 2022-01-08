@@ -1,6 +1,6 @@
-import { compilers } from "@paperclipui/compiler-base-jsx";
-import { CompilerOptions } from "@paperclipui/utils";
-import { TargetCompiler } from "@paperclipui/interim";
+import { compilers } from "@paperclip-ui/compiler-base-jsx";
+import { CompilerOptions } from "@paperclip-ui/utils";
+import { TargetCompiler } from "@paperclip-ui/interim";
 
 const CODE_PREFLIGHT = `
 

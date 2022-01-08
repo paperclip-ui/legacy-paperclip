@@ -1,8 +1,11 @@
 {
-  "name": "@paperclipui/test-utils",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/test-utils",
+  "version": "18.4.2",
   "description": "",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "yarn tsc",
     "build:watch": "yarn tsc --watch --preserveWatchOutput"

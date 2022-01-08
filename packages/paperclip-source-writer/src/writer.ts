@@ -1,4 +1,4 @@
-import { EngineDelegate } from "@paperclipui/core";
+import { EngineDelegate } from "@paperclip-ui/core";
 import {
   CSSDeclarationChanged,
   PCMutation,
@@ -15,7 +15,7 @@ import {
   DependencyNodeContent,
   getPCNodeAnnotations,
   getNodeById
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { editString } from "./string-editor";
 
 export type ContentChange = {

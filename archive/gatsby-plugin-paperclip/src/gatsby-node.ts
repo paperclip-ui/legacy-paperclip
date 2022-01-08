@@ -10,7 +10,7 @@ export function onCreateWebpackConfig({ loaders, actions }) {
       rules: [
         {
           test: /\.pc$/,
-          use: [require.resolve(`@paperclipui/loader`)]
+          use: [require.resolve(`paperclip-loader`)]
         }
       ]
     }

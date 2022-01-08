@@ -4,7 +4,7 @@ import { URL, fileURLToPath } from "url";
 import * as path from "path";
 import { EngineDelegate, EngineMode } from "../core";
 
-import { resolveImportUri, resolvePCConfig } from "@paperclipui/utils";
+import { resolveImportUri, resolvePCConfig } from "@paperclip-ui/utils";
 
 const existsSyncCaseSensitive = uri => {
   const pathname = fileURLToPath(String(uri));

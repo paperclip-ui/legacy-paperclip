@@ -1,11 +1,14 @@
 {
-  "name": "@paperclipui/common",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/common",
+  "version": "18.4.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "",
   "license": "ISC",

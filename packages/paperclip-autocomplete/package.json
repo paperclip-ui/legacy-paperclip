@@ -1,8 +1,11 @@
 {
-  "name": "@paperclipui/autocomplete",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/autocomplete",
+  "version": "18.4.2",
   "description": "Internal Autocomplete helper util for language clients",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",

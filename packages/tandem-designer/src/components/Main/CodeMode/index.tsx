@@ -4,7 +4,7 @@ import { codeChanged } from "../../../actions";
 import * as styles from "./index.pc";
 import { MonacoEditor } from "./MonacoEditor";
 import { useAppStore } from "../../../hooks/useAppStore";
-import { isPlainTextFile } from "@tandemui/common/lib/mime";
+import { isPlainTextFile } from "@tandem-ui/common/lib/mime";
 import { SlimEditor } from "./SlimEditor";
 import { Toolbar } from "./Toolbar";
 

@@ -1,8 +1,9 @@
 <import src="frontend/components/Modal/index.pc" as="Modal" />
-<import src="@tandemui/designer/src/components/TextInput/index.pc"
+<import src="@tandem-ui/designer/src/components/TextInput/index.pc"
   as="TextInput" />
 <import src="frontend/components/Button/index.pc" as="Button" />
-<import src="@tandemui/designer/src/components/Spinner/index.pc" as="Spinner" />
+<import src="@tandem-ui/designer/src/components/Spinner/index.pc"
+  as="Spinner" />
 
 <Modal.Container export component as="ShareModal" />
 

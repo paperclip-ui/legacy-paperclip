@@ -4,7 +4,7 @@ import * as path from "path";
 const DESIGNER_DIST_PATH = path.join(
   __dirname,
   "../../../../",
-  "node_modules/@tandemui/designer/dist"
+  "node_modules/@tandem-ui/designer/dist"
 );
 
 export class Designer {

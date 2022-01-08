@@ -2,7 +2,7 @@ Internal autocomplete library for Paperclip
 
 Demo:
 ```typescript
-import { getSuggestions } from "@paperclipui/complete";
+import { getSuggestions } from "@paperclip-ui/complete";
 
 let source = `<style> .element { col`;
 

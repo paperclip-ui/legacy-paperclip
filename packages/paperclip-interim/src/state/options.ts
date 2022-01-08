@@ -1,5 +1,5 @@
-import { PaperclipConfig } from "@paperclipui/core";
-import { CompilerOptions } from "@paperclipui/utils";
+import { PaperclipConfig } from "@paperclip-ui/core";
+import { CompilerOptions } from "@paperclip-ui/utils";
 import { InterimModule } from ".";
 
 export type CompileOptions = {

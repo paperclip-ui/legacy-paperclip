@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useRef, useState } from "react";
-import { MainBase as DesignModeMainBase } from "@tandemui/designer/src/components/Main";
-import history from "@tandemui/designer/src/dom-history";
+import { MainBase as DesignModeMainBase } from "@tandem-ui/designer/src/components/Main";
+import history from "@tandem-ui/designer/src/dom-history";
 import { withAppStore } from "../../hocs/withAppStore";
 import { useAppStore } from "../../hooks/useAppStore";
 import { MainToolbar } from "./Toolbar";
@@ -16,7 +16,7 @@ import {
 import { Projects } from "./Projects";
 import { Route, Router, Switch } from "react-router";
 import { filesDropped } from "../../actions";
-import { isPaperclipFile } from "@paperclipui/utils";
+import { isPaperclipFile } from "@paperclip-ui/utils";
 import mime from "mime-types";
 import { ShareModal } from "./ShareModal";
 import { PasswordModal } from "./PasswordModal";

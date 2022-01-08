@@ -1,8 +1,11 @@
 {
-  "name": "@tandemui/design-system",
-  "version": "18.4.0",
+  "name": "@tandem-ui/design-system",
+  "version": "18.4.2",
   "description": "",
   "main": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "yarn build:pc && tsc",
     "build:pc": "paperclip-minimal build --silent",
@@ -11,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@paperclipui/cli-minimal": "^18.4.0",
-    "@paperclipui/compiler-react": "^18.4.0",
-    "@paperclipui/core": "^18.4.0"
+    "@paperclip-ui/cli-minimal": "^18.4.2",
+    "@paperclip-ui/compiler-react": "^18.4.2",
+    "@paperclip-ui/core": "^18.4.2"
   }
 }

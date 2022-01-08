@@ -1,8 +1,11 @@
 {
-  "name": "@paperclipui/utils",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/utils",
+  "version": "18.4.2",
   "description": "Internal utils for Paperclip",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",

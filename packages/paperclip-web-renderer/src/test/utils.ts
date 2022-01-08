@@ -1,8 +1,8 @@
 import { DOMFactory } from "../renderer";
-import { createEngineDelegate } from "@paperclipui/core";
+import { createEngineDelegate } from "@paperclip-ui/core";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
-import { EngineMode } from "@paperclipui/core";
+import { EngineMode } from "@paperclip-ui/core";
 import { identity } from "lodash";
 import * as CSSOM from "cssom";
 

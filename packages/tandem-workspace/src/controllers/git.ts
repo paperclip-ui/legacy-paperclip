@@ -1,7 +1,7 @@
 import * as fsa from "fs-extra";
 import execa from "execa";
 import { exec } from "child_process";
-import { Logger, ok } from "@tandemui/common";
+import { Logger, ok } from "@tandem-ui/common";
 
 export class Repository {
   /**

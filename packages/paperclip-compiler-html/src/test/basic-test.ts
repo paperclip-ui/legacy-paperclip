@@ -4,7 +4,7 @@ import { compile } from "..";
 import {
   TEST_SUITE,
   compileModules
-} from "@paperclipui/compiler-base-jsx/lib/test";
+} from "@paperclip-ui/compiler-base-jsx/lib/test";
 
 describe(__filename + "#", () => {
   TEST_SUITE.forEach(([title, graph, contexts, config, expected]: any) => {

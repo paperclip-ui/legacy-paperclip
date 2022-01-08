@@ -1,4 +1,4 @@
-<import src="@paperclipui/playground/src/frontend/components/Theme/index.pc"
+<import src="@paperclip-ui/playground/src/frontend/components/Theme/index.pc"
   as="Theme" />
 <!--
   @frame { visible: false }

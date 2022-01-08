@@ -1,8 +1,11 @@
 {
-  "name": "@tandemui/common",
-  "version": "18.4.0",
+  "name": "@tandem-ui/common",
+  "version": "18.4.2",
   "description": "",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput"
@@ -10,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclip-ui/utils": "^18.4.2",
     "express": "^4.17.1",
     "mime-types": "^2.1.32",
     "node-fetch": "^2.6.1"

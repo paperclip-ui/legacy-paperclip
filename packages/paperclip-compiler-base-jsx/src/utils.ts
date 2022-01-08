@@ -4,13 +4,13 @@ import {
   Element,
   AS_ATTR_NAME,
   getAttributeStringValue
-} from "@paperclipui/core";
-import { InterimModule } from "@paperclipui/interim";
+} from "@paperclip-ui/core";
+import { InterimModule } from "@paperclip-ui/interim";
 import {
   CompilerOptions,
   PaperclipConfig,
   StringPosition
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { SourceNode } from "source-map";
 
 export type Context = {

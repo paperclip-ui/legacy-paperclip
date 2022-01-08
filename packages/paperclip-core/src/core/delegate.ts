@@ -23,7 +23,7 @@ import {
   DiffedEvent,
   LoadedPCData,
   ExprTextSource
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { noop } from "./utils";
 
 export type FileContent = {

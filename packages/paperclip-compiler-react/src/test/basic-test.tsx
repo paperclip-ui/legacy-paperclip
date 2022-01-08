@@ -7,7 +7,7 @@ import * as Adapter from "enzyme-adapter-react-16";
 import {
   TEST_SUITE,
   compileModules
-} from "@paperclipui/compiler-base-jsx/lib/test";
+} from "@paperclip-ui/compiler-base-jsx/lib/test";
 
 ez.configure({ adapter: new Adapter() });
 

@@ -1,8 +1,11 @@
 {
-  "name": "@paperclipui/diff-utils",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/diff-utils",
+  "version": "18.4.2",
   "description": "",
   "main": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch"
@@ -10,9 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/cli-utils": "^18.4.0",
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclip-ui/cli-utils": "^18.4.2",
+    "@paperclip-ui/core": "^18.4.2",
+    "@paperclip-ui/utils": "^18.4.2",
     "glob": "^7.2.0",
     "globby": "^11.0.4"
   }

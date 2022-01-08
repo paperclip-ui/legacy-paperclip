@@ -1,4 +1,4 @@
-import { eventHandlers, Observable, Observer } from "@paperclipui/common";
+import { eventHandlers, Observable, Observer } from "@paperclip-ui/common";
 
 // eslint-disable-next-line
 const getPort = require("get-port");
@@ -16,9 +16,9 @@ import {
   start as startWorkspace,
   Workspace,
   Project
-} from "@tandemui/workspace/lib/server";
-import { ExprSource } from "@paperclipui/utils";
-import { ContentChange } from "@paperclipui/source-writer";
+} from "@tandem-ui/workspace/lib/server";
+import { ExprSource } from "@paperclip-ui/utils";
+import { ContentChange } from "@paperclip-ui/source-writer";
 
 const UPDATE_THROTTLE = 10;
 

@@ -1,4 +1,4 @@
-import { stringifyCSSRule } from "@paperclipui/utils";
+import { stringifyCSSRule } from "@paperclip-ui/utils";
 
 export const patchCSSOM = (
   sheet: CSSStyleSheet,

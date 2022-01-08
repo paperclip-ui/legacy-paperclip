@@ -10,7 +10,7 @@ import {
   DidCloseTextDocumentParams,
   TextEdit
 } from "vscode-languageserver";
-import { BaseEvent, Observable, Observer } from "@paperclipui/common";
+import { BaseEvent, Observable, Observer } from "@paperclip-ui/common";
 import { $$EVENT } from "./constants";
 import { fixFileUrlCasing } from "../../utils";
 import { Initialized, TextDocumentChanged, TextDocumentOpened } from "./events";

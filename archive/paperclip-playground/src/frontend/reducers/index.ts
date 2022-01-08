@@ -10,17 +10,17 @@ import {
   Action as VEAction,
   ActionType as VEActionType,
   redirectRequest
-} from "@tandemui/designer/src/actions";
+} from "@tandem-ui/designer/src/actions";
 import { Action, ActionType } from "../actions";
 import produce from "immer";
 
-import veReducer from "@tandemui/designer/src/reducers/index";
+import veReducer from "@tandem-ui/designer/src/reducers/index";
 import { editString } from "../utils/string-editor";
 import Automerge from "automerge";
-import { updateShared } from "@tandemui/designer/src/state";
-import { historyReducer } from "@tandemui/designer/src/reducers/history";
+import { updateShared } from "@tandem-ui/designer/src/state";
+import { historyReducer } from "@tandem-ui/designer/src/reducers/history";
 import mime from "mime-types";
-import { isPaperclipFile } from "@paperclipui/utils";
+import { isPaperclipFile } from "@paperclip-ui/utils";
 
 export const reducer = (state: AppState, action: Action) => {
   state = veReducer(state, action as VEAction) as AppState;

@@ -9,7 +9,7 @@ If you'd like to create a new project with Paperclip, just run this command in a
 
 
 ```
-npx @paperclipui/cli init
+npx @paperclip-ui/cli init
 ```
 
 

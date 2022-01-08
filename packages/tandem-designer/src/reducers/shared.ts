@@ -1,7 +1,7 @@
 import { AppState, updateShared } from "../state";
 import { produce } from "immer";
 import { Action, ActionType, ExternalActionType } from "../actions";
-import { editString } from "@paperclipui/source-writer/lib/string-editor";
+import { editString } from "@paperclip-ui/source-writer/lib/string-editor";
 
 export const sharedReducer = (state: AppState, action: Action) => {
   switch (action.type) {

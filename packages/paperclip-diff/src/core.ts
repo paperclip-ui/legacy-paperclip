@@ -1,5 +1,5 @@
-import { PaperclipResourceWatcher } from "@paperclipui/core";
-import { resolvePCConfig } from "@paperclipui/utils";
+import { PaperclipResourceWatcher } from "@paperclip-ui/core";
+import { resolvePCConfig } from "@paperclip-ui/utils";
 import { produce } from "immer";
 const PNG = require("pngjs").PNG;
 import * as pupetter from "puppeteer";

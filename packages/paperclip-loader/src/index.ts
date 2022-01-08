@@ -8,12 +8,12 @@ import {
   stringifyCSSSheet,
   buildCompilerOptions,
   PC_CONFIG_FILE_NAME
-} from "@paperclipui/core";
-import { getPrettyMessage } from "@paperclipui/cli-utils";
+} from "@paperclip-ui/core";
+import { getPrettyMessage } from "@paperclip-ui/cli-utils";
 import * as path from "path";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules-fix-refresh";
-import { buildFile } from "@paperclipui/builder";
+import { buildFile } from "@paperclip-ui/builder";
 
 let _engine: EngineDelegate;
 

@@ -1,5 +1,5 @@
 import * as mime from "mime-types";
-import { isPaperclipFile } from "@paperclipui/utils";
+import { isPaperclipFile } from "@paperclip-ui/utils";
 
 export const PLAIN_TEXT_MIME_TYPES = [
   "text/plain",

@@ -1,7 +1,7 @@
-import { createEngineDelegate } from "@paperclipui/core";
+import { createEngineDelegate } from "@paperclip-ui/core";
 import * as babel from "@babel/core";
-import { InterimCompiler } from "@paperclipui/interim";
-import { isPaperclipFile, PaperclipConfig } from "@paperclipui/utils";
+import { InterimCompiler } from "@paperclip-ui/interim";
+import { isPaperclipFile, PaperclipConfig } from "@paperclip-ui/utils";
 
 export const compileModules = (
   compile: (...args: any) => any,

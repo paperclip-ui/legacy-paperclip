@@ -1,23 +1,26 @@
 {
-  "name": "@paperclipui/loader",
-  "version": "18.4.0",
+  "name": "paperclip-loader",
+  "version": "18.4.2",
   "description": "Webpack loader for Paperclip",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput",
     "lint": "eslint src",
     "test": "mocha ./lib/test/**/*-test.js",
-    "create:symlinks": "ln -s `pwd` examples/hello-world/node_modules/@paperclipui/loader"
+    "create:symlinks": "ln -s `pwd` examples/hello-world/node_modules/paperclip-loader"
   },
   "author": "",
   "license": "MIT",
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
-    "@paperclipui/builder": "^18.4.0",
-    "@paperclipui/cli-utils": "^18.4.0",
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/interim": "^18.4.0",
+    "@paperclip-ui/builder": "^18.4.2",
+    "@paperclip-ui/cli-utils": "^18.4.2",
+    "@paperclip-ui/core": "^18.4.2",
+    "@paperclip-ui/interim": "^18.4.2",
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
     "resolve": "^1.15.1",

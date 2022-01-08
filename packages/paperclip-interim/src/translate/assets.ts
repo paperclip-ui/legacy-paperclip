@@ -15,10 +15,10 @@ import {
   AttributeValueKind,
   isNode,
   NodeKind
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { InterimCompilerOptions } from "./options";
 import { InterimAsset } from "../state/assets";
-import { EngineDelegate } from "@paperclipui/core";
+import { EngineDelegate } from "@paperclip-ui/core";
 import * as mime from "mime";
 import * as crypto from "crypto";
 

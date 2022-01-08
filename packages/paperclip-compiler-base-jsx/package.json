@@ -1,6 +1,6 @@
 {
-  "name": "@paperclipui/compiler-base-jsx",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/compiler-base-jsx",
+  "version": "18.4.2",
   "description": "HTML compiler for Paperclip",
   "main": "lib/index.js",
   "scripts": {
@@ -8,6 +8,9 @@
     "test": "mocha lib/test",
     "build": "tsc",
     "build:watch": "tsc --watch"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "",
   "license": "ISC",
@@ -22,8 +25,8 @@
   "dependencies": {
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
-    "@paperclipui/interim": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclip-ui/interim": "^18.4.2",
+    "@paperclip-ui/utils": "^18.4.2",
     "lodash": "^4.17.21",
     "source-map": "^0.7.3"
   }

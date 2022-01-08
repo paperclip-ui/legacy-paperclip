@@ -1,7 +1,7 @@
 import loadMonaco from "@monaco-editor/loader";
 import React, { useRef, useState, useEffect } from "react";
-import { active as activatePaperclipExtension } from "@paperclipui/monaco";
-import { StringRange } from "@paperclipui/utils";
+import { active as activatePaperclipExtension } from "@paperclip-ui/monaco";
+import { StringRange } from "@paperclip-ui/utils";
 
 import {
   globalZKeyDown,

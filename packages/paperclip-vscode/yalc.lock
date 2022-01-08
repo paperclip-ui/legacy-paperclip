@@ -1,7 +1,7 @@
 {
   "version": "v1",
   "packages": {
-    "@tandemui/designer": {
+    "@tandem-ui/designer": {
       "signature": "7677a38910ebc0a2b84c49ae2d1f8ade",
       "file": true
     }

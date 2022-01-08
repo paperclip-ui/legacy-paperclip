@@ -1,6 +1,6 @@
 {
-  "name": "@paperclipui/builder",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/builder",
+  "version": "18.4.2",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -8,12 +8,15 @@
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/interim": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclip-ui/core": "^18.4.2",
+    "@paperclip-ui/interim": "^18.4.2",
+    "@paperclip-ui/utils": "^18.4.2",
     "chalk": "4",
     "chokidar": "^3.5.2",
     "crc32": "^0.2.2",

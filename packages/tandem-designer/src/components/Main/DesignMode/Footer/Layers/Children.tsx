@@ -1,8 +1,8 @@
 import React from "react";
-import { VirtualElement, VirtualNodeKind } from "@paperclipui/utils";
+import { VirtualElement, VirtualNodeKind } from "@paperclip-ui/utils";
 import { Text } from "./Text";
 import { Element } from "./Element";
-import { nodePathToAry } from "@paperclipui/utils";
+import { nodePathToAry } from "@paperclip-ui/utils";
 
 export type ChildrenProps = {
   parentPath: string;

@@ -4,9 +4,9 @@ import {
   Element,
   AS_ATTR_NAME,
   getAttributeStringValue
-} from "@paperclipui/core";
-import { InterimModule } from "@paperclipui/interim";
-import { PaperclipConfig, StringPosition } from "@paperclipui/utils";
+} from "@paperclip-ui/core";
+import { InterimModule } from "@paperclip-ui/interim";
+import { PaperclipConfig, StringPosition } from "@paperclip-ui/utils";
 import { SourceNode } from "source-map";
 
 export type Context = {

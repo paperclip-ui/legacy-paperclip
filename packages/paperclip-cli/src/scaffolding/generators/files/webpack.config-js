@@ -29,7 +29,7 @@ module.exports = {
       {{RULES}}
       {
         test: /\.pc$/,
-        loader: "@paperclipui/loader",
+        loader: "paperclip-loader",
         include: [path.resolve(__dirname, "src")],
         exclude: [/node_modules/],
         options: {

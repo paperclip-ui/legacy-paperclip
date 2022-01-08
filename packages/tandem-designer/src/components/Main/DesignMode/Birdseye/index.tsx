@@ -1,4 +1,4 @@
-import { Frame, FramesRenderer } from "@paperclipui/web-renderer";
+import { Frame, FramesRenderer } from "@paperclip-ui/web-renderer";
 import * as path from "path";
 import React, {
   memo,
@@ -25,10 +25,10 @@ import {
   LoadedData,
   EvaluatedDataKind,
   LoadedPCData
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useMultipleFrames } from "../Canvas/Frames";
-import { useTextInput } from "@tandemui/design-system";
+import { useTextInput } from "@tandem-ui/design-system";
 import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";

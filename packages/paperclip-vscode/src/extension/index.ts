@@ -1,6 +1,6 @@
 import { ExtensionContext } from "vscode";
 import { LanguageClient } from "vscode-languageclient";
-import { Disposable, Observable } from "@paperclipui/common";
+import { Disposable, Observable } from "@paperclip-ui/common";
 import { PaperclipLanguageClient } from "./language";
 import { LiveWindowManager } from "./preview/live-window-manager";
 import { CommandManager } from "./command-manager";

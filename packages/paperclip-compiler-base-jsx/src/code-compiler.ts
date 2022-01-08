@@ -13,12 +13,12 @@ import {
   InterimAttributeValuePartKind,
   ShorthandAttributeValuePart,
   InterimAttributeValue
-} from "@paperclipui/interim";
+} from "@paperclip-ui/interim";
 import { camelCase, omit } from "lodash";
 import {
   InterimScriptExpressionKind,
   InterimScriptExpression
-} from "@paperclipui/interim";
+} from "@paperclip-ui/interim";
 import {
   arrayJoin,
   createTranslateContext,
@@ -33,7 +33,7 @@ import {
 import { Html5Entities } from "html-entities";
 import { Context } from "./utils";
 import { SourceNode } from "source-map";
-import { CompilerOptions, PaperclipConfig } from "@paperclipui/utils";
+import { CompilerOptions, PaperclipConfig } from "@paperclip-ui/utils";
 
 const entities = new Html5Entities();
 

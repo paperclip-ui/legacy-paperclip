@@ -1,9 +1,12 @@
 {
   "name": "figma-paperclip",
-  "version": "18.4.0",
+  "version": "18.4.2",
   "description": "",
   "main": "index.js",
   "bin": "./bin/figma-paperclip",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build:watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc"

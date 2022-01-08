@@ -1,11 +1,12 @@
-<import src="@tandemui/designer/src/components/Theme/index.pc" as="Theme" />
+<import src="@tandem-ui/designer/src/components/Theme/index.pc" as="Theme" />
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
-<import src="@tandemui/designer/src/components/TextInput/filter.pc"
+<import src="@tandem-ui/designer/src/components/TextInput/filter.pc"
   as="FilterInput" />
-<import src="@tandemui/designer/src/components/Spinner/index.pc" as="Spinner" />
-<import src="@tandemui/designer/src/styles/utils.pc" as="utils" />
-<import src="@tandemui/designer/src/components/Select/index2.pc" as="Select" />
-<import src="@tandemui/designer/src/components/TextInput/index.pc"
+<import src="@tandem-ui/designer/src/components/Spinner/index.pc"
+  as="Spinner" />
+<import src="@tandem-ui/designer/src/styles/utils.pc" as="utils" />
+<import src="@tandem-ui/designer/src/components/Select/index2.pc" as="Select" />
+<import src="@tandem-ui/designer/src/components/TextInput/index.pc"
   as="TextInput" />
 <import src="frontend/components/Button/index.pc" as="Button" />
 

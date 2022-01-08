@@ -1,6 +1,6 @@
 ```javascript
 import React from "react";
-import {PaperclipREPL} from "@paperclipui/repl";
+import {PaperclipREPL} from "@paperclip-ui/repl";
 
 const FILES = {
   "entry.pc": `

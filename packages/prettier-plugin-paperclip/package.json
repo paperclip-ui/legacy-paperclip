@@ -1,8 +1,11 @@
 {
   "name": "prettier-plugin-paperclip",
-  "version": "18.4.0",
+  "version": "18.4.2",
   "description": "",
   "main": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput",
@@ -17,7 +20,7 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@paperclipui/core": "^18.4.0",
+    "@paperclip-ui/core": "^18.4.2",
     "chai": "^4.3.4",
     "mocha": "^8.3.2"
   },

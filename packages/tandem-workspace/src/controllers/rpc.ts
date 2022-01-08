@@ -1,10 +1,10 @@
 import { SocketIo } from "./socket";
 import sockjs from "sockjs";
-import { channels } from "@tandemui/designer";
-import { Directory, FSItemKind } from "@tandemui/designer/lib/state";
-import { sockAdapter, Channel } from "@paperclipui/common";
+import { channels } from "@tandem-ui/designer";
+import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
+import { sockAdapter, Channel } from "@paperclip-ui/common";
 import { Workspace } from "./workspace";
-import { isPlainTextFile, Logger } from "@tandemui/common";
+import { isPlainTextFile, Logger } from "@tandem-ui/common";
 import * as URL from "url";
 import * as path from "path";
 import * as fs from "fs";
@@ -13,9 +13,9 @@ import {
   Expression,
   isPaperclipFile,
   VirtNodeSource
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { VFS } from "./vfs";
-import { PCMutation, PCSourceWriter } from "@paperclipui/source-writer";
+import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
 import { exec } from "child_process";
 import { Options } from "../core/options";
 

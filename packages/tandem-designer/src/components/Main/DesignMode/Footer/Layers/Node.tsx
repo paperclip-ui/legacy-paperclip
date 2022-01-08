@@ -1,7 +1,7 @@
 import React from "react";
 import { Text } from "./Text";
 import { Element } from "./Element";
-import { VirtualNodeKind, VirtualNode } from "@paperclipui/utils";
+import { VirtualNodeKind, VirtualNode } from "@paperclip-ui/utils";
 
 export type NodeProps = {
   value: VirtualNode;

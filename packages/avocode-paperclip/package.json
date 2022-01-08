@@ -1,8 +1,11 @@
 {
   "name": "avocode-paperclip",
-  "version": "18.3.8",
+  "version": "18.4.1",
   "description": "",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "echo ''"
   },

@@ -1,7 +1,7 @@
 import { AppState } from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
-import history from "@tandemui/designer/src/dom-history";
-import * as vea from "@tandemui/designer/src/actions";
+import history from "@tandem-ui/designer/src/dom-history";
+import * as vea from "@tandem-ui/designer/src/actions";
 import {
   AccountConnected,
   ActionType,
@@ -16,7 +16,7 @@ import {
 } from "../actions";
 import * as api from "../api";
 import { request } from "./utils";
-import { isPaperclipFile } from "@paperclipui/utils";
+import { isPaperclipFile } from "@paperclip-ui/utils";
 
 export function* handleAPI() {
   yield fork(handleAccountConnected);

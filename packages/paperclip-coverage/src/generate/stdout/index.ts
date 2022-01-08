@@ -2,7 +2,7 @@ import * as Table from "cli-table";
 import * as path from "path";
 import * as URL from "url";
 const chalk = require("chalk");
-import { CoverageReport } from "@paperclipui/utils";
+import { CoverageReport } from "@paperclip-ui/utils";
 import { convertReportToTree } from "../../state";
 import { OK_THRESHOLD, POOR_THRESHOLD } from "../../constants";
 

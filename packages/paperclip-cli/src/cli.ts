@@ -1,3 +1,3 @@
 export * from "./init";
-export * from "@paperclipui/cli-utils";
+export * from "@paperclip-ui/cli-utils";
 export * from "./dev";

@@ -1,8 +1,11 @@
 {
-  "name": "@paperclipui/monaco",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/monaco",
+  "version": "18.4.2",
   "description": "",
   "main": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput --incremental"
@@ -10,11 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/autocomplete": "^18.4.0",
-    "@paperclipui/common": "^18.4.0",
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/language-service": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclip-ui/autocomplete": "^18.4.2",
+    "@paperclip-ui/common": "^18.4.2",
+    "@paperclip-ui/core": "^18.4.2",
+    "@paperclip-ui/language-service": "^18.4.2",
+    "@paperclip-ui/utils": "^18.4.2",
     "color": "^3.1.3",
     "monaco-editor": "^0.28.1"
   },

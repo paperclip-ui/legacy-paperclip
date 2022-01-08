@@ -1,8 +1,11 @@
 {
-  "name": "@paperclipui/language-service",
-  "version": "18.4.0",
+  "name": "@paperclip-ui/language-service",
+  "version": "18.4.2",
   "description": "",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput --incremental",
@@ -11,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/core": "^18.4.0",
-    "@paperclipui/test-utils": "^18.4.0",
-    "@paperclipui/utils": "^18.4.0",
+    "@paperclip-ui/core": "^18.4.2",
+    "@paperclip-ui/test-utils": "^18.4.2",
+    "@paperclip-ui/utils": "^18.4.2",
     "color": "^4.0.0",
     "typescript": "^4.2.3"
   },

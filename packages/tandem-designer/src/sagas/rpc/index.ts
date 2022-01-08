@@ -12,7 +12,7 @@ import {
 } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 
-import { Channel } from "@paperclipui/common";
+import { Channel } from "@paperclip-ui/common";
 import {
   fileLoaded,
   StyleRuleFileNameClicked,
@@ -71,8 +71,8 @@ import {
   computeVirtScriptObject,
   nodePathToAry,
   VirtNodeSource
-} from "@paperclipui/utils";
-import { PCMutation, PCMutationActionKind } from "@paperclipui/source-writer";
+} from "@paperclip-ui/utils";
+import { PCMutation, PCMutationActionKind } from "@paperclip-ui/source-writer";
 import path from "path";
 import { IConnection, SockConnection } from "./connection";
 import { request, takeState } from "../utils";

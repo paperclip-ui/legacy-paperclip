@@ -1,4 +1,4 @@
-import { ShapeProperty, InferenceKind, Inference } from "@paperclipui/core";
+import { ShapeProperty, InferenceKind, Inference } from "@paperclip-ui/core";
 import {
   createTranslateContext,
   Context,
@@ -7,8 +7,8 @@ import {
   endBlock,
   writeJoin
 } from "./utils";
-import { InterimComponent, InterimModule } from "@paperclipui/interim";
-import { CompilerOptions, PaperclipConfig } from "@paperclipui/utils";
+import { InterimComponent, InterimModule } from "@paperclip-ui/interim";
+import { CompilerOptions, PaperclipConfig } from "@paperclip-ui/utils";
 
 export type DefinitionCompilerOptions = {
   imports: string;
