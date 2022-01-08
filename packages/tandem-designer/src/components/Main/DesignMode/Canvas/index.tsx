@@ -21,7 +21,7 @@ import {
   getFrameFromIndex,
   isExpanded
 } from "../../../../state";
-import { getFrameBounds } from "@paperclipui/web-renderer";
+import { getFrameBounds } from "@paperclip-ui/web-renderer";
 
 export const Canvas = React.memo(() => {
   const { state, dispatch } = useAppStore();

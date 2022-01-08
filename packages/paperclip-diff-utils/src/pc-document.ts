@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as url from "url";
-import { VirtualFragment, stringifyVirtualNode } from "@paperclipui/core";
+import { VirtualFragment, stringifyVirtualNode } from "@paperclip-ui/core";
 
 export const getPCDocumentHTML = (root: VirtualFragment) => {
   return `<html><head><meta charset="utf-8"></head><body><style>body { margin: 0px; padding: 0px }</style>${stringifyVirtualNode(

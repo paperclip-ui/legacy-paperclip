@@ -4,7 +4,7 @@ import {
   globalZKeyDown,
   globalYKeyDown,
   globalSaveKeyPress
-} from "@tandemui/designer/src/actions";
+} from "@tandem-ui/designer/src/actions";
 
 // Can't import, otherwise the react monaco editor breaks :(
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
@@ -20,8 +20,8 @@ import { useAppStore } from "../../../hooks/useAppStore";
 import { slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
 import { canEditFile } from "../../../state";
-import { active as activatePaperclipExtension } from "@paperclipui/monaco";
-import { StringRange } from "@paperclipui/utils";
+import { active as activatePaperclipExtension } from "@paperclip-ui/monaco";
+import { StringRange } from "@paperclip-ui/utils";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();

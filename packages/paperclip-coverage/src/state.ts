@@ -1,4 +1,4 @@
-import { CoverageReport, FileReport } from "@paperclipui/utils";
+import { CoverageReport, FileReport } from "@paperclip-ui/utils";
 import * as fs from "fs";
 import * as URL from "url";
 

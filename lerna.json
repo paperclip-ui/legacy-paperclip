@@ -9,6 +9,6 @@
   "nohoist": [
     "@docusaurus/*",
     "paperclip-vscode/*",
-    "@paperclipui/website/*"
+    "@paperclip-ui/website/*"
   ]
 }

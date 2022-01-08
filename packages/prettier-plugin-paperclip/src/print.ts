@@ -28,7 +28,7 @@ import {
   ScriptExpression,
   StyleExpression,
   StyleRule
-} from "@paperclipui/core";
+} from "@paperclip-ui/core";
 import { Doc, FastPath, Printer, doc, Options } from "prettier";
 import { isBlockTagName } from "./utils";
 

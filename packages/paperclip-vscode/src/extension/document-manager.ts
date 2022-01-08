@@ -11,12 +11,12 @@ import {
   Range
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
-import { eventHandlers, Observer } from "@paperclipui/common";
+import { eventHandlers, Observer } from "@paperclip-ui/common";
 import {
   PCSourceEdited,
   RevealSourceRequested
 } from "./language/server/events";
-import { stripFileProtocol } from "@paperclipui/utils";
+import { stripFileProtocol } from "@paperclip-ui/utils";
 import * as URL from "url";
 
 enum OpenLivePreviewOptions {

@@ -4,12 +4,12 @@ import {
   findPCConfigUrl,
   PaperclipConfig,
   PC_CONFIG_FILE_NAME
-} from "@paperclipui/utils";
-import { fileURLToPath, pathToFileURL } from "@paperclipui/utils/lib/core/url";
+} from "@paperclip-ui/utils";
+import { fileURLToPath, pathToFileURL } from "@paperclip-ui/utils/lib/core/url";
 
 type FileSystem = any;
 
-// TODO - move to @paperclipui/utils as soon as we have a glob library that can handle virtual file systems
+// TODO - move to @paperclip-ui/utils as soon as we have a glob library that can handle virtual file systems
 const findResourcesFromConfig = (
   getResources: (
     fs: FileSystem

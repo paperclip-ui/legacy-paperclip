@@ -4,7 +4,7 @@ import * as path from "path";
 import { FILES_DIR, installDep } from "./utils";
 import { GeneratorKind } from "./base";
 import { prompt } from "inquirer";
-import { PaperclipConfig } from "@paperclipui/core";
+import { PaperclipConfig } from "@paperclip-ui/core";
 
 const HELLO_WORLD_CONTENT = fsa.readFileSync(
   path.join(FILES_DIR, "hello-paperclip.pc"),
@@ -38,8 +38,8 @@ export const root = {
         message: "Is there a compiler that you'd like to use?",
         choices: [
           { name: "None", value: undefined },
-          { name: "React", value: "@paperclipui/compiler-react" },
-          { name: "HTML", value: "@paperclipui/compiler-html" }
+          { name: "React", value: "@paperclip-ui/compiler-react" },
+          { name: "HTML", value: "@paperclip-ui/compiler-html" }
         ]
       }
     ]);
@@ -66,7 +66,7 @@ export const root = {
   },
   async install({ compilerName, cwd }: any) {
     await installDep(
-      ["@paperclipui/core", "@paperclipui/cli"],
+      ["@paperclip-ui/core", "@paperclip-ui/cli"],
       cwd,
       null,
       true
@@ -79,7 +79,7 @@ export const root = {
     const config: PaperclipConfig = {
       compilerOptions: [
         {
-          target: compilerName.replace("@paperclipui/compiler-", ""),
+          target: compilerName.replace("@paperclip-ui/compiler-", ""),
           outDir
         }
       ],
@@ -103,7 +103,7 @@ export const root = {
       console.info(
         chalk.cyanBright(
           "Next just run " +
-            chalk.underline("npx @paperclipui/cli build") +
+            chalk.underline("npx @paperclip-ui/cli build") +
             " to generate code! More docs on this can be found here: \n\n" +
             chalk.underline(`https://paperclip.dev/docs/`)
         )

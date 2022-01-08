@@ -1,6 +1,6 @@
 import { Parser, Printer, SupportLanguage } from "prettier";
 import { print } from "./print";
-import { createEngineDelegate } from "@paperclipui/core";
+import { createEngineDelegate } from "@paperclip-ui/core";
 
 export const languages: Partial<SupportLanguage>[] = [
   {

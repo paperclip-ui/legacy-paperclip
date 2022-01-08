@@ -1,4 +1,4 @@
-import * as ve from "@tandemui/designer/src/actions";
+import * as ve from "@tandem-ui/designer/src/actions";
 import {
   AppState,
   Project,
@@ -9,9 +9,9 @@ import {
   WorkerState
 } from "../state";
 import { actionCreator } from "./base";
-import { ContentChange } from "@paperclipui/source-writer";
-import { KeyComboPressed } from "@tandemui/designer/src/actions";
-import { AstEmitted } from "@paperclipui/utils";
+import { ContentChange } from "@paperclip-ui/source-writer";
+import { KeyComboPressed } from "@tandem-ui/designer/src/actions";
+import { AstEmitted } from "@paperclip-ui/utils";
 
 export type BaseAction<TType extends ActionType, TPayload = undefined> = {
   type: TType;

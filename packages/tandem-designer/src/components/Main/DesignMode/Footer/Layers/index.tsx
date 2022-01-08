@@ -6,7 +6,7 @@ import {
   getNodeByPath,
   nodePathToAry,
   VirtualElement
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { Element } from "./Element";
 import * as styles from "./index.pc";
 import {

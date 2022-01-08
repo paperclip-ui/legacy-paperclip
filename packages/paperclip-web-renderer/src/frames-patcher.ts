@@ -1,6 +1,6 @@
 import { Html5Entities } from "html-entities";
 import { createNativeNode } from "./native-renderer";
-import { Mutation, ActionKind } from "@paperclipui/utils";
+import { Mutation, ActionKind } from "@paperclip-ui/utils";
 import { DOMFactory } from "./renderer";
 import { ATTR_ALIASES } from "./utils";
 

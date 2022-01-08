@@ -4,7 +4,7 @@ import {
   Element,
   infer,
   EngineDelegate
-} from "@paperclipui/core";
+} from "@paperclip-ui/core";
 import {
   AttributeKind,
   AttributeValue,
@@ -18,7 +18,7 @@ import {
   Reference,
   Slot,
   Text
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import {
   InterimElement,
   InterimSlotNode,

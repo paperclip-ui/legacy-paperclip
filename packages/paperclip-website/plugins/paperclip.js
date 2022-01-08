@@ -1,6 +1,6 @@
 module.exports = function(context, options) {
   return {
-    name: "@paperclipui/plugin",
+    name: "@paperclip-ui/plugin",
     configureWebpack(config, isServer) {
       // Disable svg loading in react because it's fooing with CSS. Docusaraus needs to implement
       // Rules.issuer for this, but I'm too lazy to make a PR for that.
@@ -19,7 +19,7 @@ module.exports = function(context, options) {
           rules: [
             {
               test: /\.pc$/,
-              loader: "@paperclipui/loader",
+              loader: "paperclip-loader",
               options: {
                 config: require("../paperclip.config.json")
               }

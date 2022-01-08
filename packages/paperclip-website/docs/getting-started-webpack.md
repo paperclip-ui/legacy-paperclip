@@ -9,7 +9,7 @@ sidebar_label: Webpack
 Paperclip works with Webpack 4 and 5. To get started, install these dependencies:
 
 ```
-npm i @paperclipui/compiler-react @paperclipui/loader --save-dev
+npm i @paperclip-ui/compiler-react paperclip-loader --save-dev
 ```
 
 Next, in the same directory as `webpack.config.js`, copy this content to `paperclip.config.json`:
@@ -35,7 +35,7 @@ module.exports = {
 
       {
         test: /\.pc$/,
-        loader: "@paperclipui/loader",
+        loader: "paperclip-loader",
         options: {
 
           // config for your Paperclip files

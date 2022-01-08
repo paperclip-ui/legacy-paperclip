@@ -1,5 +1,5 @@
-import { CoverageReport } from "@paperclipui/utils";
-import { StringRange } from "@paperclipui/utils";
+import { CoverageReport } from "@paperclip-ui/utils";
+import { StringRange } from "@paperclip-ui/utils";
 import * as fsa from "fs-extra";
 import * as path from "path";
 import * as reportStyles from "./ui/report.pc";

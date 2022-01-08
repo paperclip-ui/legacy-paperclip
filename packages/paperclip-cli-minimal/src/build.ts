@@ -3,17 +3,17 @@ import {
   buildDirectory,
   TargetNotFoundError,
   DirectoryBuilder
-} from "@paperclipui/builder";
+} from "@paperclip-ui/builder";
 import * as path from "path";
 import * as URL from "url";
 import * as fs from "fs";
-import { getPrettyMessage } from "@paperclipui/cli-utils";
+import { getPrettyMessage } from "@paperclip-ui/cli-utils";
 import {
   isPaperclipFile,
   PaperclipConfig,
   stripFileProtocol
-} from "@paperclipui/utils";
-import { createEngineDelegate } from "@paperclipui/core";
+} from "@paperclip-ui/utils";
+import { createEngineDelegate } from "@paperclip-ui/core";
 import { mkdirpSync } from "fs-extra";
 
 export type BuildOptions = {

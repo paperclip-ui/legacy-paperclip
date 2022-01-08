@@ -51,7 +51,7 @@ import {
   getNodeAncestors,
   isInstance,
   stripFileProtocol
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import * as path from "path";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;

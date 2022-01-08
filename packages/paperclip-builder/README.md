@@ -1,11 +1,11 @@
 
 
 ```javascript
-import { build } from "@paperclipui/builder";
+import { build } from "@paperclip-ui/builder";
 
 const config: PaperclipConfig = {
   compiler: {
-    name: "@paperclipui/compiler-react"
+    name: "@paperclip-ui/compiler-react"
     css: {
       output: "embed" | "module" | "mono",
       include: true
@@ -29,5 +29,5 @@ build(config, {
 
 Qs:
 
-- @paperclipui/loader
+- paperclip-loader
   - can pass in config 

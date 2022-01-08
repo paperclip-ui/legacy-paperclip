@@ -13,7 +13,7 @@ import {
   SelectorKind,
   StyleDeclarationKind,
   AnnotationPropertyKind
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { createMockEngine } from "../utils";
 
 describe(__filename + "#", () => {

@@ -6,14 +6,14 @@ import {
   DependencyContent,
   loadedDataRequested,
   LoadedDataEmitted
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { collectASTInfo } from "./ast-info";
 import * as channels from "./channel";
 import { getSuggestions } from "./autocomplete";
-import { workerAdapter } from "@paperclipui/common";
+import { workerAdapter } from "@paperclip-ui/common";
 
 const init = () => {
-  const channel = new BroadcastChannel("@paperclipui/core");
+  const channel = new BroadcastChannel("@paperclip-ui/core");
   const asts: Record<string, DependencyContent> = {};
   let _resolveAst: (content: any) => any = () => {};
   let _resolveLoadedData: (content: any) => any = () => {};

@@ -4,9 +4,9 @@ import * as path from "path";
 import * as fs from "fs";
 import { EventEmitter } from "events";
 import * as chokidar from "chokidar";
-import { EngineDelegate } from "@paperclipui/core";
+import { EngineDelegate } from "@paperclip-ui/core";
 import { flatten } from "lodash";
-import { InterimCompiler, CompileOptions } from "@paperclipui/interim";
+import { InterimCompiler, CompileOptions } from "@paperclip-ui/interim";
 import {
   PaperclipConfig,
   getPaperclipConfigIncludes,
@@ -17,7 +17,7 @@ import {
   isPaperclipFile,
   getScopedCSSFilePath,
   CompilerOptions
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { TargetNotFoundError } from "./errors";
 
 type BaseOptions = {
@@ -386,13 +386,13 @@ const requireTargetCompilers = (
   const localDirs = cwd
     .split("/")
     .map((part, index, parts) =>
-      [...parts.slice(0, index + 1), "node_modules", "@paperclipui"].join("/")
+      [...parts.slice(0, index + 1), "node_modules", "@paperclip-ui"].join("/")
     )
     .filter(dir => dir !== "node_modules");
 
   const possibleDirs = [
     ...localDirs,
-    "/usr/local/lib/node_modules/@paperclipui"
+    "/usr/local/lib/node_modules/@paperclip-ui"
   ];
 
   const compilers: Record<string, TargetCompiler> = {};

@@ -14,7 +14,7 @@ export const react = {
     return [{ cwd }, []];
   },
   prepare({ cwd }, allInfo) {
-    const devDependencies = ["@paperclipui/compiler-react"];
+    const devDependencies = ["@paperclip-ui/compiler-react"];
 
     if (allInfo[GeneratorKind.Node].useTypescript) {
       devDependencies.push("@types/react", "@types/react-dom");
@@ -32,7 +32,7 @@ export const react = {
         entry: this.getEntry(allInfo)
       },
       [GeneratorKind.Root]: {
-        compilerName: "@paperclipui/compiler-react"
+        compilerName: "@paperclip-ui/compiler-react"
       }
     };
   },

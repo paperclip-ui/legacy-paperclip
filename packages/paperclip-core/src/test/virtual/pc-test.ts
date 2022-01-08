@@ -11,7 +11,7 @@ import {
   LoadedPCData,
   PCExports,
   stringifyVirtualNode
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {

@@ -1,5 +1,5 @@
 import { memoize } from "lodash";
-import { EvaluatedDataKind, LoadedData } from "@paperclipui/utils";
+import { EvaluatedDataKind, LoadedData } from "@paperclip-ui/utils";
 
 export enum CompletionItemKind {
   Text = 1,

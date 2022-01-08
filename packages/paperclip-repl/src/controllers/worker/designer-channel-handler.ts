@@ -1,12 +1,12 @@
-import { EngineDelegate } from "@paperclipui/core";
-import { PCMutation, PCSourceWriter } from "@paperclipui/source-writer";
+import { EngineDelegate } from "@paperclip-ui/core";
+import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
 import {
   isPaperclipFile,
   engineDelegateChanged,
   VirtNodeSource
-} from "@paperclipui/utils";
-import { Channels } from "@tandemui/designer/src/sagas/rpc/channels";
-import { FSItemKind } from "@tandemui/designer/src/state";
+} from "@paperclip-ui/utils";
+import { Channels } from "@tandem-ui/designer/src/sagas/rpc/channels";
+import { FSItemKind } from "@tandem-ui/designer/src/state";
 import { REPLChannels } from "../channels";
 
 export class DesignerChannelHandler {

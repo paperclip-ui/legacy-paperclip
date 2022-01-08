@@ -1,4 +1,4 @@
-import { EngineDelegate } from "@paperclipui/core";
+import { EngineDelegate } from "@paperclip-ui/core";
 import { FIO } from "./options";
 
 export const maybeEmbed = (

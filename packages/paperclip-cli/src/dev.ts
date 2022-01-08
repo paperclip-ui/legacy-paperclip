@@ -1,4 +1,4 @@
-// import { startServer } from "@tandemui/designer";
+// import { startServer } from "@tandem-ui/designer";
 
 export type ServerOptions = {
   port?: number;

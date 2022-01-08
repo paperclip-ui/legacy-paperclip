@@ -1,4 +1,4 @@
-// TODO - move this to @paperclipui/utils
+// TODO - move this to @paperclip-ui/utils
 
 import { clamp, random } from "lodash";
 import {

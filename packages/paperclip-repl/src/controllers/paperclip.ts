@@ -1,6 +1,6 @@
-import { loadEngineDelegate } from "@paperclipui/core/browser";
-import { EngineIO } from "@paperclipui/core/src/core/delegate";
-import { EngineDelegate } from "@paperclipui/core";
+import { loadEngineDelegate } from "@paperclip-ui/core/browser";
+import { EngineIO } from "@paperclip-ui/core/src/core/delegate";
+import { EngineDelegate } from "@paperclip-ui/core";
 
 export class PaperclipEngine {
   private _engine: EngineDelegate;

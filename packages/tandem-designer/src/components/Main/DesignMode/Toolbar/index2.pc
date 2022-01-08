@@ -1,7 +1,7 @@
 <import src="styles/utils.pc" as="utils" />
 <import src="components/Select/index2.pc" as="Select" />
-<import src="@tandemui/design-system/src/TextInput.pc" as="TextInput" />
-<import src="@tandemui/design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="@tandem-ui/design-system/src/TextInput.pc" as="TextInput" />
+<import src="@tandem-ui/design-system/src/atoms.pc" as="atoms" inject-styles />
 
 <style>
   :root {

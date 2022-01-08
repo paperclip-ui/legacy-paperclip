@@ -1,6 +1,6 @@
 import express from "express";
 import http from "http";
-import { Logger } from "@tandemui/common";
+import { Logger } from "@tandem-ui/common";
 import { Designer } from "../controllers/designer";
 import { RPC } from "../controllers/rpc";
 import { SocketIo } from "../controllers/socket";

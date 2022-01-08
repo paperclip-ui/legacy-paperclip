@@ -8,7 +8,7 @@ const node = require("./lib/node");
 
 // const { EngineMode, EngineDelegate } = lib;
 
-// const { resolveImportUri } = require("@paperclipui/utils");
+// const { resolveImportUri } = require("@paperclip-ui/utils");
 
 // const existsSyncCaseSensitive = (uri) => {
 //   const pathname = url.fileURLToPath(uri);

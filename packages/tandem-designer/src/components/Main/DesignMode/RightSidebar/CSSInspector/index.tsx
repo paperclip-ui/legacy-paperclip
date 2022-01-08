@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import * as styles from "./index.pc";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import { StyleRule } from "./StyleRule";
-import { useTextInput } from "@tandemui/design-system";
-import * as ast from "@paperclipui/utils";
+import { useTextInput } from "@tandem-ui/design-system";
+import * as ast from "@paperclip-ui/utils";
 import Pane, { Container as PaneContainer } from "../../../../Pane/index.pc";
 
 export const Inspector2 = React.memo(() => {

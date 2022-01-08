@@ -1,9 +1,9 @@
-import { resolvePCConfig } from "@paperclipui/utils";
+import { resolvePCConfig } from "@paperclip-ui/utils";
 import * as path from "path";
 import * as fsa from "fs-extra";
 import { buildDirectory } from "../index";
 import { kebabCase } from "lodash";
-import { createEngineDelegate } from "@paperclipui/core";
+import { createEngineDelegate } from "@paperclip-ui/core";
 
 const TMP_FIXTURE_DIR = path.join(
   __dirname,

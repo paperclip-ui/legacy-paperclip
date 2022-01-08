@@ -13,7 +13,7 @@ import {
   NodeAnnotations,
   VirtualFrame,
   VirtualNodeKind
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import {
   canvasMouseDown,
   canvasMouseLeave,

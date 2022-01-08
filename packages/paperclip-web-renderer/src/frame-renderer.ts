@@ -20,12 +20,12 @@ import {
   EvaluatedDataKind,
   LoadedPCData,
   patchCSSSheet
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
 import { patchCSSOM } from "./cssom-patcher";
-import { ImmutableStore } from "@paperclipui/common";
+import { ImmutableStore } from "@paperclip-ui/common";
 
 type Box = {
   width: number;

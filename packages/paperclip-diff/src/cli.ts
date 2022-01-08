@@ -1,7 +1,7 @@
 import * as sn from "./snapshots";
 import { writeReport } from "./report";
 import { Provider, start } from "./core";
-import { PaperclipResourceWatcher } from "@paperclipui/core";
+import { PaperclipResourceWatcher } from "@paperclip-ui/core";
 import { logInfo } from "./utils";
 
 export type SnapshotOptions = {

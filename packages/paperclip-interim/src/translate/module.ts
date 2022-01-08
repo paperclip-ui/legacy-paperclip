@@ -3,7 +3,7 @@ import {
   Node,
   VirtSheet,
   isErrorResult
-} from "@paperclipui/core";
+} from "@paperclip-ui/core";
 import * as path from "path";
 import * as fs from "fs";
 import * as URL from "url";
@@ -23,7 +23,7 @@ import {
   ModuleKind,
   CSSExports,
   isCSSExports
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";

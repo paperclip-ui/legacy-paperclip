@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleDeclarationInfo } from "@paperclipui/utils";
+import { StyleDeclarationInfo } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
 import { BlendedTextInput } from "../../../../TextInput/blended";
 

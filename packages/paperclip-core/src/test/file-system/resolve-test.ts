@@ -4,7 +4,7 @@ import * as url from "url";
 import { expect } from "chai";
 import { TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
 import { resolveAllPaperclipFiles } from "../../core/utils";
-import { resolveImportUri } from "@paperclipui/utils";
+import { resolveImportUri } from "@paperclip-ui/utils";
 
 describe(__filename + "#", () => {
   it("returns nested module when resolving", async () => {

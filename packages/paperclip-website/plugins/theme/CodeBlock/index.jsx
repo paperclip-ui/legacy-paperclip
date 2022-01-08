@@ -50,7 +50,7 @@ const LiveEditor = ({
 
     Object.assign(mountRef.current.style, extStyle);
 
-    import("@paperclipui/repl/src/app").then(module => {
+    import("@paperclip-ui/repl/src/app").then(module => {
       const app = new module.App(
         {
           files: graph,

@@ -1,5 +1,5 @@
-import { compilers } from "@paperclipui/compiler-base-jsx";
-import { TargetCompiler } from "@paperclipui/interim";
+import { compilers } from "@paperclip-ui/compiler-base-jsx";
+import { TargetCompiler } from "@paperclip-ui/interim";
 
 export const compile: TargetCompiler = compilers({
   code: {

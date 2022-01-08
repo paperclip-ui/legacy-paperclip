@@ -25,7 +25,7 @@ import {
   getAttributeValue,
   getAttributeStringValue,
   AttributeValueKind
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { CSS_COLOR_NAME_REGEXP } from "./css-color-names";
 import * as parseColor from "color";
 

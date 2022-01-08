@@ -1,5 +1,5 @@
 import { ColorInfo, Suggestion } from "./base";
-import { remoteChannel } from "@paperclipui/common";
+import { remoteChannel } from "@paperclip-ui/common";
 
 export const documentColors = remoteChannel<{ uri: string }, ColorInfo[]>(
   "documentColors"

@@ -1,9 +1,9 @@
 import { handleEngine } from "./engine";
 import { fork, put, select, takeEvery } from "redux-saga/effects";
-import veSaga from "@tandemui/designer/src/sagas";
-import * as vea from "@tandemui/designer/src/actions";
+import veSaga from "@tandem-ui/designer/src/sagas";
+import * as vea from "@tandem-ui/designer/src/actions";
 import { ActionType, NewFileNameEntered } from "../actions";
-import { redirectRequest } from "@tandemui/designer/src/actions";
+import { redirectRequest } from "@tandem-ui/designer/src/actions";
 import { getNewFilePath, hasUnsavedChanges } from "../state";
 import { AppState } from "../state";
 import { handleAPI } from "./api";

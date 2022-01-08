@@ -1,5 +1,5 @@
 {
-  "name": "@paperclipui/coverage",
+  "name": "@paperclip-ui/coverage",
   "version": "18.4.1",
   "description": "",
   "main": "lib/index.js",
@@ -15,17 +15,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/cli-minimal": "^18.4.1",
-    "@paperclipui/compiler-html": "^18.4.1",
-    "@paperclipui/core": "^18.4.1",
-    "@paperclipui/utils": "^18.4.1",
+    "@paperclip-ui/cli-minimal": "^18.4.1",
+    "@paperclip-ui/compiler-html": "^18.4.1",
+    "@paperclip-ui/core": "^18.4.1",
+    "@paperclip-ui/utils": "^18.4.1",
     "chalk": "2.0.0",
     "cli-table": "^0.3.11",
     "html-entities": "^1.2.1",
     "typescript": "^4.2.3"
   },
   "devDependencies": {
-    "@paperclipui/compiler-html": "^18.3.0",
+    "@paperclip-ui/compiler-html": "^18.3.0",
     "concurrently": "^6.5.1"
   }
 }

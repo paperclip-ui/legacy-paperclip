@@ -1,4 +1,4 @@
-import { LoadedPCData } from "@paperclipui/utils";
+import { LoadedPCData } from "@paperclip-ui/utils";
 import { createMockEngine, createMockFramesRenderer } from "./utils";
 import { expect } from "chai";
 import { FramesRenderer } from "../frame-renderer";

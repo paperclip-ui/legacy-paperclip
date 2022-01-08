@@ -8,7 +8,7 @@ const path = require("path");
 const resolve = require("resolve");
 const chokidar = require("chokidar");
 const {init, devStart} = require("../lib/cli");
-const {build} = require("@paperclipui/cli-minimal");
+const {build} = require("@paperclip-ui/cli-minimal");
 const argv = require("yargs")
 .command("snapshot", "Take snapshots of the current PR", yargs => {
   // yargs

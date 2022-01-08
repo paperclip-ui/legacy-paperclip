@@ -1,6 +1,6 @@
 import * as path from "path";
 import url from "url";
-import { StringRange } from "@paperclipui/utils";
+import { StringRange } from "@paperclip-ui/utils";
 import chalk from "chalk";
 import dedent from "dedent";
 

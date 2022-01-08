@@ -2,11 +2,11 @@ import {
   ActionType as VEActionType,
   locationChanged,
   LocationChanged
-} from "@tandemui/designer/src/actions";
+} from "@tandem-ui/designer/src/actions";
 import { ActionType, Action } from "../actions";
 import * as qs from "querystring";
 import * as Url from "url";
-import history from "@tandemui/designer/src/dom-history";
+import history from "@tandem-ui/designer/src/dom-history";
 import {
   call,
   fork,

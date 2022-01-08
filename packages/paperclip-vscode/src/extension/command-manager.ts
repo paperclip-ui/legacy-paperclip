@@ -1,7 +1,7 @@
 import { commands } from "vscode";
 import { LiveWindowManager } from "./preview/live-window-manager";
 import { Uri, window, env } from "vscode";
-import { isPaperclipFile } from "@paperclipui/utils";
+import { isPaperclipFile } from "@paperclip-ui/utils";
 import { fixFileUrlCasing } from "./utils";
 
 export class CommandManager {

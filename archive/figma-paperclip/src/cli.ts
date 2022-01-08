@@ -87,7 +87,7 @@ export const init = async () => {
   const pcConfig = {
     compilerOptions: {
       // TODO - this eventuall be a list
-      name: "@paperclipui/compiler-react"
+      name: "@paperclip-ui/compiler-react"
     },
     filesGlob: "./" + path.join(dest, "**/*.pc"),
     dropPcExtension: true
@@ -122,7 +122,7 @@ export const init = async () => {
 
   // TODO - may want to incude version numbers here
   await installDependencies(
-    [DEFAULT_COMPILER_TARGET_NAME, "@paperclipui/core", "@paperclipui/cli"],
+    [DEFAULT_COMPILER_TARGET_NAME, "@paperclip-ui/core", "@paperclip-ui/cli"],
     cwd,
     true
   );

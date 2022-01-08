@@ -1,5 +1,5 @@
 {
-  "name": "@paperclipui/utils",
+  "name": "@paperclip-ui/utils",
   "version": "18.4.1",
   "description": "Internal utils for Paperclip",
   "main": "index.js",

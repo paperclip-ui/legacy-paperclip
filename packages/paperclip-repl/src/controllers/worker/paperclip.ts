@@ -1,7 +1,7 @@
-import { loadEngineDelegate } from "@paperclipui/core/browser";
-import { EngineIO } from "@paperclipui/core/src/core/delegate";
-import { EngineDelegate } from "@paperclipui/core";
-import { Channels } from "@tandemui/designer/src/sagas/rpc/channels";
+import { loadEngineDelegate } from "@paperclip-ui/core/browser";
+import { EngineIO } from "@paperclip-ui/core/src/core/delegate";
+import { EngineDelegate } from "@paperclip-ui/core";
+import { Channels } from "@tandem-ui/designer/src/sagas/rpc/channels";
 
 export class PaperclipController {
   private _engine: EngineDelegate;

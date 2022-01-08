@@ -11,7 +11,7 @@ This is the setup process for CRA if you're using that in your project.
 Paperclip works with Webpack 4 and 5. To get started, install these dependencies:
 
 ```
-npm i @paperclipui/compiler-react @paperclipui/loader --save-dev
+npm i @paperclip-ui/compiler-react paperclip-loader --save-dev
 ```
 
 Next, in the same directory as `package.json`, copy this content to `paperclip.config.json` :

@@ -1,10 +1,10 @@
-import { LoadedData } from "@paperclipui/core";
-import { ContentChange } from "@paperclipui/source-writer";
+import { LoadedData } from "@paperclip-ui/core";
+import { ContentChange } from "@paperclip-ui/source-writer";
 import {
   ExprSource,
   NodeStyleInspection,
   VirtNodeSource
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import { AvailableBrowser, VirtualNodeSourceInfo } from "../state";
 import { actionCreator, BaseAction } from "./base";
 import { InstanceAction } from "./instance-actions";

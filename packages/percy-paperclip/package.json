@@ -23,8 +23,8 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@paperclipui/core": "^18.4.1",
-    "@paperclipui/diff-utils": "^18.4.1",
+    "@paperclip-ui/core": "^18.4.1",
+    "@paperclip-ui/diff-utils": "^18.4.1",
     "@percy/client": "^1.0.0-beta.64",
     "chalk": "^4.1.0",
     "get-port": "^5.1.1",

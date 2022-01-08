@@ -1,4 +1,4 @@
-<import src="@tandemui/designer/src/components/Theme/index.pc" as="Theme" />
+<import src="@tandem-ui/designer/src/components/Theme/index.pc" as="Theme" />
 
 <!--
   @frame { visible: false }

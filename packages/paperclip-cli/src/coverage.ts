@@ -1,18 +1,18 @@
-import { printCoverage, writeCoverageHTML } from "@paperclipui/coverage";
+import { printCoverage, writeCoverageHTML } from "@paperclip-ui/coverage";
 import * as fsa from "fs-extra";
 import * as path from "path";
 const chalk = require("chalk");
 import { exec } from "child_process";
 import * as glob from "glob";
 import * as URL from "url";
-import { createEngineDelegate, EngineMode } from "@paperclipui/core";
+import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
 import {
   resolvePCConfig,
   PaperclipConfig,
   paperclipResourceGlobPattern,
   paperclipSourceGlobPattern,
   EngineErrorKind
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 
 const DEFAULT_COVERAGE_DIR = ".paperclip/cov";
 

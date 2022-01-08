@@ -4,8 +4,8 @@ import PercyClient from "@percy/client";
 import * as chalk from "chalk";
 import * as mime from "mime";
 import * as fs from "fs";
-import { createEngineDelegate, EngineMode } from "@paperclipui/core";
-import { eachFrame, RunOptions } from "@paperclipui/diff-utils";
+import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
+import { eachFrame, RunOptions } from "@paperclip-ui/diff-utils";
 import { createHash } from "crypto";
 import * as pLimit from "p-limit";
 

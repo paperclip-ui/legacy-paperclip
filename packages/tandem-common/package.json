@@ -1,5 +1,5 @@
 {
-  "name": "@tandemui/common",
+  "name": "@tandem-ui/common",
   "version": "18.4.1",
   "description": "",
   "main": "index.js",
@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclipui/utils": "^18.4.1",
+    "@paperclip-ui/utils": "^18.4.1",
     "express": "^4.17.1",
     "mime-types": "^2.1.32",
     "node-fetch": "^2.6.1"

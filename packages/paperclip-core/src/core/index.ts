@@ -1,5 +1,5 @@
 export * from "./infer";
-export * from "@paperclipui/utils";
+export * from "@paperclip-ui/utils";
 export * from "./utils";
 export {
   EngineDelegate,

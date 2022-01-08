@@ -1,4 +1,4 @@
-import { StringRange } from "@paperclipui/utils";
+import { StringRange } from "@paperclip-ui/utils";
 import { InterimElement } from "./html";
 
 export enum InterimScriptExpressionKind {

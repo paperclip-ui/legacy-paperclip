@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as URL from "url";
 import { EventEmitter } from "events";
-import { Logger } from "@tandemui/common";
+import { Logger } from "@tandem-ui/common";
 
 export class VFS {
   private _contents: Record<string, string>;

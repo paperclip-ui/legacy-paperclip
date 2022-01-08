@@ -8,7 +8,7 @@ import {
   memoize,
   getElementLabel,
   isInstance
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import {
   getAppActivePCData,
   getInspectionInfo,

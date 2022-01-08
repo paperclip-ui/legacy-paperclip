@@ -11,7 +11,7 @@ import {
   ScriptExpressionKind,
   DynamicStringAttributeValuePartKind,
   ReferencePart
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 
 // TODO - this should be built in rust
 

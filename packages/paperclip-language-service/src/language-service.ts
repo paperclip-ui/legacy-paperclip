@@ -9,8 +9,8 @@ Considerations:
 
 */
 
-import { EngineDelegate, getEngineImports } from "@paperclipui/core";
-import { Observable } from "@paperclipui/common";
+import { EngineDelegate, getEngineImports } from "@paperclip-ui/core";
+import { Observable } from "@paperclip-ui/common";
 import { AutocompleteService } from "./autocomplete";
 import { collectASTInfo, ColorInfo } from "./collect-ast-info";
 import { DiagnosticService } from "./error-service";

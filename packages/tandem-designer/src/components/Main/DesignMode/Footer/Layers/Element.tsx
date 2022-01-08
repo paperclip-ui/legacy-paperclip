@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
-import { VirtualElement } from "@paperclipui/utils";
+import { VirtualElement } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
-import { nodePathToAry } from "@paperclipui/utils";
+import { nodePathToAry } from "@paperclip-ui/utils";
 import { Children } from "./Children";
 
 export type ElementProps = {

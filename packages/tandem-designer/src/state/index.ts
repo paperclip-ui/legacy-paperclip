@@ -17,13 +17,13 @@ import {
   NodeStyleInspection,
   VirtualFrame,
   VirtualNodeKind
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import {
   VirtualNode,
   EngineErrorEvent,
   EngineDelegateEvent,
   LoadedData
-} from "@paperclipui/utils";
+} from "@paperclip-ui/utils";
 import {
   Transform,
   Box,

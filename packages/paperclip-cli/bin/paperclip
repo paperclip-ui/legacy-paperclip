@@ -2,13 +2,13 @@
 const path = require("path");
 const {init} = require("../lib/cli");
 const {coverage} = require("../lib/coverage");
-const {build} = require("@paperclipui/cli-minimal");
+const {build} = require("@paperclip-ui/cli-minimal");
 const {installOptionalModule} = require("../lib/install-module");
 const fs = require("fs");
 const  URL = require("url");
-const {start: startWorkspace} = require("@tandemui/workspace/lib/server");
+const {start: startWorkspace} = require("@tandem-ui/workspace/lib/server");
 
-const installDiff = () => installOptionalModule("@paperclipui/diff", process.cwd())
+const installDiff = () => installOptionalModule("@paperclip-ui/diff", process.cwd())
 
 const argv = require("yargs")
 .command("build", "Compiles paperclip files to target language", yargs => {

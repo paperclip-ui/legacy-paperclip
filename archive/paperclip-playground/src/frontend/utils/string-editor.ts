@@ -1,6 +1,6 @@
 // https://github.com/crcn/tandem/blob/0.1.1/packages/aerial-common2/src/string/editor.ts
 
-import { ContentChange } from "@paperclipui/source-writer";
+import { ContentChange } from "@paperclip-ui/source-writer";
 
 export const editString = (input: string, mutations: ContentChange[]) => {
   let output = input;

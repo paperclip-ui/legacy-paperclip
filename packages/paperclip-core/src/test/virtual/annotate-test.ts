@@ -1,6 +1,10 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import { Comment, computeVirtScriptObject, Fragment } from "@paperclipui/utils";
+import {
+  Comment,
+  computeVirtScriptObject,
+  Fragment
+} from "@paperclip-ui/utils";
 import { EngineMode } from "../../core";
 
 describe(__filename + "#", () => {

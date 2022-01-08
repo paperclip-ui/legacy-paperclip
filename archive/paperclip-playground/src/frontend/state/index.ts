@@ -1,11 +1,11 @@
-import * as ve from "@tandemui/designer/src/state";
-import { isPaperclipFile, memoize, SourceLocation } from "@paperclipui/utils";
+import * as ve from "@tandem-ui/designer/src/state";
+import { isPaperclipFile, memoize, SourceLocation } from "@paperclip-ui/utils";
 import * as qs from "querystring";
 import mime from "mime-types";
 import { mapValues, omit, pickBy } from "lodash";
 const ENTRY_URI = "main.pc";
 import bowser from "bowser";
-import { ContentChange } from "@paperclipui/source-writer";
+import { ContentChange } from "@paperclip-ui/source-writer";
 
 export type User = {
   avatarUrl?: string;
