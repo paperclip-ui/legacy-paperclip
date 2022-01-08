@@ -1,6 +1,7 @@
 <import src="./colors.pc" />
 <import src="./typography.pc" as="typography" />
-<import src="./layout.pc" as="layout" />
+<import src="./layout.pc" as="layout" inject-styles />
+<import src="./layout.pc" inject-styles />
 <import src="./button.pc" as="button" />
 <import src="./icons/icons.pc" as="icons" />
 
@@ -234,6 +235,60 @@
 <!--
   @frame { visible: false }
 -->
+<div export component as="CTABottom" class="_row">
+  <style>
+    border-top: 1px solid rgb(226, 226, 226);
+    border-bottom: 1px solid rgb(226, 226, 226);
+    @include layout.py-6 {}
+  </style>
+  <div class="_col12">
+    <div class="_title">
+      <style>
+        font-size: 1.5em;
+        font-weight: 500;
+        margin-bottom: var(--gap-4);
+        @include typography.text-secondary {}
+      </style>
+      {title}
+    </div>
+    <div class="_text">
+      <style>
+        font-size: 20px;
+        line-height: 1.6em;
+        font-weight: 400;
+      </style>
+      {description}
+    </div>
+
+    <div>
+      <style>
+        display: flex;
+        flex-direction: column;
+        grid-row-gap: 16px;
+        margin-top: 16px;
+      </style>
+      {actions}
+    </div>
+  </div>
+</div>
+
+<div export component as="CTAInstall">
+  <span>{label}</span>
+  <div>
+    <style>
+      background: rgb(224, 224, 224);
+      border: 1px solid grey;
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 4px;
+    </style>
+    {children}
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="MainFeatures" class="_main-features $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
@@ -452,7 +507,7 @@
 <div export
   component
   as="BigFeature"
-  class="_big-feature $layout._section $layout._row"
+  class="_big-feature _section _row"
   class:noShadow="no-shadow"
   class:smallerPreview="smaller-preview"
   class:ctaText="has_cta">
@@ -542,7 +597,7 @@
 
 
 <!--
-  @frame { title: "Website / Desktop", width: 1304, height: 4194, x: -91, y: -54 }
+  @frame { title: "Website / Desktop", width: 1304, height: 4194, x: -93, y: -52 }
 -->
 <Home component as="Preview">
   <!--
@@ -607,11 +662,27 @@
       loop />}
     ctaText="View the API" />
 
-  <div>
+  <CTABottom title="Easy to set up"
+    description={<fragment>
+      Paperclip currently supports <strong>React</strong> and <strong>
+        static HTML
+      </strong> out of the box. Want to try it out? Just check out the <a href="/repl">
+        playground
+      </a>, or run one of the following commands in your existing codebase. You
+      can easily opt-out whenever you want.
+    </fragment>}
+    actions={<fragment>
+      <CTAInstall label="NPX">npx @paperclip-ui/cli init</CTAInstall>
+      <CTAInstall label="Yarn">
+        yarn add @paperclip-ui/cli --dev && yarn paperclip init
+      </CTAInstall>
+    </fragment>} />
+  <div class="$layout._row">
     <style>
       text-align: center;
       padding: 32px;
       display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       max-width: 700px;
@@ -720,6 +791,6 @@
 <Preview />
 
 <!--
-  @frame { title: "Mobile", width: 525, height: 4817, x: 1497, y: -57 }
+  @frame { title: "Mobile", width: 525, height: 4817, x: 1497, y: -59 }
 -->
 <Preview />

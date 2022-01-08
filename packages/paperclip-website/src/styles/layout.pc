@@ -81,24 +81,25 @@
     ._col12 {
       width: 100%;
     }
-  }
 
-  @media screen and (max-width: 900px) {
-    ._row {
-      flex-direction: column;
-      padding-left: var(--gap-5);
-      padding-right: var(--gap-5);
-    }
-    ._col {
-      width: 100%;
-      margin-bottom: var(--col-gap);
-      margin-right: 0;
-      padding-right: 0;
-      &:last-child {
-        margin-bottom: 0;
+    @media screen and (max-width: 900px) {
+      ._row {
+        flex-direction: column;
+        padding-left: var(--gap-5);
+        padding-right: var(--gap-5);
+      }
+      ._col {
+        width: 100%;
+        margin-bottom: var(--col-gap);
+        margin-right: 0;
+        padding-right: 0;
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
     }
   }
+
 
 
   @export {
