@@ -32,6 +32,7 @@
     "dedent": "^0.7.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
+    "globby": "11",
     "inquirer": "^7.3.0",
     "lodash": "^4.17.19",
     "resolve": "^1.15.1",
