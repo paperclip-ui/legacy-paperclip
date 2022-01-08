@@ -1,7 +1,6 @@
 <import src="./colors.pc" />
 <import src="./typography.pc" as="typography" />
 <import src="./layout.pc" as="layout" inject-styles />
-<import src="./layout.pc" inject-styles />
 <import src="./button.pc" as="button" />
 <import src="./icons/icons.pc" as="icons" />
 
@@ -17,6 +16,9 @@
   }
   * > :global(strong) {
     font-weight: 600;
+  }
+  * > :global(a) {
+    color: rgb(102, 163, 241);
   }
   @export {
     ._emoji {}
@@ -235,52 +237,87 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="CTABottom" class="_row">
+<div export component as="CTABottom">
   <style>
-    border-top: 1px solid rgb(226, 226, 226);
-    border-bottom: 1px solid rgb(226, 226, 226);
+    background: rgb(74, 77, 87);
+    color: rgba(255, 255, 255, 0.9);
     @include layout.py-6 {}
+    :global(a) {
+      color: rgb(151, 196, 255);
+    }
   </style>
-  <div class="_col12">
-    <div class="_title">
-      <style>
-        font-size: 1.5em;
-        font-weight: 500;
-        margin-bottom: var(--gap-4);
-        @include typography.text-secondary {}
-      </style>
-      {title}
-    </div>
-    <div class="_text">
-      <style>
-        font-size: 20px;
-        line-height: 1.6em;
-        font-weight: 400;
-      </style>
-      {description}
-    </div>
+  <div class="_row">
+    <style>
+      display: flex;
+      max-width: 1000px;
+      text-align: center;
+    </style>
 
-    <div>
+    <!-- here just for spacing -->
+    <icons.Icon name="grow" class="$_icon">
       <style>
-        display: flex;
-        flex-direction: column;
-        grid-row-gap: 16px;
-        margin-top: 16px;
+        visibility: hidden;
+        @include section-icon {}
       </style>
-      {actions}
+    </icons.Icon>
+    <div>
+      <div class="_title">
+        <style>
+          font-size: 1.7em;
+          font-weight: 500;
+          margin-bottom: var(--gap-5);
+          @include typography.text-secondary {}
+        </style>
+        {title}
+      </div>
+      <div class="_text">
+        <style>
+          font-size: 20px;
+          line-height: 1.6em;
+          font-weight: 400;
+        </style>
+        {description}
+      </div>
+
+      <div>
+        <style>
+          margin-top: 32px;
+          display: flex;
+          flex-direction: column;
+          grid-row-gap: 16px;
+          align-items: center;
+        </style>
+        {actions}
+      </div>
     </div>
   </div>
+  <div class="_col2" />
 </div>
 
 <div export component as="CTAInstall">
-  <span>{label}</span>
+  <style>
+    display: flex;
+    align-items: center;
+    grid-column-gap: 16px;
+  </style>
+  <span>
+    <style>
+      font-weight: 600;
+    </style>
+    {label}
+  </span>
   <div>
     <style>
       background: rgb(224, 224, 224);
+      color: rgb(48, 50, 56);
       border: 1px solid grey;
       display: inline-block;
       padding: 8px 16px;
       border-radius: 4px;
+      width: 500px;
+      @include mobile {
+        width: auto;
+      }
     </style>
     {children}
   </div>
@@ -786,7 +823,7 @@
 
 
 <!--
-  @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2462, y: -74 }
+  @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2459, y: -74 }
 -->
 <Preview />
 

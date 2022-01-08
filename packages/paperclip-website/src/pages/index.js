@@ -185,16 +185,26 @@ function Home() {
             // ctaHref={"https://paperclip.dev/docs/configure-percy"}
           />
 
-          <styles.BigFeature
-            title="Down to try it out?"
-            description="Installation is an easy process. "
-            ctaText="Get started"
-            ctaHref="/docs/installation"
-            preview={
-              <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
+          <styles.CTABottom
+            title="Easy to set up"
+            description={
+              <>
+                Paperclip currently compiles to <strong>React</strong> and{" "}
+                <strong>static HTML</strong>. Want to try it out? Just check out
+                the <a href="/repl">playground</a>, or run one of the following
+                commands in your existing codebase.{" "}
+              </>
             }
-            // ctaText="View the docs"
-            // ctaHref={"https://paperclip.dev/docs/configure-percy"}
+            actions={
+              <>
+                <styles.CTAInstall label="NPX">
+                  npx @paperclip/cli init
+                </styles.CTAInstall>
+                <styles.CTAInstall label="Yarn">
+                  yarn add @paperclip/cli --dev && yarn paperclip init
+                </styles.CTAInstall>
+              </>
+            }
           />
 
           <styles.Footer />
