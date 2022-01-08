@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/cli",
-  "version": "18.4.1",
+  "version": "18.4.2",
   "description": "Command line tools for Paperclip",
   "main": "lib/cli.js",
   "publishConfig": {
@@ -19,12 +19,12 @@
   "license": "MIT",
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
-    "@paperclip-ui/cli-minimal": "^18.4.1",
-    "@paperclip-ui/cli-utils": "^18.4.1",
-    "@paperclip-ui/core": "^18.4.1",
-    "@paperclip-ui/coverage": "^18.4.1",
-    "@paperclip-ui/utils": "^18.4.1",
-    "@tandem-ui/workspace": "^18.4.1",
+    "@paperclip-ui/cli-minimal": "^18.4.2",
+    "@paperclip-ui/cli-utils": "^18.4.2",
+    "@paperclip-ui/core": "^18.4.2",
+    "@paperclip-ui/coverage": "^18.4.2",
+    "@paperclip-ui/utils": "^18.4.2",
+    "@tandem-ui/workspace": "^18.4.2",
     "@types/inquirer": "^6.5.0",
     "@types/shelljs": "^0.8.8",
     "chalk": "^4.1.0",
