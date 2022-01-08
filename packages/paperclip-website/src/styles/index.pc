@@ -590,7 +590,7 @@
           }
 
           &:within(.has_cta) {
-            display: flex;
+            display: block;
           }
         </style>
 
@@ -599,7 +599,8 @@
             font-size: 0.9em;
             color: inherit;
             position: relative;
-            top: 1px;
+            display: inline-block;
+            top: 2px;
           </style>
         </icons.Icon>
       </a>
@@ -686,7 +687,7 @@
   </VariousFeatures>
 
   <BigFeature title="Live editing"
-    ctaText="learn more"
+    ctaText="Learn about visual regression testing"
     description="Paperclip comes with visual tools that enable to build your UIs in realtime."
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
       autoplay

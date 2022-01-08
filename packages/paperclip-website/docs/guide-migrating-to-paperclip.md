@@ -1,7 +1,7 @@
 ---
 id: guide-migrating-to-paperclip
 title: Migration Code To And From Paperclip
-sidebar_label: Migrating Code
+sidebar_label: Migrating code
 ---
 
 Migrating to and from Paperclip is easy since most of Paperclip's patterns are shared across different libraries.

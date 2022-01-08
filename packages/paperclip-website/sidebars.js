@@ -26,7 +26,7 @@ module.exports = {
       type: "category",
       label: "Tools",
       collapsed: false,
-      items: ["visual-tooling", "guide-vscode"]
+      items: ["visual-tooling", "visual-regression-tooling", "guide-vscode"]
     },
     {
       type: "category",

@@ -76,12 +76,12 @@ function Home() {
             // text="Paperclip is a UI layer that help you focus on just the HTML & CSS for your application, with tools to help you do that more quickly, and accurately. Your designers will love you. ❤️"
             text={
               <>
-                Writing scalable HTML and CSS is hard, especially with global
-                styles, slow developer tooling, and lack of automation for
-                catching visual regressions. Paperclip is a tiny language that
-                focuses purely on these problems, with features to help you
-                build scalable UIs more quickly, and accurately. Your users will
-                love you. ❤️
+                Writing HTML and CSS for large codebases is hard, especially
+                with global styles, slow developer tooling, and lack of
+                automation for catching visual regressions. Paperclip is a tiny
+                language that focuses purely on these problems, with features to
+                help you build maintainable UIs more quickly, and accurately.
+                Your users will love you. ❤️
               </>
             }
           />
@@ -92,9 +92,10 @@ function Home() {
               title="Fast and scalable"
               description={
                 <>
-                  Paperclip compiles to plain, readable code, that also keeps{" "}
-                  <strong>CSS scoped</strong>, you can write maintainable CSS
-                  that never leaks again.{" "}
+                  Paperclip compiles to plain, readable code that also keeps{" "}
+                  <strong>CSS scoped</strong>, so you can write CSS however you
+                  want knowing that it'll never accidentally leak into other
+                  documents.
                 </>
               }
             />
@@ -117,8 +118,8 @@ function Home() {
                 <>
                   Paperclip is designed to be compiled into whatever language
                   you're using, and currently supports React and vanilla HTML
-                  out of the box. You can even use Paperclip to{" "}
-                  <strong>compliment your existing codebase</strong>.
+                  out of the box. You can use Paperclip to compliment your
+                  existing codebase, and add an extra layer of safety.
                 </>
               }
             />
@@ -130,13 +131,13 @@ function Home() {
               <>
                 Paperclip UIs are <strong>automatically</strong> covered for
                 visual regressions, so you can confidently make big changes
-                knowing that you'll be aware how those change affect every other
-                part of your application across different browsers and screen
-                sizes.
+                knowing that you'll be aware how those changes will affect every
+                other part of your application across different browsers and
+                screen sizes.
               </>
             }
             ctaText="Learn about visual regression tooling"
-            ctaHref="/docs/configure-percy"
+            ctaHref="/docs/visual-regression-tooling"
             preview={
               <video
                 src="vid/visual-regression-testing.mp4"
@@ -150,7 +151,7 @@ function Home() {
           <styles.BigFeature
             title="Total control over CSS frameworks"
             description={[
-              "No more worrying about CSS frameworks accidentally overriding styles. Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. "
+              "Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. "
               // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
               // "Paperclip keeps CSS frameworks scoped, so you have complete control over how they're used in your application. No more lock-in."
               // "No more global CSS with. Paperclip gives you complete control over how they're used throughout your application."

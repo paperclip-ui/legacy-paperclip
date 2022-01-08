@@ -1,7 +1,7 @@
 ---
 id: guide-vscode
 title: VS Code Extension
-sidebar_label: VS Code Extension
+sidebar_label: VS Code extension
 ---
 
 
