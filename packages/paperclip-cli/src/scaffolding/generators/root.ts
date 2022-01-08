@@ -79,7 +79,7 @@ export const root = {
     const config: PaperclipConfig = {
       compilerOptions: [
         {
-          target: compilerName.replace("@paperclip-ui/compiler-", ""),
+          target: compilerName?.replace("@paperclip-ui/compiler-", ""),
           outDir
         }
       ],

@@ -126,7 +126,7 @@ function Home() {
           </styles.VariousFeatures>
 
           <styles.BigFeature
-            title="Catch most CSS bugs"
+            title="Easily catch CSS bugs"
             description={
               <>
                 Paperclip comes with tools to help you easily keep track of{" "}

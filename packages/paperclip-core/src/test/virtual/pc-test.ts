@@ -46,7 +46,7 @@ describe(__filename + "#", () => {
     const buffer = `${stringifyVirtualNode(preview)}`;
 
     expect(cleanHTML(buffer)).to.eql(
-      `<div class="_80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div><div class="_80f4925f_alt _pub-80f4925f_alt alt _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div><div class="_80f4925f_alt2 _pub-80f4925f_alt2 alt2 _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div>`
+      `<div class="_80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div><div class="_80f4925f_alt _pub-80f4925f_alt alt _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div><div class="_80f4925f_alt2 _pub-80f4925f_alt2 alt2 _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -210,7 +210,7 @@ describe(__filename + "#", () => {
       const buffer = `${stringifyVirtualNode(preview)}`;
 
       expect(cleanHTML(buffer)).to.eql(
-        `<div a="[Object object]" class="_80f4925f _pub-80f4925f"></div>`
+        `<div a="[Object object]" class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
       );
     });
     it(`Can render a slot with a negative number`, async () => {
@@ -220,7 +220,7 @@ describe(__filename + "#", () => {
       const engine = await createMockEngine(graph);
       const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
       expect(cleanHTML(stringifyVirtualNode(preview))).to.eql(
-        `<span class="_80f4925f _pub-80f4925f">-1</span>`
+        `<span class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f">-1</span>`
       );
     });
   });
@@ -277,7 +277,7 @@ describe(__filename + "#", () => {
 
     const result2 = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(result2).to.eql(
-      `<style></style><a class="_80f4925f _pub-80f4925f"></a>`
+      `<style></style><a class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></a>`
     );
   });
 
@@ -297,7 +297,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(result).to.eql(
-      `<style></style><div class="_139cec8e _pub-139cec8e">abc cde </div>`
+      `<style></style><div class="_139cec8e _pub-139cec8e _host-139cec8e _host-pub-139cec8e">abc cde </div>`
     );
 
     // make the parse error
@@ -345,7 +345,7 @@ describe(__filename + "#", () => {
 
     const result3 = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(result3).to.eql(
-      `<style></style><div class="_139cec8e _pub-139cec8e"> cde defg</div>`
+      `<style></style><div class="_139cec8e _pub-139cec8e _host-139cec8e _host-pub-139cec8e"> cde defg</div>`
     );
   });
 
@@ -685,7 +685,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style></style><div class="_139cec8e_a _pub-139cec8e_a a _80f4925f_ok _pub-80f4925f_ok ok _139cec8e _pub-139cec8e"></div>`
+      `<style></style><div class="_139cec8e_a _pub-139cec8e_a a _80f4925f_ok _pub-80f4925f_ok ok _139cec8e _pub-139cec8e _host-139cec8e _host-pub-139cec8e"></div>`
     );
   });
 
@@ -707,7 +707,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style></style><div class="_80f4925f _pub-80f4925f" style="--color: a;"></div><div class="_80f4925f _pub-80f4925f" style="--background: b;"></div><div class="_80f4925f _pub-80f4925f" style="--color: a; --background: b;"></div><div class="_80f4925f _pub-80f4925f"></div>`
+      `<style></style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f" style="--color: a;"></div><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f" style="--background: b;"></div><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f" style="--color: a; --background: b;"></div><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -727,7 +727,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style>[class]._80f4925f_its_a_match { color:blue; }</style><div class="_80f4925f_its_a_match _pub-80f4925f_its_a_match its_a_match _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._80f4925f_its_a_match { color:blue; }</style><div class="_80f4925f_its_a_match _pub-80f4925f_its_a_match its_a_match _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -923,7 +923,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -949,7 +949,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { color:orange; }</style><div class="_pub-139cec8e_test test _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._pub-139cec8e_test { color:orange; }</style><div class="_pub-139cec8e_test test _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
   it(`Can use a public class pierce on a component`, async () => {
@@ -975,7 +975,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { background:blue; }</style><div class="_pub-139cec8e_test test _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._pub-139cec8e_test { background:blue; }</style><div class="_pub-139cec8e_test test _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
   it(`Can use a component that's referencing a public class`, async () => {
@@ -1003,7 +1003,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-11a847ab_test { color:blue; }</style><div class="_pub-11a847ab_test test _139cec8e _pub-139cec8e"></div>`
+      `<style>[class]._pub-11a847ab_test { color:blue; }</style><div class="_pub-11a847ab_test test _139cec8e _pub-139cec8e _host-139cec8e _host-pub-139cec8e"></div>`
     );
   });
 
@@ -1030,7 +1030,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test checkbox _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test checkbox _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -1048,7 +1048,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><div class="_80f4925f _pub-80f4925f"></div><span class="_80f4925f _pub-80f4925f"></span>`
+      `<style></style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div><span class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></span>`
     );
   });
   it(`Cannot change tag name if not exposed`, async () => {
@@ -1065,7 +1065,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><div class="_80f4925f _pub-80f4925f"></div><div class="_80f4925f _pub-80f4925f"></div>`
+      `<style></style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
   it(`Does not render undefined if child isn't present`, async () => {
@@ -1082,7 +1082,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><div class="_80f4925f _pub-80f4925f"></div>`
+      `<style></style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -1128,7 +1128,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><div class="_8ae793af _pub-8ae793af">bb</div>`
+      `<style></style><div class="_8ae793af _pub-8ae793af _host-8ae793af _host-pub-8ae793af">bb</div>`
     );
   });
 
@@ -1155,7 +1155,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856 { color:blue; } ._406d2856._406d2856._80f4925f_test { color:red; } ._406d2856 #test2._80f4925f { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:blue; } ._406d2856._406d2856._80f4925f_test { color:red; } ._406d2856 #test2._80f4925f { color:blue; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1179,7 +1179,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._6f887789._6f887789 { color:red; }</style><div class="_80f4925f _pub-80f4925f"><span class="_80f4925f _pub-80f4925f _6f887789"> abba </span></div>`
+      `<style>._6f887789._6f887789 { color:red; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><span class="_80f4925f _pub-80f4925f _6f887789"> abba </span></div>`
     );
   });
 
@@ -1201,7 +1201,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856 { color:red; background:url(/path.png); } ._406d2856._406d2856._80f4925f_variant { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:red; background:url(/path.png); } ._406d2856._406d2856._80f4925f_variant { color:blue; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1224,7 +1224,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._376a18c0._376a18c0 { color:red; }</style><div class="_80f4925f _pub-80f4925f _376a18c0"></div>`
+      `<style>._376a18c0._376a18c0 { color:red; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _376a18c0"></div>`
     );
   });
 
@@ -1248,7 +1248,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._376a18c0._376a18c0 { background:blue; color:red; }</style><div class="_80f4925f _pub-80f4925f _376a18c0"></div>`
+      `<style>._376a18c0._376a18c0 { background:blue; color:red; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _376a18c0"></div>`
     );
   });
 
@@ -1266,7 +1266,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856 { background:blue; }</style><input class="_80f4925f _pub-80f4925f _406d2856"></input>`
+      `<style>._406d2856._406d2856 { background:blue; }</style><input class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></input>`
     );
   });
 
@@ -1304,7 +1304,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@media screen and (max-width: 400px) { ._376a18c0._376a18c0 { color:red; } } @media screen and (max-width: 1280px) { ._376a18c0._376a18c0 { color:black; } } @media screen and (max-width: 1280px) { ._376a18c0 label._80f4925f { color:blue; } }</style><input class="_80f4925f _pub-80f4925f _376a18c0"></input>`
+      `<style>@media screen and (max-width: 400px) { ._376a18c0._376a18c0 { color:red; } } @media screen and (max-width: 1280px) { ._376a18c0._376a18c0 { color:black; } } @media screen and (max-width: 1280px) { ._376a18c0 label._80f4925f { color:blue; } }</style><input class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _376a18c0"></input>`
     );
   });
 
@@ -1325,7 +1325,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -1346,7 +1346,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -1373,7 +1373,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; } [class]._ae63497a { background:orange; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f_test3 _pub-80f4925f_test3 test3 _80f4925f__ae63497a _pub-80f4925f__ae63497a _ae63497a _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._376a18c0 { background:blue; } [class]._ae63497a { background:orange; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f_test3 _pub-80f4925f_test3 test3 _80f4925f__ae63497a _pub-80f4925f__ae63497a _ae63497a _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
   });
 
@@ -1427,7 +1427,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856 { color:red; } ._406d2856 a._80f4925f { background:blue; } ._406d2856 a._80f4925f._80f4925f_b { opacity:1; } ._406d2856 a._80f4925f._80f4925f_c { opacity:1; } ._406d2856 a._80f4925f e._80f4925f { color:orange; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:red; } ._406d2856 a._80f4925f { background:blue; } ._406d2856 a._80f4925f._80f4925f_b { opacity:1; } ._406d2856 a._80f4925f._80f4925f_c { opacity:1; } ._406d2856 a._80f4925f e._80f4925f { color:orange; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1449,7 +1449,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856a { color:blue; } ._406d2856._406d2856:hover { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856a { color:blue; } ._406d2856._406d2856:hover { color:blue; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1471,7 +1471,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856._80f4925f_a ._80f4925f_b._80f4925f:hover { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856._80f4925f_a ._80f4925f_b._80f4925f:hover { color:blue; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1559,7 +1559,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style>._406d2856._406d2856 { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span class="_80f4925f _pub-80f4925f _406d2856"></span><span class="_80f4925f__d96479ec _pub-80f4925f__d96479ec _d96479ec _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f _406d2856"></span>`
+      `<style>._406d2856._406d2856 { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></span><span class="_80f4925f__d96479ec _pub-80f4925f__d96479ec _d96479ec _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f _406d2856"></span>`
     );
   });
 
@@ -1636,7 +1636,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style></style><a_2 class="_80f4925f _pub-80f4925f"></a_2><_a_2 class="_80f4925f _pub-80f4925f"></_a_2><$a class="_80f4925f _pub-80f4925f"></$a>`
+      `<style></style><a_2 class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></a_2><_a_2 class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></_a_2><$a class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></$a>`
     );
   });
 
@@ -1665,7 +1665,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style>._3024ebf3._3024ebf3 { color:blue; } ._188f471f._188f471f { color:red; }</style><div class="_80f4925f _pub-80f4925f"><span class="_80f4925f _pub-80f4925f _3024ebf3"></span><div class="_80f4925f _pub-80f4925f _188f471f"></div></div>`
+      `<style>._3024ebf3._3024ebf3 { color:blue; } ._188f471f._188f471f { color:red; }</style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"><span class="_80f4925f _pub-80f4925f _3024ebf3"></span><div class="_80f4925f _pub-80f4925f _188f471f"></div></div>`
     );
   });
   xit(`Treats class & className the same`, async () => {
@@ -1710,7 +1710,7 @@ describe(__filename + "#", () => {
     let result = (await engine.open("/entry.pc")) as any;
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><div class="_c938aea3 _pub-c938aea3">a b </div>`
+      `<style></style><div class="_c938aea3 _pub-c938aea3 _host-c938aea3 _host-pub-c938aea3">a b </div>`
     );
 
     graph["/mod.pc"] = undefined;
@@ -1727,7 +1727,7 @@ describe(__filename + "#", () => {
     result = (await engine.open("/entry.pc")) as any;
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><b class="_80f4925f _pub-80f4925f">a</b>`
+      `<style></style><b class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f">a</b>`
     );
   });
 
@@ -1747,7 +1747,7 @@ describe(__filename + "#", () => {
     });
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><div class="_80f4925f _pub-80f4925f"></div>`
+      `<style></style><div class="_80f4925f _pub-80f4925f _host-80f4925f _host-pub-80f4925f"></div>`
     );
 
     await engine.updateVirtualFileContent("/entry.pc", "<div /");

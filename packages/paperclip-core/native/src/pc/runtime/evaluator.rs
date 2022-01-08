@@ -1026,6 +1026,7 @@ fn evaluate_native_element<'a>(
     "class",
     format!("_{}", context.private_scope.as_str()),
   );
+  
 
   append_attribute(
     &mut attributes,
@@ -1033,8 +1034,31 @@ fn evaluate_native_element<'a>(
     format!("_{}", context.public_scope.as_str()),
   );
 
+  if depth == 1 {
+    append_attribute(
+      &mut attributes,
+      "class",
+      format!("_host-{}", context.private_scope.as_str()),
+    );
+  
+
+    append_attribute(
+      &mut attributes,
+      "class",
+      format!("_host-{}", context.public_scope.as_str()),
+    );
+  }
+
+
   for injected_scope in &context.injected_scopes {
     append_attribute(&mut attributes, "class", format!("_{}", injected_scope));
+    if depth == 1 {
+      append_attribute(
+        &mut attributes,
+        "class",
+        format!("_host_{}", injected_scope),
+      );
+    }
   }
 
   // allow for tag name to be dynamically changed.
