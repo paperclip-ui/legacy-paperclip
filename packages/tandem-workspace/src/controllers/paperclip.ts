@@ -13,7 +13,7 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "@tandem-ui/common";
-import * as glob from "glob";
+import * as globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";
 
@@ -60,11 +60,13 @@ export class PaperclipProject {
 
   /**
    */
-
+  2;
   private _addAllProjects(config: PaperclipConfig) {
-    const pcFiles = glob.sync(
-      paperclipSourceGlobPattern(path.join(this._cwd, config.srcDir))
+    const pcFiles = globby.sync(
+      paperclipSourceGlobPattern(path.join(this._cwd, config.srcDir)),
+      { gitignore: true }
     );
+
     for (const pcFile of pcFiles) {
       if (isPaperclipFile(pcFile)) {
         this._logger.verbose(`Opening ${pcFile}`);

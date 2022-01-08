@@ -15,9 +15,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclip-ui/cli-minimal": "^18.4.2",
-    "@paperclip-ui/compiler-html": "^18.4.2",
-    "@paperclip-ui/core": "^18.4.2",
     "@paperclip-ui/utils": "^18.4.2",
     "chalk": "2.0.0",
     "cli-table": "^0.3.11",
@@ -25,7 +22,8 @@
     "typescript": "^4.2.3"
   },
   "devDependencies": {
-    "@paperclip-ui/compiler-html": "^18.3.0",
+    "@paperclip-ui/cli-minimal": "^18.4.2",
+    "@paperclip-ui/compiler-html": "^18.4.2",
     "concurrently": "^6.5.1"
   }
 }
