@@ -4,96 +4,98 @@ title: Setting Up Visual Regression Tests
 sidebar_label: Visual regression tools
 ---
 
-## Installation
+Paperclip comes with a number of tools to help you keep track of visual changes. The [code coverage](#html-and-css-coverage) tool helps you figure out how much code is covered for visual changes, and the 
+[snapshot](#snapshot-tests) tool helps you analyze changes across your app. 
 
-Paperclip integrates with [Percy](https://percy.io) to allow you test for CSS bugs in your Paperclip UI files. To get started, install the NPM module:
+### HTMl and CSS coverage
+
+The code coverage tool helps you analyze how much HTML and CSS is visible for snapshot testing. All you need to do is run the following command
+in your project:
+
+```
+yarn paperclip coverage --html --open
+```
+
+This will generate an HTML report and open it up in your browser. The report will look something like this:
+
+
+![alt report summary](./assets/html-report.png)
+
+You can navigate this report to find code that's dead or isn't covered for visual changes. Here's what a file looks like:
+
+
+![alt report summary](./assets/button-report.png)
+
+The green section indicates code that's covered for snapshot testing, the red section indicates code that's either dead or needs to be set up for snapshot testing.
+
+To set up UIs for snapshot tests, all you need to do is apply the CSS to any visible element in a `*.pc` file. In the case of our button above, we can just create a new [preview](guide-previews) directly in the button file.
+
+![alt button preview](./assets/button-preview.png)
+
+The preview code for this is simply:
+
+```html
+<!--
+  @frame { width: 330, height: 169, x: 0, y: 0 }
+-->
+<div class="text-default">  
+  <style>
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    grid-row-gap: 8px;
+  </style>
+
+  <!-- previews for visual regression testing -->
+  <Anchor>Primary</Anchor>
+  <Anchor hover>Primary:hover</Anchor>
+  <Anchor secondary>Secondary</Anchor>
+  <Anchor secondary hover>Secondary:hover</Anchor>
+</div>
+```
+
+This satisfies our coverage report. <i>Now</i> when we run it, this is what's shown:
+
+![alt better summary](./assets/better-coverage.png)
+
+Now this file is ready for snapshot tests.
+
+### Snapshot testing
+
+Snapshot testing allows you to keep track of visual changes across your `*.pc` files. This is especially useful in tracking changes that may affect many different files.
+
+To use snapshot testing, you'll first need to set up a baseline snapshot, typically on your main or master branch, or whatever branch you currently have in production. Here's how you take a snpshot:
+
+```
+git checkout main && && git pull && yarn paperclip snapshot
+```
+
+This will store PC file screenshots that we can use as a baseline to check for visual changes. After that, you can run this command on any branch to detect visual changes:
 
 ```sh
-npm install percy-paperclip --save-dev
+yarn paperclip diff [baseline-branch] --html --open
 ```
 
-Next, grab your percy token, then run the following command in the same directory as your `paperclip.config.json` file:
-
+If our baseline branch is `main`, the command would be:
 
 ```sh
-PERCY_TOKEN=[TOKEN] yarn percy-paperclip
+yarn paperclip diff main --html --open
 ```
 
-After that, you should see something like this:
+Here's an example of some changes made to the button file:
 
-![Percy demo](/img/snapshot.gif)
+![alt button tweaks](./assets/button-tweaks.png)
 
-That's it! You're now set up to catch visual regressions in your UIs. 
 
-## Setting up with GitHub actions
+This is what the diff report looks like for the button file:
 
-`percy-paperclip` pairs nicely with GitHub actions, especially for PR checks. Here's a GitHub action you can use: 
+![alt button diff](./assets/button-diff.png)
 
-```yml
-name: PR Checks
-on:  
-  pull_request
+You'll notice in the left sidebar that all UIs that are affected by this change are towards the top, and outlined in yellow. Here's another UI that was captured by this change:
 
-jobs:
-  visual-regression-test:
-    name: Visual Regression Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # fetches all branches
-      - name: Maybe snapshot
-        run: |
-          CHANGED_PC_FILES=$(git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }} -- "./**/*.pc")
-          if [ -n "$CHANGED_PC_FILES" ]; then
-            yarn add percy percy-paperclip
-            percy exec -- percy-paperclip
-          fi
-        working-directory: ./path/to/frontend
-        env: 
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-```
+![alt other diff](./assets/other-diff.png)
 
-> Be sure to change `working-directory` to point to where your `paperclip.config.json` file is. 
 
-☝🏻 This script will run only when PC files change, so if you're working with people working on the back-end, for instance, they won't get this check (since we're assuming they won't touch PC files). 
 
-To go along with the script above, you'll need to set up a [baseline](https://docs.percy.io/docs/baseline-picking-logic) for your master branch. Here's a script for that:
-
-```yml
-name: Master Checks
-on:
-  push:
-    branches:
-      - master
-    
-jobs:
-  visual-regression-test:
-    name: Visual Regression Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Maybe snapshot
-        run: |
-          CHANGED_PC_FILES=$(git diff --name-only origin/master^ origin/master -- "./**/*.pc")
-          if [ -n "$CHANGED_PC_FILES" ]; then
-            yarn add percy
-            yarn snapshot
-          fi
-        working-directory: ./path/to/frontend
-        env: 
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          
-```
-
-> Again, be sure to change `working-directory` to point to where your `paperclip.config.json` file is. 
-
-☝🏻 This script runs whenever a `*.pc` file changes on master, and ensures that subsequent PRs are visually testing against the correct baseline.
 
 

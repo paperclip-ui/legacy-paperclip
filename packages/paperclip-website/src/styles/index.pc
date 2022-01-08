@@ -175,10 +175,6 @@
   {left}
   <img src="./assets/import-graphic-2.svg">
     <style>
-
-
-
-
       height: 150px;
       flex: 0;
       @include mobile {}
@@ -597,9 +593,10 @@
         {ctaText}<icons.Icon name="chevron-right">
           <style>
             font-size: 0.9em;
+            display: inline-block;
+            display: none;
             color: inherit;
             position: relative;
-            display: inline-block;
             top: 2px;
           </style>
         </icons.Icon>
@@ -635,7 +632,7 @@
 
 
 <!--
-  @frame { title: "Website / Desktop", width: 1304, height: 4194, x: -93, y: -52 }
+  @frame { title: "Website / Desktop", width: 1461, height: 4194, x: -250, y: -52 }
 -->
 <Home component as="Preview">
   <!--

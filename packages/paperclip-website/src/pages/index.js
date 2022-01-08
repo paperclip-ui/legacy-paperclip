@@ -117,9 +117,9 @@ function Home() {
               description={
                 <>
                   Paperclip is designed to be compiled into whatever language
-                  you're using, and currently supports React and vanilla HTML
-                  out of the box. You can use Paperclip to compliment your
-                  existing codebase to an extra layer of safety.
+                  you're using, and currently supports React and static HTML out
+                  of the box. You can use Paperclip to compliment your existing
+                  codebase to an extra layer of safety.
                 </>
               }
             />
@@ -129,23 +129,15 @@ function Home() {
             title="Catch most CSS bugs"
             description={
               <>
-                Paperclip UIs are <strong>automatically</strong> covered for
-                visual regressions, so you can confidently make big changes
-                knowing that you'll be aware how those changes will affect every
-                other part of your application across different browsers and
-                screen sizes.
+                Paperclip comes with tools to help you easily keep track of{" "}
+                <i>all</i> visual changes across your application, so you can
+                confidently make big CSS changes knowing exactly how that will
+                cascade throughout your app.
               </>
             }
             ctaText="Learn about visual regression tooling"
             ctaHref="/docs/visual-regression-tooling"
-            preview={
-              <video
-                src="vid/visual-regression-testing.mp4"
-                autoPlay
-                loop
-                muted
-              />
-            }
+            preview={<img src="img/coverage-report.png" autoPlay loop muted />}
           />
 
           <styles.BigFeature
@@ -174,14 +166,12 @@ function Home() {
                 looks. Paperclip comes with preview tooling that allows you to
                 build your UIs in <strong>realtime</strong>, directly within VS
                 Code. Not using VS Code? No worries, you can also launch the
-                realtime preview using the CLI command.
+                visual tools using the CLI command.
               </>
             }
             ctaText="Learn about the visual tools"
             ctaHref="/docs/visual-tooling"
-            preview={
-              <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
-            }
+            preview={<img src="img/ui-tool-screenshot.png" />}
             // ctaText="View the docs"
             // ctaHref={"https://paperclip.dev/docs/configure-percy"}
           />
