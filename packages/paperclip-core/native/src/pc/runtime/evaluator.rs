@@ -53,6 +53,7 @@ pub struct Context<'a> {
   pub part_ids: HashSet<&'a String>,
   pub private_scope: String,
   pub injected_scopes: Vec<String>,
+  pub document_scopes: HashSet<String>,
   pub public_scope: String,
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a script_virt::Value,
@@ -550,6 +551,12 @@ fn create_context<'a>(
   let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
 
+  let injected_scopes = get_injected_scoped(node_expr, graph.dependencies.get(uri).unwrap());
+  let mut document_scopes:HashSet<String> = HashSet::new();
+  document_scopes.insert(private_scope.clone());
+  document_scopes.insert(public_scope.clone());
+  document_scopes.extend(injected_scopes.clone());
+
   Context {
     graph,
     uri,
@@ -557,7 +564,8 @@ fn create_context<'a>(
     render_call_stack,
     evaluated_graph,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
-    injected_scopes: get_injected_scoped(node_expr, graph.dependencies.get(uri).unwrap()),
+    injected_scopes,
+    document_scopes,
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     private_scope,
@@ -877,7 +885,7 @@ fn create_component_instance_data<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<script_virt::Value, RuntimeError> {
-  let mut data = evaluate_attributes(instance_element, depth, context)?;
+  let mut data = evaluate_attributes(instance_element, false, depth, context)?;
 
   let mut script_children = script_virt::Array::new(instance_element.id.to_string());
 
@@ -1011,7 +1019,7 @@ fn evaluate_native_element<'a>(
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
   let mut tag_name = ast::get_tag_name(element).to_string();
 
-  let attribute_data = evaluate_attributes(element, depth, context)?;
+  let attribute_data = evaluate_attributes(element, true, depth, context)?;
 
   for (key, value) in attribute_data.values {
     if value.truthy() {
@@ -1050,9 +1058,7 @@ fn evaluate_native_element<'a>(
   if contains_style {
     // TODO - this needs to be scoped
     let element_scope = &element.id;
-    // let scope_name = format!("data-pc-{}", element_scope).to_string();
     append_attribute(&mut attributes, "class", format!("_{}", element_scope));
-    // attributes.insert(scope_name.to_string(), None);
   }
 
   Ok(Some(virt::Node::Element(virt::Element {
@@ -1082,6 +1088,7 @@ fn evaluate_native_element<'a>(
 
 fn evaluate_attributes(
   element: &ast::Element,
+  is_native: bool,
   depth: u32,
   context: &mut Context,
 ) -> Result<script_virt::Object, RuntimeError> {
@@ -1110,7 +1117,7 @@ fn evaluate_attributes(
             &element.tag_name,
             &actual_name,
             &kv_attr.value.as_ref().unwrap(),
-            true,
+            is_native,
             depth,
             context,
           )?;
@@ -1119,7 +1126,7 @@ fn evaluate_attributes(
           }
           (
             actual_name,
-            maybe_cast_attribute_script_value(&kv_attr.name, value, true, context),
+            maybe_cast_attribute_script_value(&kv_attr.name, value, is_native, context),
           )
         };
 
@@ -1140,7 +1147,7 @@ fn evaluate_attributes(
             for (key, value) in object.values.drain() {
               data.values.insert(
                 key.to_string(),
-                maybe_cast_attribute_script_value(&key, value, true, context),
+                maybe_cast_attribute_script_value(&key, value, is_native, context),
               );
             }
           }
@@ -1184,7 +1191,7 @@ fn evaluate_attributes(
                   &element.tag_name,
                   &kv_attr.name,
                   &kv_value,
-                  true,
+                  is_native,
                   depth,
                   context,
                 )?
@@ -1194,7 +1201,7 @@ fn evaluate_attributes(
                   &kv_attr.binding_name,
                   &kv_attr.id,
                   &kv_attr.range,
-                  true,
+                  is_native,
                   context,
                 )?
               };
@@ -1388,13 +1395,35 @@ fn evaluate_attribute_dynamic_string<'a>(
   depth: u32,
   context: &mut Context,
 ) -> Result<script_virt::Value, RuntimeError> {
-  let mut buffer = vec![];
   add_used_expr_id(&value.id, context);
+  let mut buffer: Vec<String> = vec![];
+  let mut scope_injections: HashSet<String> = HashSet::new();
+
+  if is_native && name == "class" {
+    scope_injections.extend(context.document_scopes.clone());
+  }
+
+  for part in value.values.iter() {
+    match part {
+      ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
+        if let Some(scope) = context.import_scopes.get(&pierce.class_name) {
+          scope_injections.insert(scope.to_string());
+        }
+      },
+      _ => {}
+    }
+  }
 
   for part in value.values.iter() {
     add_used_expr_id(&part.get_id(), context);
     buffer.push(match part {
-      ast::AttributeDynamicStringPart::Literal(value) => value.value.to_string(),
+      ast::AttributeDynamicStringPart::Literal(value) => {
+        if scope_injections.len() == 0 {
+          value.value.to_string()
+        } else {
+          add_scopes(&value.value, &scope_injections)
+        }
+      },
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if pierce.class_name.contains(".") {
           let parts = pierce.class_name.split(".").collect::<Vec<&str>>();
@@ -1459,14 +1488,20 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           }
         } else {
-          format!(
-            "_{}_{} _{}_{} {}",
-            context.private_scope,
-            pierce.class_name,
-            context.public_scope,
-            pierce.class_name,
-            pierce.class_name
-          )
+
+          if let Some(scope) = context.import_scopes.get(&pierce.class_name) {
+            scope_injections.insert(scope.to_string());
+            format!("_{}", scope)
+          } else {
+            format!(
+              "_{}_{} _{}_{} {}",
+              context.private_scope,
+              pierce.class_name,
+              context.public_scope,
+              pierce.class_name,
+              pierce.class_name
+            )
+          }
         }
       }
       ast::AttributeDynamicStringPart::Slot(statement) => {
@@ -1477,7 +1512,7 @@ fn evaluate_attribute_dynamic_string<'a>(
     });
   }
 
-  let val = buffer.join("");
+  let mut val = buffer.join("");
 
   let script_value = script_virt::Value::Str(script_virt::Str {
     source_id: use_expr_id(&source_id, context),
@@ -1490,6 +1525,21 @@ fn evaluate_attribute_dynamic_string<'a>(
     is_native,
     context,
   ))
+}
+
+fn add_scopes<'a>(class_names: &'a str, scopes: &HashSet<String>) -> String {
+  class_names.split(" ").map(|part| {
+    if part.trim() == "" {
+      return part.to_string();
+    } else {
+      let mut buffer = vec![];
+      for scope in scopes {
+        buffer.push(format!("_{}_{}", scope, part));
+      }
+      buffer.push(part.to_string());
+      buffer.join(" ")
+    }
+  }).collect::<Vec<String>>().join(" ")
 }
 
 fn get_import<'a>(
@@ -1516,55 +1566,9 @@ fn get_import_sheet<'a>(ev: &'a DependencyEvalInfo) -> &'a css_export::Exports {
   }
 }
 
-fn is_class_attribute_name(name: &String) -> bool {
-  name == "class"
-}
-
 fn is_component_instance<'a>(element: &ast::Element, context: &Context<'a>) -> bool {
   context.import_ids.contains(&ast::get_tag_name(&element))
     || context.part_ids.contains(&element.tag_name)
-}
-
-fn transform_class_value<'a>(value: &String, context: &mut Context) -> String {
-  lazy_static! {
-    static ref SCOPE_RE: Regex = Regex::new(r"^_[-\w]+_").unwrap();
-  }
-
-  let mut skip = 0;
-
-  let class_name_parts: Vec<&str> = value.split(" ").collect();
-  class_name_parts
-    .iter()
-    .map(|class| {
-      // if previous class is scoped, then skip
-      if skip > 0 {
-        skip = skip - 1;
-        return class.to_string();
-      }
-
-      // if already scoped, then skip
-      if SCOPE_RE.is_match(class) {
-        skip = context.injected_scopes.len() + 2;
-        return class.to_string();
-      }
-
-      if class != &"" {
-        let mut buffer = format!(
-          "_{}_{} _{}_{}",
-          context.private_scope, class, context.public_scope, class
-        );
-
-        for scope in &context.injected_scopes {
-          buffer = format!("{} _{}_{}", buffer, scope, class);
-        }
-
-        format!("{} {}", buffer, class)
-      } else {
-        class.to_string()
-      }
-    })
-    .collect::<Vec<String>>()
-    .join(" ")
 }
 
 fn transform_style_value<'a>(value: &String, context: &mut Context) -> String {
@@ -1599,9 +1603,7 @@ fn cast_attribute_value<'a>(
   if !is_native {
     return None;
   }
-  if is_class_attribute_name(name) {
-    Some(transform_class_value(value, context))
-  } else if name == "style" {
+  if name == "style" {
     Some(transform_style_value(value, context))
   } else {
     None
@@ -1651,6 +1653,8 @@ fn evaluate_attribute_key_value_string<'a>(
         ));
       }
     }
+  } else if name == "class" && is_native {
+    val = add_scopes(value, &context.document_scopes);
   }
 
   Ok(script_virt::Value::Str(script_virt::Str {

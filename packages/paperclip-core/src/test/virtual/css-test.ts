@@ -1097,7 +1097,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_a._80f4925f_hover { color:blue; } [class]._80f4925f_a:not(:disabled):not(._80f4925f_transparent)._80f4925f_hover { color:red; }</style><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm red</div><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_transparent _pub-80f4925f_transparent transparent _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm blue</div>`
+      `<style>[class]._80f4925f_a._80f4925f_hover { color:blue; } [class]._80f4925f_a:not(:disabled):not(._80f4925f_transparent)._80f4925f_hover { color:red; }</style><div class="_pub-80f4925f_a _80f4925f_a a _pub-80f4925f_hover _80f4925f_hover hover _80f4925f _pub-80f4925f">I'm red</div><div class="_pub-80f4925f_a _80f4925f_a a _pub-80f4925f_transparent _80f4925f_transparent transparent _pub-80f4925f_hover _80f4925f_hover hover _80f4925f _pub-80f4925f">I'm blue</div>`
     );
   });
 
@@ -1311,7 +1311,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9:empty { display:block; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._9e7e6af9._9e7e6af9 { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9:empty { display:block; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._9e7e6af9._9e7e6af9 { color:red; }</style><div class="_pub-80f4925f_variant _80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_pub-80f4925f_test _80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1337,7 +1337,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; } [class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>[class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; } [class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; }</style><div class="_pub-80f4925f_variant _80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_pub-80f4925f_test _80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1432,7 +1432,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { ._80f4925f:empty ._406d2856._406d2856 { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>@media screen and (min-width: 100px) { ._80f4925f:empty ._406d2856._406d2856 { color:red; } }</style><div class="_pub-80f4925f_variant _80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1454,7 +1454,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856._80f4925f_red { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856._80f4925f_red { color:blue; }</style><div class="_pub-80f4925f_variant _80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1497,7 +1497,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856 { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856 { color:red; }</style><div class="_pub-80f4925f_variant _80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1564,7 +1564,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856 div._80f4925f { background:url(var(--test)); }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856 div._80f4925f { background:url(var(--test)); }</style><div class="_pub-80f4925f_variant _80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1827,7 +1827,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 _80f4925f_sm:p-3.5 _pub-80f4925f_sm:p-3.5 sm:p-3.5 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 sm:p-3.5 _80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1871,7 +1871,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_80f4925f_test _pub-80f4925f_test _pub-b8a55827_test test _80f4925f _pub-80f4925f _pub-b8a55827"></div>`
+      `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_pub-b8a55827_test _pub-80f4925f_test _80f4925f_test test _80f4925f _pub-80f4925f _pub-b8a55827"></div>`
     );
   });
 

@@ -1192,7 +1192,10 @@ fn get_document_scope_selector(context: &Context) -> String {
 
 fn get_host_selector(context: &Context) -> String {
   let document_scope = get_document_scope(context);
-  format!("._{}:not(._{} ._{})", document_scope, document_scope, document_scope)
+  format!(
+    "._{}:not(._{} ._{})",
+    document_scope, document_scope, document_scope
+  )
 }
 
 fn get_scope_selector(context: &Context, is_global: bool) -> String {
@@ -1273,9 +1276,8 @@ fn write_element_selector(
       }
     }
     ast::Selector::Element(element) => {
-
       // https://github.com/paperclipui/paperclip/issues/966
-      if (element.tag_name == "html" || element.tag_name == "body") && !is_global { 
+      if (element.tag_name == "html" || element.tag_name == "body") && !is_global {
         emitter.push_target(get_host_selector(context));
       } else {
         emitter.push_target(element.tag_name.to_string());

@@ -214,6 +214,24 @@ const getAttributeValueParts = (
   if (!value) {
     return null;
   }
+
+  const injectedScopes: string[] = [];
+
+  if (value.attrValueKind === AttributeValueKind.DyanmicString) {
+    for (const part of value.values) {
+      if (
+        part.partKind === DynamicStringAttributeValuePartKind.ClassNamePierce
+      ) {
+        const publicScopeId = context.imports.find(
+          imp => imp.namespace === part.className
+        )?.publicScopeId;
+        if (publicScopeId) {
+          injectedScopes.push(publicScopeId);
+        }
+      }
+    }
+  }
+
   switch (value.attrValueKind) {
     case AttributeValueKind.DyanmicString: {
       return value.values.map(part => {
@@ -228,7 +246,13 @@ const getAttributeValueParts = (
           case DynamicStringAttributeValuePartKind.Literal: {
             return {
               kind: InterimAttributeValuePartKind.Static,
-              value: translateValuePart(part.value, attrName, tagName, context),
+              value: translateValuePart(
+                part.value,
+                attrName,
+                tagName,
+                injectedScopes,
+                context
+              ),
               range: part.range
             };
           }
@@ -246,7 +270,13 @@ const getAttributeValueParts = (
       return [
         {
           kind: InterimAttributeValuePartKind.Static,
-          value: translateValuePart(value.value, attrName, tagName, context),
+          value: translateValuePart(
+            value.value,
+            attrName,
+            tagName,
+            injectedScopes,
+            context
+          ),
           range: value.range
         }
       ];
@@ -271,11 +301,14 @@ const translateValuePart = (
   part: string,
   attrName: string,
   elementName: string,
+  elementScopes: string[],
   context: ModuleContext
 ) => {
   if (!isNativeElement(elementName, context)) {
     return part;
   }
+
+  const allScopes = [...elementScopes, ...context.scopeIds];
 
   if (attrName === "class") {
     return part
@@ -284,7 +317,7 @@ const translateValuePart = (
         if (!slice) {
           return "";
         }
-        return addScopeIds(slice, context.scopeIds);
+        return addScopeIds(slice, allScopes);
       })
       .join(" ");
   }

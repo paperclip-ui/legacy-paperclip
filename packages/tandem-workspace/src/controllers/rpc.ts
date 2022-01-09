@@ -161,6 +161,8 @@ class Connection {
     const project = this.getProject();
 
     if (isPaperclipFile(uri)) {
+      const data = project.openPCFile(uri);
+      console.log("OPEN", JSON.stringify(data, null, 2));
       return {
         uri,
         data: project.openPCFile(uri),
@@ -219,6 +221,7 @@ class Connection {
     const project = this.getProject();
 
     this._disposeEngineListener = project.onPCEngineEvent(event => {
+      console.log("ENGINE EVENT", JSON.stringify(event, null, 2));
       this._events.call(engineDelegateChanged(event));
     });
   }
