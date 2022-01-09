@@ -14,6 +14,7 @@ use serde::Serialize;
 use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::{BufRead, Cursor};
+use futures::future::{join_all, BoxFuture};
 
 #[derive(Debug, PartialEq, Serialize)]
 struct CoverageSummary {
@@ -125,7 +126,7 @@ async fn generate_file_reports(
   graph: &DependencyGraph,
   vfs: &mut VirtualFileSystem,
 ) -> Vec<FileReport> {
-  let mut reports: Vec<FileReport> = vec![];
+  let mut reports: Vec<BoxFuture<_>> = vec![];
 
   let mut file_expr_id_map: HashMap<String, HashMap<String, ExprIdInfo>> = HashMap::new();
 
@@ -139,31 +140,41 @@ async fn generate_file_reports(
     }
   }
 
+  let mut contents: HashMap<String, String> = HashMap::new();
+
+  for (uri, _) in &graph.dependencies {
+    contents.insert(uri.to_string(), vfs.load(uri).await.unwrap().to_string());
+  }
+
+
+
   for (uri, dep) in &graph.dependencies {
     reports.push(
-      generate_file_report(
+      Box::pin(generate_file_report(
         &uri,
+        contents.remove(uri).unwrap(),
         dep,
         expr_counts.get(uri).unwrap(),
-        file_expr_id_map.get(uri).unwrap_or(&HashMap::new()),
-        vfs,
-      )
-      .await,
+        file_expr_id_map.remove(uri).unwrap_or(HashMap::new())
+      ))
     );
   }
 
-  return reports;
+  let reports = join_all(reports).await;
+
+  reports
 }
 
 async fn generate_file_report(
   uri: &String,
+  content: String,
   dep: &Dependency,
   counts: &ExprCounts,
-  missing_ids: &HashMap<String, ExprIdInfo>,
-  vfs: &mut VirtualFileSystem,
+  missing_ids: HashMap<String, ExprIdInfo>
 ) -> FileReport {
   let mut missing_parts: HashMap<ExprIdKind, PartReport> = HashMap::new();
   let mut missing_statement_ranges: Vec<base_ast::Range> = vec![];
+
 
   missing_parts.insert(
     ExprIdKind::HTML,
@@ -180,7 +191,7 @@ async fn generate_file_report(
     },
   );
 
-  for (id, info) in missing_ids {
+  for (id, info) in &missing_ids {
     if let Some(expr) = dep.get_expression_by_id(id) {
       if let Some(part_report) = missing_parts.get_mut(&info.kind) {
         part_report.missing_ranges.push(expr.get_range().clone());
@@ -191,7 +202,7 @@ async fn generate_file_report(
     }
   }
 
-  let line_count = count_lines(vfs.load(uri).await.unwrap());
+  let line_count = count_lines(&content);
 
   FileReport {
     uri: uri.to_string(),
