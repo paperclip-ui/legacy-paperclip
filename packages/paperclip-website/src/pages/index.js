@@ -135,7 +135,7 @@ function Home() {
               <>
                 Paperclip gives you <i>explicit</i> syntax for using CSS that
                 gives you complete control over how styles are applied,
-                including for third-party modules. With Paperclip, you never
+                even by third-party modules. With Paperclip, you never
                 have to worry about style collisions again.
               </>
               // <>Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. </>
