@@ -8,7 +8,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "yarn build && concurrently \"yarn build:watch\" \"yarn paperclip designer\"",
+    "start": "yarn build && concurrently \"yarn build:watch\" \"yarn paperclip designer --canvas-file=./src/hello-paperclip.pc\"",
     "build": "yarn build:tailwind && yarn build:pc",
     "build:watch": "concurrently \"yarn build:pc --watch\" \"yarn build:tailwind --watch\"",
     "build:pc": "yarn paperclip build",
