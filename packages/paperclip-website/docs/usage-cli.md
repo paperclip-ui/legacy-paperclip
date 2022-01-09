@@ -8,7 +8,7 @@ The CLI tool is used primarily to compile Paperclip files into your target frame
 
 ## Installation
 
-`yarn add paperlip-cli --dev`
+`yarn add @paperclip-ui/cli --dev`
 
 ## Commands
 
@@ -29,13 +29,13 @@ Generates code based on your [paperclip config](configure-paperclip.md).
 ```sh
 
 # Build all Paperclip files and print to stdout
-paperclip build --print
+yarn paperclip build --print
 
 # Build Paperclip files & writes them
-paperclip build
+yarn paperclip build
 
 # Starts watcher & writes them whenever they change
-paperclip build --watch
+yarn paperclip build --watch
 ```
 
 ### `paperclip dev`

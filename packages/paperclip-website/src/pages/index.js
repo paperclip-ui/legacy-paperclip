@@ -134,9 +134,9 @@ function Home() {
             description={[
               <>
                 Paperclip gives you <i>explicit</i> syntax for using CSS that
-                gives you complete control over how styles are applied,
-                even by third-party modules. With Paperclip, you never
-                have to worry about style collisions again.
+                gives you complete control over how styles are applied, even by
+                third-party modules. With Paperclip, you never have to worry
+                about style collisions again.
               </>
               // <>Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. </>
 
@@ -212,10 +212,10 @@ function Home() {
             actions={
               <>
                 <styles.CTAInstall label="NPX">
-                  npx @paperclip/cli init
+                  npx @paperclip-ui/cli init
                 </styles.CTAInstall>
                 <styles.CTAInstall label="Yarn">
-                  yarn add @paperclip/cli --dev && yarn paperclip init
+                  yarn add @paperclip-ui/cli --dev && yarn paperclip init
                 </styles.CTAInstall>
               </>
             }
