@@ -9,62 +9,100 @@
 > **Installation**: `npx @paperclip-ui/cli init` in your project directory.
 
 
-Paperclip allows you to write scalable HTML & CSS that can be used in just about any codebase. Here's what it looks like:
+Paperclip allows you to write safe, scalable HTML & CSS for any kind of web application. Here's a kitchen sink example of what a Paperclip UI looks like:
 
 ```html
 
-<style>
+<!-- Imported CSS can be imported into a namespace that you can use throughout the document to have complete control
+ over what's styled -->
+<import src="css-modules/tailwind.css" as="tw" />
 
-  /* This style is scoped, and only applied to this document */
-  .font-regular {
-    font-family: Inter;
-    font-size: 0.8em;
+<!-- These styles are scoped just to this document -->
+<style>
+  * {
+    box-sizing: border-box;
   }
 </style>
 
 <!--  
-  You can export primitive components that can be used throughout
-  your codebase.
+  You can define primitive components 
 -->
-<div export component as="Message" className="font-regular">
+<div export component as="Message" class="$tw py-8 bg-blue-100">
+
+  <!-- styles that are nested are scoped to the parent element -->
+  <style>
+
+    /* you can set declarations in scoped styles directly in style blocks. This
+    will style the parent element*/
+    color: magenta;
+
+    /* You can define style rules for descendents of the styled element. */
+    span {
+      color: orange;
+    }
+  </style>
+
+  <!-- you can define "slots" for primitive components -->
   {children}
+
+  <span>
+      I'm orange!
+  </span>
 </div>
 ```
 
-> ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://paperclip.dev/repl)!** ✨
-
-Here an example of how you can use this HTML & CSS in a React app:
+Paperclip UIs compile directly to code that you can import into your app:
 
 ```jsx
 import React from "react";
 import ReactDOM from "react-dom";
 import { Message } from "./my-module.pc";
 
+// this will render "Hello Paperclip! I'm orange!"
 ReactDOM.render(<Message>
   Hello Paperclip!
 </Message>, document.body);
 ```
 
-Paperclip is a separate layer for _just_ your HTML & CSS, and exports _primitive_ components that you can wire up with UI logic in whatever language you want. 
+Currently, UIs compile to **React** and **static HTML**.
 
-Paperclip files compile down to plain code, and there's no runtime, so you get the performance of your target language, with the added benefits of having scalable HTML & CSS. 
-
-Currently Paperclip compiles to <strong>React</Strong> and <strong>static HTML</strong>. Other compiler targets for languages such as PHP, Ruby, and Python, are currently in the works. <strong>If you'd like to help out to this, feel free to reach out!</strong>
 
 ### Features
 
-- **Easy to use syntax**. You can use your existing knowledge with Papaerclip since it's basically just HTML & CSS with a few additional features.
-- **Scoped CSS**. CSS selectors are scoped to the documents they're defined in, and their exposure to _other_ documents is explicit via [@export](https://paperclip.dev/docs/usage-syntax#export). You can define global CSS, but that requires the [:global selector](https://paperclip.dev/docs/usage-syntax#global).
-- **Keeps CSS frameworks scoped**. Paperclip can be used to keep third-party CSS contained so that you know exactly where it's being used in your application. [Learn more](https://paperclip.dev/docs/guide-third-party-libraries/).
-- **Visual testing tools**. Paperclip comes with tools to help you keep track of visual changes across your app.
-- **Incrementally adoptable**. Paperclip can be used in your existing codebase, and you can slowly incorporate Paperclip to wrangle any messy CSS that you have. 
-- **Can compile to multiple languages**. Paperclip is designed to be a generic approach to scope styles for any kind of web application. If you want, you can even build a compiler yourself using the helper libraries. [Learn more](https://paperclip.dev/docs/guide-compilers/).
-- **Compiles to strongly typed code**. 
-- **Visual tooling**. The UI tools allow you to build interfaces in _realtime_, and also comes with utilities such as measurement tools, and a style inspector to help you build UIs more quickly, and accurately.
+- Predictable CSS that you have control over. 
+- Generic, and designed for any language. You can use Paperclip in your existing codebase.
+- Compiles to plain performant code. No runtime.
+- Visual test tooling to help you track UI changes across your app.
+- Code coverage tooling to help you figure out how much HTML & CSS is coverage under visual tests.
+- Realtime visual development, directly within VS Code. 
 
-![VS Code extension](assets/design-system.gif)
+This is the designer that you can use to build UIs in realtime:
 
-> The [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) comes with syntax highlighting, code completion, and embeds the [visual tooling](https://paperclip.dev/docs/visual-tooling) that you can use to build UIs in realtime.
+![alt visual editor](./assets/designer-screenshot.png)
+
+Here's an example of a code coverage report that shows how much HTML and CSS is coverage for visual testing:
+
+![alt coverage report](./assets/coverage-report.png)
+
+Here's an example of visual tests that are performed using Percy. Paperclip also has a tool for this that you can use locally. 
+
+![alt coverage report](./assets/percy-screenshot.png)
+
+
+### Goals
+
+- In a similiar spirit as TypeScript, Paperclip aims to help provide an extra layer of safety around HTML and CSS. UI code should be predictable, easy to refactor, and bugs should be easy to spot across different browsers and screen sizes.
+- To have strict control over how elements are styled, while maintaining the flexibility of CSS. 
+- To be generic, and compatible with just about any language, strongly or dynamically typed. 
+- To compile to plain code, and not require any runtime. 
+- Fast compilation of UI files so that HTM and CSS feels more like drawing. 
+- To eventually have enough UI tooling that would enable non-engineers to safely create UIs in tandem with developers.
+
+<!-- ### Non-goals
+
+- Logic. This is already a very well solved problem. Paperclip only covers what's necessary to integrate with an existing codebase.
+- Pre-processors. Though this may be possible in the long term, Paperclip won't have pre-processors that would enable you to  -->
+
 
 ### Resources
 
