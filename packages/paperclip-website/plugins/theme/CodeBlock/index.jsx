@@ -11,6 +11,8 @@ export default props => {
         fullScreen={props.fullScreen}
         height={props.height}
         showAllFrames={props.showAllFrames}
+        floatingPreview={props.floatingPreview}
+        noMargin={props.noMargin}
       >
         {props.children}
       </LiveEditor>
@@ -25,7 +27,9 @@ const LiveEditor = ({
   height = 400,
   fullScreen,
   expanded,
-  showAllFrames
+  showAllFrames,
+  floatingPreview,
+  noMargin
 }) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
@@ -44,7 +48,7 @@ const LiveEditor = ({
     } else {
       Object.assign(extStyle, {
         height,
-        margin: "16px 0px"
+        margin: noMargin !== true ? "16px 0px" : undefined
       });
     }
 
@@ -55,6 +59,7 @@ const LiveEditor = ({
         {
           files: graph,
           entry: Object.keys(graph)[0],
+          floatingPreview,
           activeFrame: showAllFrames ? null : 0
         },
         mountRef.current
@@ -75,7 +80,7 @@ const extractContent = text => {
   let entry;
 
   for (const file of files) {
-    const name = (file.match(/(.*?\.pc)/) || [, "main.pc"])[1];
+    const name = (file.match(/(.*?\.(pc|css))/) || [, "main.pc"])[1];
     if (!entry) {
       entry = name;
     }

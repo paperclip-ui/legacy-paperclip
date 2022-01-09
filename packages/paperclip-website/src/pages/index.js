@@ -4,10 +4,13 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import IMPORT_CODE_DEMO_SOURCE from "../demos/import-code";
 import PRIMITIVE_UI_EXAMPLE from "../demos/simple-pc";
 import THIRD_PART_CSS_EXAMPLE from "../demos/third-party-css";
-import CodeBlock from "@theme-init/CodeBlock";
+// import CodeBlock from "@theme-init/CodeBlock";
+import CodeBlock from "../../plugins/theme/CodeBlock";
 import * as styles from "../styles/index.pc";
 import * as buttonStyles from "../styles/button.pc";
 import * as typography from "../styles/typography.pc";
+import { TAILWIND_AND_ANIMATE_SOURCE } from "../demos/tailwind-and-animate";
+import { TAILWIND_SOURCE } from "../demos/tailwind.css";
 
 function Home() {
   const context = useDocusaurusContext();
@@ -126,24 +129,9 @@ function Home() {
           </styles.VariousFeatures>
 
           <styles.BigFeature
-            title="Easily catch CSS bugs"
-            description={
-              <>
-                Paperclip comes with tools to help you easily keep track of{" "}
-                <i>all</i> visual changes across your application, so you can
-                confidently make big CSS changes knowing exactly how that will
-                cascade throughout your app.
-              </>
-            }
-            ctaText="Learn about visual regression tooling"
-            ctaHref="/docs/visual-regression-tooling"
-            preview={<img src="img/coverage-report.png" autoPlay loop muted />}
-          />
-
-          <styles.BigFeature
-            title="Total control over CSS frameworks"
+            title="Total control over CSS"
             description={[
-              "Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. "
+              "Paperclip gives you an explicit syntax over CSS, so you have total control over your styles, including third-party CSS. With Paperclip o you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. "
               // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
               // "Paperclip keeps CSS frameworks scoped, so you have complete control over how they're used in your application. No more lock-in."
               // "No more global CSS with. Paperclip gives you complete control over how they're used throughout your application."
@@ -158,10 +146,31 @@ function Home() {
               //    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
               //    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
               //  ></iframe>
-              <CodeBlock className="language-html">
-                {THIRD_PART_CSS_EXAMPLE}
+              <CodeBlock
+                live
+                className="language-html"
+                floatingPreview={false}
+                height="500px"
+              >
+                {TAILWIND_AND_ANIMATE_SOURCE}
+                {/* {THIRD_PART_CSS_EXAMPLE} */}
               </CodeBlock>
             }
+          />
+
+          <styles.BigFeature
+            title="Easily catch CSS bugs"
+            description={
+              <>
+                Paperclip comes with tools to help you easily keep track of{" "}
+                <i>all</i> visual changes across your application, so you can
+                confidently make big CSS changes knowing exactly how that will
+                cascade throughout your app.
+              </>
+            }
+            ctaText="Learn about visual regression tooling"
+            ctaHref="/docs/visual-regression-tooling"
+            preview={<img src="img/coverage-report.png" autoPlay loop muted />}
           />
 
           <styles.BigFeature

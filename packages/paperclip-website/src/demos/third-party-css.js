@@ -7,11 +7,11 @@ const SOURCE = `
 <import src="modules/animate.css" as="animate" />
 
 <!-- Here we're just using the animate.css scope with this primitive Card component -->
-<div export component as="Card" class="$animate animate__animated animate__bounceIn font-sans bg-gray-500 h-screen w-screen">
-  <div class="$bg-gray-100 rounded-lg p-8 md\:p-0">
+<div export component as="Card" class="$animate animate__animated animate__bounceIn bg-gray-500 h-screen w-screen">
+  <div class="bg-gray-100 rounded-lg p-8 md\:p-0">
     <div class="pt-6 text-center space-y-4">
       <blockquote>
-        <p class="$tw text-lg font-semibold">
+        <p class="text-lg font-semibold">
           {description}
         </p>
       </blockquote>

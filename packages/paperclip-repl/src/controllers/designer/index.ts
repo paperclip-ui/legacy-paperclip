@@ -18,7 +18,7 @@ export class DesignerController {
       showCodeToolbar: true,
       showLeftSidebar: false,
       showInspectorPanels: false,
-      floatingPreview: true,
+      floatingPreview: this._options.floatingPreview !== false,
       showCodeEditorOnStartup: true,
       activeFrame: this._options.activeFrame,
       rounded: true,

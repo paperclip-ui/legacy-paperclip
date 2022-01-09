@@ -38,7 +38,7 @@ describe(__filename + "#", () => {
     });
 
     const emittedFiles = await tmp.emittedFiles;
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 600));
     expect(Object.keys(emittedFiles)).to.eql(["src/test.pc.css"]);
     tmp.dispose();
   });
