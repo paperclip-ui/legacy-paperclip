@@ -1,11 +1,15 @@
 import express from "express";
 import * as path from "path";
+import * as fs from "fs";
 
 const DESIGNER_DIST_PATH = path.join(
-  __dirname,
-  "../../../../",
-  "node_modules/@tandem-ui/designer/dist"
+  path.dirname(require.resolve("@tandem-ui/designer")),
+  "..",
+  "dist"
 );
+
+// simple assertion - this must exist
+fs.lstatSync(path.join(DESIGNER_DIST_PATH, "index.html"));
 
 export class Designer {
   constructor(private _express: express.Express) {

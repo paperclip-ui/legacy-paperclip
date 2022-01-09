@@ -44,7 +44,9 @@ export class Project {
     // TODO - remove embedded flag
     execa("open", [
       `http://localhost:${this._httpPort}?projectId=${this.id}&showAll=true`
-    ]);
+    ]).catch(() => {
+      console.warn(`Unable to launch browser`);
+    });
   }
 
   /**
