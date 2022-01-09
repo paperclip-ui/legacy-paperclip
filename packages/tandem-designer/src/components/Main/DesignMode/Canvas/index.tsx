@@ -24,6 +24,28 @@ import {
 import { getFrameBounds } from "@paperclip-ui/web-renderer";
 
 export const Canvas = React.memo(() => {
+  const { canvasRef, actualTransform, expanded, state } = useCanvas();
+
+  return (
+    <styles.Canvas ref={canvasRef}>
+      <styles.Inner
+        style={{
+          transform: `translateX(${actualTransform.x}px) translateY(${actualTransform.y}px) scale(${actualTransform.z}) translateZ(0)`,
+          transformOrigin: "top left"
+        }}
+      >
+        <Frames
+          expandedFrameIndex={
+            expanded ? getActiveFrameIndex(state.designer) : null
+          }
+        />
+      </styles.Inner>
+      <Tools />
+    </styles.Canvas>
+  );
+});
+
+const useCanvas = () => {
   const { state, dispatch } = useAppStore();
   const {
     designer: {
@@ -137,21 +159,5 @@ export const Canvas = React.memo(() => {
     };
   }, [canvasRef]);
 
-  return (
-    <styles.Canvas ref={canvasRef}>
-      <styles.Inner
-        style={{
-          transform: `translateX(${actualTransform.x}px) translateY(${actualTransform.y}px) scale(${actualTransform.z}) translateZ(0)`,
-          transformOrigin: "top left"
-        }}
-      >
-        <Frames
-          expandedFrameIndex={
-            expanded ? getActiveFrameIndex(state.designer) : null
-          }
-        />
-      </styles.Inner>
-      <Tools />
-    </styles.Canvas>
-  );
-});
+  return { canvasRef, actualTransform, expanded, state };
+};

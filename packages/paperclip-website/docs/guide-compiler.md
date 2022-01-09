@@ -39,8 +39,6 @@ export const compile = ({module}: CompileOptions) => {
 };
 ```
 
-Paperclip looks for compilers with the `@paperclip-ui/compiler-` prefix, so be sure to add that. Also, your package will need to expose a `compile` function that has a similar interface to the one above.
-
 The `module` passed into the `compile` function is the JSON representation of the Paperclip file being compiled. For example, if we look at this:
 
 ```html
@@ -165,9 +163,19 @@ const compileAttributes = (element: InterimElement | InterimComponent) => {
 };
 ```
 
-The compiler should _only_ handle HTML. No need to worry about CSS, that's compiled for you. 
+Compilers should should render HTML. No need to worry about CSS, that's compiled for you. 
 
-After your compiler is done, you should symlink your package into your `node_modules` directory, which will expose it for Paperclip. Finally, just run:
+After you're done, update your `paperclip.config.json` file to point to your compiler:
+
+```javascript
+{
+  compilerOptions: {
+    target: "./path/to/my-compiler"
+  }
+}
+```
+
+Finally, just run:
 
 ```
 npx @paperclip-ui/cli build
@@ -175,4 +183,4 @@ npx @paperclip-ui/cli build
 
 And you should have compiled code!
 
-That's it for the basics. If you're interested in contributing to the development of Paperclip compilers, feel free to reach out! 
+That's it for compiler basics. If you're interested in contributing to the development of Paperclip compilers, feel free to reach out! 

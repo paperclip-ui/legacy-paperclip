@@ -6,12 +6,7 @@ export default props => {
   // turned off for now until playground hooked up to this repo
   if (props.live) {
     return (
-      <LiveEditor
-        expanded={props.expanded !== "false"}
-        fullScreen={props.fullScreen}
-        height={props.height}
-        showAllFrames={props.showAllFrames}
-      >
+      <LiveEditor expanded={props.expanded !== "false"} {...props}>
         {props.children}
       </LiveEditor>
     );
@@ -25,7 +20,9 @@ const LiveEditor = ({
   height = 400,
   fullScreen,
   expanded,
-  showAllFrames
+  showAllFrames,
+  noMargin,
+  ...rest
 }) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
@@ -44,7 +41,7 @@ const LiveEditor = ({
     } else {
       Object.assign(extStyle, {
         height,
-        margin: "16px 0px"
+        margin: noMargin !== true ? "16px 0px" : undefined
       });
     }
 
@@ -55,7 +52,8 @@ const LiveEditor = ({
         {
           files: graph,
           entry: Object.keys(graph)[0],
-          activeFrame: showAllFrames ? null : 0
+          activeFrame: showAllFrames ? null : 0,
+          ...rest
         },
         mountRef.current
       );
@@ -75,7 +73,7 @@ const extractContent = text => {
   let entry;
 
   for (const file of files) {
-    const name = (file.match(/(.*?\.pc)/) || [, "main.pc"])[1];
+    const name = (file.match(/(.*?\.(pc|css))/) || [, "main.pc"])[1];
     if (!entry) {
       entry = name;
     }

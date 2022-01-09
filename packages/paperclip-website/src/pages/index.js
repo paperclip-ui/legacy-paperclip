@@ -4,10 +4,13 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import IMPORT_CODE_DEMO_SOURCE from "../demos/import-code";
 import PRIMITIVE_UI_EXAMPLE from "../demos/simple-pc";
 import THIRD_PART_CSS_EXAMPLE from "../demos/third-party-css";
-import CodeBlock from "@theme-init/CodeBlock";
+// import CodeBlock from "@theme-init/CodeBlock";
+import CodeBlock from "../../plugins/theme/CodeBlock";
 import * as styles from "../styles/index.pc";
 import * as buttonStyles from "../styles/button.pc";
 import * as typography from "../styles/typography.pc";
+import { TAILWIND_AND_ANIMATE_SOURCE } from "../demos/tailwind-and-animate";
+import { TAILWIND_SOURCE } from "../demos/tailwind.css";
 
 function Home() {
   const context = useDocusaurusContext();
@@ -24,8 +27,9 @@ function Home() {
           <styles.Header
             title={
               <>
-                Paperclip is a UI layer that brings <strong>scalable</strong>{" "}
-                HTML & CSS to any kind of web application
+                Paperclip is a UI layer that brings{" "}
+                <strong>safe, scalable</strong> HTML & CSS to any kind of web
+                application
                 {/* Paperclip is a fast, scalable UI layer that brings <strong>scoped CSS</strong> to any kind of web application. */}
               </>
             }
@@ -104,7 +108,7 @@ function Home() {
               title="Rich developer tooling"
               description={
                 <>
-                  Paperclip provides a<strong>realtime preview</strong> to help
+                  Paperclip provides a <strong>realtime preview</strong> to help
                   you build UIs quickly, and{" "}
                   <strong>visual regression tooling</strong> to help you catch
                   every visual change before shipping to production.{" "}
@@ -126,6 +130,43 @@ function Home() {
           </styles.VariousFeatures>
 
           <styles.BigFeature
+            title="Total control over CSS"
+            description={[
+              <>
+                Paperclip gives you <i>explicit</i> syntax for using CSS that
+                gives you complete control over how styles are applied,
+                including for third-party modules. With Paperclip, you never
+                have to worry about style collisions again.
+              </>
+              // <>Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. </>
+
+              // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
+              // "Paperclip keeps CSS frameworks scoped, so you have complete control over how they're used in your application. No more lock-in."
+              // "No more global CSS with. Paperclip gives you complete control over how they're used throughout your application."
+              // "Paperclip enhances your third-pary CSS by keeping it scoped, so you have explicit control over how it's used in your app."
+            ]}
+            ctaText="Learn more"
+            ctaHref="/docs/guide-third-party-libraries"
+            preview={
+              //             <iframe src="https://codesandbox.io/embed/quirky-elion-5te3x?codemirror=1&fontsize=14&hidenavigation=1&module=%2Fsrc%2Fhello-paperclip.pc&theme=dark"
+              //    style={{width:"100%", height: "500px", border: 0, borderRadius: "4px", overflow:"hidden"}}
+              //    title="quirky-elion-5te3x"
+              //    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+              //    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+              //  ></iframe>
+              <CodeBlock
+                useLiteEditor={false}
+                className="language-html"
+                floatingPreview={false}
+                height="500px"
+              >
+                {/* {TAILWIND_AND_ANIMATE_SOURCE} */}
+                {THIRD_PART_CSS_EXAMPLE}
+              </CodeBlock>
+            }
+          />
+
+          <styles.BigFeature
             title="Easily catch CSS bugs"
             description={
               <>
@@ -138,24 +179,6 @@ function Home() {
             ctaText="Learn about visual regression tooling"
             ctaHref="/docs/visual-regression-tooling"
             preview={<img src="img/coverage-report.png" autoPlay loop muted />}
-          />
-
-          <styles.BigFeature
-            title="Total control over CSS frameworks"
-            description={[
-              "Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. "
-              // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
-              // "Paperclip keeps CSS frameworks scoped, so you have complete control over how they're used in your application. No more lock-in."
-              // "No more global CSS with. Paperclip gives you complete control over how they're used throughout your application."
-              // "Paperclip enhances your third-pary CSS by keeping it scoped, so you have explicit control over how it's used in your app."
-            ]}
-            ctaText="Learn more"
-            ctaHref="/docs/guide-third-party-libraries"
-            preview={
-              <CodeBlock className="language-html">
-                {THIRD_PART_CSS_EXAMPLE}
-              </CodeBlock>
-            }
           />
 
           <styles.BigFeature

@@ -7,11 +7,14 @@ export type Options = {
   files: Record<string, string>;
   entry: string;
   activeFrame?: number;
+  useLiteEditor?: boolean;
+  floatingPreview?: boolean;
 };
 
 export class App {
   constructor(private _options: Options, private _mount: HTMLElement) {}
   init() {
+    console.log(this._options);
     const workerParent = new ParentController(this._options);
     const channels = new REPLChannels(workerParent.getWorkerConnection());
     new ChannelHandler(channels, this._options);

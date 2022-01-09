@@ -6,6 +6,7 @@ export const PREVIEW_ATTR_NAME = "preview";
 export const FRAGMENT_TAG_NAME = "fragment";
 export const AS_ATTR_NAME = "as";
 export const INJECT_STYLES_TAG_NAME = "inject-styles";
+export const PC_MODULE_NAMESPACE = "@paperclip-ui";
 
 // deprecated
 export const LOGIC_TAG_NAME = "logic";

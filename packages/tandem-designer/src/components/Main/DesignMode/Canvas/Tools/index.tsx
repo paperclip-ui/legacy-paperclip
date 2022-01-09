@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import { mergeBoxes, isExpanded } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
@@ -8,21 +8,94 @@ import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
 import {
-  computeVirtScriptObject,
   LoadedPCData,
-  NodeAnnotations,
   VirtualFrame,
   VirtualNodeKind
 } from "@paperclip-ui/utils";
 import {
   canvasMouseDown,
   canvasMouseLeave,
-  canvasMouseMoved,
-  canvasDoubleClick
+  canvasMouseMoved
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 
 export const Tools = () => {
+  const {
+    frames,
+    toolsRef,
+    onMouswDown,
+    onMouseMove,
+    onMouseLeave,
+    showEmpty,
+    resizerMoving,
+    canvas,
+    dispatch,
+    selectedBox,
+    state,
+    readonly,
+    hoveringBox,
+    virtualNode,
+    toolsLayerEnabled,
+    selectedNodePaths,
+    optionKeyDown
+  } = useTools();
+
+  if (!virtualNode || !toolsLayerEnabled) {
+    return null;
+  }
+
+  return (
+    <styles.Tools
+      ref={toolsRef}
+      onMouseDown={onMouswDown}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      <Empty show={showEmpty} />
+
+      <Pixels canvas={canvas} />
+
+      {!resizerMoving && (
+        <Selectable
+          dispatch={dispatch}
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          box={hoveringBox}
+        />
+      )}
+
+      {selectedBox ? (
+        <Selectable
+          dispatch={dispatch}
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          box={selectedBox}
+          showKnobs={
+            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
+            !readonly
+          }
+        />
+      ) : null}
+      <Frames
+        frames={frames}
+        dispatch={dispatch}
+        ui={state.designer.ui}
+        canvasTransform={canvas.transform}
+        readonly={readonly}
+      />
+      {optionKeyDown && selectedBox && hoveringBox ? (
+        <Distance
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          from={selectedBox}
+          to={hoveringBox}
+        />
+      ) : null}
+    </styles.Tools>
+  );
+};
+
+const useTools = () => {
   const { state, dispatch } = useAppStore();
   const {
     designer: {
@@ -85,60 +158,31 @@ export const Tools = () => {
 
   const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
 
-  if (!virtualNode || !toolsLayerEnabled) {
-    return null;
-  }
-
-  const frames = (virtualNode.preview.kind === VirtualNodeKind.Fragment
-    ? virtualNode.preview.children
-    : [virtualNode.preview]) as Array<VirtualFrame>;
+  const frames = virtualNode
+    ? ((virtualNode.preview.kind === VirtualNodeKind.Fragment
+        ? virtualNode.preview.children
+        : [virtualNode.preview]) as Array<VirtualFrame>)
+    : [];
 
   const showEmpty = frames.length === 0;
 
-  return (
-    <styles.Tools
-      ref={toolsRef}
-      onMouseDown={onMouswDown}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-    >
-      <Empty show={showEmpty} />
-
-      <Pixels canvas={canvas} />
-
-      <Selectable
-        dispatch={dispatch}
-        canvasScroll={canvas.scrollPosition}
-        canvasTransform={canvas.transform}
-        box={hoveringBox}
-      />
-      {selectedBox ? (
-        <Selectable
-          dispatch={dispatch}
-          canvasScroll={canvas.scrollPosition}
-          canvasTransform={canvas.transform}
-          box={selectedBox}
-          showKnobs={
-            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
-            !readonly
-          }
-        />
-      ) : null}
-      <Frames
-        frames={frames}
-        dispatch={dispatch}
-        ui={state.designer.ui}
-        canvasTransform={canvas.transform}
-        readonly={readonly}
-      />
-      {optionKeyDown && selectedBox && hoveringBox ? (
-        <Distance
-          canvasScroll={canvas.scrollPosition}
-          canvasTransform={canvas.transform}
-          from={selectedBox}
-          to={hoveringBox}
-        />
-      ) : null}
-    </styles.Tools>
-  );
+  return {
+    frames,
+    resizerMoving,
+    toolsRef,
+    onMouswDown,
+    onMouseMove,
+    onMouseLeave,
+    showEmpty,
+    virtualNode,
+    toolsLayerEnabled,
+    canvas,
+    dispatch,
+    selectedBox,
+    state,
+    readonly,
+    hoveringBox,
+    selectedNodePaths,
+    optionKeyDown
+  };
 };

@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/website",
-  "version": "18.4.4",
+  "version": "18.4.5",
   "private": true,
   "scripts": {
     "start": "docusaurus clear && docusaurus start",
@@ -17,7 +17,7 @@
     "@docusaurus/plugin-content-blog": "^2.0.0-beta.14",
     "@docusaurus/preset-classic": "^2.0.0-beta.14",
     "@docusaurus/theme-classic": "^2.0.0-beta.14",
-    "@paperclip-ui/repl": "^18.4.4",
+    "@paperclip-ui/repl": "^18.4.5",
     "caniuse-lite": "^1.0.30001178",
     "clsx": "^1.1.1",
     "dedent": "^0.7.0",
@@ -41,12 +41,12 @@
   "devDependencies": {
     "@docusaurus/core": "^2.0.0-beta.14",
     "@docusaurus/plugin-google-analytics": "^2.0.0-beta.14",
-    "@paperclip-ui/compiler-react": "^18.4.4",
-    "@tandem-ui/workspace": "^18.4.4",
+    "@paperclip-ui/compiler-react": "^18.4.5",
+    "@tandem-ui/workspace": "^18.4.5",
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^6.5.1",
     "file-loader": "^6.2.0",
     "null-loader": "^4.0.1",
-    "paperclip-loader": "^18.4.4"
+    "paperclip-loader": "^18.4.5"
   }
 }
