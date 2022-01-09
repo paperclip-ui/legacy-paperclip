@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import { mergeBoxes, isExpanded } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
@@ -8,17 +8,14 @@ import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
 import {
-  computeVirtScriptObject,
   LoadedPCData,
-  NodeAnnotations,
   VirtualFrame,
   VirtualNodeKind
 } from "@paperclip-ui/utils";
 import {
   canvasMouseDown,
   canvasMouseLeave,
-  canvasMouseMoved,
-  canvasDoubleClick
+  canvasMouseMoved
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 
@@ -36,9 +33,15 @@ export const Tools = () => {
     state,
     readonly,
     hoveringBox,
+    virtualNode,
+    toolsLayerEnabled,
     selectedNodePaths,
     optionKeyDown
   } = useTools();
+
+  if (!virtualNode || !toolsLayerEnabled) {
+    return null;
+  }
 
   return (
     <styles.Tools
@@ -51,12 +54,15 @@ export const Tools = () => {
 
       <Pixels canvas={canvas} />
 
-      <Selectable
-        dispatch={dispatch}
-        canvasScroll={canvas.scrollPosition}
-        canvasTransform={canvas.transform}
-        box={hoveringBox}
-      />
+      {!selectedBox && (
+        <Selectable
+          dispatch={dispatch}
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          box={hoveringBox}
+        />
+      )}
+
       {selectedBox ? (
         <Selectable
           dispatch={dispatch}
@@ -151,13 +157,11 @@ const useTools = () => {
 
   const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
 
-  if (!virtualNode || !toolsLayerEnabled) {
-    return null;
-  }
-
-  const frames = (virtualNode.preview.kind === VirtualNodeKind.Fragment
-    ? virtualNode.preview.children
-    : [virtualNode.preview]) as Array<VirtualFrame>;
+  const frames = virtualNode
+    ? ((virtualNode.preview.kind === VirtualNodeKind.Fragment
+        ? virtualNode.preview.children
+        : [virtualNode.preview]) as Array<VirtualFrame>)
+    : [];
 
   const showEmpty = frames.length === 0;
 
@@ -168,6 +172,8 @@ const useTools = () => {
     onMouseMove,
     onMouseLeave,
     showEmpty,
+    virtualNode,
+    toolsLayerEnabled,
     canvas,
     dispatch,
     selectedBox,
