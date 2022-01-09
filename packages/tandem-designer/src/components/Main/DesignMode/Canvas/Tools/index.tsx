@@ -27,6 +27,7 @@ export const Tools = () => {
     onMouseMove,
     onMouseLeave,
     showEmpty,
+    resizerMoving,
     canvas,
     dispatch,
     selectedBox,
@@ -54,7 +55,7 @@ export const Tools = () => {
 
       <Pixels canvas={canvas} />
 
-      {!selectedBox && (
+      {!resizerMoving && (
         <Selectable
           dispatch={dispatch}
           canvasScroll={canvas.scrollPosition}
@@ -167,6 +168,7 @@ const useTools = () => {
 
   return {
     frames,
+    resizerMoving,
     toolsRef,
     onMouswDown,
     onMouseMove,
