@@ -7,7 +7,7 @@ sidebar_label: Visual regression tools
 Paperclip comes with a number of tools to help you keep track of visual changes. The [code coverage](#html-and-css-coverage) tool helps you figure out how much code is covered for visual changes, and the 
 [snapshot](#snapshot-tests) tool helps you analyze changes across your app. 
 
-### HTMl and CSS coverage
+### HTML and CSS coverage
 
 The code coverage tool helps you analyze how much HTML and CSS is visible for snapshot testing. All you need to do is run the following command
 in your project:
