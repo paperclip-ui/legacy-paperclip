@@ -25,7 +25,8 @@ Paperclip allows you to write safe, scalable HTML & CSS for any kind of web appl
 </style>
 
 <!--  
-  You can define primitive components 
+  You can define re-usable blocks of HTML that can be imported into your application code.
+  Also, notice how Tailwind is being applied just to this element.
 -->
 <div export component as="Message" class="$tw py-8 bg-blue-100">
 
