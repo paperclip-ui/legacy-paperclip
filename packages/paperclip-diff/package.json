@@ -23,6 +23,7 @@
     "html-entities": "^1.2.1",
     "immer": "^9.0.7",
     "mime-types": "^2.1.34",
+    "chalk": "^4.0.0",
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
     "pixelmatch": "^5.2.1",
