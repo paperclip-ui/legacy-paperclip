@@ -1,7 +1,7 @@
 import { TAILWIND_SOURCE } from "./tailwind.css";
 
 export const TAILWIND_AND_ANIMATE_SOURCE = `
-  // file: main.pc
+  // file: /main.pc
   <!-- You can include CSS into the scope of this document -->
   <import src="./css-modules/tailwind.css" inject-styles />
   
@@ -49,6 +49,6 @@ export const TAILWIND_AND_ANIMATE_SOURCE = `
     </div>
   </div>
 
-  // file: css-modules/tailwind.css
+  // file: /css-modules/tailwind.css
   ${TAILWIND_SOURCE}
 `;

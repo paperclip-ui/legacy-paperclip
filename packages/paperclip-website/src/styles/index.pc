@@ -156,17 +156,21 @@
     position: relative;
     :global(& > :first-child) {
       width: 100%;
+      overflow: scroll;
     }
     :global(& > :last-child) {
       width: 100%;
+      overflow: scroll;
     }
 
-    @media screen and (max-width: 1400px) {
+    @media screen and (max-width: 1200px) {
       flex-direction: column;
     }
 
 
     :global(.prism-code, ._code-preview) {
+      width: 100%;
+      overflow: scroll;
       && {
         height: 550px;
       }
@@ -190,7 +194,7 @@
   <style>
     width: 100%;
     height: 100%;
-    min-width: 600px;
+    min-width: 400px;
     min-height: 200px;
     background: rgb(221, 221, 221);
     border-radius: 6px;
@@ -494,12 +498,13 @@
 <div export
   component
   as="VariousFeatureItem"
-  class="_item $layout._col $layout._col3">
+  class="_item $layout._col $layout._col4">
   <style>
 
     display: flex;
     margin: 0px auto;
     margin-left: 10px;
+    text-align: left;
     @include layout.py-6 {}
     @include mobile {
       margin-left: 0;
@@ -513,17 +518,14 @@
     }
 
   </style>
-  <icons.Icon name={iconName} class="$_icon">
-    <style>
-      @include section-icon {}
-    </style>
-  </icons.Icon>
+
   <div class="_info">
     <div class="_title">
       <style>
         font-size: 18px;
         font-weight: 500;
-        align-items: flex-start;
+        display: flex;
+        align-items: center;
         margin-bottom: 20px;
         @include typography.text-secondary {}
         @media screen and (max-width: 1400px) {
@@ -533,13 +535,22 @@
           height: auto;
         }
       </style>
+      <icons.Icon name={iconName} class="$_icon">
+        <style>
+          @include section-icon {}
+        </style>
+      </icons.Icon>
       <span>{title}</span>
     </div>
     <div class="_details">{description}</div>
   </div>
 </div>
 
-<div export component as="SuperBigFeature" class="_row">
+
+<!--
+  @frame { visible: false, width: 1388, height: 4194, x: -574, y: -44 }
+-->
+<div export component as="SuperBigFeature" class="$layout _row">
   <style>
     display: flex;
     flex-direction: column;
@@ -547,7 +558,7 @@
     margin: 32px 0px;
     text-align: center;
   </style>
-  <Info {title} {description} big />
+  <Info {title} {description} big center />
   <FeaturePreview>{preview}</FeaturePreview>
 </div>
 
@@ -556,6 +567,9 @@
 -->
 <div component as="FeaturePreview" class="{class?}">
   <style>
+    text-align: left;
+    width: 100%;
+    overflow: scroll;
     &:within(.smaller-preview) {
       text-align: center;
     }
@@ -591,9 +605,9 @@
     padding-top: 80px;
     padding-bottom: 80px;
   </style>
-  <div class="$layout._col $layout._col3">
+  <div class="_col _col4">
     <style>
-      display: flex;
+      flex-shrink: 0;
     </style>
 
     <!-- here just for spacing -->
@@ -605,7 +619,7 @@
     </icons.Icon>
     <Info {title?} {description?} {ctaHref?} {ctaText?} />
   </div>
-  <FeaturePreview class="$layout _col _col9">
+  <FeaturePreview class="$layout _col _col8">
     <style>
       margin-left: 15px;
       @include mobile {
@@ -620,13 +634,22 @@
   @frame { visible: false }
 -->
 
-<div component as="Info" class="_info">
+<div component as="Info" class:big="big" class:center="center">
+  <style>
+    max-width: 700px;
+    &.center {
+      margin: 0px auto;
+    }
+  </style>
   <div class="_title">
     <style>
       font-size: 1.3em;
       margin-bottom: var(--gap-5);
       font-weight: 500;
       @include typography.text-secondary {}
+      &:within(.big) {
+        font-size: 1.6em;
+      }
     </style>
     {title}
   </div>
@@ -662,7 +685,7 @@
 </div>
 
 <!--
-  @frame { title: "Website / Desktop", width: 1461, height: 4194, x: -250, y: -52 }
+  @frame { title: "Website / Desktop", width: 1248, height: 4194, x: -40, y: -54 }
 -->
 <Home component as="Preview">
   <!--
@@ -715,7 +738,7 @@
 
   <SuperBigFeature title="Live editing"
     ctaText="Learn about visual regression testing"
-    description="Paperclip comes with visual tools that enable to build your UIs in realtime."
+    description="Paperclip gives you an explicit syntax over CSS, so you have total control over your styles, including third-party CSS. With Paperclip o you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. "
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
       autoplay
       loop />} />

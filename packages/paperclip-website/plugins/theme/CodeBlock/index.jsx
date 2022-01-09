@@ -6,14 +6,7 @@ export default props => {
   // turned off for now until playground hooked up to this repo
   if (props.live) {
     return (
-      <LiveEditor
-        expanded={props.expanded !== "false"}
-        fullScreen={props.fullScreen}
-        height={props.height}
-        showAllFrames={props.showAllFrames}
-        floatingPreview={props.floatingPreview}
-        noMargin={props.noMargin}
-      >
+      <LiveEditor expanded={props.expanded !== "false"} {...props}>
         {props.children}
       </LiveEditor>
     );
@@ -28,8 +21,8 @@ const LiveEditor = ({
   fullScreen,
   expanded,
   showAllFrames,
-  floatingPreview,
-  noMargin
+  noMargin,
+  ...rest
 }) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
@@ -59,8 +52,8 @@ const LiveEditor = ({
         {
           files: graph,
           entry: Object.keys(graph)[0],
-          floatingPreview,
-          activeFrame: showAllFrames ? null : 0
+          activeFrame: showAllFrames ? null : 0,
+          ...rest
         },
         mountRef.current
       );

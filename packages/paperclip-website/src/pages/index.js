@@ -27,8 +27,9 @@ function Home() {
           <styles.Header
             title={
               <>
-                Paperclip is a UI layer that brings <strong>scalable</strong>{" "}
-                HTML & CSS to any kind of web application
+                Paperclip is a UI layer that brings{" "}
+                <strong>safe, scalable</strong> HTML & CSS to any kind of web
+                application
                 {/* Paperclip is a fast, scalable UI layer that brings <strong>scoped CSS</strong> to any kind of web application. */}
               </>
             }
@@ -107,7 +108,7 @@ function Home() {
               title="Rich developer tooling"
               description={
                 <>
-                  Paperclip provides a<strong>realtime preview</strong> to help
+                  Paperclip provides a <strong>realtime preview</strong> to help
                   you build UIs quickly, and{" "}
                   <strong>visual regression tooling</strong> to help you catch
                   every visual change before shipping to production.{" "}
@@ -131,7 +132,14 @@ function Home() {
           <styles.BigFeature
             title="Total control over CSS"
             description={[
-              "Paperclip gives you an explicit syntax over CSS, so you have total control over your styles, including third-party CSS. With Paperclip o you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. "
+              <>
+                Paperclip gives you <i>explicit</i> syntax for using CSS that
+                gives you complete control over how styles are applied,
+                including for third-party modules. With Paperclip, you never
+                have to worry about style collisions again.
+              </>
+              // <>Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. </>
+
               // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
               // "Paperclip keeps CSS frameworks scoped, so you have complete control over how they're used in your application. No more lock-in."
               // "No more global CSS with. Paperclip gives you complete control over how they're used throughout your application."
@@ -147,13 +155,13 @@ function Home() {
               //    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
               //  ></iframe>
               <CodeBlock
-                live
+                useLiteEditor={false}
                 className="language-html"
                 floatingPreview={false}
                 height="500px"
               >
-                {TAILWIND_AND_ANIMATE_SOURCE}
-                {/* {THIRD_PART_CSS_EXAMPLE} */}
+                {/* {TAILWIND_AND_ANIMATE_SOURCE} */}
+                {THIRD_PART_CSS_EXAMPLE}
               </CodeBlock>
             }
           />

@@ -7,6 +7,7 @@ export type Options = {
   files: Record<string, string>;
   entry: string;
   activeFrame?: number;
+  useLiteEditor?: boolean;
   floatingPreview?: boolean;
 };
 

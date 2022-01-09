@@ -14,7 +14,7 @@ export class DesignerController {
       mount: this._mount,
       history: createMemoryHistory(),
       showLaunchExternalButton: false,
-      useLiteEditor: true,
+      useLiteEditor: this._options.useLiteEditor !== false,
       showCodeToolbar: true,
       showLeftSidebar: false,
       showInspectorPanels: false,
