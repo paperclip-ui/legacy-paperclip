@@ -19,6 +19,7 @@ import {
   CompilerOptions
 } from "@paperclip-ui/utils";
 import { TargetNotFoundError } from "./errors";
+import { requireTargetCompilers } from "./resolve-compilers";
 
 type BaseOptions = {
   config: PaperclipConfig;
@@ -264,10 +265,6 @@ export class DirectoryBuilder {
   }
 }
 
-type TargetCompiler = {
-  compile: (options: CompileOptions) => Record<string, string>;
-};
-
 export const buildDirectory = (
   options: BuildDirectoryOptions,
   engine: EngineDelegate
@@ -396,41 +393,3 @@ const createInterimCompiler = (
     config,
     targetOptions
   });
-
-const requireTargetCompilers = (
-  cwd: string,
-  options: CompilerOptions
-): TargetCompiler[] => {
-  const localDirs = cwd
-    .split("/")
-    .map((part, index, parts) =>
-      [...parts.slice(0, index + 1), "node_modules", "@paperclip-ui"].join("/")
-    )
-    .filter(dir => dir !== "node_modules");
-
-  const possibleDirs = [
-    ...localDirs,
-    "/usr/local/lib/node_modules/@paperclip-ui"
-  ];
-
-  const compilers: Record<string, TargetCompiler> = {};
-
-  for (const possibleDir of possibleDirs) {
-    if (!fs.existsSync(possibleDir)) {
-      continue;
-    }
-
-    for (const moduleName of fs.readdirSync(possibleDir)) {
-      if (/compiler-/.test(moduleName) && !compilers[moduleName]) {
-        if (
-          !options.target ||
-          options.target === moduleName.substring("compiler-".length)
-        ) {
-          compilers[moduleName] = require(path.join(possibleDir, moduleName));
-        }
-      }
-    }
-  }
-
-  return Object.values(compilers).filter(compiler => compiler.compile != null);
-};
