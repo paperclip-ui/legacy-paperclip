@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test2": "mocha lib/test",
+    "test": "mocha lib/test",
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput"
   },
