@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/language-service",
-  "version": "18.4.3",
+  "version": "18.4.4",
   "description": "",
   "main": "index.js",
   "publishConfig": {
@@ -14,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclip-ui/core": "^18.4.3",
-    "@paperclip-ui/test-utils": "^18.4.3",
-    "@paperclip-ui/utils": "^18.4.3",
+    "@paperclip-ui/core": "^18.4.4",
+    "@paperclip-ui/test-utils": "^18.4.4",
+    "@paperclip-ui/utils": "^18.4.4",
     "color": "^4.0.0",
     "typescript": "^4.2.3"
   },
