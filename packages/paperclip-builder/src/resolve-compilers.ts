@@ -13,6 +13,14 @@ export const requireTargetCompilers = (
 ): TargetCompiler[] => {
   const localDirs = [];
 
+  // Allow for relative paths to be used for target compiler
+  if (options.target) {
+    const modulePath = path.resolve(cwd, options.target);
+    if (fs.existsSync(modulePath)) {
+      return [require(modulePath)];
+    }
+  }
+
   const parts = cwd.split("/");
   parts.shift(); // remove root
 

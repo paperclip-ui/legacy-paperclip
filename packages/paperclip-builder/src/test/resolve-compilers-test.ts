@@ -79,4 +79,19 @@ describe(__filename + "*", () => {
 
     tmp.dispose();
   });
+
+  it(`compilers can live outside of the modules directory`, () => {
+    const tmp = saveTmpFixtureFiles(`can-explicitly-define-target-compiler-6`, {
+      "scripts/my-compiler-test/index.js": `exports.compile = () => {}; exports.name = "test2";`
+    });
+
+    const targetCompilers = requireTargetCompilers(tmp.testDir, {
+      target: "scripts/my-compiler-test",
+      outDir: "blah"
+    });
+
+    expect(targetCompilers.length).to.eql(1);
+
+    tmp.dispose();
+  });
 });
