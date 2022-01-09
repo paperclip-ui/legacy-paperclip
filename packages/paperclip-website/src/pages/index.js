@@ -152,6 +152,12 @@ function Home() {
             ctaText="Learn more"
             ctaHref="/docs/guide-third-party-libraries"
             preview={
+              //             <iframe src="https://codesandbox.io/embed/quirky-elion-5te3x?codemirror=1&fontsize=14&hidenavigation=1&module=%2Fsrc%2Fhello-paperclip.pc&theme=dark"
+              //    style={{width:"100%", height: "500px", border: 0, borderRadius: "4px", overflow:"hidden"}}
+              //    title="quirky-elion-5te3x"
+              //    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+              //    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+              //  ></iframe>
               <CodeBlock className="language-html">
                 {THIRD_PART_CSS_EXAMPLE}
               </CodeBlock>
