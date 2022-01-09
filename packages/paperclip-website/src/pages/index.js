@@ -172,8 +172,7 @@ function Home() {
               <>
                 Paperclip comes with tools to help you easily keep track of{" "}
                 <i>all</i> visual changes across your application, so you can
-                confidently make big CSS changes knowing exactly how that will
-                cascade throughout your app.
+                confidently make big CSS changes knowing that you'll be able to track just about every visual bug that comes up.
               </>
             }
             ctaText="Learn about visual regression tooling"
