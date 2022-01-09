@@ -30,20 +30,20 @@ Paperclip allows you to write safe, scalable HTML & CSS for any kind of web appl
 -->
 <div export component as="Message" class="$tw py-8 bg-blue-100">
 
-  <!-- styles that are nested are scoped to the parent element -->
+  <!-- Styles that are nested are scoped to the parent element. -->
   <style>
 
-    /* you can set declarations in scoped styles directly in style blocks. This
-    will style the parent element*/
+    /* You can set declarations directly in style blocks. This
+    will be applied to the parent element. */
     color: magenta;
 
-    /* You can define style rules for descendents of the styled element. */
+    /* You can define style rules for descendents of the parent element. */
     span {
       color: orange;
     }
   </style>
 
-  <!-- you can define "slots" for primitive components -->
+  <!-- This is a "slot" that allows custom children to be inserted into primitive components. -->
   {children}
 
   <span>
@@ -65,12 +65,12 @@ ReactDOM.render(<Message>
 </Message>, document.body);
 ```
 
-Currently, UIs compile to **React** and **static HTML**.
+Currently, UIs compile to **React** and **static HTML**. More languages are planned for after Beta. 
 
 
 ### Features
 
-- Predictable CSS that you have control over. 
+- Scoped CSS by default, and expressive syntax that enables you to be more precise about what elements are styled. This can be useful for CSS frameworks.
 - Generic, and designed for any language. You can use Paperclip in your existing codebase.
 - Compiles to plain performant code. No runtime.
 - Visual test tooling to help you track UI changes across your app.
