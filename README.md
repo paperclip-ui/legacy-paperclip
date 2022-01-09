@@ -13,7 +13,7 @@ Paperclip allows you to write safe, scalable HTML & CSS for any kind of web appl
 
 ```html
 
-<!-- Imported CSS can be imported into a namespace that you can use throughout the document to have complete control
+<!-- Imported CSS can be contained to a namespace that you can use throughout the document to have complete control
  over what's styled -->
 <import src="css-modules/tailwind.css" as="tw" />
 
