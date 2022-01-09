@@ -257,6 +257,9 @@
       </style>
     </icons.Icon>
     <div>
+      <style>
+        margin: 32px 0px;
+      </style>
       <div class="_title">
         <style>
           font-size: 1.7em;
@@ -287,7 +290,6 @@
       </div>
     </div>
   </div>
-  <div class="_col2" />
 </div>
 
 <div export component as="CTAInstall">
