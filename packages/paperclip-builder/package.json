@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/builder",
-  "version": "18.4.4",
+  "version": "18.4.5",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -14,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclip-ui/core": "^18.4.4",
-    "@paperclip-ui/interim": "^18.4.4",
-    "@paperclip-ui/utils": "^18.4.4",
+    "@paperclip-ui/core": "^18.4.5",
+    "@paperclip-ui/interim": "^18.4.5",
+    "@paperclip-ui/utils": "^18.4.5",
     "chalk": "4",
     "chokidar": "^3.5.2",
     "crc32": "^0.2.2",

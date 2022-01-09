@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/autocomplete",
-  "version": "18.4.4",
+  "version": "18.4.5",
   "description": "Internal Autocomplete helper util for language clients",
   "main": "index.js",
   "publishConfig": {
