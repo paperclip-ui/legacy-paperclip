@@ -21,7 +21,7 @@ This will generate an HTML report and open it up in your browser. The report wil
 
 ![alt report summary](./assets/html-report.png)
 
-You can navigate this report to find code that's dead or isn't covered for visual changes. Here's what a file looks like:
+You can navigate this report to find code that's dead or isn't covered for visual testing. Here's what a file looks like:
 
 
 ![alt report summary](./assets/button-report.png)
