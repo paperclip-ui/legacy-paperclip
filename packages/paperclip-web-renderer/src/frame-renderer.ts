@@ -341,25 +341,6 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Evaluated: {
         if (event.data.kind === EvaluatedDataKind.PC) {
-          // console.log("EV", this._dependencies, this._dependencies.includes(event.uri), event.uri);
-          //   if ([
-          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Eina_03/font-family.pc",
-          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/IBM_Plex_Sans/font-family.pc",
-          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Inter/font-family.pc",
-          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Supera_Gothic/font-family.pc",
-          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/atoms.pc",
-          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/utils.pc",
-          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/Button.pc"
-          // ].includes(event.uri)) {
-          //   console.log("EVALUATED");
-          // }
-
-          //   if (this.targetUri.includes("frontend/packages/design-system/src/Modal.pc")) {
-          //     console.log("MODAL");;
-          //   }
-          // if (this._dependencies.toString().includes("node_modules") || event.uri.includes("node_modules")) {
-          //   console.log("WAI...");
-          // }
           if (event.uri === this.targetUri) {
             this._dependencies = event.data.allImportedSheetUris;
           } else if (this._dependencies.includes(event.uri)) {

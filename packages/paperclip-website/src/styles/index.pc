@@ -292,6 +292,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -655, y: -110 }
+-->
 <div export component as="CTAInstall">
   <style>
     display: flex;
@@ -535,6 +539,41 @@
   </div>
 </div>
 
+<div export component as="SuperBigFeature" class="_row">
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 32px 0px;
+    text-align: center;
+  </style>
+  <Info {title} {description} big />
+  <FeaturePreview>{preview}</FeaturePreview>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="FeaturePreview" class="{class?}">
+  <style>
+    &:within(.smaller-preview) {
+      text-align: center;
+    }
+    :global(img, video, .prism-code) {
+      border-radius: 4px;
+      width: 100%;
+      box-shadow: 0px 0px 20px 8px rgba(0, 0, 0, 0.103);
+      &:within(.smaller-preview) {
+        width: auto;
+      }
+      &:within(.no-shadow) {
+        box-shadow: initial;
+      }
+    }
+
+  </style>
+  {children}
+</div>
 
 <!--
   @frame { visible: false }
@@ -564,74 +603,63 @@
         @include section-icon {}
       </style>
     </icons.Icon>
-    <div class="_info">
-      <div class="_title">
-        <style>
-          font-size: 1.3em;
-          margin-bottom: var(--gap-5);
-          font-weight: 500;
-          @include typography.text-secondary {}
-        </style>
-        {title}
-      </div>
-      <div class="_details">{description}</div>
-      <a class="_mini-cta-link" href={ctaHref?}>
-        <style>
-          display: none;
-          margin-top: 10px;
-          align-items: center;
-          color: rgb(102, 163, 241);
-          text-decoration: none;
-          ._mini-cta-icon {
-            font-size: 0.9em;
-            margin-left: 6px;
-          }
-
-          &:within(.has_cta) {
-            display: block;
-          }
-        </style>
-
-        {ctaText}<icons.Icon name="chevron-right">
-          <style>
-            font-size: 0.9em;
-            display: inline-block;
-            display: none;
-            color: inherit;
-            position: relative;
-            top: 2px;
-          </style>
-        </icons.Icon>
-      </a>
-    </div>
+    <Info {title?} {description?} {ctaHref?} {ctaText?} />
   </div>
-  <div class="_preview $layout._col $layout._col9">
+  <FeaturePreview class="$layout _col _col9">
     <style>
-
       margin-left: 15px;
       @include mobile {
         margin-left: 0;
       }
-      &:within(.smaller-preview) {
-        text-align: center;
-      }
-      :global(img, video, .prism-code) {
-        border-radius: 4px;
-        width: 100%;
-        box-shadow: 0px 0px 20px 8px rgba(0, 0, 0, 0.103);
-        &:within(.smaller-preview) {
-          width: auto;
-        }
-        &:within(.no-shadow) {
-          box-shadow: initial;
-        }
-      }
-
     </style>
     {preview}
-  </div>
+  </FeaturePreview>
 </div>
 
+<!--
+  @frame { visible: false }
+-->
+
+<div component as="Info" class="_info">
+  <div class="_title">
+    <style>
+      font-size: 1.3em;
+      margin-bottom: var(--gap-5);
+      font-weight: 500;
+      @include typography.text-secondary {}
+    </style>
+    {title}
+  </div>
+  <div>{description}</div>
+  <a class="_mini-cta-link" href={ctaHref?}>
+    <style>
+      display: none;
+      margin-top: 10px;
+      align-items: center;
+      color: rgb(102, 163, 241);
+      text-decoration: none;
+      ._mini-cta-icon {
+        font-size: 0.9em;
+        margin-left: 6px;
+      }
+
+      &:within(.has_cta) {
+        display: block;
+      }
+    </style>
+
+    {ctaText}<icons.Icon name="chevron-right">
+      <style>
+        font-size: 0.9em;
+        display: inline-block;
+        display: none;
+        color: inherit;
+        position: relative;
+        top: 2px;
+      </style>
+    </icons.Icon>
+  </a>
+</div>
 
 <!--
   @frame { title: "Website / Desktop", width: 1461, height: 4194, x: -250, y: -52 }
@@ -685,7 +713,7 @@
       description="Paperclip compliments your existing codebase, so use it as you go." />
   </VariousFeatures>
 
-  <BigFeature title="Live editing"
+  <SuperBigFeature title="Live editing"
     ctaText="Learn about visual regression testing"
     description="Paperclip comes with visual tools that enable to build your UIs in realtime."
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
