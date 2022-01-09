@@ -1,5 +1,7 @@
-<!-- inject-styles makes all of the styles accessible from this document -->
+<!-- You can include CSS into the scope of this document -->
 <import src="tailwind.css" inject-styles />
+
+<!-- Or you can assign libraries to a specific namespace and use it throughout your doc -->
 <import src="animate.css" as="animate" />
 
 
@@ -7,7 +9,8 @@
 <div>
   <div class="h-screen bg-gradient-to-br from-blue-600 to-indigo-600 flex justify-center items-center w-full">
     <form>
-      <div class="$animate animate__animated animate__backInDown bg-white px-10 py-8 rounded-xl w-screen shadow-md max-w-sm">
+      <!-- animate in -->
+      <div class="$animate animate__animated animate__bounceIn bg-white px-10 py-8 rounded-xl w-screen shadow-md max-w-sm">
         <div class="space-y-4">
           <h1 class="text-center text-2xl font-semibold text-gray-600">
             Register
