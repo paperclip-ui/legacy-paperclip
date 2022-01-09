@@ -71,7 +71,7 @@ export class PaperclipProject {
       if (isPaperclipFile(pcFile)) {
         this._logger.verbose(`Opening ${pcFile}`);
         try {
-          this._engine.open(url.pathToFileURL(pcFile).href);
+          const data = this._engine.open(url.pathToFileURL(pcFile).href);
         } catch (e) {
           this._logger.warn(e);
         }

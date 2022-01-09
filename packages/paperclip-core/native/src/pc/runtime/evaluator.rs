@@ -53,7 +53,7 @@ pub struct Context<'a> {
   pub part_ids: HashSet<&'a String>,
   pub private_scope: String,
   pub injected_scopes: Vec<String>,
-  pub document_scopes: HashSet<String>,
+  pub document_scopes: Vec<String>,
   pub public_scope: String,
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a script_virt::Value,
@@ -552,9 +552,7 @@ fn create_context<'a>(
   let public_scope = get_document_style_public_scope(uri);
 
   let injected_scopes = get_injected_scoped(node_expr, graph.dependencies.get(uri).unwrap());
-  let mut document_scopes:HashSet<String> = HashSet::new();
-  document_scopes.insert(private_scope.clone());
-  document_scopes.insert(public_scope.clone());
+  let mut document_scopes:Vec<String> = vec![private_scope.clone(), public_scope.clone()];
   document_scopes.extend(injected_scopes.clone());
 
   Context {
@@ -1397,7 +1395,7 @@ fn evaluate_attribute_dynamic_string<'a>(
 ) -> Result<script_virt::Value, RuntimeError> {
   add_used_expr_id(&value.id, context);
   let mut buffer: Vec<String> = vec![];
-  let mut scope_injections: HashSet<String> = HashSet::new();
+  let mut scope_injections: Vec<String> = vec![];
 
   if is_native && name == "class" {
     scope_injections.extend(context.document_scopes.clone());
@@ -1407,7 +1405,9 @@ fn evaluate_attribute_dynamic_string<'a>(
     match part {
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if let Some(scope) = context.import_scopes.get(&pierce.class_name) {
-          scope_injections.insert(scope.to_string());
+          if !scope_injections.contains(scope) {
+            scope_injections.push(scope.to_string());
+          }
         }
       },
       _ => {}
@@ -1490,7 +1490,6 @@ fn evaluate_attribute_dynamic_string<'a>(
         } else {
 
           if let Some(scope) = context.import_scopes.get(&pierce.class_name) {
-            scope_injections.insert(scope.to_string());
             format!("_{}", scope)
           } else {
             format!(
@@ -1527,7 +1526,7 @@ fn evaluate_attribute_dynamic_string<'a>(
   ))
 }
 
-fn add_scopes<'a>(class_names: &'a str, scopes: &HashSet<String>) -> String {
+fn add_scopes<'a>(class_names: &'a str, scopes: &Vec<String>) -> String {
   class_names.split(" ").map(|part| {
     if part.trim() == "" {
       return part.to_string();

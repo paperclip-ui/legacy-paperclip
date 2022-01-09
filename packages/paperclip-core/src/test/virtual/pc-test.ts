@@ -46,7 +46,7 @@ describe(__filename + "#", () => {
     const buffer = `${stringifyVirtualNode(preview)}`;
 
     expect(cleanHTML(buffer)).to.eql(
-      `<div class="_pub-80f4925f_primary _80f4925f_primary primary _80f4925f _pub-80f4925f"></div><div class="_80f4925f_alt _pub-80f4925f_alt alt _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div><div class="_80f4925f_alt2 _pub-80f4925f_alt2 alt2 _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div>`
+      `<div class="_80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div><div class="_80f4925f_alt _pub-80f4925f_alt alt _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div><div class="_80f4925f_alt2 _pub-80f4925f_alt2 alt2 _80f4925f_primary _pub-80f4925f_primary primary _80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -685,7 +685,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style></style><div class="_pub-139cec8e_a _139cec8e_a a _80f4925f_ok _pub-80f4925f_ok ok _139cec8e _pub-139cec8e"></div>`
+      `<style></style><div class="_139cec8e_a _pub-139cec8e_a a _80f4925f_ok _pub-80f4925f_ok ok _139cec8e _pub-139cec8e"></div>`
     );
   });
 
@@ -1843,7 +1843,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style></style><div class="_pub-98523c41 _pub-8ae793af_b _pub-98523c41_b _80f4925f_b _pub-80f4925f_b b _pub-8ae793af_c _pub-98523c41_c _80f4925f_c _pub-80f4925f_c c _pub-8ae793af_d _pub-98523c41_d _80f4925f_d _pub-80f4925f_d d _80f4925f _pub-80f4925f _pub-8ae793af"></div>`
+      `<style></style><div class="_pub-98523c41 _80f4925f_b _pub-80f4925f_b _pub-8ae793af_b _pub-98523c41_b b _80f4925f_c _pub-80f4925f_c _pub-8ae793af_c _pub-98523c41_c c _80f4925f_d _pub-80f4925f_d _pub-8ae793af_d _pub-98523c41_d d _80f4925f _pub-80f4925f _pub-8ae793af"></div>`
     );
   });
 });
