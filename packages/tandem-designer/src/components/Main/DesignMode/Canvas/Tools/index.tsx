@@ -23,6 +23,72 @@ import {
 import { Empty } from "./Empty";
 
 export const Tools = () => {
+  const {
+    frames,
+    toolsRef,
+    onMouswDown,
+    onMouseMove,
+    onMouseLeave,
+    showEmpty,
+    canvas,
+    dispatch,
+    selectedBox,
+    state,
+    readonly,
+    hoveringBox,
+    selectedNodePaths,
+    optionKeyDown
+  } = useTools();
+
+  return (
+    <styles.Tools
+      ref={toolsRef}
+      onMouseDown={onMouswDown}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      <Empty show={showEmpty} />
+
+      <Pixels canvas={canvas} />
+
+      <Selectable
+        dispatch={dispatch}
+        canvasScroll={canvas.scrollPosition}
+        canvasTransform={canvas.transform}
+        box={hoveringBox}
+      />
+      {selectedBox ? (
+        <Selectable
+          dispatch={dispatch}
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          box={selectedBox}
+          showKnobs={
+            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
+            !readonly
+          }
+        />
+      ) : null}
+      <Frames
+        frames={frames}
+        dispatch={dispatch}
+        ui={state.designer.ui}
+        canvasTransform={canvas.transform}
+        readonly={readonly}
+      />
+      {optionKeyDown && selectedBox && hoveringBox ? (
+        <Distance
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          from={selectedBox}
+          to={hoveringBox}
+        />
+      ) : null}
+    </styles.Tools>
+  );
+};
+
+const useTools = () => {
   const { state, dispatch } = useAppStore();
   const {
     designer: {
@@ -95,50 +161,20 @@ export const Tools = () => {
 
   const showEmpty = frames.length === 0;
 
-  return (
-    <styles.Tools
-      ref={toolsRef}
-      onMouseDown={onMouswDown}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-    >
-      <Empty show={showEmpty} />
-
-      <Pixels canvas={canvas} />
-
-      <Selectable
-        dispatch={dispatch}
-        canvasScroll={canvas.scrollPosition}
-        canvasTransform={canvas.transform}
-        box={hoveringBox}
-      />
-      {selectedBox ? (
-        <Selectable
-          dispatch={dispatch}
-          canvasScroll={canvas.scrollPosition}
-          canvasTransform={canvas.transform}
-          box={selectedBox}
-          showKnobs={
-            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
-            !readonly
-          }
-        />
-      ) : null}
-      <Frames
-        frames={frames}
-        dispatch={dispatch}
-        ui={state.designer.ui}
-        canvasTransform={canvas.transform}
-        readonly={readonly}
-      />
-      {optionKeyDown && selectedBox && hoveringBox ? (
-        <Distance
-          canvasScroll={canvas.scrollPosition}
-          canvasTransform={canvas.transform}
-          from={selectedBox}
-          to={hoveringBox}
-        />
-      ) : null}
-    </styles.Tools>
-  );
+  return {
+    frames,
+    toolsRef,
+    onMouswDown,
+    onMouseMove,
+    onMouseLeave,
+    showEmpty,
+    canvas,
+    dispatch,
+    selectedBox,
+    state,
+    readonly,
+    hoveringBox,
+    selectedNodePaths,
+    optionKeyDown
+  };
 };
