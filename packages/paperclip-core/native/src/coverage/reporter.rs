@@ -10,11 +10,11 @@ use crate::pc::runtime::evaluator as pc_eval;
 use crate::pc::runtime::inspect_node_styles::{inspect_node_styles, InspectionOptions};
 use crate::pc::runtime::virt as pc_virt;
 use crate::script::ast as script_ast;
+use futures::future::{join_all, BoxFuture};
 use serde::Serialize;
 use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::{BufRead, Cursor};
-use futures::future::{join_all, BoxFuture};
 
 #[derive(Debug, PartialEq, Serialize)]
 struct CoverageSummary {
@@ -146,23 +146,17 @@ async fn generate_file_reports(
     contents.insert(uri.to_string(), vfs.load(uri).await.unwrap().to_string());
   }
 
-
-
   for (uri, dep) in &graph.dependencies {
-    reports.push(
-      Box::pin(generate_file_report(
-        &uri,
-        contents.remove(uri).unwrap(),
-        dep,
-        expr_counts.get(uri).unwrap(),
-        file_expr_id_map.remove(uri).unwrap_or(HashMap::new())
-      ))
-    );
+    reports.push(Box::pin(generate_file_report(
+      &uri,
+      contents.remove(uri).unwrap(),
+      dep,
+      expr_counts.get(uri).unwrap(),
+      file_expr_id_map.remove(uri).unwrap_or(HashMap::new()),
+    )));
   }
 
-  let reports = join_all(reports).await;
-
-  reports
+  join_all(reports).await
 }
 
 async fn generate_file_report(
@@ -170,11 +164,10 @@ async fn generate_file_report(
   content: String,
   dep: &Dependency,
   counts: &ExprCounts,
-  missing_ids: HashMap<String, ExprIdInfo>
+  missing_ids: HashMap<String, ExprIdInfo>,
 ) -> FileReport {
   let mut missing_parts: HashMap<ExprIdKind, PartReport> = HashMap::new();
   let mut missing_statement_ranges: Vec<base_ast::Range> = vec![];
-
 
   missing_parts.insert(
     ExprIdKind::HTML,

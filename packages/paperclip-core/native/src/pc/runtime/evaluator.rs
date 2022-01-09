@@ -552,7 +552,7 @@ fn create_context<'a>(
   let public_scope = get_document_style_public_scope(uri);
 
   let injected_scopes = get_injected_scoped(node_expr, graph.dependencies.get(uri).unwrap());
-  let mut document_scopes:Vec<String> = vec![private_scope.clone(), public_scope.clone()];
+  let mut document_scopes: Vec<String> = vec![private_scope.clone(), public_scope.clone()];
   document_scopes.extend(injected_scopes.clone());
 
   Context {
@@ -1409,7 +1409,7 @@ fn evaluate_attribute_dynamic_string<'a>(
             scope_injections.push(scope.to_string());
           }
         }
-      },
+      }
       _ => {}
     }
   }
@@ -1423,7 +1423,7 @@ fn evaluate_attribute_dynamic_string<'a>(
         } else {
           add_scopes(&value.value, &scope_injections)
         }
-      },
+      }
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if pierce.class_name.contains(".") {
           let parts = pierce.class_name.split(".").collect::<Vec<&str>>();
@@ -1488,7 +1488,6 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           }
         } else {
-
           if let Some(scope) = context.import_scopes.get(&pierce.class_name) {
             format!("_{}", scope)
           } else {
@@ -1527,18 +1526,22 @@ fn evaluate_attribute_dynamic_string<'a>(
 }
 
 fn add_scopes<'a>(class_names: &'a str, scopes: &Vec<String>) -> String {
-  class_names.split(" ").map(|part| {
-    if part.trim() == "" {
-      return part.to_string();
-    } else {
-      let mut buffer = vec![];
-      for scope in scopes {
-        buffer.push(format!("_{}_{}", scope, part));
+  class_names
+    .split(" ")
+    .map(|part| {
+      if part.trim() == "" {
+        return part.to_string();
+      } else {
+        let mut buffer = vec![];
+        for scope in scopes {
+          buffer.push(format!("_{}_{}", scope, part));
+        }
+        buffer.push(part.to_string());
+        buffer.join(" ")
       }
-      buffer.push(part.to_string());
-      buffer.join(" ")
-    }
-  }).collect::<Vec<String>>().join(" ")
+    })
+    .collect::<Vec<String>>()
+    .join(" ")
 }
 
 fn get_import<'a>(

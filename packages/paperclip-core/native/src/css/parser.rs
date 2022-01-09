@@ -1240,10 +1240,7 @@ mod tests {
   fn can_parse_a_decl_with_a_comment() {
     let expr = parse("direction: ltr /* rtl:ignore */;", "id".to_string());
 
-    assert_eq!(
-      matches!(expr, Err(_)),
-      false
-    );
+    assert_eq!(matches!(expr, Err(_)), false);
   }
 
   #[test]
