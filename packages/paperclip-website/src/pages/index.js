@@ -204,7 +204,7 @@ function Home() {
             description={
               <>
                 Paperclip currently compiles to <strong>React</strong> and{" "}
-                <strong>static HTML</strong>. Want to try it out? Just check out
+                <strong>static HTML</strong>, and works with frameworks such as <strong>NextJS</strong>, and <strong>GatsbyJS</strong>. Want to try it out? Just check out
                 the <a href="/repl">playground</a>, or run one of the following
                 commands in your existing codebase.{" "}
               </>
