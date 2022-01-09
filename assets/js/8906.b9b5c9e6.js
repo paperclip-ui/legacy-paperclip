@@ -3806,7 +3806,7 @@ return templates.reduce(function(allCompilerOptions,template){var compilerOption
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", ({value:true}));exports.LOGIC_TAG_NAME=exports.INJECT_STYLES_TAG_NAME=exports.AS_ATTR_NAME=exports.FRAGMENT_TAG_NAME=exports.PREVIEW_ATTR_NAME=exports.COMPONENT_ATTR_NAME=exports.EXPORT_TAG_NAME=exports.DEFAULT_PART_ID=exports.PC_CONFIG_FILE_NAME=void 0;exports.PC_CONFIG_FILE_NAME="paperclip.config.json";exports.DEFAULT_PART_ID="default";exports.EXPORT_TAG_NAME="export";exports.COMPONENT_ATTR_NAME="component";exports.PREVIEW_ATTR_NAME="preview";exports.FRAGMENT_TAG_NAME="fragment";exports.AS_ATTR_NAME="as";exports.INJECT_STYLES_TAG_NAME="inject-styles";// deprecated
+Object.defineProperty(exports, "__esModule", ({value:true}));exports.LOGIC_TAG_NAME=exports.PC_MODULE_NAMESPACE=exports.INJECT_STYLES_TAG_NAME=exports.AS_ATTR_NAME=exports.FRAGMENT_TAG_NAME=exports.PREVIEW_ATTR_NAME=exports.COMPONENT_ATTR_NAME=exports.EXPORT_TAG_NAME=exports.DEFAULT_PART_ID=exports.PC_CONFIG_FILE_NAME=void 0;exports.PC_CONFIG_FILE_NAME="paperclip.config.json";exports.DEFAULT_PART_ID="default";exports.EXPORT_TAG_NAME="export";exports.COMPONENT_ATTR_NAME="component";exports.PREVIEW_ATTR_NAME="preview";exports.FRAGMENT_TAG_NAME="fragment";exports.AS_ATTR_NAME="as";exports.INJECT_STYLES_TAG_NAME="inject-styles";exports.PC_MODULE_NAMESPACE="@paperclip-ui";// deprecated
 exports.LOGIC_TAG_NAME="logic";
 
 /***/ }),
