@@ -74,8 +74,15 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
   // No bueno? Move onto the module directories then
   if (config.moduleDirs) {
     const firstSlashIndex = moduleRelativePath.indexOf("/");
-    const moduleName = moduleRelativePath.substr(0, firstSlashIndex);
-    const srcPath = moduleRelativePath.substr(firstSlashIndex);
+    const moduleName =
+      firstSlashIndex !== -1
+        ? moduleRelativePath.substring(0, firstSlashIndex)
+        : moduleRelativePath;
+    const srcPath =
+      firstSlashIndex !== -1
+        ? moduleRelativePath.substring(firstSlashIndex)
+        : "";
+
     for (let i = 0, { length } = config.moduleDirs; i < length; i++) {
       const moduleDir = config.moduleDirs[i];
       const moduleDirectory = path.join(

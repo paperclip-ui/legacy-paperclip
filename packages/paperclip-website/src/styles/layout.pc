@@ -29,13 +29,12 @@
 
   @export {
     @mixin col-3 {
-      width: 33.333%;
-    }
-
-    @mixin col-2 {
       width: 25%;
     }
 
+    @mixin col-2 {
+      width: 20%;
+    }
 
     @mixin col-6 {
       width: 50%;
@@ -73,32 +72,42 @@
       @include col-3;
     }
     ._col9 {
-      width: 66.666%;
+      width: 75%;
     }
     ._col6 {
       @include col-6;
     }
+    ._col8 {
+      width: 66.6666%;
+    }
+    ._col4 {
+      width: 33.3333%;
+    }
+    ._col10 {
+      width: 83.3333%;
+    }
     ._col12 {
       width: 100%;
     }
-  }
 
-  @media screen and (max-width: 900px) {
-    ._row {
-      flex-direction: column;
-      padding-left: var(--gap-5);
-      padding-right: var(--gap-5);
-    }
-    ._col {
-      width: 100%;
-      margin-bottom: var(--col-gap);
-      margin-right: 0;
-      padding-right: 0;
-      &:last-child {
-        margin-bottom: 0;
+    @media screen and (max-width: 900px) {
+      ._row {
+        flex-direction: column;
+        padding-left: var(--gap-5);
+        padding-right: var(--gap-5);
+      }
+      ._col {
+        width: 100%;
+        margin-bottom: var(--col-gap);
+        margin-right: 0;
+        padding-right: 0;
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
     }
   }
+
 
 
   @export {

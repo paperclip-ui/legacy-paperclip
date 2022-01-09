@@ -1,7 +1,7 @@
 ---
 id: guide-third-party-libraries
 title: Using Third-party Libraries
-sidebar_label: Third-party Libraries
+sidebar_label: Third-party libraries
 ---
 
 ## Third-party CSS

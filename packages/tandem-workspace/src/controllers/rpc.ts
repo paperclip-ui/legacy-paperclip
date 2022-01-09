@@ -161,6 +161,7 @@ class Connection {
     const project = this.getProject();
 
     if (isPaperclipFile(uri)) {
+      const data = project.openPCFile(uri);
       return {
         uri,
         data: project.openPCFile(uri),

@@ -1,6 +1,6 @@
 <import src="./colors.pc" />
 <import src="./typography.pc" as="typography" />
-<import src="./layout.pc" as="layout" />
+<import src="./layout.pc" as="layout" inject-styles />
 <import src="./button.pc" as="button" />
 <import src="./icons/icons.pc" as="icons" />
 
@@ -13,6 +13,12 @@
 <style>
   :root {
     --row-max-width: 1800px;
+  }
+  * > :global(strong) {
+    font-weight: 600;
+  }
+  * > :global(a) {
+    color: rgb(102, 163, 241);
   }
   @export {
     ._emoji {}
@@ -155,9 +161,10 @@
       width: 100%;
     }
 
-    @include mobile {
+    @media screen and (max-width: 1400px) {
       flex-direction: column;
     }
+
 
     :global(.prism-code, ._code-preview) {
       && {
@@ -168,10 +175,6 @@
   {left}
   <img src="./assets/import-graphic-2.svg">
     <style>
-
-
-
-
       height: 150px;
       flex: 0;
       @include mobile {}
@@ -187,6 +190,7 @@
   <style>
     width: 100%;
     height: 100%;
+    min-width: 600px;
     min-height: 200px;
     background: rgb(221, 221, 221);
     border-radius: 6px;
@@ -225,6 +229,95 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="CTABottom">
+  <style>
+    background: rgb(74, 77, 87);
+    color: rgba(255, 255, 255, 0.9);
+    @include layout.py-6 {}
+    :global(a) {
+      color: rgb(151, 196, 255);
+    }
+  </style>
+  <div class="_row">
+    <style>
+      display: flex;
+      max-width: 1000px;
+      text-align: center;
+    </style>
+
+    <!-- here just for spacing -->
+    <icons.Icon name="grow" class="$_icon">
+      <style>
+        visibility: hidden;
+        @include section-icon {}
+      </style>
+    </icons.Icon>
+    <div>
+      <div class="_title">
+        <style>
+          font-size: 1.7em;
+          font-weight: 500;
+          margin-bottom: var(--gap-5);
+          @include typography.text-secondary {}
+        </style>
+        {title}
+      </div>
+      <div class="_text">
+        <style>
+          font-size: 20px;
+          line-height: 1.6em;
+          font-weight: 400;
+        </style>
+        {description}
+      </div>
+
+      <div>
+        <style>
+          margin-top: 32px;
+          display: flex;
+          flex-direction: column;
+          grid-row-gap: 16px;
+          align-items: center;
+        </style>
+        {actions}
+      </div>
+    </div>
+  </div>
+  <div class="_col2" />
+</div>
+
+<div export component as="CTAInstall">
+  <style>
+    display: flex;
+    align-items: center;
+    grid-column-gap: 16px;
+  </style>
+  <span>
+    <style>
+      font-weight: 600;
+    </style>
+    {label}
+  </span>
+  <div>
+    <style>
+      background: rgb(224, 224, 224);
+      color: rgb(48, 50, 56);
+      border: 1px solid grey;
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 4px;
+      width: 500px;
+      @include mobile {
+        width: auto;
+      }
+    </style>
+    {children}
+  </div>
+</div>
 
 <!--
   @frame { visible: false }
@@ -381,6 +474,9 @@
   <style>
     border-top: 1px solid rgb(255, 255, 255);
     border-bottom: 1px solid rgb(226, 226, 226);
+    @media screen and (max-width: 600px) {
+      flex-direction: column;
+    }
   </style>
   {children}
 </div>
@@ -402,6 +498,9 @@
     @include mobile {
       margin-left: 0;
     }
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
 
     &:first-child {
       margin-left: 0;
@@ -421,6 +520,12 @@
         align-items: flex-start;
         margin-bottom: 20px;
         @include typography.text-secondary {}
+        @media screen and (max-width: 1400px) {
+          height: 50px;
+        }
+        @media screen and (max-width: 900px) {
+          height: auto;
+        }
       </style>
       <span>{title}</span>
     </div>
@@ -435,7 +540,7 @@
 <div export
   component
   as="BigFeature"
-  class="_big-feature $layout._section $layout._row"
+  class="_big-feature _section _row"
   class:noShadow="no-shadow"
   class:smallerPreview="smaller-preview"
   class:ctaText="has_cta">
@@ -481,16 +586,18 @@
           }
 
           &:within(.has_cta) {
-            display: flex;
+            display: block;
           }
         </style>
 
         {ctaText}<icons.Icon name="chevron-right">
           <style>
             font-size: 0.9em;
+            display: inline-block;
+            display: none;
             color: inherit;
             position: relative;
-            top: 1px;
+            top: 2px;
           </style>
         </icons.Icon>
       </a>
@@ -525,7 +632,7 @@
 
 
 <!--
-  @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -91, y: -54 }
+  @frame { title: "Website / Desktop", width: 1461, height: 4194, x: -250, y: -52 }
 -->
 <Home component as="Preview">
   <!--
@@ -577,7 +684,7 @@
   </VariousFeatures>
 
   <BigFeature title="Live editing"
-    ctaText="learn more"
+    ctaText="Learn about visual regression testing"
     description="Paperclip comes with visual tools that enable to build your UIs in realtime."
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4"
       autoplay
@@ -589,6 +696,90 @@
       autoplay
       loop />}
     ctaText="View the API" />
+
+  <CTABottom title="Easy to set up"
+    description={<fragment>
+      Paperclip currently supports <strong>React</strong> and <strong>
+        static HTML
+      </strong> out of the box. Want to try it out? Just check out the <a href="/repl">
+        playground
+      </a>, or run one of the following commands in your existing codebase. You
+      can easily opt-out whenever you want.
+    </fragment>}
+    actions={<fragment>
+      <CTAInstall label="NPX">npx @paperclip-ui/cli init</CTAInstall>
+      <CTAInstall label="Yarn">
+        yarn add @paperclip-ui/cli --dev && yarn paperclip init
+      </CTAInstall>
+    </fragment>} />
+  <div class="$layout._row">
+    <style>
+      text-align: center;
+      padding: 32px;
+      display: flex;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      max-width: 700px;
+      margin: 0px auto;
+    </style>
+    <div>
+      <style>
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      </style>
+      Easy setup
+    </div>
+    <div>
+      <style>
+        padding-bottom: 16px;
+      </style>
+      Paperclip currently supports <strong>React</strong> and <strong>
+        static HTML
+      </strong> out of the box. Want to try it out? Just check out the <a href="/repl">
+        playground
+      </a>, or run one of the following commands in your existing codebase. You
+      can easily opt-out whenever you want.
+    </div>
+
+    <!-- TODO: have two options -->
+    <div>
+      <style>
+        display: flex;
+        flex-direction: column;
+        grid-row-gap: 18px;
+      </style>
+
+      <div>
+        Via NPX:
+        <div>
+          <style>
+            background: rgb(224, 224, 224);
+            border: 1px solid grey;
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+          </style>
+          npx @paperclip/cli init
+        </div>
+      </div>
+
+      <div>
+        Via Yarn:
+        <div>
+          <style>
+            background: rgb(224, 224, 224);
+            border: 1px solid grey;
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+          </style>
+          yarn add @paperclip/cli --dev && yarn @paperclip/cli init
+        </div>
+      </div>
+    </div>
+  </div>
 
   <Footer />
 </Home>
@@ -630,11 +821,11 @@
 
 
 <!--
-  @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2462, y: -74 }
+  @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2459, y: -74 }
 -->
 <Preview />
 
 <!--
-  @frame { title: "Mobile", width: 525, height: 4817, x: 1497, y: -57 }
+  @frame { title: "Mobile", width: 525, height: 4817, x: 1497, y: -59 }
 -->
 <Preview />

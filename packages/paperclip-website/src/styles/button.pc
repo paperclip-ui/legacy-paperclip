@@ -1,3 +1,4 @@
+<import src="./typography.pc" inject-styles />
 <import src="./colors.pc" />
 <style>
   ._button {
@@ -9,12 +10,9 @@
     text-decoration: none;
     transition: 0.1s linear;
     color: rgb(31, 72, 85);
+    cursor: pointer;
     &--strong {
       font-weight: 600;
-    }
-    &:hover {
-      border-color: var(--color-green-neon);
-      background-color: var(--color-green-neon);
     }
     &--secondary {
       color: var(--color-green-neon-light);
@@ -22,9 +20,13 @@
         background-color: transparent;
       }
 
-      &:hover {
+      &:hover, &.hover {
         color: var(--color-green-neon);
       }
+    }
+    &:hover, &.hover {
+      border-color: var(--color-green-neon);
+      background-color: var(--color-green-neon);
     }
   }
 </style>
@@ -38,6 +40,7 @@
   as="Anchor"
   class="_button {class?} {className?}"
   class:secondary="_button--secondary"
+  class:hover="hover"
   class:strong="_button--strong"
   {href?}>
   {children}
@@ -48,3 +51,20 @@
   @frame { visible: false }
 -->
 <Anchor href="#">hello world</Anchor>
+
+
+<!--
+  @frame { width: 330, height: 223, x: 0, y: 0 }
+-->
+<div class="text-default">
+  <style>
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    grid-row-gap: 8px;
+  </style>
+  <Anchor>Primary</Anchor>
+  <Anchor hover>Primary:hover</Anchor>
+  <Anchor secondary>Secondary</Anchor>
+  <Anchor secondary hover>Secondary</Anchor>
+</div>

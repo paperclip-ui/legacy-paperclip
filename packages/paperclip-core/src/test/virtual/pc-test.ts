@@ -1030,7 +1030,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test checkbox _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test _80f4925f_checkbox _pub-80f4925f_checkbox checkbox _80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1325,7 +1325,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div class="_376a18c0 _80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1346,7 +1346,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div class="test _376a18c0 _80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1373,7 +1373,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; } [class]._ae63497a { background:orange; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f_test3 _pub-80f4925f_test3 test3 _80f4925f__ae63497a _pub-80f4925f__ae63497a _ae63497a _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._376a18c0 { background:blue; } [class]._ae63497a { background:orange; }</style><div class="test test3 _ae63497a _376a18c0 _80f4925f _pub-80f4925f"></div>`
     );
   });
 
@@ -1559,7 +1559,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style>._406d2856._406d2856 { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span class="_80f4925f _pub-80f4925f _406d2856"></span><span class="_80f4925f__d96479ec _pub-80f4925f__d96479ec _d96479ec _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0 _80f4925f _pub-80f4925f _406d2856"></span>`
+      `<style>._406d2856._406d2856 { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span class="_80f4925f _pub-80f4925f _406d2856"></span><span class="_d96479ec _376a18c0 _80f4925f _pub-80f4925f _406d2856"></span>`
     );
   });
 
@@ -1789,5 +1789,61 @@ describe(__filename + "#", () => {
         mutations: []
       }
     });
+  });
+
+  it(`Can inject an imported namespace into a class`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="/atoms.pc" as="atoms" />
+        <div class="$atoms a b" />
+      `,
+      "/atoms.pc": `
+        <style>
+          @export {
+            .a {
+              color: red;
+            }
+            .b {
+              color: blue;
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.open("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style>[class]._pub-230c4d4a_a { color:red; } [class]._pub-230c4d4a_b { color:blue; }</style><div class="_pub-230c4d4a _80f4925f_a _pub-80f4925f_a _pub-230c4d4a_a a _80f4925f_b _pub-80f4925f_b _pub-230c4d4a_b b _80f4925f _pub-80f4925f"></div>`
+    );
+  });
+
+  it(`Properly inject styles`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <import src="/a.pc" as="a" />
+        <import src="/b.pc" inject-styles />
+        <div class="$a b c d">
+        </div>
+      `,
+      "/a.pc": `
+        <style>
+        </style>
+      `,
+      "/b.pc": `
+        <style>
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.open("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style></style><div class="_pub-98523c41 _80f4925f_b _pub-80f4925f_b _pub-8ae793af_b _pub-98523c41_b b _80f4925f_c _pub-80f4925f_c _pub-8ae793af_c _pub-98523c41_c c _80f4925f_d _pub-80f4925f_d _pub-8ae793af_d _pub-98523c41_d d _80f4925f _pub-80f4925f _pub-8ae793af"></div>`
+    );
   });
 });

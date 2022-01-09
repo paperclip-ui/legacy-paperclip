@@ -1827,7 +1827,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 _80f4925f_sm:p-3.5 _pub-80f4925f_sm:p-3.5 sm:p-3.5 _80f4925f _pub-80f4925f"></div>`
+      `<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 sm:p-3.5 _80f4925f _pub-80f4925f"></div>`
     );
   });
 

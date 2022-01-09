@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/diff",
-  "version": "18.4.2",
+  "version": "18.4.3",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -14,15 +14,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclip-ui/core": "^18.4.2",
-    "@paperclip-ui/diff-utils": "^18.4.2",
-    "@paperclip-ui/utils": "^18.4.2",
+    "@paperclip-ui/core": "^18.4.3",
+    "@paperclip-ui/diff-utils": "^18.4.3",
+    "@paperclip-ui/utils": "^18.4.3",
     "execa": "^6.0.0",
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",
     "html-entities": "^1.2.1",
     "immer": "^9.0.7",
     "mime-types": "^2.1.34",
+    "chalk": "^4.0.0",
     "ora": "5.0.0",
     "p-limit": "^2.0.0",
     "pixelmatch": "^5.2.1",
@@ -32,7 +33,7 @@
     "simple-git": "^2.48.0"
   },
   "devDependencies": {
-    "@paperclip-ui/cli-minimal": "^18.4.2",
-    "@paperclip-ui/compiler-html": "^18.4.2"
+    "@paperclip-ui/cli-minimal": "^18.4.3",
+    "@paperclip-ui/compiler-html": "^18.4.3"
   }
 }

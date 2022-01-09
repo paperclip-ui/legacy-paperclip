@@ -1,0 +1,9 @@
+{
+  "compilerOptions": [
+    {
+      "outDir": "./lib"
+    }
+  ],
+  "srcDir": "./src",
+  "moduleDirs": ["css-modules"]
+}

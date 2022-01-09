@@ -1152,6 +1152,9 @@ fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Stri
       Token::Semicolon | Token::CurlyClose | Token::Colon => {
         break;
       }
+      Token::ScriptComment(_) => {
+        context.tokenizer.next();
+      }
       Token::Str((value, boundary)) => {
         context.tokenizer.next();
         buffer.push_str(format!("{}{}{}", boundary, value, boundary).as_str());
@@ -1173,7 +1176,11 @@ fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Stri
 
 #[cfg(test)]
 mod tests {
+  use super::super::ast;
   use super::*;
+  use crate::base::ast::*;
+  use crate::base::parser::*;
+  use crate::base::string_scanner::*;
 
   #[test]
   fn can_smoke_parse_various_selectors() {
@@ -1227,6 +1234,13 @@ mod tests {
     ";
 
     parse(source, "id".to_string()).unwrap();
+  }
+
+  #[test]
+  fn can_parse_a_decl_with_a_comment() {
+    let expr = parse("direction: ltr /* rtl:ignore */;", "id".to_string());
+
+    assert_eq!(matches!(expr, Err(_)), false);
   }
 
   #[test]

@@ -2,6 +2,7 @@ import { WebviewPanel, window } from "vscode";
 import { eventHandlers, Observable, Observer } from "@paperclip-ui/common";
 import { LiveWindow, LiveWindowState } from "./live-window";
 import { DesignServerStarted } from "../language/server/events";
+import { isPaperclipFile } from "@paperclip-ui/utils";
 // import { HTTPServerStarted } from "@tandem-ui/designer/lib/server/services/http-server";
 // import {
 //   ActionType,
@@ -29,7 +30,7 @@ export class LiveWindowManager implements Observer {
   }
   setStickyWindowUri(uri: string) {
     const stickyWindow = this._windows.find(window => window.getState().sticky);
-    if (stickyWindow) {
+    if (stickyWindow && isPaperclipFile(uri)) {
       stickyWindow.setTargetUri(uri);
       return true;
     }

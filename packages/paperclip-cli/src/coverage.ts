@@ -3,7 +3,7 @@ import * as fsa from "fs-extra";
 import * as path from "path";
 const chalk = require("chalk");
 import { exec } from "child_process";
-import * as glob from "glob";
+import * as globby from "globby";
 import * as URL from "url";
 import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
 import {
@@ -31,10 +31,11 @@ export const coverage = ({ output, html, cwd, open }: CoverageOptions) => {
 
   const configPath = URL.fileURLToPath(url);
 
-  const sources = glob.sync(
+  const sources = globby.sync(
     paperclipSourceGlobPattern(
       path.join(path.dirname(configPath), config.srcDir)
-    )
+    ),
+    { gitignore: true }
   );
 
   for (const source of sources) {

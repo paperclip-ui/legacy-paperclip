@@ -1,19 +1,22 @@
 const SOURCE = `
 
-<!-- inject-styles makes all of the styles accessible from this document -->
-<import src="./tailwind.css" inject-styles />
+<!-- Keep Tailwind scoped to $tw -->
+<import src="modules/tailwind.css" as="tw" />
+
+<!-- You can even mix & match frameworks if you want-->
+<import src="modules/bootstrap.css" as="bs" />
 
 
-<div export component as="Card" class="font-sans bg-gray-500 h-screen w-screen">
-  <div class="bg-gray-100 rounded-lg p-8 md\:p-0">
-    <div class="pt-6 text-center space-y-4">
+<div export component as="Card" class="$tw font-sans bg-gray-500 h-screen w-screen">
+  <div class="$tw bg-gray-100 rounded-lg p-8 md\:p-0">
+    <div class="$tw pt-6 text-center space-y-4">
       <blockquote>
-        <p class="text-lg font-semibold">
+        <p class="$tw text-lg font-semibold">
           {description}
         </p>
       </blockquote>
-      <figcaption class="font-medium">
-        <div class="text-blue-600">
+      <figcaption class="$tw font-medium">
+        <div class="$tw text-blue-600">
           {caption}
         </div>
       </figcaption>

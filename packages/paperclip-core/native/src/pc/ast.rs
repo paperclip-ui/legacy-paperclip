@@ -146,7 +146,7 @@ impl Expr for Node {
     if !visitor.should_continue() {
       return;
     }
-  
+
     self.walk_inside(visitor);
   }
   fn get_id<'a>(&'a self) -> &'a String {
@@ -262,9 +262,7 @@ impl AttributeDynamicStringPart {
   }
   pub fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
     match self {
-      AttributeDynamicStringPart::ClassNamePierce(_) | AttributeDynamicStringPart::Literal(_) => {
-
-      },
+      AttributeDynamicStringPart::ClassNamePierce(_) | AttributeDynamicStringPart::Literal(_) => {}
       AttributeDynamicStringPart::Slot(slot) => {
         slot.walk(visitor);
       }
@@ -367,7 +365,7 @@ impl Expr for Attribute {
       Attribute::KeyValueAttribute(kv) => kv.walk_inside(visitor),
       Attribute::ShorthandAttribute(kv) => kv.walk_inside(visitor),
       Attribute::PropertyBoundAttribute(kv) => kv.walk_inside(visitor),
-      Attribute::SpreadAttribute(kv) => kv.walk_inside(visitor)
+      Attribute::SpreadAttribute(kv) => kv.walk_inside(visitor),
     }
   }
   fn wrap<'a>(&'a self) -> Expression<'a> {
@@ -515,7 +513,7 @@ impl AttributeValue {
     match self {
       AttributeValue::DyanmicString(ds) => ds.walk_inside(visitor),
       AttributeValue::Slot(ds) => ds.walk_inside(visitor),
-      AttributeValue::String(_ds) => { }
+      AttributeValue::String(_ds) => {}
     }
   }
 }

@@ -7,7 +7,6 @@ import { Package } from "./package";
 import { EngineDelegateEvent } from "@paperclip-ui/core";
 import { PaperclipProject } from "./paperclip";
 import { VFS } from "./vfs";
-import { Workspace } from "./workspace";
 import { Options } from "../core/options";
 
 export class Project {

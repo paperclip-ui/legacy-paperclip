@@ -216,6 +216,22 @@ describe(__filename + "#", () => {
       {
         html: `<import src=/a.pc as=test  /><import src=/a.scoped.css as=undefined  /><style></style>`
       }
+    ],
+    [
+      `Namespaces can be injected`,
+      {
+        "/src/entry.pc": `
+          <import src="/a.css" as="test" />
+          <div export component as="A" class="$test a"></div>
+        `,
+        "/a.css": ".a { }"
+      },
+      {
+        importAssetsAsModules: true
+      },
+      {
+        html: `<import src=/a.scoped.css as=test  /><style></style> <div class=_a61d499e_test _pub-a61d499e_test test+ _pub-b29b268d_a _a61d499e_a _pub-a61d499e_a a></div>`
+      }
     ]
   ].forEach(
     ([

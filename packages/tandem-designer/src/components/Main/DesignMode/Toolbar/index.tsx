@@ -116,7 +116,7 @@ export const Toolbar = ({ onMouseDown, onMouseUp }: ToolbarProps) => {
             <styles.Tab active={showingBirdsEye} onClick={onGridButtonClick}>
               <styles.GridButton />
             </styles.Tab>
-            {showFullEditor && sharable && !WIN_ENV && (
+            {!showFullEditor && sharable && !WIN_ENV && (
               <styles.Tab
                 active={showEnvironmentPopup}
                 onClick={onPopOutButtonClicked}
