@@ -6,10 +6,27 @@
   <img src="assets/logo-outline-5-beta.png" width="420">
 </div>
 
-> **Installation**: `npx @paperclip-ui/cli init` in your project directory.
 
+Paperclip is a UI layer for your web application that allows you to write HTML and CSS in a fast, safe, and scalable way. It's designed for any language to use, and currently works with React and static HTML and CSS out of the box. 
 
-Paperclip allows you to write safe, scalable HTML & CSS for any kind of web application. Here's a kitchen sink example of what a Paperclip UI looks like:
+## Installation
+
+Just run this command in your existing project to get started
+
+```
+npx @paperclip-ui/cli init
+```
+
+This will walk you through a brief setup process. Next, just run:
+
+```
+npx @paperclip-ui/cli build
+```
+
+## Example
+
+Here's a kitchen sink example of what a Paperclip UI looks like:
+
 
 ```html
 
@@ -68,9 +85,9 @@ ReactDOM.render(<Message>
 Currently, UIs compile to **React** and **static HTML**. More languages are planned for after Beta. 
 
 
-### Features
+## Features
 
-- Scoped CSS by default, and expressive syntax that enables you to be more precise about what elements are styled. This can be useful for CSS frameworks.
+- Scoped CSS by default, and expressive syntax that enables you to be more precise about what elements are styled. This can even be used to scope CSS frameworks.
 - Generic, and designed for any language. You can use Paperclip in your existing codebase.
 - Compiles to plain performant code. No runtime.
 - Visual test tooling to help you track UI changes across your app.
@@ -90,7 +107,7 @@ Here's an example of visual tests that are performed using Percy. Paperclip also
 ![alt coverage report](./assets/percy-screenshot.png)
 
 
-### Goals
+## Goals
 
 - In a similiar spirit as TypeScript, Paperclip aims to help provide an extra layer of safety around HTML and CSS. UI code should be predictable, easy to refactor, and bugs should be easy to spot across different browsers and screen sizes.
 - To have strict control over how elements are styled, while maintaining the flexibility of CSS. 
@@ -105,7 +122,7 @@ Here's an example of visual tests that are performed using Percy. Paperclip also
 - Pre-processors. Though this may be possible in the long term, Paperclip won't have pre-processors that would enable you to  -->
 
 
-### Resources
+## Resources
 
 - [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
 - [Playground](https://paperclip.dev/repl/)

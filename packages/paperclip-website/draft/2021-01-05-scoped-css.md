@@ -21,7 +21,7 @@ One of the things that I find problematic about CSS is that it’s global. CSS i
 
 I think the simplicity of this is nice, and probably works fine with a small app. However, it’s *a* bit fragile when it comes to larger applications, especially when working with other people. If someone accidentally adds a new `.card` class somewhere else in the codebase, my card element above will break. Patterns like BEM or SMACSS help alleviate this problem by providing rules around how to write CSS, but those rules don’t address a deeper problem that appears to be at the language level. This is one of Paperclip’s core focuses.
 
-Paperclip is a UI layer for web applications that aims to help developers write HTML & CSS that scales well, is resilient to visual regressions, and generally helps developers feel more confident in their UI code. It’s in a similar spirit as TypeScript’s added safety to JavaScript. Paperclip aims to provide an extra layer of safety around HTML & CSS. Here’s a simple example:
+Paperclip is a UI layer for web applications that aims to help developers write HTML & CSS that scales well by making CSS predictable and providing tools for keeping track of visual changes across Paperclip files. It’s in a similar spirit as TypeScript’s added safety to JavaScript. Paperclip aims to provide an extra layer of safety around HTML & CSS. Here’s a simple example:
 
 ```html
 <!-- src/hello.pc -->
@@ -103,7 +103,7 @@ The `@export` block is an explicit way to expose styles into other documents. Ev
 
 Styles from other documents must be explicitly referenced, which is what you’ll notice above with the `$typography.font-regular` reference. This is helpful since it enables the `typography.pc` file to remain easily refactorable later on. For example, if you remove the `font-regular` style (Or move it outside of the `@export` block), the Paperclip compiler will complain about the `font-regular` reference being used in the `button.pc` file:
 
-![Screen Shot 2021-12-31 at 1.22.58 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/00c695b6-fd46-408a-bd28-1f2042d04aa8/Screen_Shot_2021-12-31_at_1.22.58_PM.png)
+![Screen Shot 2021-12-31 at 1.22.58 PM.png](./scoped-css/import-error.png)
 
 Along with any other file where `$typography.font-regular` is used. This makes refactoring relatively straightforward since all you need to do is fix whatever Paperclip is complaining about - this should feel similar to TypeScript. When it comes to *global* styles, those need to be made explicit using special syntax. Here’s an example:
 
@@ -155,7 +155,7 @@ ReactDOM.render(<styles.Button>
 
 If you’re familiar with [Styled Components](https://styled-components.com/), the API is similar. If you want, you can also access class names directly. Using our `typography.pc` example above, here’s how we might access the `font-regular` class in TypeScript:
 
-```typescript
+```jsx
 //src.entry.tsx
 import React from "react";
 import ReactDOM from "react-dom";
