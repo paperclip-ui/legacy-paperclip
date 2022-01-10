@@ -7,7 +7,7 @@
 </div>
 
 
-Paperclip is a UI layer for your web application that allows you to write HTML and CSS in a fast, safe, and scalable way. Paperclip aims to make web UIs easier to maintain, faster to develop, and help make it easy to prevent visual bugs across different browsers and device sizes.
+Paperclip is a UI layer for your web application that aims to make web UIs easier to maintain, faster to develop, and help make it easy to prevent visual bugs across different browsers and device sizes.
 
 
 Paperclip is designed for any language to use, and currently works with React and static HTML and CSS out of the box. 
