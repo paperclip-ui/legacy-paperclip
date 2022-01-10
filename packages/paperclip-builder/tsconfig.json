@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
     "strict": false /* Enable all strict type-checking options. */
   },
   "exclude": [
