@@ -62,7 +62,7 @@ export const build = async (options: BuildOptions) => {
       }
     })
     .onError((error, filePath) => {
-      const info = error.info || error;
+      const info = (error as any).info || error;
       if (info?.range) {
         console.error(
           getPrettyMessage(
