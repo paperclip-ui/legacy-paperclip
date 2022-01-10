@@ -1,6 +1,6 @@
 {
   "name": "@tandem-ui/design-system",
-  "version": "18.4.5",
+  "version": "18.4.6",
   "description": "",
   "main": "lib/index.js",
   "publishConfig": {
@@ -14,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@paperclip-ui/cli-minimal": "^18.4.5",
-    "@paperclip-ui/compiler-react": "^18.4.5",
-    "@paperclip-ui/core": "^18.4.5"
+    "@paperclip-ui/cli-minimal": "^18.4.6",
+    "@paperclip-ui/compiler-react": "^18.4.6",
+    "@paperclip-ui/core": "^18.4.6"
   }
 }
