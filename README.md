@@ -12,7 +12,7 @@
 Paperclip is a thin UI layer for web applications that aims to make UIs easier to maintain, faster to develop, and help make it easy to prevent visual bugs across different browsers and device sizes. 
 
 
-Paperclip can be used on its own to build static websites, or used to expose primitive components that you can integrate into your codebase. It's designed for any language to use, and currently works with React out of the box.
+Paperclip can be used on its own to build static websites, or be used to expose primitive components that you can integrate into your codebase. It's designed for any language to use, and currently works with React out of the box.
 
 ## Installation
 
