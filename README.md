@@ -31,7 +31,7 @@ npx @paperclip-ui/cli build
 ## Resources
 
 - Community
-  - [Discord](https://discord.gg/H6wEVtd)
+  - [Discord](https://chat.paperclip.dev)
 - API
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
