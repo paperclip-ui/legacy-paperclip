@@ -7,7 +7,10 @@
 </div>
 
 
-Paperclip is a UI layer for your web application that allows you to write HTML and CSS in a fast, safe, and scalable way. It's designed for any language to use, and currently works with React and static HTML and CSS out of the box. 
+Paperclip is a UI layer for your web application that allows you to write HTML and CSS in a fast, safe, and scalable way. Paperclip aims to make web UIs easier to maintain, faster to develop, and help make it easy to prevent visual bugs across different browsers and device sizes.
+
+
+Paperclip is designed for any language to use, and currently works with React and static HTML and CSS out of the box. 
 
 ## Installation
 
@@ -22,6 +25,38 @@ This will walk you through a brief setup process. Next, just run:
 ```
 npx @paperclip-ui/cli build
 ```
+
+## Resources
+
+- [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
+- [Playground](https://paperclip.dev/repl/)
+- Installation
+  - [Project installation](https://paperclip.dev/docs/installation) - Basic installation of Paperclip for new and existing projects.
+  - [VSCode extension](https://paperclip.dev/docs/guide-vscode) - Getting started with the VS Code extension.
+  - [Webpack setup](https://paperclip.dev/docs/getting-started-webpack) - Setting up with Webpack
+- API
+  - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
+  - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
+  - [Configuration](https://paperclip.dev/docs/configure-paperclip)
+- [Visual tools](https://paperclip.dev/docs/visual-tooling)
+- Guides
+  - [Compilers](https://paperclip.dev/docs/guide-compilers/) - Basics in creating a compiler.
+- Examples
+  - [Syntax / basic](./examples/syntax-basic)
+  - [React / basic](./examples/react-basic)
+  - [Tailwind](./examples/React-basic)
+
+
+## Goals
+
+- In a similiar spirit as TypeScript, Paperclip aims to help provide an extra layer of safety around HTML and CSS. UI code should be predictable, easy to refactor, and bugs should be easy to spot across different browsers and screen sizes.
+- To have strict control over how elements are styled, while maintaining the flexibility of CSS. 
+- To be generic, and compatible with just about any language, strongly or dynamically typed. 
+- To compile to plain code, and not require any runtime. 
+To make UI development feel more like drawing. Developers shouldn't have to wait around for their UI code to compile, and should have more visual tooling to help <i>visually</i> develop their UIs.
+- To eventually have enough UI tooling that would enable non-engineers to safely create UIs in tandem with developers.
+
+
 
 ## Example
 
@@ -85,14 +120,14 @@ ReactDOM.render(<Message>
 Currently, UIs compile to **React** and **static HTML**. More languages are planned for after Beta. 
 
 
-## Features
+<!-- ## Features
 
 - Scoped CSS by default, and expressive syntax that enables you to be more precise about what elements are styled. This can even be used to scope CSS frameworks.
 - Generic, and designed for any language. You can use Paperclip in your existing codebase.
 - Compiles to plain performant code. No runtime.
 - Visual test tooling to help you track UI changes across your app.
 - Code coverage tooling to help you figure out how much HTML & CSS is coverage under visual tests.
-- Realtime visual development, directly within VS Code. 
+- Realtime visual development, directly within VS Code.  -->
 
 This is the designer that you can use to build UIs in realtime:
 
@@ -107,40 +142,12 @@ Here's an example of visual tests that are performed using Percy. Paperclip also
 ![alt coverage report](./assets/percy-screenshot.png)
 
 
-## Goals
 
-- In a similiar spirit as TypeScript, Paperclip aims to help provide an extra layer of safety around HTML and CSS. UI code should be predictable, easy to refactor, and bugs should be easy to spot across different browsers and screen sizes.
-- To have strict control over how elements are styled, while maintaining the flexibility of CSS. 
-- To be generic, and compatible with just about any language, strongly or dynamically typed. 
-- To compile to plain code, and not require any runtime. 
-- Fast compilation of UI files so that HTM and CSS feels more like drawing. 
-- To eventually have enough UI tooling that would enable non-engineers to safely create UIs in tandem with developers.
 
 <!-- ### Non-goals
 
 - Logic. This is already a very well solved problem. Paperclip only covers what's necessary to integrate with an existing codebase.
 - Pre-processors. Though this may be possible in the long term, Paperclip won't have pre-processors that would enable you to  -->
-
-
-## Resources
-
-- [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
-- [Playground](https://paperclip.dev/repl/)
-- Installation
-  - [Project installation](https://paperclip.dev/docs/installation) - Basic installation of Paperclip for new and existing projects.
-  - [VSCode extension](https://paperclip.dev/docs/guide-vscode) - Getting started with the VS Code extension.
-  - [Webpack setup](https://paperclip.dev/docs/getting-started-webpack) - Setting up with Webpack
-- API
-  - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
-  - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
-  - [Configuration](https://paperclip.dev/docs/configure-paperclip)
-- [Visual tools](https://paperclip.dev/docs/visual-tooling)
-- Guides
-  - [Compilers](https://paperclip.dev/docs/guide-compilers/) - Basics in creating a compiler.
-- Examples
-  - [Syntax / basic](./examples/syntax-basic)
-  - [React / basic](./examples/react-basic)
-  - [Tailwind](./examples/React-basic)
 
 <!-- 
 
