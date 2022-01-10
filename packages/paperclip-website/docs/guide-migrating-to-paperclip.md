@@ -79,7 +79,7 @@ export const Button = styled.button`
 
 The translation to Paperclip would be this:
 
-```html live
+```html
 // file: button.pc
 <import src="./theme.pc" as="theme" />
 <style>

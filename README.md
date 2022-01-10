@@ -28,23 +28,29 @@ npx @paperclip-ui/cli build
 
 ## Resources
 
-- [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
-- [Playground](https://paperclip.dev/repl/)
-- Installation
-  - [Project installation](https://paperclip.dev/docs/installation) - Basic installation of Paperclip for new and existing projects.
-  - [VSCode extension](https://paperclip.dev/docs/guide-vscode) - Getting started with the VS Code extension.
-  - [Webpack setup](https://paperclip.dev/docs/getting-started-webpack) - Setting up with Webpack
+- Community
+  - [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg)
 - API
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
-  - [Configuration](https://paperclip.dev/docs/configure-paperclip)
-- [Visual tools](https://paperclip.dev/docs/visual-tooling)
-- Guides
-  - [Compilers](https://paperclip.dev/docs/guide-compilers/) - Basics in creating a compiler.
+  - [Configuration](https://paperclip.dev/docs/configure-paperclip) - How to configure Paperclip for your codebase
 - Examples
   - [Syntax / basic](./examples/syntax-basic)
   - [React / basic](./examples/react-basic)
   - [Tailwind](./examples/React-basic)
+- Tools
+  - [CLI usage](https://paperclip.dev/docs/usage-cli)
+  - [Designer](https://paperclip.dev/docs/visual-tooling)
+  - [Visual regression tools](https://paperclip.dev/docs/visual-regression-tooling)
+  - [VS Code extension](https://paperclip.dev/docs/guide-vscode)
+- Integrations
+  - [Webpack](https://paperclip.dev/docs/getting-started-webpack) - Setting up with Webpack
+  - [Percy](https://paperclip.dev/docs/configure-percy)
+  - [Jest](https://paperclip.dev/docs/configure-jest)
+  - [Prettier](https://paperclip.dev/docs/configure-prettier)
+- Guides
+  - [Creating a compiler](https://paperclip.dev/docs/guide-compilers/)
+  - [Using third-party CSS](https://paperclip.dev/docs/guide-third-party-libraries)
 
 
 ## Goals
