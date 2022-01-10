@@ -20,8 +20,8 @@ function Home() {
     <div className="home">
       <Layout
         className="dograg"
-        title={`${siteConfig.title} - Scalable HTML & CSS for any kind of web application.`}
-        description="Paperclip offers a way to write CSS that is scoped to the document that it's defined in, so you never have to worry about styles leaking again."
+        title={`${siteConfig.title} - Safe, scalable HTML and CSS for any kind of web application`}
+        description="Like TypeScript for HTML and CSS, Paperclip provides you with a way to write predictable, scoped CSS, and comes with tools to help track visual changes across your application to prevent bugs from shipping to production."
       >
         <styles.Home>
           <styles.Header
@@ -172,8 +172,7 @@ function Home() {
               <>
                 Paperclip comes with tools to help you easily keep track of{" "}
                 <i>all</i> visual changes across your application, so you can
-                confidently make big CSS changes knowing exactly how that will
-                cascade throughout your app.
+                confidently make big CSS changes knowing that you'll be able to track just about every visual bug that comes up.
               </>
             }
             ctaText="Learn about visual regression tooling"
@@ -204,7 +203,7 @@ function Home() {
             description={
               <>
                 Paperclip currently compiles to <strong>React</strong> and{" "}
-                <strong>static HTML</strong>. Want to try it out? Just check out
+                <strong>static HTML</strong>, and works with frameworks such as <strong>NextJS</strong>, and <strong>GatsbyJS</strong>. Want to try it out? Just check out
                 the <a href="/repl">playground</a>, or run one of the following
                 commands in your existing codebase.{" "}
               </>
