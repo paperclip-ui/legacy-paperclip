@@ -120,9 +120,7 @@ module.exports = {
           items: [
             {
               label: "Help",
-              href:
-                "https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg"
-              // href: "https://chat.paperclip.dev"
+              href: "https://chat.paperclip.dev"
             },
             {
               href: "https://github.com/paperclipui/paperclip",
