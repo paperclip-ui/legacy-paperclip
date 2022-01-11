@@ -13,99 +13,149 @@ hide_table_of_contents: false
 draft: true
 ---
 
-Vendor lock-in with CSS frameworks can be a particularly sticky problem, largely because of the global nature of CSS. Once you pick a CSS library, you can make a pretty good bet that you’ll be stuck with it forever <!--truncate-->- it just gets too mangled up with the codebase. This can make it a bit nerve-wracking to introduce *any* CSS framework, let alone one into an existing codebase. I think that a large chunk of this problem can be avoided by removing *global* aspect of CSS, this is where Paperclip is handy. 
+Vendor lock-in with CSS frameworks can be a particularly sticky problem, largely because of the global nature of CSS. Once you pick a CSS library with a team of engineers, you can make a pretty good bet that you’ll be stuck with it forever <!--truncate-->- it just gets too mangled up with the codebase. This can make it a bit nerve-wracking to introduce *any* CSS framework, let alone one into an existing codebase where there's the risk of overriding existing styles. I think that a large chunk of this problem can be avoided by removing *global* aspect of CSS, this is where Paperclip is handy. 
 
-[Paperclip](http://paperclip.dev) provides a way to keep HTML & CSS sandboxed in a single file that you can use anywhere in your application. Here’s a basic example:
+[Paperclip](http://paperclip.dev) provides a way to keep HTML & CSS sandboxed & explicit. Here’s a basic example:
 
 ```html
-<!-- src/hello.pc" -->
-
-<!-- styles are only applied to this doc -->
+<!-- src/atoms/typography.pc" -->
 <style>
-  div {
-    color: red;
-  }
-
-  /* class names be made accessible to other files using @export */
+  
+  /* everything within an @export block is accessible to other documents */
   @export {
-    .font-regular {
+  
+    // apply default style rule
+    * {
       font-family: Open Sans;
       font-size: 14px;
     }
+  
+    .bold {
+      font-weight: 600;
+    }
+  
+    h1 {
+      font-size: 1.5em;
+    }
+  
+    h2 {
+      font-size: 1.3em;
+    }
+  
+    .blue {
+      color: blue;
+    }
+  
+    .underline {
+      text-decoration: underline;
+    }
+  
+    .small {
+      font-size: 1.5em;
+    }
+  }
+  
+  /* everything outside of an export block is private to this document */
+  div {
+    color: red;
   }
 </style>
 
-<!-- you can export primitive components that are usable anywhere in your app -->
-<div export component as="Hello">
-  {children}
+<div class="bold">
+  I'm read text!
 </div>
 ```
 
-Assuming that you’re using JSX, you can use these styles like so:
-
-```jsx
-import {classNames, Hello} from "./hello.pc";
-
-<div className={classNames["font-regular"]}>
-  <Hello>Hello World!</Hello>
-</div>
-```
-
-When it comes to CSS frameworks, Paperclip is useful since it *scopes* CSS libraries to the files where they’re imported into*.*  For example, here’s Tailwind used with Paperclip:
+This file can be used in other documents like so:
 
 ```html
-<!-- src/Card.pc -->
+<import src="atoms/typography.pc" as="text" />
 
-<!-- This imported CSS is scoped to this document -->
-<import src="./styles/tailwind.css" inject-styles />
+<!-- shorthand way of applying styles from another doc -->
+<h1 class="$text blue underline">
+  I'm a blue header!
+</h1>
 
-<!-- -->
-<figure export component as="Card" class="font-sans md:flex bg-gray-100 rounded-xl p-8 md:p-0 dark:bg-gray-800">
-  <div style="--background:url({profileUrl})" class="w-24 h-24 md:w-48 md:h-auto md:rounded-none rounded-full mx-auto">
-    <style>
-      background-image: var(--background);
-      background-size: 100%;
-      width: 512px;
-    </style>
-  </div>
-  <div class="pt-6 md:p-8 text-center md:text-left space-y-4">
-    <blockquote>
-      <p class="text-lg font-medium">
-        {description}
-      </p>
-    </blockquote>
-    <figcaption class="font-medium">
-      <div class="text-sky-500 dark:text-sky-400">
-        {name}
-      </div>
-      <div class="text-gray-700 dark:text-gray-500">
-        {title}
-      </div>
-    </figcaption>
-  </div>
-</figure>
-```
-
-> You can play with this example live here: [SANDBOX URL]
-> 
-
-Tailwind is only applied in this document, and you’re given absolute control *where* the library is used in your application. If you don’t want to use Tailwind, you don’t have to. For example, suppose we have another Paperclip file in the same codebase:
-
-```html
-<!-- src/test.pc -->
-
-<style>
-  .font-medium {
-    font-family: Open Sans;
-    font-size: 14px;
-  }
-</style>
-
-<div class="font-medium">
-  {children}
+<!-- or we can be very specific about what styles are applied -->
+<div class="$text.small $text.blue">
+  I'm small blue text
 </div>
 ```
 
-If we were to use this file, the only rule that’s applied to the `div` is the `font-medium` style in this doc, even though `font-medium` is *also* defined in Tailwind. 
+And if you want, you can include the entire CSS scope of another document like so:
 
-Paperclip can scope other CSS libraries, Tailwind is just used as an example here. You can use Bootstrap, Bulma, or just about anything else. Paperclip should make it easy to keep them in isolation from the rest of your app. Paperclip should also allow you to more easily experiment with new libraries without worrying about them leaking into other parts of your application. You could even use multiple libraries together without worrying about them colliding with each other
+```html
+<import src="atoms/typography.pc" inject-styles />
+
+<h1 class="blue underline">
+  I'm a blue header!
+</h1>
+
+<div class="small blue">
+  I'm small blue text
+</div>
+```
+
+This level of control can also be used with CSS frameworks. For example, here’s a Tailwind + Animate.css example:
+
+```html
+<!-- You can include CSS into the scope of this document -->
+<import src="tailwind.css" inject-styles />
+
+<!-- Or you can assign libraries to a specific namespace and use it throughout your doc -->
+<import src="animate.css" as="animate" />
+
+<div>
+  <div class="h-screen bg-gradient-to-br from-blue-600 to-indigo-600">
+    <form>
+      <!-- animate in -->
+      <div class="$animate animate__animated animate__bounceIn bg-white px-10 py-8 ...more classes...">
+        <!-- More code here ... -->
+      </div>
+    </form>
+  </div>
+</div>
+```
+
+> You can play with this example live here: https://codesandbox.io/s/github/paperclipui/paperclip/tree/master/examples/tailwind-and-animate
+
+Tailwind is only applied in this document, and you’re given absolute control *where* the library is used in your application. You can also use other libraries too like Bootstrap, Bulma, etc. Paperclip should make to easier to have control over any CSS framework. Suppose you want to move away from one? You can easily do that. For example, here's a bootstrap example:
+
+```html
+<import src="modules/bootstrap.css" as="bts" />
+
+<button export component as="Button" class="$bts btn-small btn-default">
+</button>
+```
+
+Suppose you want to switch over to Tailwind, here's an example of how to do that:
+
+```html
+
+<import src="modules/tailwind.css" as="tw" />
+<import src="modules/bootstrap.css" as="bp" />
+
+<button export component as="Button" class:bts="$bts btn-small btn-default" class:tw="$tw btn">
+  {children}
+</button>
+
+
+<Button bts>
+  I'm a Bootstrap button
+</Button>
+
+<Button tw>
+  I'm a Tailwind button
+</Button>
+```
+
+here's what this looks like:
+
+
+
+The `class:variant` syntax gives you a way to define variant styles on any element. We're using it above between Bootstrap and Tailwind to make sure that they don't clobber each other, and _also_ because the styles are slightly different. Chances are I'll probably want to use this same pattern in the _rest_ of the application, and then assign them to a feature flag switch that turns bootstrap off and tailwind on when migration is finished.
+
+
+
+
+Paperclip should make it easy to keep them in isolation from the rest of your app. Paperclip should also allow you to more easily experiment with new libraries without worrying about them leaking into other parts of your application. You could even use multiple libraries together without worrying about them colliding with each other
