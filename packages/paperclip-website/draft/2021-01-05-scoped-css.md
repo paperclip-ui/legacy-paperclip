@@ -10,7 +10,7 @@ authors:
 image: https://i.imgur.com/mErPwqL.png
 hide_table_of_contents: false
 ---
-One of the things that I find problematic about CSS is that it’s global. CSS in a small project is manageable, but it increasingly becomes difficult to scale as applications get larger. <!--truncate-->For example, this code *alone* isn’t too problematic: 
+CSS in a small project is manageable, but it increasingly becomes difficult to scale as applications get larger. <!--truncate-->For example, this code *alone* isn’t too problematic: 
 
 ```html
 <link rel="stylesheet" href="./card.css">
