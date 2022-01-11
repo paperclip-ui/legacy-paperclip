@@ -66,12 +66,12 @@ With Paperclip, you know exactly what’s going on.  You don’t have to worry a
   /* Make these styles accessible to other documents */
   @export {
     .font-regular {
-	    @include font-base;
+      @include font-base;
       font-size: 14px;
     }
 
     .font-heading {
-	    @include font-base;
+      @include font-base;
       font-weight: 600;
       font-size: 18px;
       letter-spacing: 0.06em;
