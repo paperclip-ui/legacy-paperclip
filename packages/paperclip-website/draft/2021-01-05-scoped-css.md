@@ -10,18 +10,20 @@ authors:
 image: https://i.imgur.com/mErPwqL.png
 hide_table_of_contents: false
 ---
-CSS in a small project is manageable, but it increasingly becomes difficult to scale as applications get larger. <!--truncate-->For example, this code *alone* isn’t too problematic: 
+CSS in a small project is manageable, but it increasingly becomes difficult to maintain as codebases get larger. <!--truncate-->For example, this code *alone* isn’t too problematic: 
 
 ```html
+<!-- <head /> in index.html -->
 <link rel="stylesheet" href="./card.css">
 
+<!-- somewhere in the body -->
 <div class="card">
 </div>
 ```
 
-I think the simplicity of this is nice, and probably works fine with a small app. However, it’s *a* bit fragile when it comes to larger applications, especially when working with other people. If someone accidentally adds a new `.card` class somewhere else in the codebase, my card element above will break. Patterns like BEM or SMACSS help alleviate this problem by providing rules around how to write CSS, but those rules don’t address a deeper problem that appears to be at the language level. This is one of Paperclip’s core focuses.
+I think the simplicity of this is nice, and works fine in a small app. However, it’s a bit fragile when it comes to larger applications, especially when working with other people. If someone accidentally adds a new `.card` class somewhere else in the codebase, my card element above will break. Patterns like BEM or SMACSS help alleviate this problem by providing rules around how to write CSS, but those rules don’t address global CSS which is the larger problem. 
 
-Paperclip is a UI layer for web applications that aims to help developers write HTML & CSS that scales well by making CSS predictable and providing tools for keeping track of visual changes across Paperclip files. It’s in a similar spirit as TypeScript’s added safety to JavaScript. Paperclip aims to provide an extra layer of safety around HTML & CSS. Here’s a simple example:
+Paperclip is a language-agnostic UI layer for web applications that aims to help developers write HTML & CSS that's resilient to bugs by keeping CSS scoped, <i>explicit</i>, provide static analysis tooling to follow CSS and make sure it's being applied correctly, and [visual test](https://paperclip.dev/docs/visual-regression-tooling) tooling to make sure that you're aware of every visual change in your app. It’s aimed to be a bit like TypeScript in the sense of having an extra layer of safety for HTML and CSS. Here’s a simple example:
 
 ```html
 <!-- src/hello.pc -->
@@ -37,7 +39,7 @@ Paperclip is a UI layer for web applications that aims to help developers write 
 </div>
 ```
 
-Styles in Paperclip are scoped by default. In other words, the styles here are only applied to the elements in this document. To illustrate how this works, here’s what a *compiled* Paperclip file might look like in regular HTML & CSS:
+Styles in Paperclip are scoped by default. In other words, styles are only applied to the elements in the same document. To illustrate how this works, here’s what a *compiled* Paperclip file might look like in regular HTML & CSS:
 
 ```html
 <style>
@@ -54,7 +56,7 @@ Styles in Paperclip are scoped by default. In other words, the styles here are o
 > Example of generated code from a `*.pc` file.
 > 
 
-With Paperclip, you know exactly what’s going on.  You don’t have to worry about styles leaking into other documents, so you’re free to write HTML & CSS however you want. Of course, you may want to expose styles to other files. Here’s an example of how to do that:
+You don’t have to worry about styles leaking into other documents, so you’re free to write HTML & CSS however you want. Of course, you may want to expose styles to other files. Here’s an example of how to do that:
 
 ```html
 <!-- src/typography.pc -->
