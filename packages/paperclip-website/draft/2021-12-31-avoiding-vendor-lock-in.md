@@ -13,7 +13,11 @@ hide_table_of_contents: false
 draft: true
 ---
 
-Vendor lock-in with CSS frameworks can be a particularly sticky problem, largely because of the global nature of CSS. Once you pick a CSS library with a team of engineers, you can make a pretty good bet that you’ll be stuck with it forever <!--truncate-->- it just gets too mangled up with the codebase. This can make it a bit nerve-wracking to introduce *any* CSS framework, let alone one into an existing codebase where there's the risk of overriding existing styles. I think that a large chunk of this problem can be avoided by removing *global* aspect of CSS, this is where Paperclip is handy. 
+TODO: CSS scoping for everyone
+
+
+
+Vendor lock-in with CSS frameworks can be a particularly sticky problem, largely because of the global nature of CSS. Once you pick a CSS library with a team of engineers, you can make a pretty good bet that you’ll be incredibly hard to remove <!--truncate-->- it can just get too mangled up with the codebase. This can make it a bit nerve-wracking to introduce *any* CSS framework, let alone one into an existing codebase where there's the risk of overriding existing styles. I think that a large chunk of this problem can be avoided by removing *global* aspect of CSS, this is where Paperclip is handy. 
 
 [Paperclip](http://paperclip.dev) provides a way to keep HTML & CSS sandboxed & explicit. Here’s a basic example:
 
@@ -61,8 +65,8 @@ Vendor lock-in with CSS frameworks can be a particularly sticky problem, largely
   }
 </style>
 
-<div class="bold">
-  I'm read text!
+<div class="blue underline bold">
+  I'm blue text!
 </div>
 ```
 
@@ -119,7 +123,7 @@ This level of control can also be used with CSS frameworks. For example, here’
 
 > You can play with this example live here: https://codesandbox.io/s/github/paperclipui/paperclip/tree/master/examples/tailwind-and-animate
 
-Tailwind is only applied in this document, and you’re given absolute control *where* the library is used in your application. You can also use other libraries too like Bootstrap, Bulma, etc. Paperclip should make to easier to have control over any CSS framework. Suppose you want to move away from one? You can easily do that. For example, here's a bootstrap example:
+Tailwind is only applied in this document, and you’re given absolute control *where* the library is used in your application. You can also use other libraries too like Bootstrap, Bulma, etc. What if you want to move away from one? You can easily do that. For example:
 
 ```html
 <import src="modules/bootstrap.css" as="bts" />
@@ -131,29 +135,58 @@ Tailwind is only applied in this document, and you’re given absolute control *
 Suppose you want to switch over to Tailwind, here's an example of how to do that:
 
 ```html
+<import src="bootstrap/bootstrap.css" as="bts" />
+<import src="tailwind.css" as="tw" />
 
-<import src="modules/tailwind.css" as="tw" />
-<import src="modules/bootstrap.css" as="bp" />
-
-<button export component as="Button" class:bts="$bts btn-small btn-default" class:tw="$tw btn">
+<!--
+  @frame { visible: false }
+-->
+<button component as="Button" 
+  class:bts="$bts btn btn-primary" 
+  class:tw="$tw bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
   {children}
 </button>
 
 
-<Button bts>
-  I'm a Bootstrap button
-</Button>
+<!--
+  @frame { title: "Buttons", width: 241, height: 264, x: 564, y: 0 }
+-->
+<div>
 
-<Button tw>
-  I'm a Tailwind button
-</Button>
+  <!-- Using vanilla CSS here instead of CSS framework to make sure 
+  that neither UI is tainted with the wrong styles (inherited declarations, maybe CSS vars) -->
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  </style>
+
+
+  <!-- All Legacy UI goes here. We define $bts at the top to apply root styles like
+   :root, body, html, and any other styles that have cascading declarations like font-family, color, etc. -->
+  <div class="$bts">
+    <h4>Legacy buttons</h4>
+    <Button bts>
+      I'm a bootstrap button
+    </Button>
+  </div>
+
+  <!-- New UI here, isolated in its own div -->
+  <div class="$tw"> 
+    <h4>New buttons</h4>
+    <Button tw>
+      I'm a bootstrap button
+    </Button>
+  </div>
+</div>
 ```
 
 here's what this looks like:
 
+![alt bootstrap v tailwind](./avoid-lock-in/bootstrap-v-tailwind.png)
 
 
-The `class:variant` syntax gives you a way to define variant styles on any element. We're using it above between Bootstrap and Tailwind to make sure that they don't clobber each other, and _also_ because the styles are slightly different. Chances are I'll probably want to use this same pattern in the _rest_ of the application, and then assign them to a feature flag switch that turns bootstrap off and tailwind on when migration is finished.
+The `class:variant` syntax gives you a way to define variant styles on any element. We're using it above between Bootstrap and Tailwind to make sure that they don't clobber each other. This pattern can also be used throughout to incrementally transition from one framework to another while also continuously deploying these changes behind the scenes (which I find to be a far safer approach to shipping big re-designs like this instead of having a feature branch that may quickly become out of date because people are touching UI code so much). And when you're migration effort is done, all you need do is flip a switch.
 
 
 
