@@ -13,8 +13,6 @@ hide_table_of_contents: false
 draft: true
 ---
 
-TODO: CSS scoping for everyone
-
 
 
 Vendor lock-in with CSS frameworks can be a particularly sticky problem, largely because of the global nature of CSS. Once you pick a CSS library with a team of engineers, you can make a pretty good bet that you’ll be incredibly hard to remove <!--truncate-->- it can just get too mangled up with the codebase. This can make it a bit nerve-wracking to introduce *any* CSS framework, let alone one into an existing codebase where there's the risk of overriding existing styles. I think that a large chunk of this problem can be avoided by removing *global* aspect of CSS, this is where Paperclip is handy. 

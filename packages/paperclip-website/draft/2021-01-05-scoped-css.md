@@ -1,5 +1,5 @@
 ---
-title: Scalable HTML & CSS for any kind of web application
+title: Why CSS scoping and how it works in Paperclip
 description: How to use Paperclip to 
 slug: scoped-css-with-paperclip
 authors:
@@ -10,6 +10,16 @@ authors:
 image: https://i.imgur.com/mErPwqL.png
 hide_table_of_contents: false
 ---
+
+<!--
+
+Self criticisms:
+
+- this is framed in a way to attract 
+
+-->
+
+
 CSS in a small project is manageable, but it increasingly becomes difficult to maintain as codebases get larger. <!--truncate-->For example, this code *alone* isn’t too problematic: 
 
 ```html
@@ -21,7 +31,11 @@ CSS in a small project is manageable, but it increasingly becomes difficult to m
 </div>
 ```
 
+
+
 I think the simplicity of this is nice, and works fine in a small app. However, it’s a bit fragile when it comes to larger applications, especially when working with other people. If someone accidentally adds a new `.card` class somewhere else in the codebase, my card element above will break. Patterns like BEM or SMACSS help alleviate this problem by providing rules around how to write CSS, but those rules don’t address global CSS which is the larger problem. 
+
+Paperclip is a domain-specific-language that covers HTML and CSS with a few adjustments, the main one being that CSS is scoped by _default_. 
 
 Paperclip is a language-agnostic UI layer for web applications that aims to help developers write HTML & CSS that's resilient to bugs by keeping CSS scoped, <i>explicit</i>, provide static analysis tooling to follow CSS and make sure it's being applied correctly, and [visual test](https://paperclip.dev/docs/visual-regression-tooling) tooling to make sure that you're aware of every visual change in your app. It’s aimed to be a bit like TypeScript in the sense of having an extra layer of safety for HTML and CSS. Here’s a simple example:
 

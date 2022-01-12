@@ -1,7 +1,6 @@
 use super::super::declaration_value_ast as decl_ast;
 use super::super::media_ast::*;
 use super::super::media_parser::parse as parse_media;
-use crate::base::parser::ParseError;
 
 pub struct Options {
   pub screen_width: u32,
@@ -52,11 +51,11 @@ fn match_and(ast: &MediaCompound, options: &Options) -> bool {
       .all(|condition| match_in_parens(condition, options))
 }
 
-fn match_not(ast: &MediaNot, options: &Options) -> bool {
+fn match_not(_ast: &MediaNot, _options: &Options) -> bool {
   false
 }
 
-fn match_or(ast: &MediaCompound, options: &Options) -> bool {
+fn match_or(_ast: &MediaCompound, _options: &Options) -> bool {
   false
 }
 
@@ -95,7 +94,7 @@ fn match_mf_plain(ast: &MFPlain, options: &Options) -> bool {
   }
 }
 
-fn get_mf_plain_unit_value(ast: &decl_ast::Expression, options: &Options) -> Option<u32> {
+fn get_mf_plain_unit_value(ast: &decl_ast::Expression, _options: &Options) -> Option<u32> {
   match ast {
     decl_ast::Expression::Value(value) => {
       match value {

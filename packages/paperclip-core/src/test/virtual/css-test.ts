@@ -1951,4 +1951,24 @@ describe(__filename + "#", () => {
       `<style>div._pub-b8a55827 { color:blue; }</style><div class="_80f4925f _pub-80f4925f _pub-b8a55827"></div>`
     );
   });
+
+  // Fixes https://github.com/paperclip-ui/paperclip/issues/970
+  it(`Should error if a resource isn't found`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          .div {
+            background: url("./not-found.png");
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_80f4925f_test _pub-80f4925f_test _pub-b8a55827_test test _80f4925f _pub-80f4925f _pub-b8a55827"></div>`
+    );
+  });
 });

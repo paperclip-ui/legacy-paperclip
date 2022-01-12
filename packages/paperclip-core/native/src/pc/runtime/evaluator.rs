@@ -1413,6 +1413,7 @@ fn evaluate_attribute_dynamic_string<'a>(
       _ => {}
     }
   }
+  
 
   for part in value.values.iter() {
     add_used_expr_id(&part.get_id(), context);
