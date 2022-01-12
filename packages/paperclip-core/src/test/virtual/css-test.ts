@@ -1968,7 +1968,7 @@ describe(__filename + "#", () => {
     let err;
 
     try {
-      const result = await engine.open("/entry.pc");
+      await engine.open("/entry.pc");
     } catch (e) {
       err = e;
     }
