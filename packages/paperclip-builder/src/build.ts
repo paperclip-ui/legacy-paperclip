@@ -196,7 +196,8 @@ export class DirectoryBuilder {
       await Promise.all(
         sources.map(inc =>
           globby(inc, {
-            gitignore: this.options.gitignore !== false ? true : false
+            gitignore: this.options.gitignore !== false ? true : false,
+            ignore: ["**/node_modules/**"]
           })
         )
       )

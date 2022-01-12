@@ -194,7 +194,7 @@ describe(__filename + "#", () => {
         start: { pos: 19, line: 2, column: 19 },
         end: { pos: 33, line: 2, column: 33 }
       },
-      message: "Unable to resolve file: /not/found.png from /entry.pc"
+      message: "Unable to resolve file: /not/found.png"
     });
   });
 
@@ -1195,7 +1195,8 @@ describe(__filename + "#", () => {
             }
           </style>
         </div>
-      `
+      `,
+      "/path.png": ""
     };
 
     const engine = await createMockEngine(graph);
@@ -1845,5 +1846,24 @@ describe(__filename + "#", () => {
     expect(buffer).to.eql(
       `<style></style><div class="_pub-98523c41 _80f4925f_b _pub-80f4925f_b _pub-8ae793af_b _pub-98523c41_b b _80f4925f_c _pub-80f4925f_c _pub-8ae793af_c _pub-98523c41_c c _80f4925f_d _pub-80f4925f_d _pub-8ae793af_d _pub-98523c41_d d _80f4925f _pub-80f4925f _pub-8ae793af"></div>`
     );
+  });
+
+  // https://github.com/paperclip-ui/paperclip/issues/970
+  it(`Errors if image src is not found`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <img src="/blah.png" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    let err;
+    try {
+      (await engine.open("/entry.pc")) as any;
+    } catch (e) {
+      err = e;
+    }
+    expect(err).not.eql(undefined);
+    expect(err.message).to.eql(`Unable to resolve file: /blah.png`);
   });
 });

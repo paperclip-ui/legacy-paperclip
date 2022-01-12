@@ -111,7 +111,8 @@ describe(__filename + "#", () => {
   xit(`imported sheets across multiple getState().frames when import changes`);
   it(`properly renders with protocol`, async () => {
     const graph = {
-      "file:///entry.pc": `<img src="/file.jpeg" />`
+      "file:///entry.pc": `<img src="/file.jpeg" />`,
+      "file:///file.jpeg": "a"
     };
 
     const renderer = createMockFramesRenderer("file:///entry.pc", url =>

@@ -1,0 +1,8 @@
+<import src="./test3.pc" as="test3" />
+
+<div class="$test3.el">
+  <style>
+    color: orange;
+  </style>
+  I'm some text
+</div>

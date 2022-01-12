@@ -1,0 +1,16 @@
+{
+  "name": "tailwind-and-bootstrap-example",
+  "version": "18.4.7",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn tailwindcss -i ./src/tailwind.scss -o ./css-modules/tailwind.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@paperclip-ui/cli": "^18.4.7",
+    "@paperclip-ui/core": "^18.4.7"
+  }
+}

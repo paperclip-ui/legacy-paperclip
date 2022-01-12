@@ -40,6 +40,7 @@ use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use serde::Serialize;
 use std::collections::BTreeMap;
+use crate::core::eval_utils::resolve_asset;
 use std::fmt;
 
 pub struct Context<'a> {
@@ -277,9 +278,7 @@ impl fmt::Display for SelectorContext {
       buffer.push_str(target);
     }
 
-    fmt.write_str(buffer.trim());
-
-    Ok(())
+    fmt.write_str(buffer.trim())
   }
 }
 
@@ -398,7 +397,7 @@ fn get_context_id(context: &Context) -> String {
 
 fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
   match rule {
-    ast::Rule::Comment(charset) => {
+    ast::Rule::Comment(_) => {
       // skip it
     }
     ast::Rule::Charset(charset) => {
@@ -434,7 +433,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       evaluate_style_rule(rule, context, &SelectorContext::from_context(context))?;
     }
     ast::Rule::Keyframes(rule) => {
-      let rule = evaluate_keyframes_rule(rule, context)?;
+      evaluate_keyframes_rule(rule, context)?;
     }
     ast::Rule::Supports(rule) => {
       let rule = evaluate_supports_rule(rule, context)?;
@@ -667,7 +666,7 @@ fn get_mixin<'a>(
   };
 
   Ok((
-    get_mixin_from_dep(dep, &iref.parts.last().unwrap().name, context),
+    get_mixin_from_dep(dep, &iref.parts.last().unwrap().name),
     &dep.uri,
   ))
 }
@@ -675,7 +674,6 @@ fn get_mixin<'a>(
 fn get_mixin_from_dep<'a>(
   dep: &'a Dependency,
   name: &String,
-  context: &Context,
 ) -> Option<&'a ast::MixinRule> {
   match &dep.content {
     DependencyContent::Node(content) => {
@@ -883,7 +881,7 @@ fn evaluate_style_rule(
 }
 
 fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result<(), RuntimeError> {
-  let mut exports = Exports::new();
+  let exports = Exports::new();
   let in_public_scope = context.in_public_scope;
   context.in_public_scope = true;
 
@@ -974,20 +972,11 @@ fn evaluate_style_rule2(
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   lazy_static! {
-    static ref class_name_re: Regex = Regex::new(r"\.(((\\.)?[\w\-_]+)+)").unwrap();
-    static ref private_class_name_re: Regex = Regex::new(r"^_[^_]+$").unwrap();
-    static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
-    static ref escape_re: Regex = Regex::new(r"\\").unwrap();
+    static ref CLASS_NAME_RE: Regex = Regex::new(r"\.(((\\.)?[\w\-_]+)+)").unwrap();
+    static ref PRIVATE_CLASS_NAME_RE: Regex = Regex::new(r"^_[^_]+$").unwrap();
+    static ref SCOPE_RE: Regex = Regex::new(r"^_[^_]+_").unwrap();
+    static ref ESCAPE_RE: Regex = Regex::new(r"\\").unwrap();
   }
-
-  let mut is_global_selector = false;
-
-  let target_selector = if let ast::Selector::Global(selector) = &expr.selector {
-    is_global_selector = true;
-    &selector.selector
-  } else {
-    &expr.selector
-  };
 
   let mut emitter: SelectorEmitter = SelectorEmitter::new(parent_selector_context.child());
   write_element_selector(&expr.selector, true, false, context, &mut emitter);
@@ -996,18 +985,18 @@ fn evaluate_style_rule2(
     let selector_text = selector_context.to_string();
 
     // Note that this is necessary for this case: .a { &--b { color: red; }}
-    if class_name_re.is_match(selector_text.as_ref()) {
+    if CLASS_NAME_RE.is_match(selector_text.as_ref()) {
       // url check
-      for caps in class_name_re.captures_iter(selector_text.as_str()) {
+      for caps in CLASS_NAME_RE.captures_iter(selector_text.as_str()) {
         let scoped_class_name = caps.get(1).unwrap().as_str();
 
         // skip ._93aa0a { } selectors. A bit hacky since this also captures selector names
         // with ._ prefix (._header or smth). Will want to fix this later
-        if private_class_name_re.is_match(scoped_class_name) {
+        if PRIVATE_CLASS_NAME_RE.is_match(scoped_class_name) {
           continue;
         }
-        let mut class_name = scope_re.replace(scoped_class_name, "").to_string();
-        class_name = escape_re.replace_all(class_name.as_str(), "").to_string();
+        let mut class_name = SCOPE_RE.replace(scoped_class_name, "").to_string();
+        class_name = ESCAPE_RE.replace_all(class_name.as_str(), "").to_string();
 
         let existing_option = context.exports.class_names.get(&class_name);
 
@@ -1016,7 +1005,7 @@ fn evaluate_style_rule2(
             class_name.to_string(),
             ClassNameExport {
               name: class_name.to_string(),
-              scoped_name: escape_re.replace_all(scoped_class_name, "").to_string(),
+              scoped_name: ESCAPE_RE.replace_all(scoped_class_name, "").to_string(),
               public: context.in_public_scope,
             },
           );
@@ -1323,7 +1312,6 @@ fn write_element_selector(
         if is_global {
           emitter.push_target(":root".to_string());
         } else {
-          let document_scope = get_document_scope(context);
 
           // Ensure that only top-most selector is selected
           // https://jsfiddle.net/q6a74fnj/
@@ -1466,26 +1454,26 @@ fn is_pseudo_element(child: &ast::Selector) -> bool {
 
 fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
   lazy_static! {
-    static ref reserved_timing_re: Regex = Regex::new(r"\b(\d+s?)\b").unwrap();
-    static ref reserved_timing_fn_re: Regex = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
+    static ref RESERVED_TIMING_RE: Regex = Regex::new(r"\b(\d+s?)\b").unwrap();
+    static ref RESERVED_TIMING_FN_RE: Regex = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
 
     // https://www.w3schools.com/cssref/css3_pr_animation-direction.asp
-    static ref reserved_direction_re: Regex = Regex::new(r"\b(normal|reverse|alternate|alternate-reverse|initial|inherit)\b").unwrap();
-    static ref iter_count_re: Regex = Regex::new(r"\b(infinite)\b").unwrap();
+    static ref RESERVED_DIRECTION_RE: Regex = Regex::new(r"\b(normal|reverse|alternate|alternate-reverse|initial|inherit)\b").unwrap();
+    static ref ITER_COUNT_RE: Regex = Regex::new(r"\b(infinite)\b").unwrap();
 
     // https://www.w3schools.com/cssref/css3_pr_animation-fill-mode.asp
-    static ref reserved_fill_mode_re: Regex = Regex::new(r"\b(none|forwards|backwards|both|initial|inherit)\b").unwrap();
+    static ref RESERVED_FILL_MODE_RE: Regex = Regex::new(r"\b(none|forwards|backwards|both|initial|inherit)\b").unwrap();
 
     // https://www.w3schools.com/cssref/css3_pr_animation-play-state.asp
-    static ref reserved_play_state_re: Regex = Regex::new(r"\b(paused|running|initial|inherit)\b").unwrap();
+    static ref RESERVED_PLAY_STATE_RE: Regex = Regex::new(r"\b(paused|running|initial|inherit)\b").unwrap();
   }
 
-  reserved_timing_re.is_match(word)
-    || reserved_timing_fn_re.is_match(word)
-    || reserved_direction_re.is_match(word)
-    || reserved_fill_mode_re.is_match(word)
-    || reserved_play_state_re.is_match(word)
-    || iter_count_re.is_match(word)
+  RESERVED_TIMING_RE.is_match(word)
+    || RESERVED_TIMING_FN_RE.is_match(word)
+    || RESERVED_DIRECTION_RE.is_match(word)
+    || RESERVED_FILL_MODE_RE.is_match(word)
+    || RESERVED_PLAY_STATE_RE.is_match(word)
+    || ITER_COUNT_RE.is_match(word)
 }
 
 fn format_scoped_reference(value: &str, context: &Context) -> String {
@@ -1512,16 +1500,16 @@ fn evaluate_style_key_value_declaration<'a>(
   let mut value = expr.value.to_string();
 
   lazy_static! {
-    static ref url_re: Regex = Regex::new(r#"url\((?:['"]?)([^(]*?)(?:['"]?)\)"#).unwrap();
-    static ref protocol_re: Regex = Regex::new(r"^\w+:").unwrap();
+    static ref URL_RE: Regex = Regex::new(r#"url\((?:['"]?)([^(]*?)(?:['"]?)\)"#).unwrap();
+    static ref PROTOCOL_RE: Regex = Regex::new(r"^\w+:").unwrap();
 
     // Only want to cover CSS that can affect the preview. All other CSS prefixing can happen via
     // CSS autoprefixer. This is primarily for performance reasons. _Maybe_ at some point we can have an option that
     // allows for autoprefixing everything.
-    static ref css3_name_starts: Vec<&'static str> = vec![
+    static ref CSS3_NAME_STARTS: Vec<&'static str> = vec![
       "mask"
     ];
-    static ref css3_prefixes: Vec<&'static str> = vec![
+    static ref CSS3_PREFIXES: Vec<&'static str> = vec![
       "-webkit-"
     ];
   }
@@ -1547,33 +1535,23 @@ fn evaluate_style_key_value_declaration<'a>(
   }
 
   // a bit crude, but works for now. Need to eventually consider HTTP paths
-  if url_re.is_match(value.clone().as_str()) {
+  if URL_RE.is_match(value.clone().as_str()) {
     // url check
-    for caps in url_re.captures_iter(value.to_string().as_str()) {
+    for caps in URL_RE.captures_iter(value.to_string().as_str()) {
       let url_fn = caps.get(0).unwrap().as_str();
 
       let relative_path = caps.get(1).unwrap().as_str();
 
       // skip values with protocol
-      if protocol_re.is_match(relative_path) {
+      if PROTOCOL_RE.is_match(relative_path) {
         continue;
       }
-      let full_path_option = context.vfs.resolve(context.uri, &relative_path.to_string());
+      let full_path = resolve_asset(&context.uri, &relative_path.to_string(), &expr.value_range, &context.vfs)?;
 
-      if let Some(full_path) = full_path_option {
-        value = url_re
-          .replace(url_fn, format!("url({})", full_path).as_str())
-          .to_string();
-      } else {
-        return Err(RuntimeError::new(
-          format!(
-            "Unable to resolve file: {} from {}",
-            relative_path, context.uri
-          ),
-          context.uri,
-          &expr.value_range,
-        ));
-      }
+      value = URL_RE
+        .replace(url_fn, format!("url({})", full_path).as_str())
+        .to_string();
+      let full_path_option = context.vfs.resolve(context.uri, &relative_path.to_string());
     }
   }
 
@@ -1594,9 +1572,9 @@ fn evaluate_style_key_value_declaration<'a>(
     value: value.to_string(),
   });
 
-  for start in css3_name_starts.iter() {
+  for start in CSS3_NAME_STARTS.iter() {
     if expr.name.starts_with(start) {
-      for prefix in css3_prefixes.iter() {
+      for prefix in CSS3_PREFIXES.iter() {
         declarations.push(virt::CSSStyleProperty {
           source_id: expr.id.to_string(),
           name: format!("{}{}", prefix, expr.name.to_string()),

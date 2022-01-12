@@ -3,7 +3,7 @@ import * as path from "path";
 import * as url from "url";
 import { EventEmitter } from "events";
 import { paperclipSourceGlobPattern } from "../core/utils";
-import { isGeneratedPaperclipFile } from "..";
+import { isPaperclipResourceFile } from "..";
 
 export enum ChangeKind {
   Removed,
@@ -32,12 +32,18 @@ export class PaperclipResourceWatcher {
     this._watcher.close();
   }
   private _init() {
+    console.log(paperclipSourceGlobPattern(this._srcDir));
     const watcher = (this._watcher = chokidar.watch(
       paperclipSourceGlobPattern(this._srcDir),
-      { cwd: this.cwd, ignoreInitial: true }
+      {
+        cwd: this.cwd,
+        ignoreInitial: true,
+        ignored: "**/node_modules/**",
+        followSymlinks: true
+      }
     ));
     watcher.on("all", (eventName, relativePath) => {
-      if (isGeneratedPaperclipFile(relativePath)) {
+      if (!isPaperclipResourceFile(relativePath)) {
         return;
       }
       const filePath =

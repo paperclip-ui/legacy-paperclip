@@ -1,6 +1,5 @@
 use super::tokenizer::*;
 use crate::base::ast::Range;
-use crate::base::string_scanner::U16Position;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

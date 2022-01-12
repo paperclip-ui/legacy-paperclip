@@ -1,0 +1,7 @@
+<style>
+  @export {
+    .el {
+      color: red;
+    }
+  }
+</style>

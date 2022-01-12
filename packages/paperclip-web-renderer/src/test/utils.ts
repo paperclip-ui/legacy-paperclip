@@ -206,10 +206,11 @@ export const createMockEngineDelegate = (
     io: {
       readFile: uri =>
         graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
-      fileExists: uri =>
-        Boolean(
+      fileExists: uri => {
+        return Boolean(
           graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
-        ),
+        );
+      },
       resolveFile: (from, to) => {
         const prefix = from.indexOf("file:") === 0 ? "file://" : "";
 

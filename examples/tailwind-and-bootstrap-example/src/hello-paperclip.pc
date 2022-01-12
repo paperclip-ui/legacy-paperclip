@@ -1,0 +1,40 @@
+<import src="bootstrap/bootstrap.css" as="bts" />
+<import src="tailwind.css" as="tw" />
+
+<!--
+  @frame { visible: false }
+-->
+<button component
+  as="Button"
+  class:bts="$bts btn btn-primary"
+  class:tw="$tw bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+  {children}
+</button>
+
+
+<!--
+  @frame { title: "Buttons", width: 241, height: 264, x: 564, y: 0 }
+-->
+<div>
+  <!--  Using vanilla CSS here instead of CSS framework to make sure
+    that neither UI is tainted with the wrong inherited styles-->
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  </style>
+
+
+  <!--  All Legacy UI goes here. We define $bts at the top to apply root styles like
+    :root, body, html, and any other cascading declarations.-->
+  <div class="$bts">
+    <h4>Legacy buttons</h4>
+    <Button bts>I'm a bootstrap button</Button>
+  </div>
+
+  <!-- New UI here, isolated in its own div -->
+  <div class="$tw">
+    <h4>New buttons</h4>
+    <Button tw>I'm a bootstrap button</Button>
+  </div>
+</div>
