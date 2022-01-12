@@ -55,7 +55,13 @@ export const eachFrame = async (
 ) => {
   let paperclipFilePaths = await globby(
     paperclipSourceGlobPattern(sourceDirectory),
-    { cwd, absolute: true, gitignore: true }
+    {
+      cwd,
+      absolute: true,
+      gitignore: true,
+      ignore: ["**/node_modules/**"],
+      followSymbolicLinks: true
+    }
   );
 
   const engine = await createEngineDelegate({

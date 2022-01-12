@@ -13,7 +13,7 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "@tandem-ui/common";
-import * as globby from "globby";
+import globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";
 
@@ -32,11 +32,11 @@ export class PaperclipProject {
   /**
    */
 
-  start() {
+  async start() {
     const config = readConfig(this._cwd, this._logger);
     this._startEngine();
     this._startWatcher(config);
-    this._addAllProjects(config);
+    await this._addAllProjects(config);
   }
 
   /**
@@ -61,22 +61,36 @@ export class PaperclipProject {
   /**
    */
   2;
-  private _addAllProjects(config: PaperclipConfig) {
-    const pcFiles = globby.sync(
+  private async _addAllProjects(config: PaperclipConfig) {
+    const ms = Date.now();
+    this._logger.verbose(`Opening all Paperclip files`);
+
+    const pcFiles = await globby(
       paperclipSourceGlobPattern(path.join(this._cwd, config.srcDir)),
-      { gitignore: true }
+      {
+        gitignore: true,
+        ignore: ["**/node_modules/**"],
+        followSymbolicLinks: true
+      }
+    );
+
+    this._logger.verbose(
+      `Done scanning all PC files (${pcFiles.length}) in ${(Date.now() - ms) /
+        1000}s`
     );
 
     for (const pcFile of pcFiles) {
       if (isPaperclipFile(pcFile)) {
-        this._logger.verbose(`Opening ${pcFile}`);
         try {
           const data = this._engine.open(url.pathToFileURL(pcFile).href);
         } catch (e) {
-          this._logger.warn(e);
+          // this._logger.warn(e);
         }
       }
     }
+    this._logger.verbose(
+      `Done opening ${pcFiles.length} PC files in ${(Date.now() - ms) / 1000}s`
+    );
   }
 
   /**

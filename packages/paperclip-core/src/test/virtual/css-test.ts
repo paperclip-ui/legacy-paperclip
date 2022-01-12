@@ -1975,4 +1975,30 @@ describe(__filename + "#", () => {
 
     expect(err.message).to.eql(`Unable to resolve file: ./not-found.png`);
   });
+
+  // Fix https://github.com/paperclip-ui/paperclip/issues/885
+  it(`Imported CSS is included before document styles`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="/imp.css" />
+        <div>
+          <style>
+            color: blue;
+          </style>
+        </div>
+      `,
+      "/imp.css": `
+          div {
+            color: red;
+          }
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@keyframes _pub-80f4925f_a { to { color:red; } } @keyframes _80f4925f_a { to { color:red; } }</style>`
+    );
+  });
 });
