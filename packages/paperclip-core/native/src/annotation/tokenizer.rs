@@ -20,9 +20,6 @@ pub struct Tokenizer<'a> {
 }
 
 impl<'a> Tokenizer<'a> {
-  pub fn u16_pos(&self) -> usize {
-    self.scanner.u16_pos
-  }
 
   pub fn get_pos(&self) -> StringScannerPosition {
     self.scanner.get_pos()
@@ -39,18 +36,6 @@ impl<'a> Tokenizer<'a> {
     self.set_pos(&pos);
     result
   }
-  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
-    let pos = self.get_pos();
-    let mut i = 0;
-    let mut result = Err(ParseError::unknown());
-    while i < steps {
-      self.scanner.eat_whitespace();
-      result = self.next();
-      i += 1;
-    }
-    self.set_pos(&pos);
-    result
-  }
 
   pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'a>, ParseError> {
     let utf16_pos = self.scanner.get_u16pos();
@@ -61,17 +46,6 @@ impl<'a> Tokenizer<'a> {
       return Err(ParseError::unexpected_token(
         utf16_pos.range_from(self.scanner.get_u16pos()),
       ));
-    }
-  }
-
-  pub fn next_word_value(&mut self) -> Result<String, ParseError> {
-    let pos = self.scanner.get_u16pos();
-    if let Token::Word(value) = self.next()? {
-      Ok(value.to_string())
-    } else {
-      Err(ParseError::unexpected_token(
-        pos.range_from(self.scanner.get_u16pos()),
-      ))
     }
   }
 

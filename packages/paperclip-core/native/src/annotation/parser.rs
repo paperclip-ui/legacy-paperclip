@@ -70,7 +70,7 @@ fn parse_text_annotation<'a, 'b>(
 
   // Take everything except @ sign
   while !context.ended()? && context.tokenizer.peek(1)? != Token::At {
-    let token = context.tokenizer.next()?;
+    context.tokenizer.next()?;
   }
   let end = context.tokenizer.scanner.get_u16pos();
   let end_u8 = context.tokenizer.get_pos().u8_pos;

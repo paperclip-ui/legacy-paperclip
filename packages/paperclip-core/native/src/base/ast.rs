@@ -1,6 +1,5 @@
 use super::string_scanner::U16Position;
 use serde::Serialize;
-use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Range {
@@ -52,12 +51,6 @@ impl ExprSource {
 impl ExprTextSource {
   pub fn new(uri: String, range: Range) -> ExprTextSource {
     ExprTextSource { uri, range }
-  }
-  pub fn virt(uri: String) -> ExprTextSource {
-    ExprTextSource::new(
-      uri,
-      Range::new(U16Position::new(0, 0, 0), U16Position::new(0, 0, 0)),
-    )
   }
 }
 

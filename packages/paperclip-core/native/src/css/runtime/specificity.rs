@@ -1,5 +1,4 @@
 use crate::css::ast::Selector;
-use crate::css::parser::parse_selector;
 
 pub fn get_selector_text_specificity(selector: &Selector) -> i32 {
   let specificity = calc_specificity(selector);

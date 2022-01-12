@@ -1,5 +1,4 @@
 use serde::Serialize;
-use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -27,7 +26,7 @@ impl fmt::Display for CSSSheet {
 pub enum Rule {
   Style(StyleRule),
   Charset(CharsetRule),
-  Namespace(String),
+  // Namespace(String),
   FontFace(FontFaceRule),
   Media(ConditionRule),
   Supports(ConditionRule),
@@ -43,7 +42,7 @@ impl PartialEq for Rule {
     match (self, other) {
       (Rule::Style(a), Rule::Style(b)) => a == b,
       (Rule::Charset(a), Rule::Charset(b)) => a == b,
-      (Rule::Namespace(a), Rule::Namespace(b)) => a == b,
+      // (Rule::Namespace(a), Rule::Namespace(b)) => a == b,
       (Rule::FontFace(a), Rule::FontFace(b)) => a == b,
       (Rule::Media(a), Rule::Media(b)) => a == b,
       (Rule::Supports(a), Rule::Supports(b)) => a == b,
@@ -60,7 +59,7 @@ impl fmt::Display for Rule {
     match self {
       Rule::Style(rule) => write!(f, "{}", rule.to_string()),
       Rule::Charset(value) => write!(f, "@charset {};", value),
-      Rule::Namespace(value) => write!(f, "@namespace {};", value),
+      // Rule::Namespace(value) => write!(f, "@namespace {};", value),
       Rule::FontFace(rule) => write!(f, "{}", rule.to_string()),
       Rule::Media(rule) => write!(f, "{}", rule.to_string()),
       Rule::Document(rule) => write!(f, "{}", rule.to_string()),

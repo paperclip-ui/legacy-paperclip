@@ -1,5 +1,4 @@
 use super::virt::Rule;
-use crate::base::ast::ExprTextSource;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -37,8 +36,6 @@ pub enum Action {
   InsertRule(InsertRule),
   DeleteRule(DeleteRule),
   ReplaceRule(ReplaceRule),
-  SetDeclaration(SetDeclaration),
-  SetSelectorText(SetSelectorText),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
