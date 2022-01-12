@@ -350,8 +350,8 @@ describe(__filename + "#", () => {
       "file:///entry.pc": `
         <img src="/file.jpg" />
       `,
-      "file:///file.jpg": ``,
-      "file:///something-else.jpg": ``
+      "file:///file.jpg": `a`,
+      "file:///something-else.jpg": `a`
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -602,7 +602,8 @@ describe(__filename + "#", () => {
       <Test>
         Hello world
       </Test>
-      `
+      `,
+      "file:///Eina03-Regular.woff": `a`
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
