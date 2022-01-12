@@ -47,7 +47,7 @@ describe(__filename + "#", () => {
         start: { pos: 59, line: 4, column: 25 },
         end: { pos: 91, line: 5, column: 11 }
       },
-      message: "Unable to resolve file: /not/found.png from /entry.pc"
+      message: "Unable to resolve file: /not/found.png"
     });
   });
 
@@ -57,22 +57,21 @@ describe(__filename + "#", () => {
         <style>
           .rule {
             background: url('./test.woff');
-            color: url("./test.woff");
             src: url("http://google.com");
           }
         </style>
       `,
-      "/test.woff": ""
+      "/path/to/test/test.woff": ""
     };
     const engine = await createMockEngine(graph, noop, {
       resolveFile() {
-        return "/test.woooof";
+        return "/path/to/test/test.woff";
       }
     });
 
     const result = engine.open("/entry.pc");
     expect(stringifyCSSSheet(result.sheet).replace(/[\n\s]+/g, " ")).to.eql(
-      `[class]._80f4925f_rule { background:url(/test.woooof); color:url(/test.woooof); src:url("http://google.com"); }`
+      `[class]._80f4925f_rule { background:url(/path/to/test/test.woff); src:url("http://google.com"); }`
     );
   });
 
@@ -1965,10 +1964,15 @@ describe(__filename + "#", () => {
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_80f4925f_test _pub-80f4925f_test _pub-b8a55827_test test _80f4925f _pub-80f4925f _pub-b8a55827"></div>`
-    );
+    let err;
+
+    try {
+      const result = await engine.open("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err.message).to.eql(`Unable to resolve file: ./not-found.png`);
   });
 });

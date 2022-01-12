@@ -38,6 +38,10 @@ impl VirtualFileSystem {
     }
   }
 
+  pub fn file_exists(&self, uri: &String) -> bool {
+    (self.file_exists)(uri)
+  }
+
   pub fn resolve(&self, from_path: &String, relative_path: &String) -> Option<String> {
     (self.resolve_file)(from_path, relative_path)
   }
@@ -45,7 +49,7 @@ impl VirtualFileSystem {
     let mut unlinked: Vec<String> = Vec::new();
 
     for (uri, _) in self.contents.iter() {
-      if !(self.file_exists)(uri) {
+      if !self.file_exists(uri) {
         unlinked.push(uri.clone());
       }
     }
@@ -58,7 +62,7 @@ impl VirtualFileSystem {
   }
 
   pub async fn update(&mut self, uri: &String, content: &String) -> Result<&String, &'static str> {
-    if !(self.file_exists)(uri) {
+    if !self.file_exists(uri) {
       return Err("File does not exist");
     }
     self.contents.insert(uri.to_string(), content.to_string());
@@ -66,7 +70,7 @@ impl VirtualFileSystem {
   }
 
   pub async fn reload(&mut self, uri: &String) -> Result<&String, &'static str> {
-    if !(self.file_exists)(uri) {
+    if !self.file_exists(uri) {
       return Err("File does not exist");
     }
     let content = (self.read_file)(uri);

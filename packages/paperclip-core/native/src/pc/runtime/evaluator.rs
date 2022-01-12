@@ -18,6 +18,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::script::ast as script_ast;
 use crate::script::runtime::evaluator::evaluate as evaluate_js;
 use crate::script::runtime::virt as script_virt;
+use crate::core::eval_utils::resolve_asset;
 use regex::Regex;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
@@ -1645,16 +1646,7 @@ fn evaluate_attribute_key_value_string<'a>(
     val = casted_value;
   } else if name == "src" {
     if is_relative_path(&value) {
-      let value_option = context.vfs.resolve(context.uri, &value);
-      if let Some(value) = &value_option {
-        val = value.to_string();
-      } else {
-        return Err(RuntimeError::new(
-          format!("Unable to resolve file: {} from {}", value, context.uri),
-          context.uri,
-          range,
-        ));
-      }
+      val = resolve_asset(&context.uri, &value, range, &context.vfs)?;
     }
   } else if name == "class" && is_native {
     val = add_scopes(value, &context.document_scopes);

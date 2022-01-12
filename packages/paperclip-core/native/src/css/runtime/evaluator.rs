@@ -40,6 +40,7 @@ use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use serde::Serialize;
 use std::collections::BTreeMap;
+use crate::core::eval_utils::resolve_asset;
 use std::fmt;
 
 pub struct Context<'a> {
@@ -1545,22 +1546,12 @@ fn evaluate_style_key_value_declaration<'a>(
       if PROTOCOL_RE.is_match(relative_path) {
         continue;
       }
-      let full_path_option = context.vfs.resolve(context.uri, &relative_path.to_string());
+      let full_path = resolve_asset(&context.uri, &relative_path.to_string(), &expr.value_range, &context.vfs)?;
 
-      if let Some(full_path) = full_path_option {
-        value = URL_RE
-          .replace(url_fn, format!("url({})", full_path).as_str())
-          .to_string();
-      } else {
-        return Err(RuntimeError::new(
-          format!(
-            "Unable to resolve file: {} from {}",
-            relative_path, context.uri
-          ),
-          context.uri,
-          &expr.value_range,
-        ));
-      }
+      value = URL_RE
+        .replace(url_fn, format!("url({})", full_path).as_str())
+        .to_string();
+      let full_path_option = context.vfs.resolve(context.uri, &relative_path.to_string());
     }
   }
 

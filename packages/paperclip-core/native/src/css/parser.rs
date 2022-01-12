@@ -8,9 +8,7 @@ use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Range};
 use crate::base::parser::{get_buffer, ParseError};
 use crate::base::string_scanner::{StringScanner, U16Position};
-use crate::core::id_generator::generate_seed;
 use crate::core::id_generator::IDGenerator;
-use cached::proc_macro::cached;
 use std::collections::HashMap;
 use std::sync::Mutex;
 

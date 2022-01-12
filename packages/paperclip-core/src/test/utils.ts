@@ -33,7 +33,7 @@ export const createMockEngine = (
           return graph[uri];
         },
         fileExists: uri => {
-          return Boolean(graph[uri]);
+          return graph[uri] != null;
         },
         resolveFile: (from, to) => {
           if (to.charAt(0) === "/") {
