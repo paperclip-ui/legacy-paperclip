@@ -5,7 +5,7 @@ use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::core::id_generator::generate_seed;
+use crate::core::id_generator::{IDGenerator};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::coverage::reporter::{generate_coverage_report, CoverageReport};
 use crate::css::ast as css_ast;
@@ -94,11 +94,11 @@ pub enum Module {
 type EngineEventListener = dyn Fn(&EngineEvent);
 type GetLintConfigResolverFn = dyn Fn(&String) -> Option<LintOptions>;
 
-fn parse_content(content: &String, uri: &String) -> Result<Module, ParseError> {
+fn parse_content(content: &String, uri: &String, id_seed: String) -> Result<Module, ParseError> {
   Result::Ok(if uri.ends_with(".css") {
-    Module::CSS(parse_css(content, generate_seed())?)
+    Module::CSS(parse_css(content, id_seed)?)
   } else {
-    Module::PC(parse_pc(content, uri.as_str(), generate_seed().as_str())?)
+    Module::PC(parse_pc(content, uri.as_str(), id_seed.as_str())?)
   })
 }
 
@@ -114,6 +114,7 @@ pub struct Engine {
   pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
   pub get_lint_config: Option<Box<GetLintConfigResolverFn>>,
   pub include_used_exprs: bool,
+  pub id_generator: IDGenerator,
 }
 
 impl Engine {
@@ -134,6 +135,7 @@ impl Engine {
       dependency_graph: DependencyGraph::new(),
       diagnostics: BTreeMap::new(),
       include_used_exprs,
+      id_generator: IDGenerator::new("-".to_string()),
       mode,
     };
 
@@ -318,7 +320,7 @@ impl Engine {
   pub async fn parse_file(&mut self, uri: &String) -> Result<Module, ParseError> {
     let content = self.vfs.reload(uri).await.unwrap();
     // parse_pc(content, uri, generate_seed().as_str())
-    parse_content(content, uri)
+    parse_content(content, uri, self.id_generator.new_id())
   }
 
   pub async fn parse_content(
@@ -326,7 +328,7 @@ impl Engine {
     content: &String,
     uri: &String,
   ) -> Result<Module, ParseError> {
-    parse_content(content, uri)
+    parse_content(content, uri, self.id_generator.new_id())
   }
 
   // Called when files are deleted
@@ -445,6 +447,7 @@ impl Engine {
         &self.evaluated_data,
         self.include_used_exprs,
         &self.mode,
+        self.id_generator.new_id()
       )
       .and_then(|info| Ok(DependencyEvalInfo::PC(info))),
     };

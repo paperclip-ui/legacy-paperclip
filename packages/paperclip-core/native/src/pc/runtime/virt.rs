@@ -1,7 +1,4 @@
 extern crate wasm_bindgen;
-use wasm_bindgen::prelude::*;
-
-use crate::base::ast::ExprTextSource;
 use crate::css::runtime::virt as css_virt;
 use crate::script::runtime::virt as script_virt;
 use serde::Serialize;
@@ -18,6 +15,7 @@ pub struct NodeSource {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
+  pub id: String,
   pub source_id: String,
   pub children: Vec<Node>,
 }
@@ -45,6 +43,7 @@ pub struct ElementSourceInfo {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
+  pub id: String,
   pub source_id: String,
 
   // Deprecated, use source_id instead
@@ -88,6 +87,7 @@ impl Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
+  pub id: String,
   pub source_id: String,
   pub sheet: css_virt::CSSSheet,
 }
@@ -136,6 +136,7 @@ impl Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
+  pub id: String,
   pub source_id: String,
   pub annotations: Option<script_virt::Object>,
   pub value: String,

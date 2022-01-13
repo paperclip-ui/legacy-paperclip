@@ -23,6 +23,7 @@ use regex::Regex;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 use std::iter::FromIterator;
+use crate::core::id_generator::IDGenerator;
 
 #[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "kind")]
@@ -48,6 +49,7 @@ impl ElementSource {
 #[derive(Clone)]
 pub struct Context<'a> {
   pub graph: &'a DependencyGraph,
+  pub id_generator: IDGenerator,
   pub vfs: &'a VirtualFileSystem,
   pub uri: &'a String,
   pub import_ids: HashSet<&'a String>,
@@ -104,7 +106,11 @@ pub fn evaluate<'a>(
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   include_used_exprs: bool,
   mode: &EngineMode,
+  id_seed: String,
 ) -> Result<EvalInfo, RuntimeError> {
+
+  let mut id_generator = IDGenerator::new(id_seed.to_string());
+
   let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new(
     "URI not loaded".to_string(),
     uri,
@@ -123,6 +129,7 @@ pub fn evaluate<'a>(
       evaluated_graph,
       include_used_exprs,
       mode,
+      id_seed
     );
 
     let preview = wrap_as_fragment(
@@ -332,12 +339,14 @@ fn wrap_as_fragment<'a>(node_option: Option<virt::Node>, context: &'a mut Contex
     match node {
       virt::Node::Fragment(fragment) => virt::Node::Fragment(fragment),
       _ => virt::Node::Fragment(virt::Fragment {
+        id: context.id_generator.new_id(),
         source_id: use_expr_id(node.get_range_id(), context),
         children: vec![node],
       }),
     }
   } else {
     virt::Node::Fragment(virt::Fragment {
+      id: context.id_generator.new_id(),
       source_id: "".to_string(),
       children: vec![],
     })
@@ -548,6 +557,7 @@ fn create_context<'a>(
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   include_used_exprs: bool,
   mode: &'a EngineMode,
+  id_seed: String
 ) -> Context<'a> {
   let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
@@ -569,6 +579,7 @@ fn create_context<'a>(
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     private_scope,
     public_scope,
+    id_generator: IDGenerator::new(id_seed),
     data,
     mode,
     include_used_exprs,
@@ -622,6 +633,7 @@ pub fn evaluate_node<'a>(
       // }
 
       return Ok(Some(virt::Node::Text(virt::Text {
+        id: context.id_generator.new_id(),
         source_id: use_expr_id(node_expr.get_id(), context),
         annotations: annotations.clone(),
         value: text.value.to_string(),
@@ -750,6 +762,7 @@ fn evaluate_slot<'a>(
         children.push(child);
       } else {
         children.push(virt::Node::Text(virt::Text {
+          id: context.id_generator.new_id(),
           source_id: use_expr_id(item.get_range_id(), context),
           annotations: None,
           value: item.to_string(),
@@ -758,6 +771,7 @@ fn evaluate_slot<'a>(
     }
 
     return Ok(Some(virt::Node::Fragment(virt::Fragment {
+      id: context.id_generator.new_id(),
       source_id: use_expr_id(&ary.source_id, context),
       children,
     })));
@@ -766,6 +780,7 @@ fn evaluate_slot<'a>(
   }
 
   Ok(Some(virt::Node::Text(virt::Text {
+    id: context.id_generator.new_id(),
     source_id: use_expr_id(script.get_id(), context),
     annotations: None,
     value: if script_value.truthy() || script_value.is_number() {
@@ -965,6 +980,7 @@ fn evaluate_component_instance<'a>(
         context.evaluated_graph,
         context.include_used_exprs,
         context.mode,
+        context.id_generator.new_id()
       );
       check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
       // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
@@ -1061,6 +1077,7 @@ fn evaluate_native_element<'a>(
   }
 
   Ok(Some(virt::Node::Element(virt::Element {
+    id: context.id_generator.new_id(),
     source_info: virt::ElementSourceInfo {
       instance_of: if let Some(source) = &instance_source {
         Some(virt::ElementInstanceOfInfo {
@@ -1355,6 +1372,7 @@ fn evaluate_children_as_fragment<'a>(
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let (children, _) = evaluate_children(&children, depth, context)?;
   Ok(Some(virt::Node::Fragment(virt::Fragment {
+    id: context.id_generator.new_id(),
     source_id: use_expr_id(source_id, context),
     children,
   })))
@@ -1740,6 +1758,7 @@ pub fn __test__evaluate_pc_files<'a>(
       &BTreeMap::new(),
       false,
       &EngineMode::SingleFrame,
+      "#".to_string()
     ),
     graph,
   )

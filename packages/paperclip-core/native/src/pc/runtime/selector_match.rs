@@ -94,14 +94,9 @@ Combo selectors? `a b, c > d` would yield:
 
 */
 
-use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::virt::{Element as VirtElement, Node as VirtNode};
-use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::core::id_generator::generate_seed;
-use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
-use crate::css::parser::{parse as parse_css, parse_selector as parse_css_selector};
-use crate::pc::parser::parse as parse_pc;
+use crate::css::parser::{parse_selector as parse_css_selector};
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use regex::Regex;
@@ -300,7 +295,7 @@ fn traverse_tree<'a>(
   selector: &css_ast::Selector,
   node: &'a VirtNode,
   context: Context,
-  each: &mut FnMut(&'a VirtElement, &Context) -> bool,
+  each: &mut dyn FnMut(&'a VirtElement, &Context) -> bool,
 ) -> bool {
   if let VirtNode::Element(element) = node {
     if !each(element, &context) {
@@ -441,7 +436,7 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
             }
           });
         })
-        .and_then(|matches_parent| Some(selector));
+        .and_then(|_| Some(selector));
     }
     // a + b
     css_ast::Selector::Adjacent(sel) => {
@@ -521,7 +516,7 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
     // .class
     css_ast::Selector::Class(sel) => {
       lazy_static! {
-        static ref escape_re: Regex = Regex::new(r"\\").unwrap();
+        static ref ESCAPE_RE: Regex = Regex::new(r"\\").unwrap();
         static ref CACHE: Mutex<HashMap<String, Vec<String>>> = Mutex::new(HashMap::new());
       }
 
@@ -531,7 +526,7 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
         .and_then(|classes| {
           let mut class_name_cache = CACHE.lock().unwrap();
 
-          let match_class_name = escape_re.replace_all(&sel.class_name, "").to_string();
+          let match_class_name = ESCAPE_RE.replace_all(&sel.class_name, "").to_string();
 
           let class_list = if let Some(class_list) = class_name_cache.get(&classes) {
             class_list
@@ -628,7 +623,7 @@ fn selector_matches_nested_element<'a>(
 
 #[cfg(test)]
 mod tests {
-  use super::super::super::parser::*;
+  use super::super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
   use super::*;
 
   // ID
