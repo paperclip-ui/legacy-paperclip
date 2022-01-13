@@ -7,5 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@paperclip-ui/core": "^18.4.7",
+    "automerge": "^1.0.1-preview.6",
+    "fs-extra": "^10.0.0",
+    "sockjs": "^0.3.24"
+  }
 }
