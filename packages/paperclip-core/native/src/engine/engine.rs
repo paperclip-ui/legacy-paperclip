@@ -436,7 +436,7 @@ impl Engine {
 
     let eval_result: Result<DependencyEvalInfo, RuntimeError> = match &dependency.content {
       DependencyContent::StyleSheet(sheet) => {
-        evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data)
+        evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data, self.id_generator.new_id())
           .and_then(|info| Ok(DependencyEvalInfo::CSS(info)))
       }
 

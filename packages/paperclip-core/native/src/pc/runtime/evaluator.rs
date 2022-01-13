@@ -398,7 +398,7 @@ fn evaluate_document_sheet<'a>(
   entry_expr: &ast::Node,
   context: &'a mut Context,
 ) -> Result<(css_virt::CSSSheet, css_export::Exports), RuntimeError> {
-  let mut sheet = css_virt::CSSSheet { rules: vec![] };
+  let mut sheet = css_virt::CSSSheet { id: context.id_generator.new_id(), rules: vec![] };
   let mut css_exports: css_export::Exports = css_export::Exports::new();
   evaluate_node_sheet(uri, None, entry_expr, &mut sheet, &mut css_exports, context)?;
   Ok((sheet, css_exports))
@@ -441,6 +441,7 @@ fn evaluate_node_sheet<'a>(
       &context.evaluated_graph,
       Some(&css_exports),
       false,
+      context.id_generator.new_id()
     )?;
     match info {
       CSSEvalInfo {

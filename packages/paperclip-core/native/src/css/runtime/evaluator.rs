@@ -28,6 +28,7 @@ global -> document -> scoped -> element
 use super::super::super::pc::ast as pc_ast;
 use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
+use crate::core::id_generator::IDGenerator;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::utils::get_document_style_public_scope;
@@ -46,6 +47,7 @@ use std::fmt;
 pub struct Context<'a> {
   private_scope: &'a str,
   public_scope: &'a str,
+  id_generator: IDGenerator,
 
   // deprecated
   element_scope: Option<(String, bool)>,
@@ -293,6 +295,7 @@ pub fn evaluate<'a>(
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
+  id_seed: String
 ) -> Result<EvalInfo, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   match &dep.content {
@@ -308,6 +311,7 @@ pub fn evaluate<'a>(
       evaluated_graph,
       None,
       true,
+      id_seed
     ),
     _ => Err(RuntimeError::new(
       "Incorrect file type".to_string(),
@@ -329,6 +333,7 @@ pub fn evaluate_expr<'a>(
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   existing_exports: Option<&Exports>,
   public: bool,
+  id_seed: String
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     private_scope,
@@ -344,6 +349,7 @@ pub fn evaluate_expr<'a>(
     exports: Exports::new(),
     all_rules: vec![],
     inc_declarations: vec![],
+    id_generator: IDGenerator::new(id_seed)
   };
 
   if let Some(existing_exports) = existing_exports {
@@ -370,6 +376,7 @@ pub fn evaluate_expr<'a>(
       context.all_rules.insert(
         0,
         virt::Rule::Style(virt::StyleRule {
+          id: context.id_generator.new_id(),
           exported: context.in_public_scope,
           source_id: get_context_id(&context).to_string(),
           selector_text: get_element_scope_selector(&context, true),
@@ -381,6 +388,7 @@ pub fn evaluate_expr<'a>(
 
   Ok(EvalInfo {
     sheet: virt::CSSSheet {
+      id: context.id_generator.new_id(),
       rules: context.all_rules,
     },
     exports: context.exports,
@@ -404,6 +412,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       context
         .all_rules
         .push(virt::Rule::Charset(virt::CharsetRule {
+          id: context.id_generator.new_id(),
           value: charset.value.clone(),
         }));
     }
@@ -470,6 +479,7 @@ fn evaluate_font_family_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::FontFace(virt::FontFaceRule {
+    id: context.id_generator.new_id(),
     style: evaluate_style_declarations(
       &font_family.declarations,
       context,
@@ -528,7 +538,8 @@ fn evaluate_condition_rule(
   context: &mut Context,
   parent_selector_context: &SelectorContext,
 ) -> Result<virt::ConditionRule, RuntimeError> {
-  let mut child_context = create_child_context(context);
+  let id_seed = context.id_generator.new_id();
+  let mut child_context = create_child_context(context, id_seed);
 
   evaluate_style_rules(&rule.rules, &mut child_context, &parent_selector_context)?;
 
@@ -563,6 +574,7 @@ fn evaluate_condition_rule(
       child_context
         .all_rules
         .push(virt::Rule::Style(virt::StyleRule {
+          id: context.id_generator.new_id(),
           exported: context.in_public_scope,
           source_id,
           selector_text,
@@ -574,6 +586,7 @@ fn evaluate_condition_rule(
   context.exports.extend(&child_context.exports);
 
   Ok(virt::ConditionRule {
+    id: context.id_generator.new_id(),
     name: rule.name.to_string(),
     condition_text: rule.condition_text.to_string(),
     rules: child_context.all_rules,
@@ -608,6 +621,7 @@ fn evaluate_keyframes_rule(
   context
     .all_rules
     .push(virt::Rule::Keyframes(virt::KeyframesRule {
+      id: context.id_generator.new_id(),
       name: format!("_{}_{}", get_document_scope(context), rule.name.to_string()),
       rules: rules.clone(),
     }));
@@ -616,6 +630,7 @@ fn evaluate_keyframes_rule(
     context
       .all_rules
       .push(virt::Rule::Keyframes(virt::KeyframesRule {
+        id: context.id_generator.new_id(),
         name: format!("_{}_{}", context.private_scope, rule.name.to_string()),
         rules: rules.clone(),
       }));
@@ -637,6 +652,7 @@ fn evaluate_keyframe_rule(
 ) -> Result<virt::KeyframeRule, RuntimeError> {
   let style = evaluate_style_declarations(&rule.declarations, context, &SelectorContext::nil())?;
   Ok(virt::KeyframeRule {
+    id: context.id_generator.new_id(),
     key: rule.key.to_string(),
     style,
   })
@@ -726,7 +742,7 @@ fn get_mixin_from_rules<'a>(
   None
 }
 
-fn create_child_context<'a>(context: &Context<'a>) -> Context<'a> {
+fn create_child_context<'a>(context: &Context<'a>, id_seed: String) -> Context<'a> {
   Context {
     private_scope: context.private_scope,
     public_scope: context.public_scope,
@@ -741,11 +757,12 @@ fn create_child_context<'a>(context: &Context<'a>) -> Context<'a> {
     in_public_scope: context.in_public_scope,
     exports: context.exports.clone(),
     inc_declarations: vec![],
+    id_generator: IDGenerator::new(id_seed)
   }
 }
 
-fn fork_context<'a>(dependency_uri: &'a String, context: &Context<'a>) -> Context<'a> {
-  let mut child = create_child_context(context);
+fn fork_context<'a>(dependency_uri: &'a String, context: &Context<'a>, id_seed: String) -> Context<'a> {
+  let mut child = create_child_context(context, id_seed);
   child.uri = &dependency_uri;
   child.in_public_scope = false;
   child.import_scopes =
@@ -831,7 +848,8 @@ fn include_content<'a>(
 ) -> Result<(), RuntimeError> {
   if let Some(inc) = &context.content {
     let (uri, inc2) = inc.clone();
-    let mut child_context = fork_context(&uri, context);
+    let id_seed = context.id_generator.new_id();
+    let mut child_context = fork_context(&uri, context, id_seed);
     evaluate_style_rules(&inc2.rules, context, &parent_selector_context)?;
     all_styles.extend(evaluate_style_declarations(
       &inc2.declarations,
@@ -934,7 +952,8 @@ fn evaluate_mixin<'a, 'b>(
   context: &mut Context<'a>,
   parent_selector_context: &SelectorContext,
 ) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), RuntimeError> {
-  let mut child_context = fork_context(owner_uri, context);
+  let id_seed = context.id_generator.new_id();
+  let mut child_context = fork_context(owner_uri, context, id_seed);
   child_context.content = content;
   let declarations = evaluate_style_declarations(
     &expr.declarations,
@@ -1024,6 +1043,7 @@ fn evaluate_style_rule2(
       context.all_rules.insert(
         rule_len,
         virt::Rule::Style(virt::StyleRule {
+          id: context.id_generator.new_id(),
           exported: context.in_public_scope,
           source_id: expr.id.to_string(),
           selector_text: selector_context.to_string(),
@@ -1567,6 +1587,7 @@ fn evaluate_style_key_value_declaration<'a>(
   }
 
   declarations.push(virt::CSSStyleProperty {
+    id: context.id_generator.new_id(),
     source_id: expr.id.to_string(),
     name: expr.name.to_string(),
     value: value.to_string(),
@@ -1576,6 +1597,7 @@ fn evaluate_style_key_value_declaration<'a>(
     if expr.name.starts_with(start) {
       for prefix in CSS3_PREFIXES.iter() {
         declarations.push(virt::CSSStyleProperty {
+          id: context.id_generator.new_id(),
           source_id: expr.id.to_string(),
           name: format!("{}{}", prefix, expr.name.to_string()),
           value: value.to_string(),
