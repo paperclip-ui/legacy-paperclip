@@ -4,14 +4,22 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha lib/test",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@paperclip-ui/common": "^18.4.7",
     "@paperclip-ui/core": "^18.4.7",
     "automerge": "^1.0.1-preview.6",
     "fs-extra": "^10.0.0",
     "sockjs": "^0.3.24"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.0.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3"
   }
 }

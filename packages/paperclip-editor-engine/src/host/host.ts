@@ -1,7 +1,10 @@
 import { EngineDelegate } from "@paperclip-ui/core";
+import { EventEmitter } from "events";
 import * as sockjs from "sockjs";
-import { Connection } from "./connection";
-import { InternalHost } from "./internal-host";
+import { openDocumentChannel } from "../core";
+import { RPCClient } from "../core/rpc";
+import { ClientConnection } from "./connection";
+import { DocumentManager } from "./documents";
 
 export type EditorHostOptions = {};
 
@@ -9,22 +12,23 @@ export class EditorHost {
   /**
    */
 
-  private _connections: Connection[];
-  private _internal: InternalHost;
+  private _events: EventEmitter;
+  private _documents: DocumentManager;
 
   /**
    */
 
-  constructor(private _engine: EngineDelegate, private _server: sockjs.Server) {
-    this._internal = new InternalHost(this._engine);
+  constructor(private _engine: EngineDelegate, private _server: RPCClient) {
+    this._events = new EventEmitter();
+    this._documents = new DocumentManager(this._engine);
   }
 
   /**
    */
 
   start() {
-    this._server.on("connection", connection => {
-      this._connections.push(new Connection(connection, this._internal));
+    this._server.onConnection(connection => {
+      new ClientConnection(this._documents, connection, this._events);
     });
   }
 }

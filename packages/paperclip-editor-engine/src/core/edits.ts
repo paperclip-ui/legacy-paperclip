@@ -17,21 +17,11 @@ export enum DocumentEditKind {
 /**
  */
 
-export type DocumentBaseEdit<TKind extends DocumentEditKind> = {
+export type VirtualObjectBaseEdit<TKind extends DocumentEditKind> = {
   kind: TKind;
 };
 
 /**
- * Handles inserting and deleting source text
  */
 
-export type SetSourceText = {
-  value: string;
-  start: number;
-  end: number;
-} & DocumentBaseEdit<DocumentEditKind.SetSourceText>;
-
-/**
- */
-
-export type DocumentEdit = SetSourceText;
+export type VirtualObjectEdit = any;

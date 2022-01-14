@@ -41,7 +41,10 @@ const spy = (obj, prop, handler) => {
 
 type Message = {
   name: string;
-  payload: any;
+  channelId: any;
+  id: any;
+  payload?: any;
+  error?: any;
 };
 
 type Adapter = {
@@ -89,27 +92,45 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
   const responseName = `${name}:response`;
 
   return (chan: Adapter): Channel<TRequest, TResponse> => {
+    const channelId = Math.random();
+
     const call = (payload: any): Promise<any> => {
-      return new Promise(resolve => {
+      let id = Math.random();
+
+      return new Promise((resolve, reject) => {
         const onMessage = message => {
-          if (message.name === responseName) {
+          if (message.id === id) {
             disposeListener();
-            resolve(message.payload);
+            if (message.error) {
+              reject(message.error);
+            } else {
+              resolve(message.payload);
+            }
           }
         };
-
         const disposeListener = chan.onMessage(onMessage);
-        chan.send({ name: requestName, payload });
+        chan.send({ name: requestName, payload, id, channelId });
       });
     };
 
     const listen = (call: (payload: any) => Promise<any>) => {
       const dispose = chan.onMessage(async message => {
-        if (message.name === requestName) {
-          chan.send({
-            name: responseName,
-            payload: await call(message.payload)
-          });
+        if (message.name === requestName && message.channelId !== channelId) {
+          try {
+            chan.send({
+              name: responseName,
+              id: message.id,
+              channelId,
+              payload: await call(message.payload)
+            });
+          } catch (error) {
+            chan.send({
+              name: responseName,
+              id: message.id,
+              channelId,
+              error
+            });
+          }
         }
       });
       return { dispose };
