@@ -4,7 +4,7 @@ import { EventEmitter } from "events";
 import * as sockjs from "sockjs";
 import { crdtChangesChannel, openDocumentChannel } from "../core";
 import { Connection } from "../core/connection";
-import { DocumentManager } from "./documents";
+import { PCDocumentManager } from "./documents";
 // import { InternalHost } from "./internal-host";
 
 export class ClientConnection {
@@ -18,7 +18,7 @@ export class ClientConnection {
    */
 
   constructor(
-    private _documents: DocumentManager,
+    private _documents: PCDocumentManager,
     private _connection: Connection,
     private _events: EventEmitter
   ) {

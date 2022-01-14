@@ -1,7 +1,7 @@
 import { EngineDelegate } from "@paperclip-ui/core";
 import { SourceDocument } from "../core/source-document";
 
-export class DocumentManager {
+export class PCDocumentManager {
   private _documents: Record<string, PCDocument>;
 
   constructor(private _engine: EngineDelegate) {
