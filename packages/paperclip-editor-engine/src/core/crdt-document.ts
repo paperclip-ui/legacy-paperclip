@@ -4,20 +4,20 @@ type SourceDocumentData = {
   text: Automerge.Text;
 };
 
-export class SourceDocument {
+export class CRDTTextDocument {
   private constructor(private _doc: SourceDocumentData) {}
 
   static fromText(text: string) {
-    return new SourceDocument(
+    return new CRDTTextDocument(
       Automerge.from({ text: new Automerge.Text(text) })
     );
   }
 
   static load(document: Automerge.BinaryDocument) {
-    return new SourceDocument(Automerge.load(document));
+    return new CRDTTextDocument(Automerge.load(document));
   }
 
-  save() {
+  toData() {
     return Automerge.save(this._doc);
   }
 

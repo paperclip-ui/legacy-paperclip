@@ -1,6 +1,7 @@
 import { Connection } from "../core/connection";
 import { RPCClient } from "../core/rpc";
-import { ClientDocument } from "./client-document";
+import { createDocument } from "./documents";
+import { deferPromise } from "../core/utils";
 
 export type EditorClientOptions = {
   hostname?: string;
@@ -9,14 +10,14 @@ export type EditorClientOptions = {
 
 export class EditorClient {
   private _connection: Promise<Connection>;
+  private _resolveConnection: (Connection) => void;
 
   /**
    */
 
   constructor(private _rpcClient: RPCClient) {
-    this._connection = new Promise(resolve =>
-      this._rpcClient.onConnection(resolve)
-    );
+    [this._connection, this._resolveConnection] = deferPromise();
+    this._rpcClient.onConnection(this._onConnection);
   }
 
   /**
@@ -24,8 +25,15 @@ export class EditorClient {
    */
 
   async open(documentUri: string) {
-    const connection = new ClientDocument(documentUri, await this._connection);
-    await connection.open();
-    return connection;
+    const document = createDocument(documentUri, await this._connection);
+    await document.open();
+    return document;
   }
+
+  /**
+   */
+
+  private _onConnection = (connection: Connection) => {
+    this._resolveConnection(connection);
+  };
 }

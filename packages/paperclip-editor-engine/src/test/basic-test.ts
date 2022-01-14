@@ -4,6 +4,8 @@ import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
 import { EditorHost } from "../host/host";
 import { createMockServer } from "./utils";
 import { EditorClient } from "../client/client";
+import { PCDocument } from "../client/documents";
+import { stringifyVirtualNode } from "@paperclip-ui/core";
 
 describe(__filename + "#", () => {
   it(`Can open a simple document`, async () => {
@@ -22,7 +24,7 @@ describe(__filename + "#", () => {
 
     const doc = await client.open("/hello.pc");
 
-    expect(doc.getSourceText()).to.eql("div");
+    expect((await doc.getSource()).getText()).to.eql("div");
   });
 
   it(`Text changes are synchronized between documents`, async () => {
@@ -39,15 +41,39 @@ describe(__filename + "#", () => {
 
     const client = new EditorClient(server.createClient());
     const doc = await client.open("/hello.pc");
-    expect(doc.getSourceText()).to.eql("div");
+    const docSource = await doc.getSource();
+    expect(docSource.getText()).to.eql("div");
 
     const client2 = new EditorClient(server.createClient());
     const doc2 = await client2.open("/hello.pc");
+    const doc2Source = await doc2.getSource();
 
-    doc.insertSourceText("blahh".split(""));
+    docSource.insertText("blahh".split(""));
 
-    expect(doc2.getSourceText()).to.eql("blahhdiv");
+    expect(await doc2Source.getText()).to.eql("blahhdiv");
   });
 
-  it(`When text changes are applied to the document, the engine updates`, async () => {});
+  it(`The engine updates when the source doc changes`, async () => {
+    const server = createMockServer();
+    const host = new EditorHost(
+      createMockEngine({
+        "/hello.pc": "Hello World"
+      }),
+      server
+    );
+    host.start();
+
+    const client = new EditorClient(server.createClient());
+    const doc = (await client.open("/hello.pc")) as PCDocument;
+    expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      "Hello World"
+    );
+
+    const source = await doc.getSource();
+    source.insertText("abc".split(""));
+
+    expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      "abcHello World"
+    );
+  });
 });

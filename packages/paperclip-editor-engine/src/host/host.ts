@@ -4,7 +4,7 @@ import * as sockjs from "sockjs";
 import { openDocumentChannel } from "../core";
 import { RPCClient } from "../core/rpc";
 import { ClientConnection } from "./connection";
-import { PCDocumentManager } from "./documents";
+import { DocumentManager } from "./documents/manager";
 
 export type EditorHostOptions = {};
 
@@ -13,14 +13,14 @@ export class EditorHost {
    */
 
   private _events: EventEmitter;
-  private _documents: PCDocumentManager;
+  private _documents: DocumentManager;
 
   /**
    */
 
   constructor(private _engine: EngineDelegate, private _server: RPCClient) {
     this._events = new EventEmitter();
-    this._documents = new PCDocumentManager(this._engine);
+    this._documents = new DocumentManager(this._events, this._engine);
   }
 
   /**
@@ -28,7 +28,12 @@ export class EditorHost {
 
   start() {
     this._server.onConnection(connection => {
-      new ClientConnection(this._documents, connection, this._events);
+      new ClientConnection(
+        this._documents,
+        connection,
+        this._events,
+        this._engine
+      );
     });
   }
 }
