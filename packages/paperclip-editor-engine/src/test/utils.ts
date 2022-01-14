@@ -1,5 +1,8 @@
 import { RPCClient } from "../core/rpc";
 import { EventEmitter } from "events";
+import { EditorHost } from "../host/host";
+import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
+import { EditorClient } from "../client/client";
 
 export const createMockServer = () => {
   const hostEm = new EventEmitter();
@@ -8,28 +11,32 @@ export const createMockServer = () => {
     onConnection(listener) {
       hostEm.on("connection", listener);
     },
-    createClient() {
-      return {
+    createHostClient(delay?: boolean) {
+      return new EditorClient({
         onConnection(listener) {
           const remote = new EventEmitter();
           const local = new EventEmitter();
 
-          const remoteCon = createClient(1, local, remote);
-          const localCon = createClient(2, remote, local);
+          const remoteCon = createClient(delay, local, remote);
+          const localCon = createClient(delay, remote, local);
 
           hostEm.emit("connection", localCon);
           listener(remoteCon);
         }
-      };
+      });
     }
   };
 };
 
-const createClient = (id, a: EventEmitter, b: EventEmitter) => {
+const createClient = (delay: boolean, a: EventEmitter, b: EventEmitter) => {
   return {
-    id,
     send(message) {
-      a.emit("message", message);
+      const emitNow = () => a.emit("message", message);
+      if (delay) {
+        setTimeout(emitNow, 0);
+      } else {
+        emitNow();
+      }
     },
     onMessage(listener) {
       const listener2 = v => {
@@ -43,3 +50,15 @@ const createClient = (id, a: EventEmitter, b: EventEmitter) => {
     onDisconnect() {}
   };
 };
+
+export const createMockHost = (graph: Record<string, string>) => {
+  const server = createMockServer();
+
+  const host = new EditorHost(createMockEngine(graph), server);
+
+  host.start();
+
+  return { host, server };
+};
+
+export const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
