@@ -1,4 +1,9 @@
-import { stringifyVirtualNode, VirtualText } from "@paperclip-ui/core";
+import {
+  computeVirtScriptObject,
+  stringifyVirtualNode,
+  VirtualElement,
+  VirtualText
+} from "@paperclip-ui/core";
 import { expect } from "chai";
 import { VirtualobjectEditKind } from "../core";
 import { createMockHost } from "./utils";
@@ -6,70 +11,121 @@ import { createMockHost } from "./utils";
 // TODO - test latency
 
 describe(__filename + "#", () => {
-  it(`Can update the text of a virtual node`, async () => {
-    const { server } = createMockHost({
-      "/hello.pc": "<div>blah</div>"
+  describe("html", () => {
+    it(`Can update the text of a virtual node`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div>blah</div>"
+      });
+
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.InsertNodeBefore,
+          beforeNodePath: "0.0",
+          node: "<span />"
+        }
+      ]);
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
+      );
     });
 
-    const client = server.createHostClient();
+    it(`Can insert multiple nodes in the same edit`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div>blah</div>"
+      });
 
-    const doc = await client.open("/hello.pc");
-    doc.editVirtualObjects([
-      {
-        kind: VirtualobjectEditKind.InsertNodeBefore,
-        beforeNodeId: "0.0",
-        node: "<span />"
-      }
-    ]);
-    expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
-      `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
-    );
-  });
+      const client = server.createHostClient();
 
-  it(`Can insert multiple nodes in the same edit`, async () => {
-    const { server } = createMockHost({
-      "/hello.pc": "<div>blah</div>"
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.InsertNodeBefore,
+          beforeNodePath: "0.0",
+          node: "<a />"
+        },
+        {
+          kind: VirtualobjectEditKind.InsertNodeBefore,
+          beforeNodePath: "0.0",
+          node: "<b />"
+        }
+      ]);
+      expect(
+        stringifyVirtualNode(doc.getContent().virtualData.preview)
+      ).to.equals(
+        `<div class="_5cd17222 _pub-5cd17222"><b class="_5cd17222 _pub-5cd17222"></b><a class="_5cd17222 _pub-5cd17222"></a>blah</div>`
+      );
     });
 
-    const client = server.createHostClient();
+    it(`Can update the text of a node`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div>blah</div>"
+      });
 
-    const doc = await client.open("/hello.pc");
-    doc.editVirtualObjects([
-      {
-        kind: VirtualobjectEditKind.InsertNodeBefore,
-        beforeNodeId: "0.0",
-        node: "<a />"
-      },
-      {
-        kind: VirtualobjectEditKind.InsertNodeBefore,
-        beforeNodeId: "0.0",
-        node: "<b />"
-      }
-    ]);
-    expect(
-      stringifyVirtualNode(doc.getContent().virtualData.preview)
-    ).to.equals(
-      `<div class="_5cd17222 _pub-5cd17222"><b class="_5cd17222 _pub-5cd17222"></b><a class="_5cd17222 _pub-5cd17222"></a>blah</div>`
-    );
-  });
+      const client = server.createHostClient();
 
-  it(`Can update the text of a node`, async () => {
-    const { server } = createMockHost({
-      "/hello.pc": "<div>blah</div>"
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.SetTextNodeValue,
+          nodePath: "0.0",
+          value: "Hello world"
+        }
+      ]);
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">Hello world</div>`
+      );
     });
 
-    const client = server.createHostClient();
+    it(`Can insert new node annotations`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div>blah</div>"
+      });
 
-    const doc = await client.open("/hello.pc");
-    doc.editVirtualObjects([
-      {
-        kind: VirtualobjectEditKind.InsertNodeBefore,
-        beforeNodeId: "0.0",
-        node: "<span />"
-      }
-    ]);
-    expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
-      `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      const annotations = {
+        tags: ["a", "b"],
+        desc: "Some description",
+        frame: { width: 100, height: 100 }
+      };
+
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.SetAnnotations,
+          nodePath: "0",
+          value: annotations
+        }
+      ]);
+
+      const node = doc.getNodeFromPath("0") as VirtualElement;
+      expect(annotations).to.eql(computeVirtScriptObject(node.annotations));
+
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">blah</div>`
+      );
+    });
+
+    xit(`Can add a new element attribute`, async () => {});
+
+    xit(`Can update an element attribute`, async () => {});
+
+    xit(`Can append a child to an empty element`, async () => {});
+
+    xit(
+      `If a node is inserted into a slot placeholder, that slot placeholder is replaced with the element`
     );
+    xit(
+      `Slotted children are wrapped in a fragment if another child is inserted`
+    );
+    xit(
+      `An import is added if inserting an instance that's not already imported`
+    );
+    xit(`The instance type of a component can be changed`);
   });
+
+  describe("styles", () => {});
 });

@@ -6,6 +6,12 @@ type SourceDocumentData = {
   text: Automerge.Text;
 };
 
+export type TextEdit = {
+  chars: string[];
+  index: number;
+  deleteCount?: number;
+};
+
 export class CRDTTextDocument {
   private _em: EventEmitter;
 
@@ -27,15 +33,12 @@ export class CRDTTextDocument {
     return new CRDTTextDocument(Automerge.load(document));
   }
 
-  applyEdits<TEdit>(
-    edits: TEdit[],
-    applyEdit: (edit: TEdit, text: Automerge.Text) => void
-  ) {
+  applyEdits(edits: TextEdit[]) {
     let curr = this._doc;
 
     for (const edit of edits) {
       curr = Automerge.change(curr, doc => {
-        applyEdit(edit, doc.text);
+        applyTextEdit(edit, doc.text);
       });
     }
     return this._setDoc(curr, this._doc);
@@ -48,24 +51,29 @@ export class CRDTTextDocument {
     return this._doc.text.toString();
   }
 
-  setText(value: string[], start = 0, deleteCount = 0) {
+  setText(chars: string[], index = 0, deleteCount = 0) {
     const newDoc = Automerge.change(this._doc, newDoc => {
-      if (deleteCount) {
-        newDoc.text.deleteAt(start, deleteCount);
-      }
-      newDoc.text.insertAt(start, ...value);
+      applyTextEdit(
+        {
+          chars,
+          index,
+          deleteCount
+        },
+        newDoc.text
+      );
     });
     return this._setDoc(newDoc, this._doc);
   }
 
   applyChanges(changes: Automerge.BinaryChange[]) {
     // const oldDoc = this._doc;
-    const [newDoc, patch] = Automerge.applyChanges(this._doc, changes);
+    const [newDoc, _patch] = Automerge.applyChanges(this._doc, changes);
     this._doc = newDoc;
     this._em.emit("change");
 
     // TODO - emit changes of text
   }
+
   private _setDoc(newDoc: SourceDocumentData, oldDoc: SourceDocumentData) {
     this._doc = newDoc;
     const changes = Automerge.getChanges(oldDoc, newDoc);
@@ -73,3 +81,10 @@ export class CRDTTextDocument {
     return changes;
   }
 }
+
+const applyTextEdit = (edit: TextEdit, text: Automerge.Text) => {
+  if (edit.deleteCount) {
+    text.deleteAt(edit.index, edit.deleteCount);
+  }
+  text.insertAt(edit.index, ...edit.chars);
+};

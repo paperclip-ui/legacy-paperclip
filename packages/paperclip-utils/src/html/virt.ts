@@ -10,6 +10,7 @@ import { CSSMutation } from "../css/virt-mutation";
 export enum VirtualNodeKind {
   Element = "Element",
   Text = "Text",
+  Slot = "Slot",
   Fragment = "Fragment",
   StyleElement = "StyleElement"
 }
@@ -133,6 +134,8 @@ export type VirtualText = {
   value: string;
 } & VirtualBaseNode<VirtualNodeKind.Text>;
 
+export type VirtualSlot = {} & VirtualBaseNode<VirtualNodeKind.Slot>;
+
 export type VirtualFragment = {
   children: VirtualNode[];
 } & VirtualBaseNode<VirtualNodeKind.Fragment>;
@@ -140,6 +143,7 @@ export type VirtualFragment = {
 export type VirtualNode =
   | VirtualElement
   | VirtualText
+  | VirtualSlot
   | VirtualFragment
   | VirtualStyleElement;
 

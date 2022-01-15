@@ -624,6 +624,32 @@ describe(__filename + "#", () => {
       `<div></div><div><style>._a0539270._a0539270 {font-family: sans-serif; color: rgb(100, 172, 86); font-size: 24px;} </style></div><div><div class="_6bcf0994 _pub-6bcf0994 _a0539270"> Hello world </div></div>`
     );
   });
+
+  it(`Renders slots`, async () => {
+    const graph = {
+      "file:///entry.pc": `
+        <div component as="Test">
+          {children}
+        </div>
+      `
+    };
+
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    const renderer = createMockFramesRenderer("file:///entry.pc");
+
+    renderer.initialize(
+      (await engine.open("file:///entry.pc")) as LoadedPCData
+    );
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\+/g, "/")
+    ).to.eql(
+      `<div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
+    );
+  });
 });
 
 const combineFrameHTML = (renderer: FramesRenderer) => {

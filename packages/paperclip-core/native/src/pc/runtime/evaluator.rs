@@ -109,8 +109,6 @@ pub fn evaluate<'a>(
   id_seed: String,
 ) -> Result<EvalInfo, RuntimeError> {
 
-  let mut id_generator = IDGenerator::new(id_seed.to_string());
-
   let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new(
     "URI not loaded".to_string(),
     uri,
@@ -468,7 +466,7 @@ fn evaluate_node_sheet<'a>(
       if let ast::Attribute::KeyValueAttribute(kv) = attribute {
         if let Some(value) = &kv.value {
           if let ast::AttributeValue::Slot(slot) = value {
-            traverse_script_expr_css(&slot.script, &mut |expr| {
+            traverse_script_expr(&slot.script, &mut |expr| {
               if let script_ast::Expression::Node(node) = expr {
                 evaluate_node_sheet(uri, Some(&current), &*node, sheet, css_exports, context)?;
               }
@@ -481,7 +479,7 @@ fn evaluate_node_sheet<'a>(
   }
 
   if let ast::Node::Slot(slot) = current {
-    traverse_script_expr_css(&slot.script, &mut |expr| {
+    traverse_script_expr(&slot.script, &mut |expr| {
       if let script_ast::Expression::Node(node) = expr {
         evaluate_node_sheet(uri, Some(&current), &*node, sheet, css_exports, context)?;
       }
@@ -492,7 +490,7 @@ fn evaluate_node_sheet<'a>(
   Ok(())
 }
 
-pub fn traverse_script_expr_css<TEach>(
+pub fn traverse_script_expr<TEach>(
   current: &script_ast::Expression,
   each: &mut TEach,
 ) -> Result<(), RuntimeError>
@@ -503,24 +501,24 @@ where
 
   match current {
     script_ast::Expression::Conjunction(expr) => {
-      traverse_script_expr_css(&expr.left, each)?;
-      traverse_script_expr_css(&expr.right, each)?;
+      traverse_script_expr(&expr.left, each)?;
+      traverse_script_expr(&expr.right, each)?;
     }
     script_ast::Expression::Group(expr) => {
-      traverse_script_expr_css(&expr.expression, each)?;
+      traverse_script_expr(&expr.expression, each)?;
     }
     script_ast::Expression::Not(expr) => {
-      traverse_script_expr_css(&expr.expression, each)?;
+      traverse_script_expr(&expr.expression, each)?;
     }
     script_ast::Expression::Array(expr) => {
       for value in &expr.values {
-        traverse_script_expr_css(&value, each)?;
+        traverse_script_expr(&value, each)?;
       }
     }
     script_ast::Expression::Node(_) => {}
     script_ast::Expression::Object(expr) => {
       for property in &expr.properties {
-        traverse_script_expr_css(&property.value, each)?;
+        traverse_script_expr(&property.value, each)?;
       }
     }
     _ => {}
@@ -754,6 +752,7 @@ fn evaluate_slot<'a>(
 
   let script = &slot.script;
   let mut script_value = evaluate_js(script, depth + 1, context)?;
+  
 
   // if array of values, then treat as document fragment
   if let script_virt::Value::Array(ary) = &mut script_value {
@@ -780,16 +779,24 @@ fn evaluate_slot<'a>(
     return Ok(Some(node));
   }
 
-  Ok(Some(virt::Node::Text(virt::Text {
-    id: context.id_generator.new_id(),
-    source_id: use_expr_id(script.get_id(), context),
-    annotations: None,
-    value: if script_value.truthy() || script_value.is_number() {
-      script_value.to_string()
-    } else {
-      "".to_string()
-    },
-  })))
+  if !matches!(script_value, script_virt::Value::Undefined(_)) {
+    Ok(Some(virt::Node::Text(virt::Text {
+      id: context.id_generator.new_id(),
+      source_id: use_expr_id(script.get_id(), context),
+      annotations: None,
+      value: if script_value.truthy() || script_value.is_number() {
+        script_value.to_string()
+      } else {
+        "".to_string()
+      },
+    })))
+  } else {
+    Ok(Some(virt::Node::Slot(virt::Slot {
+      id: context.id_generator.new_id(),
+      source_id: use_expr_id(script.get_id(), context)
+    })))
+  }
+
 }
 
 pub fn evaluate_imported_component<'a>(

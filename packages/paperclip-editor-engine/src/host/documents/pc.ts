@@ -1,5 +1,6 @@
 import { EngineDelegate } from "@paperclip-ui/core";
-import { CRDTTextDocument } from "../../core/crdt-document";
+import * as Automerge from "automerge";
+import { CRDTTextDocument, TextEdit } from "../../core/crdt-document";
 import { DocumentKind } from "../../core/documents";
 import { BaseDocument } from "./base";
 import { EventEmitter } from "events";
@@ -34,21 +35,9 @@ export class PCDocument extends BaseDocument {
    */
 
   applyVirtualObjectEdits(edits: VirtualObjectEdit[]) {
-    const source = this.openSource();
-    source.applyEdits(edits, (edit, text) => {
-      if (edit.kind === VirtualobjectEditKind.InsertNodeBefore) {
-        const info = this._engine.getVirtualNodeSourceInfo(
-          edit.beforeNodeId.split(".").map(Number),
-          this.uri
-        );
-        text.insertAt(info.textSource.range.start.pos, ...edit.node.split(""));
-      }
-    });
-
-    //
-    // info.textSource.range.start.pos
-    // const source = this.openSource();
-    // source.setText(node.split(""), info.textSource.range.start.pos);
+    this.openSource().applyEdits(
+      edits.map(mapVirtualSourceEdit(this.uri, this._engine))
+    );
   }
 
   /**
@@ -88,3 +77,57 @@ export class PCDocument extends BaseDocument {
     this.load();
   };
 }
+
+const mapVirtualSourceEdit = (uri: string, engine: EngineDelegate) => (
+  edit: VirtualObjectEdit
+): TextEdit => {
+  if (edit.kind === VirtualobjectEditKind.InsertNodeBefore) {
+  }
+
+  switch (edit.kind) {
+    case VirtualobjectEditKind.InsertNodeBefore: {
+      const info = getSourceNodeFromPath(uri, engine, edit.beforeNodePath);
+      return {
+        chars: edit.node.split(""),
+        index: info.textSource.range.start.pos
+      };
+    }
+    case VirtualobjectEditKind.SetTextNodeValue: {
+      const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+      return {
+        chars: edit.value.split(""),
+        index: info.textSource.range.start.pos,
+        deleteCount:
+          info.textSource.range.end.pos - info.textSource.range.start.pos
+      };
+    }
+    case VirtualobjectEditKind.SetAnnotations: {
+      const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+
+      const buffer = [`<!--\n`];
+      for (const name in edit.value) {
+        // PC can't handle string keys yet for objects, so we need to strip them
+        buffer.push(
+          `@${name} ${JSON.stringify(edit.value[name]).replace(
+            /"(.+?)":/g,
+            "$1:"
+          )}\n`
+        );
+      }
+      buffer.push("-->\n");
+      return {
+        chars: buffer.join("").split(""),
+        index: info.textSource.range.start.pos
+      };
+    }
+    default: {
+      throw new Error(`Unhandled edit`);
+    }
+  }
+};
+
+const getSourceNodeFromPath = (
+  uri: string,
+  engine: EngineDelegate,
+  path: string
+) => engine.getVirtualNodeSourceInfo(path.split(".").map(Number), uri);

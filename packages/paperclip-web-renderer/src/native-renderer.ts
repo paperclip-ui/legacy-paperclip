@@ -1,5 +1,10 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSRule, stringifyCSSSheet } from "@paperclip-ui/utils";
+import {
+  NodeKind,
+  Slot,
+  stringifyCSSRule,
+  stringifyCSSSheet
+} from "@paperclip-ui/utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 
@@ -46,6 +51,9 @@ export const createNativeNode = (
         return createNativeStyleFromSheet(node.sheet, factory, resolveUrl);
       case "Fragment":
         return createNativeFragment(node, factory, resolveUrl);
+      case NodeKind.Slot: {
+        return createSlot(node, factory);
+      }
     }
   } catch (e) {
     return factory.createTextNode(String(e.stack));
@@ -53,6 +61,15 @@ export const createNativeNode = (
 };
 
 let _dummyStyle: HTMLStyleElement;
+
+const createSlot = (node: Slot, domFactory: DOMFactory) => {
+  const placeholder = domFactory.createElement("div");
+  placeholder.setAttribute(
+    "style",
+    "border: 1px dashed #333; padding: 30px; box-sizing: border-box;"
+  );
+  return placeholder;
+};
 
 const ruleIsValid = (ruleText: string) => {
   if (typeof window === "undefined") {
