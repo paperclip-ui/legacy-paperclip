@@ -31,23 +31,15 @@ export class CRDTTextDocument {
     edits: TEdit[],
     applyEdit: (edit: TEdit, text: Automerge.Text) => void
   ) {
-    const existingDoc = this._doc;
+    let curr = this._doc;
 
-    const changedDocs = edits.map(edit => {
-      return Automerge.change(Automerge.clone(existingDoc), doc => {
+    for (const edit of edits) {
+      curr = Automerge.change(curr, doc => {
         applyEdit(edit, doc.text);
       });
-    });
-
-    this._doc = changedDocs.reduce((newDoc, part) => {
-      return Automerge.merge(newDoc, part);
-    }, this._doc);
-
-    const changes = Automerge.getChanges(existingDoc, this._doc);
-    this._em.emit("change");
-    return changes;
+    }
+    return this._setDoc(curr, this._doc);
   }
-
   toData() {
     return Automerge.save(this._doc);
   }
@@ -57,16 +49,13 @@ export class CRDTTextDocument {
   }
 
   setText(value: string[], start = 0, deleteCount = 0) {
-    const oldDoc = this._doc;
-    this._doc = Automerge.change(this._doc, newDoc => {
+    const newDoc = Automerge.change(this._doc, newDoc => {
       if (deleteCount) {
         newDoc.text.deleteAt(start, deleteCount);
       }
       newDoc.text.insertAt(start, ...value);
     });
-    const changes = Automerge.getChanges(oldDoc, this._doc);
-    this._em.emit("change");
-    return changes;
+    return this._setDoc(newDoc, this._doc);
   }
 
   applyChanges(changes: Automerge.BinaryChange[]) {
@@ -76,5 +65,11 @@ export class CRDTTextDocument {
     this._em.emit("change");
 
     // TODO - emit changes of text
+  }
+  private _setDoc(newDoc: SourceDocumentData, oldDoc: SourceDocumentData) {
+    this._doc = newDoc;
+    const changes = Automerge.getChanges(oldDoc, newDoc);
+    this._em.emit("change");
+    return changes;
   }
 }
