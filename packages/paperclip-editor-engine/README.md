@@ -1,78 +1,29 @@
 
 
 ```javascript
-import { EngineDelegate } from "paperclip-core";
-import { PaperclipEditorHost, PaperclipClient } from "paperclip-editor-engine";
+const client = new EditorClient(new SockJSAdapter(window.location));
 
-const host = new PaperclpEditorHost(new EngineDelegate());
+const doc = await client.openDocument("hello.pc"); // Hello world!@
 
-// CRDT connection
-const { textDocument, vobjDocument } = await host.open("file.pc");
+// display the element to the screen
+document.body.appendChild(div.preview);
 
-textDocument.insertText({ });
-
-
-vobjDocument.insertNodeBefore({ id: "virtual-node-id", child: { kind: "text", value: "Hello world" } })
+const node = doc.getNodeByPath([0]);
 
 
-host.onConnection(client => {
-  client.onMessage(message => {
+// should update the previw and such
+doc.updateText(node, "Hello world");
 
-  });
-});
-
-
-// somewhere far far away...
-
-const client = new PaperclipClient(host.url);
-
-
-client.loadDirectory();
-
-
-// open a new document, or as many as we want
-const { textDocument, vobjDocument } = await client.open("path/to/paperclip/file.pc");
-
-
-
-// state may not 
-await document.preview.getState();
-
-
-document.preview.onChange(async () => {
-  
-  dispatch(documentStateChanged(await document.preview.getState()));
-});
-
-document.onChange(event => {
-  document.previe
-});
 
 ```
 
+
+### TODO
+
+- [ ] patch AST with CRDT changes
+  - [ ] parse_until option for AST
 
 ### Considerations
 
 - Some way to connect the client with a preview without going through state
 - CRDT text documents, need to start with this
-
-
-Needs to support:
-
-```
-
-      .listen(this._loadNodeSources);
-    channels.helloChannel(adapter).listen(this._initialize);
-    channels.loadDirectoryChannel(adapter).listen(this._loadDirectory);
-    channels.inspectNodeStyleChannel(adapter).listen(this._inspectNode);
-    channels.revealNodeSourceChannel(adapter).listen(this._revealSource);
-    channels
-      .revealNodeSourceByIdChannel(adapter)
-      .listen(this._revealSourceById);
-    channels.popoutWindowChannel(adapter).listen(this._popoutWindow);
-    channels.openFileChannel(adapter).listen(this._openFile);
-    channels.editCodeChannel(adapter).listen(this._editCode);
-    channels.commitChangesChannel(adapter).listen(this._commitChanges);
-    channels.setBranchChannel(adapter).listen(this._setBranch);
-    channels.editPCSourceChannel(adapter).listen(this._editPCSource);
-```

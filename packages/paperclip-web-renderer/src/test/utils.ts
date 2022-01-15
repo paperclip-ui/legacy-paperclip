@@ -5,6 +5,7 @@ import { FramesRenderer } from "../frame-renderer";
 import { EngineMode } from "@paperclip-ui/core";
 import { identity } from "lodash";
 import * as CSSOM from "cssom";
+import { FramesRendererState } from "..";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => {
@@ -17,6 +18,10 @@ export const mockDOMFactory: DOMFactory = {
   createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
   createDocumentFragment: () => (new MockFragment() as any) as DocumentFragment,
   createTextNode: nodeValue => (new MockTextNode(nodeValue) as any) as Text
+};
+
+export const combineFrameHTML = (state: FramesRendererState) => {
+  return state.frames.map(frame => frame.stage.innerHTML).join("");
 };
 
 abstract class BaseNode {

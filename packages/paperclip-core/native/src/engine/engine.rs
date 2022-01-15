@@ -16,6 +16,7 @@ use crate::css::runtime::export as css_export;
 use crate::css::runtime::mutation as css_mutation;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
+use crate::core::graph::GraphError;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
@@ -73,6 +74,13 @@ pub struct DiffedCSSData<'a> {
 pub struct DiffedEvent<'a> {
   pub uri: String,
   pub data: DiffedData<'a>,
+}
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct StringSplice {
+  value: String,
+  start: u32,
+  delete_count: u32,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -148,7 +156,7 @@ impl Engine {
     self.reset();
 
     for uri in keys {
-      self.run(&uri).await?;
+      self.load(&uri).await?;
     }
     let report =
       generate_coverage_report(&self.dependency_graph, &self.evaluated_data, &mut self.vfs).await;
@@ -202,8 +210,12 @@ impl Engine {
       .load_dependency(uri, &mut self.vfs)
       .await;
 
+    self.handle_load_result(uri, load_result)
+  }
+
+  fn handle_load_result(&mut self, uri: &String, load_result: Result<Vec<String>, GraphError>) -> Result<(), EngineError> {
     match load_result {
-      Ok(_loaded_uris) => {
+      Ok(_) => {
         let mut stack = HashSet::new();
 
         self
@@ -360,7 +372,7 @@ impl Engine {
     content: &String,
   ) -> Result<(), EngineError> {
     self.vfs.update(uri, content).await;
-    self.run(uri).await?;
+    self.load(uri).await?;
 
     let mut dep_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 
@@ -368,6 +380,21 @@ impl Engine {
       let mut stack = HashSet::new();
       self.evaluate(&dep_uri, &mut stack);
     }
+
+    Ok(())
+  }
+
+  pub async fn splice_file_content(
+    &mut self,
+    ui: &String,
+    splices: &Vec<StringSplice>
+  ) -> Result<(), EngineError> {
+
+    // 1. update the content
+    // 2. generate new AST
+    // 3. patch dependency graph
+    // 4. generate new vdom (for now)
+
 
     Ok(())
   }

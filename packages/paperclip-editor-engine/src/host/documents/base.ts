@@ -15,5 +15,5 @@ export abstract class BaseDocument {
     return this._contents;
   }
   abstract load2(): Promise<any>;
-  abstract openSource(): Promise<CRDTTextDocument>;
+  abstract openSource(): Promise<CRDTTextDocument> | CRDTTextDocument;
 }

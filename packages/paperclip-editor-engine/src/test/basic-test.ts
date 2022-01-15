@@ -1,9 +1,5 @@
 import { expect } from "chai";
-import * as Automerge from "automerge";
-import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
-import { EditorHost } from "../host/host";
-import { createMockHost, createMockServer, timeout } from "./utils";
-import { EditorClient } from "../client/client";
+import { createMockHost, timeout } from "./utils";
 import { PCDocument } from "../client/documents";
 import { stringifyVirtualNode } from "@paperclip-ui/core";
 

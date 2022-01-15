@@ -3,10 +3,8 @@ use crate::base::ast::Range;
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
 use crate::core::ast::find_expr_by_id;
-use crate::core::id_generator::IDGenerator;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
-use crc::crc32;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 

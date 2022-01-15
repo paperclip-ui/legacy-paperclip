@@ -102,6 +102,7 @@ export type LoadedCSSData = EvaluatedCSSData;
 export type LoadedData = LoadedPCData | LoadedCSSData;
 
 type VirtualBaseNode<KKind extends VirtualNodeKind> = {
+  id: string;
   kind: KKind;
 };
 

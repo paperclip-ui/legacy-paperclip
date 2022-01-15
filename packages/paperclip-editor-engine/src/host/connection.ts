@@ -5,11 +5,13 @@ import {
   openDocumentChannel,
   openDocumentSourceChannel,
   OpenDocumentResult,
-  engineEventChannel
+  engineEventChannel,
+  VirtualObjectEdit
 } from "../core";
+import { editVirtualObjectsChannel } from "../core/channels";
 import { Connection } from "../core/connection";
-import { BaseDocument } from "./documents/base";
 import { DocumentManager } from "./documents/manager";
+import { PCDocument } from "./documents/pc";
 
 export class ClientConnection {
   /**
@@ -24,6 +26,7 @@ export class ClientConnection {
     typeof sourceDocumentCRDTChangesChannel
   >;
   private _openDocuments: Record<string, boolean>;
+  private _editVirtualObjects: ReturnType<typeof editVirtualObjectsChannel>;
 
   /**
    */
@@ -35,6 +38,8 @@ export class ClientConnection {
     private _engine: EngineDelegate
   ) {
     this._openDocuments = {};
+    this._editVirtualObjects = editVirtualObjectsChannel(this._connection);
+    this._editVirtualObjects.listen(this._handleEditVirtualObjects);
     this._openDocumentChannel = openDocumentChannel(this._connection);
     this._openDocumentChannel.listen(this._openDocument);
     this._engineEvents = engineEventChannel(this._connection);
@@ -65,6 +70,18 @@ export class ClientConnection {
 
     this._engine.onEvent(this._onEngineEvent);
   }
+
+  /**
+   */
+
+  private _handleEditVirtualObjects = async (
+    allEdits: Record<string, VirtualObjectEdit[]>
+  ) => {
+    for (const uri in allEdits) {
+      const doc = this._documents.open(uri) as PCDocument;
+      doc.applyVirtualObjectEdits(allEdits[uri]);
+    }
+  };
 
   /**
    */

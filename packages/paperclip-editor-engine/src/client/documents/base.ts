@@ -5,6 +5,8 @@
 import { openDocumentChannel, OpenDocumentResult } from "../../core";
 import { Connection } from "../../core/connection";
 import { DocumentKind } from "../../core/documents";
+import { EventEmitter } from "events";
+import { createListener } from "../../core/utils";
 
 export abstract class BaseDocument<
   TContent extends OpenDocumentResult["content"]
@@ -13,8 +15,10 @@ export abstract class BaseDocument<
 
   private _openDocument: ReturnType<typeof openDocumentChannel>;
   protected _content: TContent;
+  protected _em: EventEmitter;
 
   constructor(readonly uri: string, protected _connection: Connection) {
+    this._em = new EventEmitter();
     this._openDocument = openDocumentChannel(_connection);
   }
 
@@ -31,6 +35,14 @@ export abstract class BaseDocument<
   async open() {
     const result = await this._openDocument.call(this.uri);
     this._content = result.content as TContent;
+    this._em.emit("contentLoaded", this._content);
+  }
+
+  /**
+   */
+
+  onContentLoaded(listener: (content: TContent) => void) {
+    return createListener(this._em, "contentLoaded", listener);
   }
 
   /**

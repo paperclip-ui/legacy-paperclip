@@ -1,4 +1,5 @@
 import { RPCClient } from "../core/rpc";
+import { mockDOMFactory } from "@paperclip-ui/web-renderer/lib/test/utils";
 import { EventEmitter } from "events";
 import { EditorHost } from "../host/host";
 import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
@@ -12,18 +13,23 @@ export const createMockServer = () => {
       hostEm.on("connection", listener);
     },
     createHostClient(delay?: boolean) {
-      return new EditorClient({
-        onConnection(listener) {
-          const remote = new EventEmitter();
-          const local = new EventEmitter();
+      return new EditorClient(
+        {
+          onConnection(listener) {
+            const remote = new EventEmitter();
+            const local = new EventEmitter();
 
-          const remoteCon = createClient(delay, local, remote);
-          const localCon = createClient(delay, remote, local);
+            const remoteCon = createClient(delay, local, remote);
+            const localCon = createClient(delay, remote, local);
 
-          hostEm.emit("connection", localCon);
-          listener(remoteCon);
+            hostEm.emit("connection", localCon);
+            listener(remoteCon);
+          }
+        },
+        {
+          domFactory: mockDOMFactory
         }
-      });
+      );
     }
   };
 };

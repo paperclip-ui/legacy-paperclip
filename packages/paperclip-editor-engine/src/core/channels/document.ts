@@ -1,9 +1,9 @@
 import { remoteChannel } from "@paperclip-ui/common";
 import * as pc from "@paperclip-ui/core";
-import { EngineDelegateEvent } from "@paperclip-ui/core";
+import { EngineDelegateEvent, VirtualNode } from "@paperclip-ui/core";
 import * as Automerge from "automerge";
 import { BinaryChange } from "automerge";
-import { DocumentKind } from "./documents";
+import { DocumentKind } from "../documents";
 
 /**
  */

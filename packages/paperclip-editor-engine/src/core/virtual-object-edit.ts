@@ -1,7 +1,7 @@
 /**
  */
 
-export enum DocumentEditKind {
+export enum VirtualobjectEditKind {
   // We use this be default to ensure that we maintain positional information
   // about an inserted element
   InsertNodeBefore = "InsertNodeBefore",
@@ -17,11 +17,16 @@ export enum DocumentEditKind {
 /**
  */
 
-export type VirtualObjectBaseEdit<TKind extends DocumentEditKind> = {
+export type VirtualObjectBaseEdit<TKind extends VirtualobjectEditKind> = {
   kind: TKind;
 };
+
+export type InsertNodeBefore = {
+  beforeNodeId: string;
+  node: string;
+} & VirtualObjectBaseEdit<VirtualobjectEditKind.InsertNodeBefore>;
 
 /**
  */
 
-export type VirtualObjectEdit = any;
+export type VirtualObjectEdit = InsertNodeBefore;

@@ -2,10 +2,10 @@ import { Connection } from "../core/connection";
 import { RPCClient } from "../core/rpc";
 import { createDocument } from "./documents";
 import { deferPromise } from "../core/utils";
+import { DOMFactory } from "@paperclip-ui/web-renderer/lib/base";
 
 export type EditorClientOptions = {
-  hostname?: string;
-  port: number;
+  domFactory: DOMFactory;
 };
 
 export class EditorClient {
@@ -15,7 +15,10 @@ export class EditorClient {
   /**
    */
 
-  constructor(private _rpcClient: RPCClient) {
+  constructor(
+    private _rpcClient: RPCClient,
+    private _options: EditorClientOptions
+  ) {
     [this._connection, this._resolveConnection] = deferPromise();
     this._rpcClient.onConnection(this._onConnection);
   }
@@ -25,7 +28,11 @@ export class EditorClient {
    */
 
   async open(documentUri: string) {
-    const document = createDocument(documentUri, await this._connection);
+    const document = createDocument(
+      documentUri,
+      await this._connection,
+      this._options
+    );
     await document.open();
     return document;
   }

@@ -1,5 +1,9 @@
 import { LoadedPCData } from "@paperclip-ui/utils";
-import { createMockEngine, createMockFramesRenderer } from "./utils";
+import {
+  combineFrameHTML,
+  createMockEngine,
+  createMockFramesRenderer
+} from "./utils";
 import { expect } from "chai";
 import { FramesRenderer } from "../frame-renderer";
 
@@ -268,17 +272,12 @@ describe(__filename, () => {
           (await engine.open("entry.pc")) as LoadedPCData
         );
 
-        expect(combineFrameHTML(baseline)).to.eql(expectationSanityCheck);
-        const html = combineFrameHTML(renderer);
-        expect(html).to.eql(combineFrameHTML(baseline));
+        expect(combineFrameHTML(baseline.getState())).to.eql(
+          expectationSanityCheck
+        );
+        const html = combineFrameHTML(renderer.getState());
+        expect(html).to.eql(combineFrameHTML(baseline.getState()));
       }
     });
   });
-
-  const combineFrameHTML = (renderer: FramesRenderer) => {
-    return renderer
-      .getState()
-      .frames.map(frame => frame.stage.innerHTML)
-      .join("");
-  };
 });
