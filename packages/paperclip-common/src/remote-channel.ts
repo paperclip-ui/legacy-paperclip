@@ -52,7 +52,7 @@ type Adapter = {
   send: (message: Message) => void;
 };
 
-export const workerAdapter = (worker: Window | Worker): Adapter => ({
+export const workerRPCClientAdapter = (worker: Window | Worker): Adapter => ({
   onMessage(listener) {
     return spy(worker, "onmessage", event => listener(event.data));
   },
@@ -62,7 +62,7 @@ export const workerAdapter = (worker: Window | Worker): Adapter => ({
 });
 
 // sockjs adapter
-export const sockAdapter = (worker: any): Adapter => ({
+export const sockjsClientAdapter = (worker: any): Adapter => ({
   onMessage(listener) {
     // is on the server
     const onMessage = message => {

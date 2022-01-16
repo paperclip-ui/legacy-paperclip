@@ -35,6 +35,7 @@
   "dependencies": {
     "@paperclip-ui/common": "^18.4.7",
     "@paperclip-ui/core": "^18.4.7",
+    "@tandem-ui/workspace-core": "^18.4.7",
     "@paperclip-ui/editor-engine": "^18.4.7",
     "@tandem-ui/common": "^18.4.7",
     "@tandem-ui/designer": "^18.4.7",

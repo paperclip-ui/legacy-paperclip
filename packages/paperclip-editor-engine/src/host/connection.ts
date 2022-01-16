@@ -1,3 +1,4 @@
+import { RPCClientAdapter } from "@paperclip-ui/common";
 import { EngineDelegate, EngineDelegateEvent } from "@paperclip-ui/core";
 import { EventEmitter } from "events";
 import {
@@ -9,9 +10,7 @@ import {
   VirtualObjectEdit
 } from "../core";
 import { editVirtualObjectsChannel } from "../core/channels";
-import { Connection } from "../core/connection";
 import { DocumentManager } from "./documents/manager";
-import { PCDocument } from "./documents/pc";
 import { PCDocumentEditor } from "./documents/pc-document-editor";
 
 export class ClientConnection {
@@ -34,7 +33,7 @@ export class ClientConnection {
 
   constructor(
     private _documents: DocumentManager,
-    private _connection: Connection,
+    private _connection: RPCClientAdapter,
     private _events: EventEmitter,
     private _engine: EngineDelegate
   ) {

@@ -10,7 +10,7 @@ import {
 import { collectASTInfo } from "./ast-info";
 import * as channels from "./channel";
 import { getSuggestions } from "./autocomplete";
-import { workerAdapter } from "@paperclip-ui/common";
+import { workerRPCClientAdapter } from "@paperclip-ui/common";
 
 const init = () => {
   const channel = new BroadcastChannel("@paperclip-ui/core");
@@ -18,7 +18,7 @@ const init = () => {
   let _resolveAst: (content: any) => any = () => {};
   let _resolveLoadedData: (content: any) => any = () => {};
 
-  const adapter = workerAdapter(self);
+  const adapter = workerRPCClientAdapter(self);
   channels.documentColors(adapter).listen(async ({ uri }) => {
     return collectASTInfo(await waitForAST(uri)).colors;
   });

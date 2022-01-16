@@ -9,7 +9,6 @@ import {
   ChildInsertionKind,
   ChildInsertion
 } from "../../core";
-import { Connection } from "../../core/connection";
 import { DocumentManager } from "./manager";
 import {
   AttributeKind,

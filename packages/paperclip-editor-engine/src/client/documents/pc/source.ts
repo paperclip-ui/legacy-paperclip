@@ -2,8 +2,8 @@
  * Editable virtual object document
  */
 
+import { RPCClientAdapter } from "@paperclip-ui/common";
 import { sourceDocumentCRDTChangesChannel } from "../../../core";
-import { Connection } from "../../../core/connection";
 import { CRDTTextDocument } from "../../../core/crdt-document";
 
 /**
@@ -20,7 +20,7 @@ export class PCSourceDocument {
   constructor(
     private _uri: string,
     private _textDocument: CRDTTextDocument,
-    connection: Connection
+    connection: RPCClientAdapter
   ) {
     this._sourceDocumentCRDTChanges = sourceDocumentCRDTChangesChannel(
       connection

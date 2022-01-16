@@ -1,8 +1,7 @@
 import { EngineDelegate } from "@paperclip-ui/core";
+import { RPCServer } from "@paperclip-ui/common";
 import { EventEmitter } from "events";
-import * as sockjs from "sockjs";
-import { openDocumentChannel } from "../core";
-import { RPCClient } from "../core/rpc";
+// import { RPCClient } from "../core/rpc";
 import { ClientConnection } from "./connection";
 import { DocumentManager } from "./documents/manager";
 
@@ -18,7 +17,7 @@ export class EditorHost {
   /**
    */
 
-  constructor(private _engine: EngineDelegate, private _server: RPCClient) {
+  constructor(private _engine: EngineDelegate, private _server: RPCServer) {
     this._events = new EventEmitter();
     this._documents = new DocumentManager(this._events, this._engine);
   }

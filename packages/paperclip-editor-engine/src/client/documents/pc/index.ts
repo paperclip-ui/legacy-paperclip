@@ -16,7 +16,6 @@ import {
   engineEventChannel,
   VirtualObjectEdit
 } from "../../../core";
-import { Connection } from "../../../core/connection";
 import { CRDTTextDocument } from "../../../core/crdt-document";
 import { DocumentKind } from "../../../core/documents";
 
@@ -26,6 +25,7 @@ import { FrameRenderingManager } from "./renderer";
 import { EditorClientOptions } from "../../client";
 import { createListener } from "../../../core/utils";
 import { editVirtualObjectsChannel } from "../../../core/channels";
+import { RPCClientAdapter } from "@paperclip-ui/common";
 
 export type PCDocumentContent = LoadedPCData;
 
@@ -50,7 +50,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
 
   constructor(
     uri: string,
-    connection: Connection,
+    connection: RPCClientAdapter,
     options: EditorClientOptions
   ) {
     super(uri, connection);

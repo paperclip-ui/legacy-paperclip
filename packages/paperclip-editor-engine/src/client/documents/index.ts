@@ -1,5 +1,5 @@
+import { RPCClientAdapter } from "@paperclip-ui/common";
 import { isPaperclipFile } from "@paperclip-ui/core";
-import { Connection } from "../../core/connection";
 import { EditorClientOptions } from "../client";
 import { PCDocument } from "./pc";
 
@@ -9,7 +9,7 @@ export type Document = PCDocument;
 
 export const createDocument = (
   uri: string,
-  connection: Connection,
+  connection: RPCClientAdapter,
   options: EditorClientOptions
 ): Document => {
   if (isPaperclipFile(uri)) {

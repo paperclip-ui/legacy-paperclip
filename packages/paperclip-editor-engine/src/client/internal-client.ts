@@ -1,5 +1,5 @@
-import { Connection } from "../core/connection";
+import { RPCClientAdapter } from "@paperclip-ui/common";
 
 export class InternalEditorClient {
-  constructor(private _connection: Connection) {}
+  constructor(private _connection: RPCClientAdapter) {}
 }

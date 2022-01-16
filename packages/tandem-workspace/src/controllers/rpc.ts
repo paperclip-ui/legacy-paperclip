@@ -2,7 +2,7 @@ import { SocketIo } from "./socket";
 import sockjs from "sockjs";
 import { channels } from "@tandem-ui/designer";
 import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
-import { sockAdapter, Channel } from "@paperclip-ui/common";
+import { sockjsClientAdapter, Channel } from "@paperclip-ui/common";
 import { Workspace } from "./workspace";
 import { isPlainTextFile, Logger } from "@tandem-ui/common";
 import * as URL from "url";
@@ -65,7 +65,7 @@ class Connection {
     private _httpPort: number,
     private _options: Options
   ) {
-    const adapter = sockAdapter(connection);
+    const adapter = sockjsClientAdapter(connection);
     this._events = channels.eventsChannel(adapter);
     channels.getAllScreensChannel(adapter).listen(this._getAllScreens);
     channels

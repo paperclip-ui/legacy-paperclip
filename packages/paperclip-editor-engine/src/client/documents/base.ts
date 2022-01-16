@@ -3,10 +3,10 @@
  */
 
 import { openDocumentChannel, OpenDocumentResult } from "../../core";
-import { Connection } from "../../core/connection";
 import { DocumentKind } from "../../core/documents";
 import { EventEmitter } from "events";
 import { createListener } from "../../core/utils";
+import { RPCClientAdapter } from "@paperclip-ui/common";
 
 export abstract class BaseDocument<
   TContent extends OpenDocumentResult["content"]
@@ -17,7 +17,7 @@ export abstract class BaseDocument<
   protected _content: TContent;
   protected _em: EventEmitter;
 
-  constructor(readonly uri: string, protected _connection: Connection) {
+  constructor(readonly uri: string, protected _connection: RPCClientAdapter) {
     this._em = new EventEmitter();
     this._openDocument = openDocumentChannel(_connection);
   }
