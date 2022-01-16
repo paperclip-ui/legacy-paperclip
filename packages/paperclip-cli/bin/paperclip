@@ -81,7 +81,7 @@ const argv = require("yargs")
     },
     standalone: true,
     showFullEditor: false
-  }).then((workspace) => {
+  }).then(({workspace}) => {
     workspace.start(process.cwd()).then(project => {
       project.openBrowser();
     });

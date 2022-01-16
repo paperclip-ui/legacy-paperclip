@@ -11,6 +11,7 @@ export type WorkspaceAdapter = {
 };
 
 export type Options = {
+  pause?: boolean;
   autoSave?: boolean;
   http?: {
     port: number;
