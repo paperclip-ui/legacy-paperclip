@@ -1,5 +1,5 @@
-import { SocketIo } from "./socket";
 import sockjs from "sockjs";
+import { RPCClientAdapter, RPCServer } from "@paperclip-ui/common";
 import { channels } from "@tandem-ui/designer";
 import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
 import { sockjsClientAdapter, Channel } from "@paperclip-ui/common";
@@ -22,7 +22,7 @@ import { EngineDelegate } from "@paperclip-ui/core";
 
 export class RPC {
   constructor(
-    sockio: SocketIo,
+    server: RPCServer,
     private _workspace: Workspace,
     private _engine: EngineDelegate,
     private _vfs: VFS,
@@ -30,9 +30,9 @@ export class RPC {
     private _httpPort: number,
     private _options: Options
   ) {
-    sockio.on("connection", this._onConnection);
+    server.onConnection(this._onConnection);
   }
-  private _onConnection = (connection: sockjs.Connection) => {
+  private _onConnection = (connection: RPCClientAdapter) => {
     this._logger.info(`Connection established`);
     new Connection(
       connection,
@@ -57,7 +57,7 @@ class Connection {
   private _disposeEngineListener: any;
 
   constructor(
-    connection: sockjs.Connection,
+    connection: RPCClientAdapter,
     private _workspace: Workspace,
     private _engine: EngineDelegate,
     private _vfs: VFS,
@@ -65,25 +65,24 @@ class Connection {
     private _httpPort: number,
     private _options: Options
   ) {
-    const adapter = sockjsClientAdapter(connection);
-    this._events = channels.eventsChannel(adapter);
-    channels.getAllScreensChannel(adapter).listen(this._getAllScreens);
+    this._events = channels.eventsChannel(connection);
+    channels.getAllScreensChannel(connection).listen(this._getAllScreens);
     channels
-      .loadVirtualNodeSourcesChannel(adapter)
+      .loadVirtualNodeSourcesChannel(connection)
       .listen(this._loadNodeSources);
-    channels.helloChannel(adapter).listen(this._initialize);
-    channels.loadDirectoryChannel(adapter).listen(this._loadDirectory);
-    channels.inspectNodeStyleChannel(adapter).listen(this._inspectNode);
-    channels.revealNodeSourceChannel(adapter).listen(this._revealSource);
+    channels.helloChannel(connection).listen(this._initialize);
+    channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
+    channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
+    channels.revealNodeSourceChannel(connection).listen(this._revealSource);
     channels
-      .revealNodeSourceByIdChannel(adapter)
+      .revealNodeSourceByIdChannel(connection)
       .listen(this._revealSourceById);
-    channels.popoutWindowChannel(adapter).listen(this._popoutWindow);
-    channels.openFileChannel(adapter).listen(this._openFile);
-    channels.editCodeChannel(adapter).listen(this._editCode);
-    channels.commitChangesChannel(adapter).listen(this._commitChanges);
-    channels.setBranchChannel(adapter).listen(this._setBranch);
-    channels.editPCSourceChannel(adapter).listen(this._editPCSource);
+    channels.popoutWindowChannel(connection).listen(this._popoutWindow);
+    channels.openFileChannel(connection).listen(this._openFile);
+    channels.editCodeChannel(connection).listen(this._editCode);
+    channels.commitChangesChannel(connection).listen(this._commitChanges);
+    channels.setBranchChannel(connection).listen(this._setBranch);
+    channels.editPCSourceChannel(connection).listen(this._editPCSource);
   }
 
   private getProject() {

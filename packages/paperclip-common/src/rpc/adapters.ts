@@ -1,5 +1,6 @@
 import { spy } from "./spy";
 import { EventEmitter } from "events";
+import * as sockjs from "sockjs";
 
 type Message = any;
 
@@ -98,5 +99,14 @@ export const sockjsClientAdapter = (worker: any): RPCClientAdapter => ({
       worker,
       JSON.stringify(message)
     );
+  }
+});
+
+// sockjs adapter
+export const sockjsServerRPCAdapter = (server: sockjs.Server): RPCServer => ({
+  onConnection(listener: (connection: RPCClientAdapter) => void) {
+    server.on("connection", connection => {
+      listener(sockjsClientAdapter(connection));
+    });
   }
 });

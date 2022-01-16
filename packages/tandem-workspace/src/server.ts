@@ -1,17 +1,18 @@
 import { Logger, LogLevel, startHTTPServer } from "@tandem-ui/common";
-import { Designer } from "./controllers/designer";
 import { SSHKeys } from "./controllers/ssh";
-import * as express from "express";
 import * as http from "http";
 import { Workspace } from "./controllers/workspace";
 import { Project } from "./controllers/project";
 import { Options } from "./core/options";
 import { addRoutes } from "./routes";
-import { SocketIo } from "./controllers/socket";
+import * as sockjs from "sockjs";
 import { VFS } from "./controllers/vfs";
 import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
-import { createEditorHostRPCClient } from "./editor-host-utils";
+import {
+  sockjsClientAdapter,
+  sockjsServerRPCAdapter
+} from "@paperclip-ui/common";
 
 const getPort = require("get-port");
 
@@ -36,14 +37,16 @@ export class Server {
     const [expressServer, httpServer] = startHTTPServer(httpPort, this._logger);
     this._httpServer = httpServer;
     const vfs = new VFS(this.options.autoSave, this._logger);
-    const sock = new SocketIo(httpServer);
+
+    const io = sockjs.createServer();
+    io.installHandlers(httpServer, { prefix: "/rt" });
 
     const paperclipEngine = createEngineDelegate({
       mode: EngineMode.MultiFrame
     });
     const documentManager = new EditorHost(
       paperclipEngine,
-      createEditorHostRPCClient(sock)
+      sockjsServerRPCAdapter(io)
     );
 
     const workspace = new Workspace(
