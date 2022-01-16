@@ -19,12 +19,9 @@ export const saveTmpFixtureFiles = (
 
   saveFiles(files);
 
-  const emittedFiles: Record<string, string> = {};
-
   return {
     testDir,
     saveFiles,
-    emittedFiles,
     dispose: () => {
       fsa.rmSync(testDir, { recursive: true });
     }

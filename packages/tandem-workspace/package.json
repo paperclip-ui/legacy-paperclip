@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "mocha lib/test",
+    "test": "mocha lib/test --exit",
+    "test:watch": "mocha lib/test --watch",
     "build:docker": "docker build .",
     "build:watch": "tsc --watch --preserveWatchOutput",
     "start": "nodemon ./lib/cli --watch lib"
