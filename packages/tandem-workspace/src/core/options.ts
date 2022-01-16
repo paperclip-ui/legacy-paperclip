@@ -1,5 +1,6 @@
 import { ContentChange } from "@paperclip-ui/source-writer";
 import { ExprSource } from "@paperclip-ui/utils";
+import { LogLevel } from "@tandem-ui/common";
 
 export type ProjectOptions = {
   installDependencies?: boolean;
@@ -12,6 +13,7 @@ export type WorkspaceAdapter = {
 
 export type Options = {
   pause?: boolean;
+  logLevel: LogLevel;
   autoSave?: boolean;
   http?: {
     port: number;

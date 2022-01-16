@@ -1,8 +1,16 @@
 import { expect } from "chai";
-import { start } from "../server";
+import { Server, start, Workspace } from "../server";
 
 describe(__filename + "#", () => {
-  it(`Can spin up a simple workspace`, async () => {
-    const server = await start({ pause: false });
+  let server: Server;
+
+  beforeEach(async () => {
+    server = await start({ pause: false, logLevel: 0 });
   });
+
+  afterEach(async () => {
+    server.stop();
+  });
+
+  it(`Can spin up a simple workspace`, async () => {});
 });

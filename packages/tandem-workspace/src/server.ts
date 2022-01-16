@@ -1,7 +1,8 @@
-import { Logger, startHTTPServer } from "@tandem-ui/common";
+import { Logger, LogLevel, startHTTPServer } from "@tandem-ui/common";
 import { Designer } from "./controllers/designer";
 import { SSHKeys } from "./controllers/ssh";
 import * as express from "express";
+import * as http from "http";
 import { Workspace } from "./controllers/workspace";
 import { Project } from "./controllers/project";
 import { Kernel } from "./core/kernel";
@@ -26,14 +27,16 @@ export const start = async (options: Options) => {
 
 export class Server {
   private _logger: Logger;
+  private _httpServer: http.Server;
 
   constructor(readonly options: Options) {
-    this._logger = new Logger();
+    this._logger = new Logger(options.logLevel);
   }
   async start() {
     this._logger.info(`Workspace started 🚀`);
     const httpPort = this.options.http?.port || (await getPort());
     const [expressServer, httpServer] = startHTTPServer(httpPort, this._logger);
+    this._httpServer = httpServer;
     const vfs = new VFS(this.options.autoSave, this._logger);
     const sock = new SocketIo(httpServer);
 
@@ -64,5 +67,8 @@ export class Server {
         setTimeout(resolve, 500);
       });
     }
+  }
+  stop() {
+    this._httpServer.close();
   }
 }
