@@ -113,7 +113,8 @@ const updateNode = (
   }
   if (
     ancestor.kind === VirtualNodeKind.Text ||
-    ancestor.kind === VirtualNodeKind.StyleElement
+    ancestor.kind === VirtualNodeKind.StyleElement ||
+    ancestor.kind === VirtualNodeKind.Slot
   ) {
     return newNode;
   }

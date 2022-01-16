@@ -15,7 +15,7 @@ type BaseVirtScriptObject<TKind extends VirtScriptObjectKind> = {
 
 export type VirtScriptObject = {
   values: Record<string, VirtJsValue>;
-  source: ExprTextSource;
+  sourceId: string;
 } & BaseVirtScriptObject<VirtScriptObjectKind.Object>;
 export type VirtScriptArray = {
   values: VirtJsValue[];

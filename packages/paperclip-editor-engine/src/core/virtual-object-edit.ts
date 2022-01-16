@@ -6,6 +6,8 @@ export enum VirtualobjectEditKind {
   // about an inserted element
   InsertNodeBefore = "InsertNodeBefore",
   SetTextNodeValue = "SetTextNodeValue",
+  AddAttribute = "AddAttribute",
+  UpdateAttribute = "UpdateAttribute",
   SetAnnotations = "SetAnnotations",
   SetNodeType = "SetNodeType",
 
@@ -32,15 +34,36 @@ export type SetTextNodeValue = {
   value: string;
 } & VirtualObjectBaseEdit<VirtualobjectEditKind.SetTextNodeValue>;
 
+export type AddAttribute = {
+  nodePath: string;
+  name: string;
+  value: string;
+} & VirtualObjectBaseEdit<VirtualobjectEditKind.AddAttribute>;
+
+export type UpdateAttribute = {
+  nodePath: string;
+  name: string;
+  newName?: string;
+  value: string;
+} & VirtualObjectBaseEdit<VirtualobjectEditKind.UpdateAttribute>;
+
 export type SetAnnotations = {
   nodePath: string;
   value: Record<string, string | Object>;
 } & VirtualObjectBaseEdit<VirtualobjectEditKind.SetAnnotations>;
+
+export type AppendChild = {
+  nodePath: string;
+  child: string;
+} & VirtualObjectBaseEdit<VirtualobjectEditKind.AppendChild>;
 
 /**
  */
 
 export type VirtualObjectEdit =
   | InsertNodeBefore
+  | AddAttribute
+  | UpdateAttribute
   | SetTextNodeValue
-  | SetAnnotations;
+  | SetAnnotations
+  | AppendChild;

@@ -109,11 +109,102 @@ describe(__filename + "#", () => {
       );
     });
 
-    xit(`Can add a new element attribute`, async () => {});
+    it(`Can update existing annotations`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": `<!--
+          @frame { width: 100, height: 100 }
+        --> <div>blah</div>`
+      });
 
-    xit(`Can update an element attribute`, async () => {});
+      const client = server.createHostClient();
 
-    xit(`Can append a child to an empty element`, async () => {});
+      const doc = await client.open("/hello.pc");
+      const annotations = {
+        tags: ["a", "b"],
+        desc: "Some description",
+        frame: { width: 100, height: 100 }
+      };
+
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.SetAnnotations,
+          nodePath: "0",
+          value: annotations
+        }
+      ]);
+
+      const node = doc.getNodeFromPath("0") as VirtualElement;
+      const source = await doc.getSource();
+      expect(source.getText().replace(/[\s\n]+/g, " ")).to.eq(
+        `<!-- @tags ["a","b"] @desc "Some description" @frame {width:100,height:100} --> <div>blah</div>`
+      );
+      expect(annotations).to.eql(computeVirtScriptObject(node.annotations));
+
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">blah</div>`
+      );
+    });
+
+    it(`Can add a new element attribute`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div>blah</div>"
+      });
+
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.AddAttribute,
+          nodePath: "0",
+          name: "a",
+          value: '"b"'
+        }
+      ]);
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
+      );
+    });
+
+    xit(`Can update an element attribute value`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div a>blah</div>"
+      });
+
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.UpdateAttribute,
+          nodePath: "0",
+          name: "a",
+          value: '"b"'
+        }
+      ]);
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
+      );
+    });
+
+    it(`Can append a child to an empty element`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div />"
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.AppendChild,
+          nodePath: "0",
+          child: "<span />"
+        }
+      ]);
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
+      );
+    });
 
     xit(
       `If a node is inserted into a slot placeholder, that slot placeholder is replaced with the element`

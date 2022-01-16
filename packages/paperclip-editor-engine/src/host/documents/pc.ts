@@ -1,5 +1,14 @@
-import { EngineDelegate } from "@paperclip-ui/core";
-import * as Automerge from "automerge";
+import {
+  AnnotationPropertyKind,
+  AttributeKind,
+  Element,
+  EngineDelegate,
+  getNodeByPath,
+  LoadedPCData,
+  ScriptExpressionKind,
+  ScriptObject,
+  VirtualElement
+} from "@paperclip-ui/core";
 import { CRDTTextDocument, TextEdit } from "../../core/crdt-document";
 import { DocumentKind } from "../../core/documents";
 import { BaseDocument } from "./base";
@@ -101,8 +110,65 @@ const mapVirtualSourceEdit = (uri: string, engine: EngineDelegate) => (
           info.textSource.range.end.pos - info.textSource.range.start.pos
       };
     }
-    case VirtualobjectEditKind.SetAnnotations: {
+    case VirtualobjectEditKind.AddAttribute: {
       const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+      const [sourceUri, expr] = engine.getExpressionById(info.sourceId) as [
+        string,
+        Element
+      ];
+
+      const buffer = [edit.name];
+      if (edit.value) {
+        buffer.push(`=`, edit.value);
+      }
+
+      return {
+        chars: (" " + buffer.join("")).split(""),
+        index: expr.tagNameRange.end.pos
+      };
+    }
+    // case VirtualobjectEditKind.AppendChild: {
+    //   const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+    //   const [sourceUri, expr] = engine.getExpressionById(info.sourceId) as [string, Element];
+
+    //   return {
+    //     chars: (" " + buffer.join("")).split(""),
+    //     index: expr.tagNameRange.end.pos,
+    //   };
+    // }
+    case VirtualobjectEditKind.UpdateAttribute: {
+      const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+      const [sourceUri, expr] = engine.getExpressionById(info.sourceId) as [
+        string,
+        Element
+      ];
+
+      const attr = expr.attributes.find(attr => {
+        if (attr.attrKind === AttributeKind.KeyValueAttribute) {
+          return attr.name === edit.name;
+        } else if (attr.attrKind === AttributeKind.ShorthandAttribute) {
+          return attr.reference.scriptKind === ScriptExpressionKind.Reference
+            ? attr.reference.path[0].name === edit.name
+            : null;
+        }
+      });
+
+      if (edit.value) {
+      }
+
+      const buffer = [edit.name];
+      if (edit.value) {
+        buffer.push(`=`, edit.value);
+      }
+
+      return {
+        chars: (" " + buffer.join("")).split(""),
+        index: expr.tagNameRange.end.pos
+      };
+    }
+    case VirtualobjectEditKind.SetAnnotations: {
+      const parentPath = edit.nodePath.split(".");
+      parentPath.pop();
 
       const buffer = [`<!--\n`];
       for (const name in edit.value) {
@@ -115,10 +181,27 @@ const mapVirtualSourceEdit = (uri: string, engine: EngineDelegate) => (
         );
       }
       buffer.push("-->\n");
-      return {
-        chars: buffer.join("").split(""),
-        index: info.textSource.range.start.pos
-      };
+
+      const virtualElement = getNodeByPath(
+        edit.nodePath,
+        (engine.getLoadedData(uri) as LoadedPCData).preview
+      ) as VirtualElement;
+      if (virtualElement.annotations) {
+        const [uri, expr] = engine.getExpressionById(
+          virtualElement.annotations.sourceId
+        ) as [string, ScriptObject];
+        return {
+          chars: buffer.join("").split(""),
+          index: expr.range.start.pos,
+          deleteCount: expr.range.end.pos
+        };
+      } else {
+        const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+        return {
+          chars: buffer.join("").split(""),
+          index: info.textSource.range.start.pos
+        };
+      }
     }
     default: {
       throw new Error(`Unhandled edit`);
