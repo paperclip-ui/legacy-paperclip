@@ -6,7 +6,7 @@ import {
 } from "@paperclip-ui/core";
 import { expect } from "chai";
 import { VirtualobjectEditKind } from "../core";
-import { createMockHost } from "./utils";
+import { createMockHost, timeout } from "./utils";
 
 // TODO - test latency
 
@@ -27,7 +27,7 @@ describe(__filename + "#", () => {
           node: "<span />"
         }
       ]);
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
       );
     });
@@ -52,9 +52,7 @@ describe(__filename + "#", () => {
           node: "<b />"
         }
       ]);
-      expect(
-        stringifyVirtualNode(doc.getContent().virtualData.preview)
-      ).to.equals(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.equals(
         `<div class="_5cd17222 _pub-5cd17222"><b class="_5cd17222 _pub-5cd17222"></b><a class="_5cd17222 _pub-5cd17222"></a>blah</div>`
       );
     });
@@ -74,7 +72,7 @@ describe(__filename + "#", () => {
           value: "Hello world"
         }
       ]);
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">Hello world</div>`
       );
     });
@@ -104,7 +102,7 @@ describe(__filename + "#", () => {
       const node = doc.getNodeFromPath("0") as VirtualElement;
       expect(annotations).to.eql(computeVirtScriptObject(node.annotations));
 
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">blah</div>`
       );
     });
@@ -140,7 +138,7 @@ describe(__filename + "#", () => {
       );
       expect(annotations).to.eql(computeVirtScriptObject(node.annotations));
 
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">blah</div>`
       );
     });
@@ -161,7 +159,7 @@ describe(__filename + "#", () => {
           value: '"b"'
         }
       ]);
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
       );
     });
@@ -182,7 +180,7 @@ describe(__filename + "#", () => {
           value: '"b"'
         }
       ]);
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
       );
     });
@@ -201,7 +199,7 @@ describe(__filename + "#", () => {
           child: "<span />"
         }
       ]);
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span></div>`
       );
     });
@@ -220,7 +218,7 @@ describe(__filename + "#", () => {
           child: "<span />"
         }
       ]);
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span></div>`
       );
     });
@@ -239,7 +237,7 @@ describe(__filename + "#", () => {
           child: "<span />"
         }
       ]);
-      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">abba<span class="_5cd17222 _pub-5cd17222"></span></div>`
       );
     });
@@ -252,9 +250,9 @@ describe(__filename + "#", () => {
 
       const doc = await client.open("/hello.pc");
       const source = await doc.getSource();
-      expect(
-        stringifyVirtualNode(doc.getContent().virtualData.preview, "[slot]")
-      ).to.eql(`<div class="_5cd17222 _pub-5cd17222">[slot]</div>`);
+      expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">[slot]</div>`
+      );
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.AppendChild,
@@ -262,7 +260,12 @@ describe(__filename + "#", () => {
           child: "blarg"
         }
       ]);
-      expect(source.getText()).to.eql("ok");
+      expect(source.getText()).to.eql(
+        `<div component as="Test">{child}</div><Test child="blarg" />`
+      );
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eq(
+        `<div class="_5cd17222 _pub-5cd17222">blarg</div>`
+      );
     });
 
     xit(

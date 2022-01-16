@@ -258,13 +258,14 @@ impl Engine {
           .get_expression_by_id(descendent.get_source_id())
       })
       .and_then(|(uri, expr)| match expr {
-        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node)),
+        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node.get_id(), pc_node.get_range())),
+        pc_ast::Expression::Script(pc_script) => Some((uri, pc_script.get_id(), pc_script.get_range())),
         _ => None,
       })
-      .and_then(|(uri, ast)| {
+      .and_then(|(uri, id, range)| {
         Some(ast::ExprSource::new(
-          ast.get_id(),
-          Some(&ast::ExprTextSource::new(uri, ast.get_range().clone())),
+          id,
+          Some(&ast::ExprTextSource::new(uri, range.clone())),
         ))
       })
   }

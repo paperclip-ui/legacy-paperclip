@@ -752,6 +752,8 @@ fn evaluate_slot<'a>(
 
   let script = &slot.script;
   let mut script_value = evaluate_js(script, depth + 1, context)?;
+
+
   
 
   // if array of values, then treat as document fragment
@@ -793,7 +795,7 @@ fn evaluate_slot<'a>(
   } else {
     Ok(Some(virt::Node::Slot(virt::Slot {
       id: context.id_generator.new_id(),
-      source_id: use_expr_id(&slot.id, context)
+      source_id: use_expr_id(&script_value.get_source_id(), context)
     })))
   }
 

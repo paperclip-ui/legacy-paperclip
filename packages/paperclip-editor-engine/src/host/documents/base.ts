@@ -2,18 +2,18 @@ import { CRDTTextDocument } from "../../core/crdt-document";
 import { EventEmitter } from "events";
 import { DocumentKind } from "../../core/documents";
 
-export abstract class BaseDocument {
+export abstract class BaseDocument<TContent> {
   abstract readonly kind: DocumentKind;
-  private _contents: any;
+  private _contents: TContent;
   constructor(readonly uri: string, protected _events: EventEmitter) {}
-  load() {
-    const content = (this._contents = this.load2());
+  async load() {
+    const content = (this._contents = await this.load2());
     this._events.emit("documentLoaded", this);
     return content;
   }
-  getContents() {
+  getContent() {
     return this._contents;
   }
-  abstract load2(): Promise<any>;
+  abstract load2(): Promise<TContent>;
   abstract openSource(): Promise<CRDTTextDocument> | CRDTTextDocument;
 }

@@ -26,7 +26,7 @@ export class FrameRenderingManager {
     return uri;
   };
   private _onDocumentContentLoaded = (content: PCDocumentContent) => {
-    this._renderer.initialize(content.virtualData);
+    this._renderer.initialize(content);
   };
   private _onDocumentAppliedChanges = (
     content: PCDocumentContent,

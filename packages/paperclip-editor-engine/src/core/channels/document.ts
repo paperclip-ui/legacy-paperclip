@@ -20,9 +20,7 @@ export type BaseOpenDocumentResult<TKind extends DocumentKind, TContent> = {
 
 export type OpenDocumentPCResult = BaseOpenDocumentResult<
   DocumentKind.Paperclip,
-  {
-    virtualData: pc.LoadedData;
-  }
+  pc.LoadedData
 >;
 
 export type OpenDocumentResult = OpenDocumentPCResult;

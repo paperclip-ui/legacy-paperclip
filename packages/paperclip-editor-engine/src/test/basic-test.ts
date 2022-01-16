@@ -42,14 +42,14 @@ describe(__filename + "#", () => {
 
     const client = server.createHostClient();
     const doc = (await client.open("/hello.pc")) as PCDocument;
-    expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+    expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
       "Hello World"
     );
 
     const source = await doc.getSource();
     source.insertText("abc".split(""));
 
-    expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+    expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
       "abcHello World"
     );
   });
@@ -71,7 +71,7 @@ describe(__filename + "#", () => {
 
     await timeout(10);
 
-    expect(stringifyVirtualNode(doc1.getContent().virtualData.preview)).to.eql(
+    expect(stringifyVirtualNode(doc1.getContent().preview)).to.eql(
       "222111Hello World"
     );
   });

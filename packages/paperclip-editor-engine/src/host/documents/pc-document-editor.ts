@@ -14,16 +14,21 @@ import {
   Element,
   EngineDelegate,
   getNodeByPath,
+  isNode,
+  isScriptExpression,
   LoadedPCData,
+  NodeKind,
+  Reference,
+  ScriptBoolean,
+  ScriptExpression,
   ScriptExpressionKind,
   ScriptObject,
+  Slot,
   VirtualElement
 } from "@paperclip-ui/core";
-import { CRDTTextDocument, TextEdit } from "../../core/crdt-document";
-import { DocumentKind } from "../../core/documents";
-import { BaseDocument } from "./base";
-import { EventEmitter } from "events";
+import { TextEdit } from "../../core/crdt-document";
 import { VirtualobjectEditKind } from "../../core";
+import { PCDocument } from "./pc";
 
 type DocumentTextEdit = {
   uri: string;
@@ -133,18 +138,15 @@ const updateAttribute = (
     Element
   ];
 
-  const attr = expr.attributes.find(attr => {
-    if (attr.attrKind === AttributeKind.KeyValueAttribute) {
-      return attr.name === edit.name;
-    } else if (attr.attrKind === AttributeKind.ShorthandAttribute) {
-      return attr.reference.scriptKind === ScriptExpressionKind.Reference
-        ? attr.reference.path[0].name === edit.name
-        : null;
-    }
-  });
-
-  if (edit.value) {
-  }
+  // const attr = expr.attributes.find(attr => {
+  //   if (attr.attrKind === AttributeKind.KeyValueAttribute) {
+  //     return attr.name === edit.name;
+  //   } else if (attr.attrKind === AttributeKind.ShorthandAttribute) {
+  //     return attr.reference.scriptKind === ScriptExpressionKind.Reference
+  //       ? attr.reference.path[0].name === edit.name
+  //       : null;
+  //   }
+  // });
 
   const buffer = [edit.name];
   if (edit.value) {
@@ -209,44 +211,109 @@ const appendChild = (
   engine: EngineDelegate,
   edit: AppendChild
 ) => {
-  {
-    const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
-    const [exprUri, expr] = engine.getExpressionById(info.sourceId) as [
-      string,
-      Element
-    ];
-    const source = documents
-      .open(exprUri)
-      .openSource()
-      .getText();
+  // console.log(JSON.stringify(engine.getLoadedAst(uri), null, 2));
+  // const doc = documents.open(uri);
+  // console.log(JSON.stringify(doc.getContent(), null, 2));
+  const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+  // console.log(JSON.stringify(getSourceNodeFromPath(uri, engine, "0"), null, 2));
+  // console.log(JSON.stringify(engine.getExpressionById("be76bb9c"), null, 2));
 
-    const tagBuffer = source.substring(
-      expr.openTagRange.start.pos,
-      expr.openTagRange.end.pos
-    );
+  const [exprUri, expr] = engine.getExpressionById(info.sourceId) as [
+    string,
+    Element | Reference
+  ];
 
-    // self closing
-    if (tagBuffer.trim().lastIndexOf("/>") !== -1) {
-      return {
-        uri: exprUri,
-        chars: [">", edit.child, `</${expr.tagName}>`].join("").split(""),
-        index: tagBuffer.trim().lastIndexOf("/>"),
-        deleteCount: 2
-      };
+  if (isNode(expr) && expr.nodeKind === NodeKind.Element) {
+    return appendElement(documents, expr, exprUri, edit);
+  } else if (
+    isScriptExpression(expr) &&
+    expr.scriptKind === ScriptExpressionKind.Reference
+  ) {
+    return appendSlot(documents, uri, engine, expr, edit);
+  } else {
+    throw new Error(`Unknown expr`);
+  }
+};
+
+const appendSlot = (
+  documents: DocumentManager,
+  uri: string,
+  engine: EngineDelegate,
+  expr: Reference,
+  edit: AppendChild
+) => {
+  const doc = documents.open(uri) as PCDocument;
+  const path = edit.nodePath.split(".");
+  path.pop();
+
+  const exprName = expr.path[0].name;
+
+  let instanceElement: VirtualElement;
+  let instancePath: string;
+
+  for (let i = path.length; i > 0; i--) {
+    const ancestorPath = path.slice(0, i).join(".");
+    const ancestor = getNodeByPath(
+      ancestorPath,
+      doc.getContent().preview
+    ) as VirtualElement;
+    if (ancestor.sourceInfo?.instanceOf) {
+      instanceElement = ancestor;
+      instancePath = ancestorPath;
+      break;
     }
+  }
 
-    const endTagPos =
-      expr.range.start.pos +
-      source
-        .substring(expr.range.start.pos, expr.range.end.pos)
-        .lastIndexOf(`</${expr.tagName}>`);
+  // there should always be an instance element. If not, then there's a bug
+  if (!instanceElement) {
+    throw new Error(`Instance element not found`);
+  }
 
+  return updateAttribute(uri, engine, {
+    kind: VirtualobjectEditKind.UpdateAttribute,
+    nodePath: instancePath,
+    name: exprName,
+    value: `"${edit.child}"`
+  });
+};
+
+const appendElement = (
+  documents: DocumentManager,
+  expr: Element,
+  exprUri: string,
+  edit: AppendChild
+) => {
+  const source = documents
+    .open(exprUri)
+    .openSource()
+    .getText();
+
+  const tagBuffer = source.substring(
+    expr.openTagRange.start.pos,
+    expr.openTagRange.end.pos
+  );
+
+  // self closing
+  if (tagBuffer.trim().lastIndexOf("/>") !== -1) {
     return {
       uri: exprUri,
-      chars: edit.child.split(""),
-      index: endTagPos
+      chars: [">", edit.child, `</${expr.tagName}>`].join("").split(""),
+      index: tagBuffer.trim().lastIndexOf("/>"),
+      deleteCount: 2
     };
   }
+
+  const endTagPos =
+    expr.range.start.pos +
+    source
+      .substring(expr.range.start.pos, expr.range.end.pos)
+      .lastIndexOf(`</${expr.tagName}>`);
+
+  return {
+    uri: exprUri,
+    chars: edit.child.split(""),
+    index: endTagPos
+  };
 };
 
 const setTextNodeValue = (

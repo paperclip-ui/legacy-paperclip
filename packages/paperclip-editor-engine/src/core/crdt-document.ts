@@ -25,7 +25,7 @@ export class CRDTTextDocument {
   /**
    */
 
-  onChange(listener: () => void) {
+  onChange(listener: (changes: Automerge.BinaryChange[]) => void) {
     return createListener(this._em, "change", listener);
   }
 
@@ -97,7 +97,7 @@ export class CRDTTextDocument {
     // const oldDoc = this._doc;
     const [newDoc, _patch] = Automerge.applyChanges(this._doc, changes);
     this._doc = newDoc;
-    this._em.emit("change");
+    this._em.emit("change", []);
   }
 
   /**
@@ -106,7 +106,7 @@ export class CRDTTextDocument {
   private _setDoc(newDoc: SourceDocumentData, oldDoc: SourceDocumentData) {
     this._doc = newDoc;
     const changes = Automerge.getChanges(oldDoc, newDoc);
-    this._em.emit("change");
+    this._em.emit("change", changes);
     return changes;
   }
 }

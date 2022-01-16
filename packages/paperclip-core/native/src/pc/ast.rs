@@ -169,7 +169,7 @@ pub struct Slot {
 }
 
 impl Slot {
-  fn walk_inside<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+  fn walk_inside<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
     self.script.walk(visitor);
   }
 }

@@ -27,7 +27,7 @@ import { EditorClientOptions } from "../../client";
 import { createListener } from "../../../core/utils";
 import { editVirtualObjectsChannel } from "../../../core/channels";
 
-export type PCDocumentContent = { virtualData: LoadedPCData };
+export type PCDocumentContent = LoadedPCData;
 
 /**
  * TODO: include preview with this document
@@ -81,7 +81,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
    */
 
   getNodeFromPath(path: string) {
-    return getNodeByPath(path, this._content.virtualData.preview);
+    return getNodeByPath(path, this._content.preview);
   }
 
   /**
@@ -120,7 +120,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
       return;
     }
     let newData: LoadedPCData = {
-      ...this._content.virtualData
+      ...this._content
     };
 
     if (event.kind === EngineDelegateEventKind.Loaded) {
@@ -132,7 +132,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
       );
     }
 
-    this._updateContent({ virtualData: newData });
+    this._updateContent(newData);
     this._em.emit("appliedChanges", this._content, event);
   };
 }

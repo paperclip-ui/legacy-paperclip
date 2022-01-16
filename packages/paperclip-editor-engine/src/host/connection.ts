@@ -52,7 +52,7 @@ export class ClientConnection {
       this._connection
     );
     this._sourceDocumentCRDTChangesChannel.listen(
-      this._onsourceDocumentCRDTChanges
+      this._onSourceDocumentCRDTChanges
     );
 
     this._openDocumentSourceChannel = openDocumentSourceChannel(
@@ -61,14 +61,23 @@ export class ClientConnection {
     this._openDocumentSourceChannel.listen(this._openDocumentSource);
 
     this._events.on(
-      "sourceDocumentCRDTChanges",
-      this._onInternalsourceDocumentCRDTChanges
+      "incommingCRDTChanges",
+      this._onInternalSourceDocumentCRDTChanges
+    );
+
+    this._events.on(
+      "outgoingCRDTChanges",
+      this._onInternalSourceDocumentCRDTChanges
     );
 
     this._connection.onDisconnect(() => {
       this._events.off(
-        "sourceDocumentCRDTChanges",
-        this._onInternalsourceDocumentCRDTChanges
+        "incommingCRDTChanges",
+        this._onInternalSourceDocumentCRDTChanges
+      );
+      this._events.off(
+        "outgoingCRDTChanges",
+        this._onInternalSourceDocumentCRDTChanges
       );
     });
 
@@ -109,14 +118,14 @@ export class ClientConnection {
   /**
    */
 
-  _onsourceDocumentCRDTChanges = async result => {
-    this._events.emit("sourceDocumentCRDTChanges", result, this);
+  _onSourceDocumentCRDTChanges = async result => {
+    this._events.emit("incommingCRDTChanges", result, this);
   };
 
   /**
    */
 
-  _onInternalsourceDocumentCRDTChanges = (
+  _onInternalSourceDocumentCRDTChanges = (
     // type doesn't matter as much here, just use as a trampoline
     result: any,
     client: ClientConnection

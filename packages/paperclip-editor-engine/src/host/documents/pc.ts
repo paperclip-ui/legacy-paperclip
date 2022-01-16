@@ -8,13 +8,14 @@ import {
   ScriptObject,
   VirtualElement
 } from "@paperclip-ui/core";
+import * as Automerge from "automerge";
 import { CRDTTextDocument, TextEdit } from "../../core/crdt-document";
 import { DocumentKind } from "../../core/documents";
 import { BaseDocument } from "./base";
 import { EventEmitter } from "events";
 import { VirtualObjectEdit, VirtualobjectEditKind } from "../../core";
 
-export class PCDocument extends BaseDocument {
+export class PCDocument extends BaseDocument<LoadedPCData> {
   readonly kind = DocumentKind.Paperclip;
   private _source: CRDTTextDocument;
 
@@ -33,10 +34,7 @@ export class PCDocument extends BaseDocument {
    */
 
   async load2() {
-    const virtualData = this._engine.open(this.uri);
-    return {
-      virtualData
-    };
+    return this._engine.open(this.uri) as LoadedPCData;
   }
 
   /**
@@ -46,10 +44,7 @@ export class PCDocument extends BaseDocument {
     if (this._source) {
       return this._source;
     }
-    this._events.on(
-      "sourceDocumentCRDTChanges",
-      this._onSourceDocumentCRDTChanges
-    );
+    this._events.on("incommingCRDTChanges", this._onSourceDocumentCRDTChanges);
     this._source = CRDTTextDocument.fromText(
       this._engine.getVirtualContent(this.uri)
     );
@@ -71,8 +66,11 @@ export class PCDocument extends BaseDocument {
   /**
    */
 
-  private _onSourceChange = () => {
+  private _onSourceChange = (changes: Automerge.BinaryChange[]) => {
     this._engine.updateVirtualFileContent(this.uri, this._source.getText());
     this.load();
+    if (changes.length) {
+      this._events.emit("outgoingCRDTChanges", { uri: this.uri, changes });
+    }
   };
 }
