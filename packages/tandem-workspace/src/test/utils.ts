@@ -2,6 +2,7 @@ import { sockjsClientAdapter } from "@paperclip-ui/common";
 import { saveTmpFixtureFiles } from "@paperclip-ui/common/lib/test-utils";
 import SockJSClient from "sockjs-client";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
+import { mockDOMFactory } from "@paperclip-ui/web-renderer/lib/test/utils";
 import { start } from "../server";
 
 export type TestServer = {
@@ -27,7 +28,8 @@ export const createTestServer = async (
       return new WorkspaceClient(
         sockjsClientAdapter(
           new SockJSClient(`http://localhost:${server.getPort()}/rt`)
-        )
+        ),
+        mockDOMFactory
       );
     }
   };
