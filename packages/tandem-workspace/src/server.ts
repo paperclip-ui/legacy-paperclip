@@ -1,4 +1,4 @@
-import { Logger, LogLevel, startHTTPServer } from "@tandem-ui/common";
+import { Logger, startHTTPServer } from "@tandem-ui/common";
 import { SSHKeys } from "./controllers/ssh";
 import * as http from "http";
 import { Workspace } from "./controllers/workspace";
@@ -9,10 +9,7 @@ import * as sockjs from "sockjs";
 import { VFS } from "./controllers/vfs";
 import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
-import {
-  sockjsClientAdapter,
-  sockjsServerRPCAdapter
-} from "@paperclip-ui/common";
+import { sockjsServerRPCAdapter } from "@paperclip-ui/common";
 
 const getPort = require("get-port");
 
@@ -27,13 +24,18 @@ export const start = async (options: Options) => {
 export class Server {
   private _logger: Logger;
   private _httpServer: http.Server;
+  private _port: number;
 
   constructor(readonly options: Options) {
     this._logger = new Logger(options.logLevel);
   }
+  getPort() {
+    return this._port;
+  }
   async start() {
     this._logger.info(`Workspace started 🚀`);
-    const httpPort = this.options.http?.port || (await getPort());
+    const httpPort = (this._port =
+      this.options.http?.port || (await getPort()));
     const [expressServer, httpServer] = startHTTPServer(httpPort, this._logger);
     this._httpServer = httpServer;
     const vfs = new VFS(this.options.autoSave, this._logger);
@@ -69,6 +71,7 @@ export class Server {
       });
     }
   }
+
   stop() {
     this._httpServer.close();
   }

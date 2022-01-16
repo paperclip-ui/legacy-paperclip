@@ -17,6 +17,7 @@
     "@paperclip-ui/core": "^18.4.7",
     "@paperclip-ui/interim": "^18.4.7",
     "@paperclip-ui/utils": "^18.4.7",
+    "@paperclip-ui/common": "^18.4.7",
     "chalk": "4",
     "chokidar": "^3.5.2",
     "crc32": "^0.2.2",

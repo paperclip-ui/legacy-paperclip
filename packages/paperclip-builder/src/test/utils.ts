@@ -2,9 +2,10 @@ import { resolvePCConfig } from "@paperclip-ui/utils";
 import * as path from "path";
 import * as fsa from "fs-extra";
 import { buildDirectory } from "../index";
-import { kebabCase } from "lodash";
 import { createEngineDelegate } from "@paperclip-ui/core";
 import { DirectoryBuilder } from "../build";
+import { saveTmpFixtureFiles as saveTmpFixtureFiles2 } from "@paperclip-ui/common/lib/test-utils";
+import { kebabCase } from "lodash";
 
 const TMP_FIXTURE_DIR = path.join(
   __dirname,
@@ -20,24 +21,14 @@ export const saveTmpFixtureFiles = (
   files: Record<string, string>,
   options: Options = {}
 ) => {
-  const testDir = path.join(TMP_FIXTURE_DIR, kebabCase(title));
-
-  const saveFiles = (files: Record<string, string>) => {
-    for (const relativePath in files) {
-      const filePath = path.join(testDir, relativePath);
-      fsa.mkdirpSync(path.dirname(filePath));
-      fsa.writeFileSync(filePath, files[relativePath]);
-    }
-  };
-
-  saveFiles(files);
+  const fixtures = saveTmpFixtureFiles2(title, files, TMP_FIXTURE_DIR);
+  const testDir = fixtures.testDir;
 
   let builder: DirectoryBuilder;
   const emittedFiles: Record<string, string> = {};
 
   return {
-    testDir,
-    saveFiles,
+    ...fixtures,
     emittedFiles,
     async buildFiles() {
       const engine = createEngineDelegate();
@@ -58,7 +49,7 @@ export const saveTmpFixtureFiles = (
       if (builder) {
         builder.stop();
       }
-      fsa.rmSync(testDir, { recursive: true });
+      fixtures.dispose();
     }
   };
 };
