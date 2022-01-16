@@ -14,14 +14,15 @@
     "@paperclip-ui/core": "^18.4.7",
     "@paperclip-ui/web-renderer": "^18.4.7",
     "automerge": "^1.0.1-preview.6",
+    "diff": "^5.0.0",
     "fs-extra": "^10.0.0",
     "paperclip-preview": "^1.0.0",
-    "prettier": "^2.5.1",
     "prettier-plugin-paperclip": "^18.4.7",
     "sockjs": "^0.3.24"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
+    "@types/diff": "^5.0.2",
     "@types/mocha": "^9.0.0",
     "chai": "^4.3.4",
     "mocha": "^9.1.3",

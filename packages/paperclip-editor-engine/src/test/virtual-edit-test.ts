@@ -187,7 +187,7 @@ describe(__filename + "#", () => {
       );
     });
 
-    it(`Can append a child to an empty element`, async () => {
+    it(`Can append a child to a self-closing element`, async () => {
       const { server } = createMockHost({
         "/hello.pc": "<div />"
       });
@@ -202,7 +202,45 @@ describe(__filename + "#", () => {
         }
       ]);
       expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
-        `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
+        `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span></div>`
+      );
+    });
+
+    it(`Can append a child to an element with a closing tag`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div></div>"
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.AppendChild,
+          nodePath: "0",
+          child: "<span />"
+        }
+      ]);
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span></div>`
+      );
+    });
+
+    it(`Can append a child to an element with children`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": "<div>abba</div>"
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.AppendChild,
+          nodePath: "0",
+          child: "<span />"
+        }
+      ]);
+      expect(stringifyVirtualNode(doc.getContent().virtualData.preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">abba<span class="_5cd17222 _pub-5cd17222"></span></div>`
       );
     });
 

@@ -2,7 +2,7 @@ import * as Automerge from "automerge";
 import { EventEmitter } from "events";
 import { createListener } from "./utils";
 
-type SourceDocumentData = {
+export type SourceDocumentData = {
   text: Automerge.Text;
 };
 
@@ -15,13 +15,22 @@ export type TextEdit = {
 export class CRDTTextDocument {
   private _em: EventEmitter;
 
-  private constructor(private _doc: SourceDocumentData) {
+  /**
+   */
+
+  protected constructor(private _doc: SourceDocumentData) {
     this._em = new EventEmitter();
   }
+
+  /**
+   */
 
   onChange(listener: () => void) {
     return createListener(this._em, "change", listener);
   }
+
+  /**
+   */
 
   static fromText(text: string) {
     return new CRDTTextDocument(
@@ -29,9 +38,15 @@ export class CRDTTextDocument {
     );
   }
 
+  /**
+   */
+
   static load(document: Automerge.BinaryDocument) {
     return new CRDTTextDocument(Automerge.load(document));
   }
+
+  /**
+   */
 
   applyEdits(edits: TextEdit[]) {
     let curr = this._doc;
@@ -43,13 +58,23 @@ export class CRDTTextDocument {
     }
     return this._setDoc(curr, this._doc);
   }
+
+  /**
+   */
+
   toData() {
     return Automerge.save(this._doc);
   }
 
+  /**
+   */
+
   getText() {
     return this._doc.text.toString();
   }
+
+  /**
+   */
 
   setText(chars: string[], index = 0, deleteCount = 0) {
     const newDoc = Automerge.change(this._doc, newDoc => {
@@ -65,14 +90,18 @@ export class CRDTTextDocument {
     return this._setDoc(newDoc, this._doc);
   }
 
+  /**
+   */
+
   applyChanges(changes: Automerge.BinaryChange[]) {
     // const oldDoc = this._doc;
     const [newDoc, _patch] = Automerge.applyChanges(this._doc, changes);
     this._doc = newDoc;
     this._em.emit("change");
-
-    // TODO - emit changes of text
   }
+
+  /**
+   */
 
   private _setDoc(newDoc: SourceDocumentData, oldDoc: SourceDocumentData) {
     this._doc = newDoc;

@@ -12,6 +12,7 @@ import { editVirtualObjectsChannel } from "../core/channels";
 import { Connection } from "../core/connection";
 import { DocumentManager } from "./documents/manager";
 import { PCDocument } from "./documents/pc";
+import { PCDocumentEditor } from "./documents/pc-document-editor";
 
 export class ClientConnection {
   /**
@@ -25,8 +26,8 @@ export class ClientConnection {
   private _sourceDocumentCRDTChangesChannel: ReturnType<
     typeof sourceDocumentCRDTChangesChannel
   >;
-  private _openDocuments: Record<string, boolean>;
   private _editVirtualObjects: ReturnType<typeof editVirtualObjectsChannel>;
+  private _pcDocumentEditor: PCDocumentEditor;
 
   /**
    */
@@ -37,7 +38,10 @@ export class ClientConnection {
     private _events: EventEmitter,
     private _engine: EngineDelegate
   ) {
-    this._openDocuments = {};
+    this._pcDocumentEditor = new PCDocumentEditor(
+      this._documents,
+      this._engine
+    );
     this._editVirtualObjects = editVirtualObjectsChannel(this._connection);
     this._editVirtualObjects.listen(this._handleEditVirtualObjects);
     this._openDocumentChannel = openDocumentChannel(this._connection);
@@ -78,8 +82,7 @@ export class ClientConnection {
     allEdits: Record<string, VirtualObjectEdit[]>
   ) => {
     for (const uri in allEdits) {
-      const doc = this._documents.open(uri) as PCDocument;
-      doc.applyVirtualObjectEdits(allEdits[uri]);
+      this._pcDocumentEditor.applyVirtualObjectEdits(uri, allEdits[uri]);
     }
   };
 
@@ -98,7 +101,6 @@ export class ClientConnection {
    */
 
   private _openDocumentSource = async (uri: string) => {
-    this._openDocuments[uri] = true;
     const doc = this._documents.open(uri);
     const source = await doc.openSource();
     return source.toData();
