@@ -17,6 +17,26 @@ export enum VirtualobjectEditKind {
   SetAttribute = "SetAttribute"
 }
 
+export enum ChildInsertionKind {
+  Text = "Text",
+  Element = "Element",
+  Instance = "Instance"
+}
+
+type BaseChildInsertion<TKind extends ChildInsertionKind> = {
+  kind: ChildInsertionKind;
+};
+
+export type TextInsertion = {
+  value: string;
+} & BaseChildInsertion<ChildInsertionKind.Text>;
+
+export type ElementInsertion = {
+  value: string;
+} & BaseChildInsertion<ChildInsertionKind.Element>;
+
+export type ChildInsertion = TextInsertion | ElementInsertion;
+
 /**
  */
 
@@ -26,7 +46,7 @@ export type VirtualObjectBaseEdit<TKind extends VirtualobjectEditKind> = {
 
 export type InsertNodeBefore = {
   beforeNodePath: string;
-  node: string;
+  node: ChildInsertion;
 } & VirtualObjectBaseEdit<VirtualobjectEditKind.InsertNodeBefore>;
 
 export type SetTextNodeValue = {
@@ -54,7 +74,7 @@ export type SetAnnotations = {
 
 export type AppendChild = {
   nodePath: string;
-  child: string;
+  child: ChildInsertion;
 } & VirtualObjectBaseEdit<VirtualobjectEditKind.AppendChild>;
 
 /**

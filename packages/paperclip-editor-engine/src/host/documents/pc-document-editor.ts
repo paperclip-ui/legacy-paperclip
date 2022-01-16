@@ -5,7 +5,9 @@ import {
   UpdateAttribute,
   VirtualObjectEdit,
   SetAnnotations,
-  InsertNodeBefore
+  InsertNodeBefore,
+  ChildInsertionKind,
+  ChildInsertion
 } from "../../core";
 import { Connection } from "../../core/connection";
 import { DocumentManager } from "./manager";
@@ -99,7 +101,7 @@ const insertNodeBefore = (
   const info = getSourceNodeFromPath(uri, engine, edit.beforeNodePath);
   return {
     uri: info.textSource.uri,
-    chars: edit.node.split(""),
+    chars: getChildInsertionContent(edit.node, false).split(""),
     index: info.textSource.range.start.pos
   };
 };
@@ -273,7 +275,7 @@ const appendSlot = (
     kind: VirtualobjectEditKind.UpdateAttribute,
     nodePath: instancePath,
     name: exprName,
-    value: `"${edit.child}"`
+    value: getChildInsertionContent(edit.child, true)
   });
 };
 
@@ -297,7 +299,13 @@ const appendElement = (
   if (tagBuffer.trim().lastIndexOf("/>") !== -1) {
     return {
       uri: exprUri,
-      chars: [">", edit.child, `</${expr.tagName}>`].join("").split(""),
+      chars: [
+        ">",
+        getChildInsertionContent(edit.child, false),
+        `</${expr.tagName}>`
+      ]
+        .join("")
+        .split(""),
       index: tagBuffer.trim().lastIndexOf("/>"),
       deleteCount: 2
     };
@@ -311,7 +319,7 @@ const appendElement = (
 
   return {
     uri: exprUri,
-    chars: edit.child.split(""),
+    chars: getChildInsertionContent(edit.child, false).split(""),
     index: endTagPos
   };
 };
@@ -330,5 +338,19 @@ const setTextNodeValue = (
       deleteCount:
         info.textSource.range.end.pos - info.textSource.range.start.pos
     };
+  }
+};
+
+const getChildInsertionContent = (
+  insertion: ChildInsertion,
+  isAttributeValue: boolean
+) => {
+  switch (insertion.kind) {
+    case ChildInsertionKind.Element: {
+      return isAttributeValue ? `{${insertion.value}}` : insertion.value;
+    }
+    case ChildInsertionKind.Text: {
+      return isAttributeValue ? `"${insertion.value}"` : insertion.value;
+    }
   }
 };

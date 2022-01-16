@@ -5,7 +5,7 @@ import {
   VirtualText
 } from "@paperclip-ui/core";
 import { expect } from "chai";
-import { VirtualobjectEditKind } from "../core";
+import { ChildInsertionKind, VirtualobjectEditKind } from "../core";
 import { createMockHost, timeout } from "./utils";
 
 // TODO - test latency
@@ -24,7 +24,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: "<span />"
+          node: { kind: ChildInsertionKind.Element, value: "<span />" }
         }
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -44,12 +44,12 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: "<a />"
+          node: { kind: ChildInsertionKind.Element, value: "<a />" }
         },
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: "<b />"
+          node: { kind: ChildInsertionKind.Element, value: "<b />" }
         }
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.equals(
@@ -196,7 +196,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0",
-          child: "<span />"
+          child: { kind: ChildInsertionKind.Element, value: "<span />" }
         }
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -215,7 +215,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0",
-          child: "<span />"
+          child: { kind: ChildInsertionKind.Element, value: "<span />" }
         }
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -234,7 +234,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0",
-          child: "<span />"
+          child: { kind: ChildInsertionKind.Element, value: "<span />" }
         }
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -242,7 +242,7 @@ describe(__filename + "#", () => {
       );
     });
 
-    it(`If a node is inserted into a slot placeholder, that slot is assigned`, async () => {
+    it(`If text is inserted into a slot placeholder, that slot is assigned as a regular key/value attribute`, async () => {
       const { server } = createMockHost({
         "/hello.pc": `<div component as="Test">{child}</div><Test />`
       });
@@ -257,7 +257,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: "blarg"
+          child: { kind: ChildInsertionKind.Text, value: "blarg" }
         }
       ]);
       expect(source.getText()).to.eql(
@@ -265,6 +265,64 @@ describe(__filename + "#", () => {
       );
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eq(
         `<div class="_5cd17222 _pub-5cd17222">blarg</div>`
+      );
+    });
+
+    it(`If an element is inserted into a slot placeholder, that slot is assigned as a regular key/script attribute`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": `<div component as="Test">{child}</div><Test />`
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      const source = await doc.getSource();
+      expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">[slot]</div>`
+      );
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.AppendChild,
+          nodePath: "0.0",
+          child: { kind: ChildInsertionKind.Element, value: "<span />" }
+        }
+      ]);
+      expect(source.getText()).to.eql(
+        `<div component as="Test">{child}</div><Test child={<span />} />`
+      );
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eq(
+        `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span></div>`
+      );
+    });
+
+    // just a quick smoke test
+    it(`Can insert multiple slots at the same time`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": `<div component as="Test">{child}{child2}</div><Test />`
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      const source = await doc.getSource();
+      expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">[slot][slot]</div>`
+      );
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.AppendChild,
+          nodePath: "0.0",
+          child: { kind: ChildInsertionKind.Element, value: "<a />" }
+        },
+        {
+          kind: VirtualobjectEditKind.AppendChild,
+          nodePath: "0.1",
+          child: { kind: ChildInsertionKind.Element, value: "<b />" }
+        }
+      ]);
+      expect(source.getText()).to.eql(
+        `<div component as="Test">{child}{child2}</div><Test child2={<b />} child={<a />} />`
+      );
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eq(
+        `<div class="_5cd17222 _pub-5cd17222"><a class="_5cd17222 _pub-5cd17222"></a><b class="_5cd17222 _pub-5cd17222"></b></div>`
       );
     });
 
@@ -276,6 +334,4 @@ describe(__filename + "#", () => {
     );
     xit(`The instance type of a component can be changed`);
   });
-
-  describe("styles", () => {});
 });
