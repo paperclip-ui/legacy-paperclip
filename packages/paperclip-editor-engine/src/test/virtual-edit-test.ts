@@ -244,9 +244,27 @@ describe(__filename + "#", () => {
       );
     });
 
-    xit(
-      `If a node is inserted into a slot placeholder, that slot placeholder is replaced with the element`
-    );
+    it(`If a node is inserted into a slot placeholder, that slot is assigned`, async () => {
+      const { server } = createMockHost({
+        "/hello.pc": `<div component as="Test">{child}</div><Test />`
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.open("/hello.pc");
+      const source = await doc.getSource();
+      expect(
+        stringifyVirtualNode(doc.getContent().virtualData.preview, "[slot]")
+      ).to.eql(`<div class="_5cd17222 _pub-5cd17222">[slot]</div>`);
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.AppendChild,
+          nodePath: "0.0",
+          child: "blarg"
+        }
+      ]);
+      expect(source.getText()).to.eql("ok");
+    });
+
     xit(
       `Slotted children are wrapped in a fragment if another child is inserted`
     );

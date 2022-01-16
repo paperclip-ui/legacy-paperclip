@@ -35,10 +35,10 @@ impl Value {
       _ => false,
     }
   }
-  pub fn get_range_id(&self) -> &String {
+  pub fn get_source_id(&self) -> &String {
     match self {
       Value::Undefined(value) => &value.source_id,
-      Value::Node(value) => &value.get_range_id(),
+      Value::Node(value) => &value.get_source_id(),
       Value::Boolean(value) => &value.source_id,
       Value::Number(value) => &value.source_id,
       Value::Str(value) => &value.source_id,

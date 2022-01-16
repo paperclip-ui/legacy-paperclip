@@ -12,6 +12,7 @@ import {
   PCExports,
   stringifyVirtualNode
 } from "@paperclip-ui/utils";
+import { EngineMode } from "../../core";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {

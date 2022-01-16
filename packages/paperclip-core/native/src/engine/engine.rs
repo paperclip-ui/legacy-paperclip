@@ -255,7 +255,7 @@ impl Engine {
       .and_then(|descendent| {
         self
           .dependency_graph
-          .get_expression_by_id(descendent.get_range_id())
+          .get_expression_by_id(descendent.get_source_id())
       })
       .and_then(|(uri, expr)| match expr {
         pc_ast::Expression::Node(pc_node) => Some((uri, pc_node)),

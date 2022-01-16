@@ -625,12 +625,13 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Renders slots`, async () => {
+  it(`Render slots`, async () => {
     const graph = {
       "file:///entry.pc": `
         <div component as="Test">
           {children}
         </div>
+        <Test />
       `
     };
 
@@ -647,7 +648,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
+      `<div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div><div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
     );
   });
 });

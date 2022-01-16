@@ -1,9 +1,16 @@
 import { Html5Entities } from "html-entities";
 import {
+  Element,
+  Fragment,
   NodeKind,
   Slot,
   stringifyCSSRule,
-  stringifyCSSSheet
+  stringifyCSSSheet,
+  VirtualElement,
+  VirtualFragment,
+  VirtualNode,
+  VirtualNodeKind,
+  VirtualSlot
 } from "@paperclip-ui/utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
@@ -31,28 +38,35 @@ export const getNativeNodePath = (root: Node, node: Node) => {
 export type UrlResolver = (url: string) => string;
 
 export const createNativeNode = (
-  node,
+  node: VirtualNode,
   factory: DOMFactory,
   resolveUrl: UrlResolver,
-  namespaceURI: string
+  namespaceURI: string,
+  inInstance?: boolean
 ) => {
   if (!node) {
     return factory.createTextNode("");
   }
   try {
     switch (node.kind) {
-      case "Text": {
+      case VirtualNodeKind.Text: {
         const text = createNativeTextNode(node, factory);
         return text;
       }
-      case "Element":
-        return createNativeElement(node, factory, resolveUrl, namespaceURI);
-      case "StyleElement":
+      case VirtualNodeKind.Element:
+        return createNativeElement(
+          node,
+          factory,
+          resolveUrl,
+          namespaceURI,
+          inInstance
+        );
+      case VirtualNodeKind.StyleElement:
         return createNativeStyleFromSheet(node.sheet, factory, resolveUrl);
-      case "Fragment":
-        return createNativeFragment(node, factory, resolveUrl);
-      case NodeKind.Slot: {
-        return createSlot(node, factory);
+      case VirtualNodeKind.Fragment:
+        return createNativeFragment(node, factory, resolveUrl, inInstance);
+      case VirtualNodeKind.Slot: {
+        return createSlot(node, factory, inInstance);
       }
     }
   } catch (e) {
@@ -62,7 +76,14 @@ export const createNativeNode = (
 
 let _dummyStyle: HTMLStyleElement;
 
-const createSlot = (node: Slot, domFactory: DOMFactory) => {
+const createSlot = (
+  node: VirtualSlot,
+  domFactory: DOMFactory,
+  inInstance?: boolean
+) => {
+  if (!inInstance) {
+    return domFactory.createTextNode("");
+  }
   const placeholder = domFactory.createElement("div");
   placeholder.setAttribute(
     "style",
@@ -125,10 +146,11 @@ const createNativeTextNode = (node, factory: DOMFactory) => {
 };
 
 const createNativeElement = (
-  element,
+  element: VirtualElement,
   factory: DOMFactory,
   resolveUrl: UrlResolver,
-  namespaceUri?: string
+  namespaceUri?: string,
+  inInstance?: boolean
 ) => {
   const nativeElement =
     element.tagName === "svg"
@@ -150,9 +172,17 @@ const createNativeElement = (
 
     nativeElement.setAttribute(aliasName, value);
   }
+
   for (const child of element.children) {
     nativeElement.appendChild(
-      createNativeNode(child, factory, resolveUrl, childNamespaceUri)
+      createNativeNode(
+        child,
+        factory,
+        resolveUrl,
+        childNamespaceUri,
+        inInstance ||
+          Boolean(element.sourceInfo && element.sourceInfo.instanceOf)
+      )
     );
   }
 
@@ -167,14 +197,21 @@ const createNativeElement = (
 };
 
 const createNativeFragment = (
-  fragment,
+  fragment: VirtualFragment,
   factory: DOMFactory,
-  resolveUrl: UrlResolver
+  resolveUrl: UrlResolver,
+  inInstance?: boolean
 ) => {
   const nativeFragment = factory.createDocumentFragment() as any;
   for (const child of fragment.children) {
     nativeFragment.appendChild(
-      createNativeNode(child, factory, resolveUrl, nativeFragment.namespaceURI)
+      createNativeNode(
+        child,
+        factory,
+        resolveUrl,
+        nativeFragment.namespaceURI,
+        inInstance
+      )
     );
   }
   return nativeFragment;

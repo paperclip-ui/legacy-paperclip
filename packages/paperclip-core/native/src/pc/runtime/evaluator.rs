@@ -338,7 +338,7 @@ fn wrap_as_fragment<'a>(node_option: Option<virt::Node>, context: &'a mut Contex
       virt::Node::Fragment(fragment) => virt::Node::Fragment(fragment),
       _ => virt::Node::Fragment(virt::Fragment {
         id: context.id_generator.new_id(),
-        source_id: use_expr_id(node.get_range_id(), context),
+        source_id: use_expr_id(node.get_source_id(), context),
         children: vec![node],
       }),
     }
@@ -763,7 +763,7 @@ fn evaluate_slot<'a>(
       } else {
         children.push(virt::Node::Text(virt::Text {
           id: context.id_generator.new_id(),
-          source_id: use_expr_id(item.get_range_id(), context),
+          source_id: use_expr_id(item.get_source_id(), context),
           annotations: None,
           value: item.to_string(),
         }))
@@ -793,7 +793,7 @@ fn evaluate_slot<'a>(
   } else {
     Ok(Some(virt::Node::Slot(virt::Slot {
       id: context.id_generator.new_id(),
-      source_id: use_expr_id(script.get_id(), context)
+      source_id: use_expr_id(&slot.id, context)
     })))
   }
 
@@ -942,10 +942,12 @@ fn create_component_instance_data<'a>(
 
   script_children.values.extend(children);
 
-  data.values.insert(
-    "children".to_string(),
-    script_virt::Value::Array(script_children),
-  );
+  if script_children.values.len() > 0 {
+    data.values.insert(
+      "children".to_string(),
+      script_virt::Value::Array(script_children),
+    );
+  }
 
   Ok(script_virt::Value::Object(data))
 }
@@ -1650,7 +1652,7 @@ fn maybe_cast_attribute_script_value<'a>(
 
   if let Some(casted_value) = cast_attribute_value(name, &str_value, is_native, context) {
     script_virt::Value::Str(script_virt::Str {
-      source_id: use_expr_id(value.get_range_id(), context),
+      source_id: use_expr_id(value.get_source_id(), context),
       value: casted_value.to_string(),
     })
   } else {

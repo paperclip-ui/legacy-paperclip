@@ -3,7 +3,6 @@ use crate::css::runtime::virt as css_virt;
 use crate::script::runtime::virt as script_virt;
 use serde::Serialize;
 use std::collections::BTreeMap;
-use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NodeSource {
@@ -134,7 +133,7 @@ impl Node {
       _ => {}
     }
   }
-  pub fn get_range_id(&self) -> &String {
+  pub fn get_source_id(&self) -> &String {
     match self {
       Node::Element(value) => &value.source_id,
       Node::Text(value) => &value.source_id,
