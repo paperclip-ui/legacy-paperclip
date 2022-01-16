@@ -9,12 +9,16 @@ export enum VirtualobjectEditKind {
   AddAttribute = "AddAttribute",
   UpdateAttribute = "UpdateAttribute",
   SetAnnotations = "SetAnnotations",
-  SetNodeType = "SetNodeType",
 
   // inserts a child into a parent element. This will happen
   // if there are no siblings to insert before
   AppendChild = "AppendChild",
-  SetAttribute = "SetAttribute"
+
+  // TODO: needs to scan all documents where reference is used. Probably needs to use inferencing engine for this.
+  RenameReferenceName = "RenameReferenceName",
+
+  // Should
+  RenameComponentName = "RenameComponentName"
 }
 
 export enum ChildInsertionKind {
