@@ -17,16 +17,16 @@ import globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";
 
-export class PaperclipProject {
+export class PaperclipManager {
   private _watcher: PaperclipResourceWatcher;
-  private _engine: EngineDelegate;
 
   constructor(
     private _cwd: string,
     private _vfs: VFS,
-    private _logger: Logger
+    private _logger: Logger,
+    private _engine: EngineDelegate
   ) {
-    this._startEngine();
+    // this._startEngine();
   }
 
   /**
@@ -34,16 +34,9 @@ export class PaperclipProject {
 
   async start() {
     const config = readConfig(this._cwd, this._logger);
-    this._startEngine();
+    // this._startEngine();
     this._startWatcher(config);
     await this._addAllProjects(config);
-  }
-
-  /**
-   */
-
-  get engine() {
-    return this._engine;
   }
 
   /**
@@ -114,34 +107,34 @@ export class PaperclipProject {
   /**
    */
 
-  private _startEngine() {
-    if (this._engine) {
-      return;
-    }
+  // private _startEngine() {
+  //   if (this._engine) {
+  //     return;
+  //   }
 
-    this._logger.info(`Starting PC engine`);
+  //   this._logger.info(`Starting PC engine`);
 
-    this._engine = createEngineDelegate(
-      {
-        mode: EngineMode.MultiFrame
-      },
-      () => {
-        this._engine = undefined;
-        disposeVFSChangeListener();
-        this._logger.error(`PC engine crashed`);
-        this._startEngine();
-      }
-    );
+  //   this._engine = createEngineDelegate(
+  //     {
+  //       mode: EngineMode.MultiFrame
+  //     },
+  //     () => {
+  //       this._engine = undefined;
+  //       disposeVFSChangeListener();
+  //       this._logger.error(`PC engine crashed`);
+  //       this._startEngine();
+  //     }
+  //   );
 
-    const disposeVFSChangeListener = this._vfs.onChange((uri, content) => {
-      if (isPaperclipFile(uri)) {
-        this._logger.info(`Updating PC content for ${uri}`);
-        this._engine.updateVirtualFileContent(uri, content);
-      }
-    });
+  //   const disposeVFSChangeListener = this._vfs.onChange((uri, content) => {
+  //     if (isPaperclipFile(uri)) {
+  //       this._logger.info(`Updating PC content for ${uri}`);
+  //       this._engine.updateVirtualFileContent(uri, content);
+  //     }
+  //   });
 
-    this._engine.onEvent(this._onEngineEvent);
-  }
+  //   this._engine.onEvent(this._onEngineEvent);
+  // }
 
   /**
    */

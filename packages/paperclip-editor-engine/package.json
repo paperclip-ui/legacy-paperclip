@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/editor-engine",
-  "version": "1.0.0",
+  "version": "18.4.7",
   "description": "",
   "main": "lib/index.js",
   "scripts": {

@@ -5,6 +5,8 @@ import { getProjectId, Project } from "./project";
 import { SSHKeys } from "./ssh";
 import { VFS } from "./vfs";
 import { Options } from "../core/options";
+import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
+import { EngineDelegate } from "@paperclip-ui/core";
 
 export class Workspace {
   private _projects: Record<string, Project> = {};
@@ -14,6 +16,7 @@ export class Workspace {
     private _ssh: SSHKeys,
     readonly vfs: VFS,
     private _logger: Logger,
+    private _engine: EngineDelegate,
     private _options: Options,
     private _httpPort: number
   ) {}
@@ -30,6 +33,7 @@ export class Workspace {
         branch,
         this.vfs,
         this._logger,
+        this._engine,
         this._options,
         this._httpPort
       ));

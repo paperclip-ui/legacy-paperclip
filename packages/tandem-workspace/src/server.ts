@@ -9,6 +9,10 @@ import { addRoutes } from "./routes";
 import { RPC } from "./controllers/rpc";
 import { SocketIo } from "./controllers/socket";
 import { VFS } from "./controllers/vfs";
+import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
+import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
+import { createEditorHostRPCClient } from "./editor-host-utils";
+
 const getPort = require("get-port");
 
 export { Workspace, Project };
@@ -27,11 +31,21 @@ const prepare = async (options: Options) => {
 
   const vfs = new VFS(options.autoSave, logger);
   const sock = new SocketIo(httpServer);
+
+  const paperclipEngine = createEngineDelegate({
+    mode: EngineMode.MultiFrame
+  });
+  const documentManager = new EditorHost(
+    paperclipEngine,
+    createEditorHostRPCClient(sock)
+  );
+
   const workspace = new Workspace(
     null,
     new SSHKeys(logger),
     vfs,
     logger,
+    paperclipEngine,
     options,
     httpPort
   );
@@ -39,9 +53,19 @@ const prepare = async (options: Options) => {
   const kernel: Kernel = {
     options,
     expressServer,
+    documentManager,
+    paperclipEngine,
     httpServer,
     sockio: sock,
-    rpc: new RPC(sock, workspace, vfs, logger, httpPort, options),
+    rpc: new RPC(
+      sock,
+      workspace,
+      paperclipEngine,
+      vfs,
+      logger,
+      httpPort,
+      options
+    ),
     designer: new Designer(expressServer),
     workspace,
     logger

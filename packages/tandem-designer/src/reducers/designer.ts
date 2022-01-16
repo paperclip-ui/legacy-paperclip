@@ -132,7 +132,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
       values: {},
 
       // null to indicate insertion
-      source: null
+      sourceId: null
     };
   }
 

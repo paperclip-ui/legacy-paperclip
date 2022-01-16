@@ -1,16 +1,16 @@
-import { Repository } from "./git";
-import * as URL from "url";
-import * as crypto from "crypto";
-import { Logger } from "@tandem-ui/common";
 import execa from "execa";
-import { Package } from "./package";
-import { EngineDelegateEvent } from "@paperclip-ui/core";
-import { PaperclipProject } from "./paperclip";
 import { VFS } from "./vfs";
+import * as URL from "url";
+import { Logger } from "@tandem-ui/common";
 import { Options } from "../core/options";
+import { Package } from "./package";
+import * as crypto from "crypto";
+import { Repository } from "./git";
+import { PaperclipManager } from "./paperclip";
+import { EngineDelegate, EngineDelegateEvent } from "@paperclip-ui/core";
 
 export class Project {
-  private _pc: PaperclipProject;
+  private _pc: PaperclipManager;
   readonly repository: Repository;
   readonly package: Package;
 
@@ -22,6 +22,7 @@ export class Project {
     private _branch: string,
     _vfs: VFS,
     _logger: Logger,
+    private _engine: EngineDelegate,
     private _options: Options,
     private _httpPort: number
   ) {
@@ -30,10 +31,11 @@ export class Project {
       : getTemporaryDirectory(this.url, this._branch);
     this.repository = new Repository(directory, _logger);
     this.package = new Package(directory, _logger);
-    this._pc = new PaperclipProject(
+    this._pc = new PaperclipManager(
       this.repository.localDirectory,
       _vfs,
-      _logger
+      _logger,
+      _engine
     );
   }
 
@@ -43,7 +45,9 @@ export class Project {
   openBrowser() {
     // TODO - remove embedded flag
     execa("open", [
-      `http://localhost:${this._httpPort}?projectId=${this.id}&showAll=true`
+      `http://localhost:${
+        this._httpPort
+      }?projectId=${this.getId()}&showAll=true`
     ]).catch(() => {
       console.warn(`Unable to launch browser`);
     });
@@ -78,36 +82,29 @@ export class Project {
   /**
    */
 
-  get id() {
+  getId() {
     return getProjectId(this.url);
   }
 
   /**
    */
 
-  get engine() {
-    return this._pc.engine;
-  }
-
-  /**
-   */
-
   openPCFile = (uri: string) => {
-    return this._pc.engine.open(uri);
+    return this._engine.open(uri);
   };
 
   /**
    */
 
   getPCContent = (uri: string) => {
-    return this._pc.engine.getVirtualContent(uri);
+    return this._engine.getVirtualContent(uri);
   };
 
   /**
    */
 
   updatePCContent = (uri: string, content: string) => {
-    return this._pc.engine.updateVirtualFileContent(uri, content);
+    return this._engine.updateVirtualFileContent(uri, content);
   };
 
   /**
@@ -156,7 +153,7 @@ export class Project {
    */
 
   getAllPaperclipScreens() {
-    return this._pc.engine.getAllLoadedData();
+    return this._engine.getAllLoadedData();
   }
 }
 

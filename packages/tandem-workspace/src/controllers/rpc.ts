@@ -18,11 +18,13 @@ import { VFS } from "./vfs";
 import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
 import { exec } from "child_process";
 import { Options } from "../core/options";
+import { EngineDelegate } from "@paperclip-ui/core";
 
 export class RPC {
   constructor(
     sockio: SocketIo,
     private _workspace: Workspace,
+    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
@@ -35,6 +37,7 @@ export class RPC {
     new Connection(
       connection,
       this._workspace,
+      this._engine,
       this._vfs,
       this._logger,
       this._httpPort,
@@ -56,6 +59,7 @@ class Connection {
   constructor(
     connection: sockjs.Connection,
     private _workspace: Workspace,
+    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
@@ -93,16 +97,13 @@ class Connection {
   // TODO - need to remove this eventually in favor of CRDT document sync
 
   private _editPCSource = async (mutations: PCMutation[]) => {
-    const writer = new PCSourceWriter(this.getProject().engine);
+    const writer = new PCSourceWriter(this._engine);
     const changes = writer.apply(mutations);
     this._options.adapter?.applyCodeChanges(changes);
   };
 
   private _revealSource = (source: VirtNodeSource) => {
-    const info = this.getProject().engine.getVirtualNodeSourceInfo(
-      source.path,
-      source.uri
-    );
+    const info = this._engine.getVirtualNodeSourceInfo(source.path, source.uri);
 
     if (info) {
       this._options.adapter?.revealSource(info);
@@ -115,9 +116,10 @@ class Connection {
   };
 
   private _revealSourceById = (sourceId: string) => {
-    const [uri, expr] = this.getProject().engine.getExpressionById(
-      sourceId
-    ) as [string, Expression];
+    const [uri, expr] = this._engine.getExpressionById(sourceId) as [
+      string,
+      Expression
+    ];
 
     this._options.adapter?.revealSource({
       sourceId,
@@ -134,7 +136,7 @@ class Connection {
     return sources.map(info => {
       return {
         virtualNodePath: info.path,
-        source: project.engine.getVirtualNodeSourceInfo(info.path, info.uri)
+        source: this._engine.getVirtualNodeSourceInfo(info.path, info.uri)
       };
     });
   };
@@ -149,7 +151,7 @@ class Connection {
     const project = this.getProject();
     return sources.map(source => [
       source,
-      project.engine.inspectNodeStyles(source, 0)
+      this._engine.inspectNodeStyles(source, 0)
     ]);
   };
 

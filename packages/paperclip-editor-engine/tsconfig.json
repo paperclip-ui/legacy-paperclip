@@ -3,6 +3,7 @@
     "outDir": "./lib",
     "target": "es5",
     "moduleResolution": "node",
+    "declaration": true,
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
     "strict": false /* Enable all strict type-checking options. */

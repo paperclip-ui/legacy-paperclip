@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+// import { EventEmitter } from "events";
 
 export const deferPromise = <TRet>(): [Promise<TRet>, (ret: TRet) => void] => {
   let _resolve;
@@ -11,7 +11,7 @@ export const deferPromise = <TRet>(): [Promise<TRet>, (ret: TRet) => void] => {
 };
 
 export const createListener = (
-  em: EventEmitter,
+  em: any,
   type: string,
   listener: (...args: any[]) => void
 ) => {

@@ -64,10 +64,10 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
   /**
    */
 
-  onAppliedChanges = (
+  public onAppliedChanges = (
     listener: (content: PCDocumentContent, event: EngineDelegateEvent) => void
   ) => {
-    return createListener(this._em, "appliedChanges", listener);
+    return createListener(this._em as any, "appliedChanges", listener);
   };
 
   /**
