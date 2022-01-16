@@ -134,7 +134,7 @@ export type VirtualText = {
   value: string;
 } & VirtualBaseNode<VirtualNodeKind.Text>;
 
-export type VirtualSlot = {} & VirtualBaseNode<VirtualNodeKind.Slot>;
+export type VirtualSlot = VirtualBaseNode<VirtualNodeKind.Slot>;
 
 export type VirtualFragment = {
   children: VirtualNode[];
