@@ -1,4 +1,3 @@
-import { Kernel } from "../core/kernel";
 import express from "express";
 import * as path from "path";
 import * as URL from "url";

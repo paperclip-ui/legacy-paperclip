@@ -1,0 +1,16 @@
+{
+  "name": "@tandem-ui/workspace-client",
+  "version": "18.4.7",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tandem-ui/workspace-core": "^18.4.7"
+  }
+}

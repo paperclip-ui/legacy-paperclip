@@ -24,6 +24,7 @@
     "@types/fs-extra": "^9.0.12",
     "@types/mocha": "^9.0.0",
     "@types/yargs": "^17.0.2",
+    "@tandem-ui/workspace-client": "^18.4.7",
     "chai": "^4.3.4",
     "cypress": "^8.4.1",
     "mocka": "^0.0.1",
