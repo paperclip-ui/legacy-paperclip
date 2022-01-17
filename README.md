@@ -9,7 +9,7 @@
 <br />
 
 
-Paperclip is a thin UI layer for web applications that aims to make UIs easier to maintain, faster to develop, and help make it easy to prevent visual bugs across different browsers and device sizes. 
+Paperclip is a tiny DSL for HTML & CSS that aims to bring scoped styles to any language.
 
 
 Paperclip can be used on its own to build static websites, or be used to expose primitive components that you can integrate into your codebase. It's designed for any language to use, and currently works with React out of the box.
@@ -57,13 +57,11 @@ npx @paperclip-ui/cli build
 
 ## Goals
 
-- In a similiar spirit as TypeScript, Paperclip aims to help provide an extra layer of safety around HTML and CSS. UI code should be predictable, easy to refactor, and bugs should be easy to spot across different browsers and screen sizes.
 - To have strict control over how elements are styled, while maintaining the flexibility of CSS. 
 - To be generic, and compatible with just about any language, strongly or dynamically typed. 
 - To compile to plain code, and not require any runtime. 
-To make UI development feel more like drawing. Developers shouldn't have to wait around for their UI code to compile, and should have more visual tooling to help <i>visually</i> develop their UIs.
-- To eventually have enough UI tooling that would enable non-engineers to safely create UIs in tandem with developers.
-
+- To make UI development feel more like drawing. Developers shouldn't have to wait around for their UI code to compile, and should have more visual tooling to help <i>visually</i> develop their UIs.
+- To eventually have enough UI tooling that would enable non-engineers to create UIs in tandem with developers.
 
 
 ## Example
