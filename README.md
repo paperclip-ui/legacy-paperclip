@@ -2,9 +2,9 @@
 
 <br />
 
-<div style="text-align: left; margin-bottom: 32px;">
+
   <img src="assets/logo-outline-5-beta.png" width="420">
-</div>
+
 
 <br />
 
@@ -34,6 +34,9 @@ ReactDOM.render(<Message>
   Hello world
 </Message>, document.getElementById("app"));
 ```
+
+Currently, UIs compile to **React** and **static HTML**. More languages are planned for after Beta. 
+
 
 ## Why use Paperclip?
 
@@ -85,18 +88,18 @@ npx @paperclip-ui/cli build
   - [Using third-party CSS](https://paperclip.dev/docs/guide-third-party-libraries)
 
 
-## Goals
+<!--## Goals
 
 - To have strict control over how elements are styled, while maintaining the flexibility of CSS. 
 - To be generic, and compatible with just about any language, strongly or dynamically typed. 
 - To compile to plain code, and not require any runtime. 
 - To make UI development feel more like drawing. Developers shouldn't have to wait around for their UI code to compile, and should have more visual tooling to help <i>visually</i> develop their UIs.
-- To eventually have enough UI tooling that would enable non-engineers to create UIs in tandem with developers.
+- To eventually have enough UI tooling that would enable non-engineers to create UIs in tandem with developers.-->
 
 
 ## Kitchen sink example
 
-Here's a kitchen sink example of what a Paperclip UI looks like:
+Here's an example that includes many Paperclip features:
 
 
 ```html
@@ -140,21 +143,6 @@ Here's a kitchen sink example of what a Paperclip UI looks like:
 </div>
 ```
 
-Paperclip UIs compile directly to code that you can import into your app:
-
-```jsx
-import React from "react";
-import ReactDOM from "react-dom";
-import { Message } from "./my-module.pc";
-
-// this will render "Hello Paperclip! I'm orange!"
-ReactDOM.render(<Message>
-  Hello Paperclip!
-</Message>, document.body);
-```
-
-Currently, UIs compile to **React** and **static HTML**. More languages are planned for after Beta. 
-
 
 <!-- ## Features
 
@@ -165,18 +153,11 @@ Currently, UIs compile to **React** and **static HTML**. More languages are plan
 - Code coverage tooling to help you figure out how much HTML & CSS is coverage under visual tests.
 - Realtime visual development, directly within VS Code.  -->
 
-This is the designer that you can use to build UIs in realtime:
-
-![alt visual editor](./assets/designer-screenshot.png)
-
-Here's an example of a code coverage report that shows how much HTML and CSS is coverage for visual testing:
-
-![alt coverage report](./assets/coverage-report.png)
-
-Here's an example of visual tests that are performed using Percy. Paperclip also has a tool for this that you can use locally. 
-
-![alt coverage report](./assets/percy-screenshot.png)
-
+<!--div style="display: flex; flex-direction: row;">
+    <img src="./assets/designer-screenshot.png" style="inline-block; margin: 8px; width: 500px;" />
+    <img src="./assets/coverage-report.png" style="inline-block; margin: 8px; width: 500px;" />
+    <img src="./assets/percy-screenshot.png" style="inline-block; margin: 8px; width: 500px;" />
+</div-->
 
 
 <!-- ### Non-goals
