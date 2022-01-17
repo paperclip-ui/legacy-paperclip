@@ -7,7 +7,7 @@ import { stringifyVirtualNode } from "@paperclip-ui/core";
 describe(__filename + "#", () => {
   let server: TestServer;
 
-  it(`Can open a new project`, async () => {
+  it(`Can open a project`, async () => {
     server = await createTestServer({
       "hello.pc": "Hello world"
     });
