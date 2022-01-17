@@ -1,4 +1,3 @@
-import { Disposable } from "..";
 import { RPCClientAdapter } from "./adapters";
 
 export type Channel<TRequest, TResponse> = {

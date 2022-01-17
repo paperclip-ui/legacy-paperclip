@@ -4,22 +4,27 @@ import SockJSClient from "sockjs-client";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
 import { mockDOMFactory } from "@paperclip-ui/web-renderer/lib/test/utils";
 import { start } from "../server";
+import { LogLevel } from "@tandem-ui/common";
 
 export type TestServer = {
   stop: () => void;
   createClient: () => WorkspaceClient;
   testDir: string;
-  fixtureFilePaths: Record<string, string>;
+  fixtureUris: Record<string, string>;
 };
 
 export const createTestServer = async (
   files: Record<string, string>
 ): Promise<TestServer> => {
   const fixtures = saveTmpFixtureFiles("fixtures", files, "/tmp/__TEST__");
-  const server = await start({ logLevel: 0, pause: false });
+  const server = await start({
+    logLevel: LogLevel.All,
+    pause: false,
+    project: { installDependencies: false }
+  });
   return {
     testDir: fixtures.testDir,
-    fixtureFilePaths: fixtures.emittedFiles,
+    fixtureUris: fixtures.fixtureUris,
     stop() {
       server.stop();
       fixtures.dispose();

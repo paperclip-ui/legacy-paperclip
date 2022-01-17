@@ -40,6 +40,13 @@ export class Workspace {
     return await project.start();
   }
 
+  dispose() {
+    for (const id in this._projects) {
+      this._projects[id].dispose();
+    }
+    this._projects = {};
+  }
+
   /**
    */
 

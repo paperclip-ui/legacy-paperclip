@@ -17,15 +17,24 @@ export class EditorHost {
   /**
    */
 
-  constructor(private _engine: EngineDelegate, private _server: RPCServer) {
+  private constructor(
+    private _engine: EngineDelegate,
+    private _server: RPCServer
+  ) {
     this._events = new EventEmitter();
     this._documents = new DocumentManager(this._events, this._engine);
+  }
+
+  static async start(engine: EngineDelegate, server: RPCServer) {
+    const host = new EditorHost(engine, server);
+    await host._start();
+    return host;
   }
 
   /**
    */
 
-  start() {
+  private _start() {
     this._server.onConnection(connection => {
       new ClientConnection(
         this._documents,

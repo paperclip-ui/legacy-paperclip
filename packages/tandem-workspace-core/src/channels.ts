@@ -1,4 +1,4 @@
-import { remoteChannel } from "@tandem-ui/common/lib/rpc";
+import { remoteChannel } from "@paperclip-ui/common";
 import { ContentChange, PCMutation } from "@paperclip-ui/source-writer";
 import {
   NodeStyleInspection,
@@ -7,6 +7,7 @@ import {
 } from "@paperclip-ui/utils";
 import { Directory, WorkspaceState } from "./state";
 import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
+import { Channel } from "@paperclip-ui/common";
 
 export const inspectNodeStyleChannel = remoteChannel<
   VirtNodeSource[],
@@ -24,6 +25,11 @@ export const revealNodeSourceChannel = remoteChannel<VirtNodeSource, void>(
 export const revealNodeSourceByIdChannel = remoteChannel<string, void>(
   "revealNodeSourceByIdChannel"
 );
+
+export const openProjectChannel = remoteChannel<
+  { uri: string; branch?: string },
+  { projectId: string }
+>("openProjectChannel");
 
 export const editPCSourceChannel = remoteChannel<
   PCMutation[],

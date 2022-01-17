@@ -42,6 +42,13 @@ export class Project {
   /**
    */
 
+  dispose() {
+    this._pc.dispose();
+  }
+
+  /**
+   */
+
   openBrowser() {
     // TODO - remove embedded flag
     execa("open", [

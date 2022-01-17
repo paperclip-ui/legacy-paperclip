@@ -74,33 +74,61 @@ export const workerRPCClientAdapter = (
 });
 
 // sockjs adapter
-export const sockjsClientAdapter = (worker: any): RPCClientAdapter => ({
-  onMessage(listener) {
-    // is on the server
-    const onMessage = message => {
-      listener(JSON.parse(message));
-    };
+export const sockjsClientAdapter = (worker: any): RPCClientAdapter => {
+  let prebuff = [];
 
-    // is on the client
-    if (!worker.on) {
-      return spy(worker, "onmessage", event => {
-        onMessage(event.data);
-      });
+  const send = message => {
+    if (prebuff) {
+      prebuff.push(message);
+      return;
     }
-
-    worker.on("data", onMessage);
-    return () => worker.off("data", onMessage);
-  },
-  onDisconnect(listener: () => void) {
-    worker.on("disconnect", listener);
-  },
-  send(message) {
     ((worker as any).send || (worker as any).write).call(
       worker,
       JSON.stringify(message)
     );
+  };
+
+  const onOpen = () => {
+    const buffer = prebuff;
+    prebuff = undefined;
+    for (const message of buffer) {
+      send(message);
+    }
+  };
+
+  if (!worker.on) {
+    worker.onopen = onOpen;
+  } else {
+    onOpen();
   }
-});
+
+  worker.onclose = () => {
+    console.log("CLOS");
+  };
+
+  return {
+    onMessage(listener) {
+      // is on the server
+      const onMessage = message => {
+        listener(JSON.parse(message));
+      };
+
+      // is on the client
+      if (!worker.on) {
+        return spy(worker, "onmessage", event => {
+          onMessage(event.data);
+        });
+      }
+
+      worker.on("data", onMessage);
+      return () => worker.off("data", onMessage);
+    },
+    onDisconnect(listener: () => void) {
+      worker.on("disconnect", listener);
+    },
+    send
+  };
+};
 
 // sockjs adapter
 export const sockjsServerRPCAdapter = (server: sockjs.Server): RPCServer => ({

@@ -1,19 +1,18 @@
 import {
   computeVirtScriptObject,
   stringifyVirtualNode,
-  VirtualElement,
-  VirtualText
+  VirtualElement
 } from "@paperclip-ui/core";
 import { expect } from "chai";
 import { ChildInsertionKind, VirtualobjectEditKind } from "../core";
-import { createMockHost, timeout } from "./utils";
+import { createMockHost } from "./utils";
 
 // TODO - test latency
 
 describe(__filename + "#", () => {
   describe("html", () => {
     it(`Can update the text of a virtual node`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div>blah</div>"
       });
 
@@ -33,7 +32,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can insert multiple nodes in the same edit`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div>blah</div>"
       });
 
@@ -58,7 +57,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can update the text of a node`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div>blah</div>"
       });
 
@@ -78,7 +77,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can insert new node annotations`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div>blah</div>"
       });
 
@@ -108,7 +107,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can update existing annotations`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": `<!--
           @frame { width: 100, height: 100 }
         --> <div>blah</div>`
@@ -144,7 +143,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can add a new element attribute`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div>blah</div>"
       });
 
@@ -165,7 +164,7 @@ describe(__filename + "#", () => {
     });
 
     xit(`Can update an element attribute value`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div a>blah</div>"
       });
 
@@ -186,7 +185,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can append a child to a self-closing element`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div />"
       });
       const client = server.createHostClient();
@@ -205,7 +204,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can append a child to an element with a closing tag`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div></div>"
       });
       const client = server.createHostClient();
@@ -224,7 +223,7 @@ describe(__filename + "#", () => {
     });
 
     it(`Can append a child to an element with children`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": "<div>abba</div>"
       });
       const client = server.createHostClient();
@@ -243,7 +242,7 @@ describe(__filename + "#", () => {
     });
 
     it(`If text is inserted into a slot placeholder, that slot is assigned as a regular key/value attribute`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": `<div component as="Test">{child}</div><Test />`
       });
       const client = server.createHostClient();
@@ -269,7 +268,7 @@ describe(__filename + "#", () => {
     });
 
     it(`If an element is inserted into a slot placeholder, that slot is assigned as a regular key/script attribute`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": `<div component as="Test">{child}</div><Test />`
       });
       const client = server.createHostClient();
@@ -296,7 +295,7 @@ describe(__filename + "#", () => {
 
     // just a quick smoke test
     it(`Can insert multiple slots at the same time`, async () => {
-      const { server } = createMockHost({
+      const { server } = await createMockHost({
         "/hello.pc": `<div component as="Test">{child}{child2}</div><Test />`
       });
       const client = server.createHostClient();

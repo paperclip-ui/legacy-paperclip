@@ -9,7 +9,11 @@ import * as sockjs from "sockjs";
 import { VFS } from "./controllers/vfs";
 import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
-import { sockjsServerRPCAdapter } from "@paperclip-ui/common";
+import {
+  sockjsServerRPCAdapter,
+  workerRPCClientAdapter
+} from "@paperclip-ui/common";
+import { RPC } from "./controllers/rpc";
 
 const getPort = require("get-port");
 
@@ -25,6 +29,7 @@ export class Server {
   private _logger: Logger;
   private _httpServer: http.Server;
   private _port: number;
+  private _workspace: Workspace;
 
   constructor(readonly options: Options) {
     this._logger = new Logger(options.logLevel);
@@ -46,12 +51,12 @@ export class Server {
     const paperclipEngine = createEngineDelegate({
       mode: EngineMode.MultiFrame
     });
-    const documentManager = new EditorHost(
-      paperclipEngine,
-      sockjsServerRPCAdapter(io)
-    );
 
-    const workspace = new Workspace(
+    const sockServer = sockjsServerRPCAdapter(io);
+
+    const documentManager = await EditorHost.start(paperclipEngine, sockServer);
+
+    const workspace = (this._workspace = new Workspace(
       null,
       new SSHKeys(this._logger),
       vfs,
@@ -59,9 +64,18 @@ export class Server {
       paperclipEngine,
       this.options,
       httpPort
-    );
+    ));
 
     addRoutes(expressServer, this._logger, workspace);
+    new RPC(
+      sockServer,
+      workspace,
+      paperclipEngine,
+      vfs,
+      this._logger,
+      this._port,
+      this.options
+    );
 
     // need to wait for http server to spin up. This is a really dumb approach.
     // pause option specifically for testing.
@@ -74,5 +88,6 @@ export class Server {
 
   stop() {
     this._httpServer.close();
+    this._workspace.dispose();
   }
 }

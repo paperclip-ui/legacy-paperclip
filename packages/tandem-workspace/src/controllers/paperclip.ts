@@ -51,6 +51,10 @@ export class PaperclipManager {
     return this._engine.onEvent(listener);
   };
 
+  dispose() {
+    this._watcher.dispose();
+  }
+
   /**
    */
   2;
@@ -63,7 +67,8 @@ export class PaperclipManager {
       {
         gitignore: true,
         ignore: ["**/node_modules/**"],
-        followSymbolicLinks: true
+        followSymbolicLinks: true,
+        cwd: this._cwd
       }
     );
 

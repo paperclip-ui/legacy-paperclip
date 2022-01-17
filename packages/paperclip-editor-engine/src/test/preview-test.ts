@@ -5,7 +5,7 @@ import { combineFrameHTML } from "@paperclip-ui/web-renderer/lib/test/utils";
 
 describe(__filename + "#", () => {
   it(`Can render basic HTML`, async () => {
-    const { server } = createMockHost({
+    const { server } = await createMockHost({
       "/entry.pc": "Hello"
     });
 
@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
   });
 
   it(`Re-renders based on document changes`, async () => {
-    const { server } = createMockHost({
+    const { server } = await createMockHost({
       "/entry.pc": "Hello"
     });
 

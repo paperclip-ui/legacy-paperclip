@@ -21,12 +21,10 @@ export const createMockServer = () => {
   };
 };
 
-export const createMockHost = (graph: Record<string, string>) => {
+export const createMockHost = async (graph: Record<string, string>) => {
   const server = createMockServer();
 
-  const host = new EditorHost(createMockEngine(graph), server);
-
-  host.start();
+  const host = await EditorHost.start(createMockEngine(graph), server);
 
   return { host, server };
 };

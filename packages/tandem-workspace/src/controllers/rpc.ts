@@ -1,8 +1,7 @@
-import sockjs from "sockjs";
 import { RPCClientAdapter, RPCServer } from "@paperclip-ui/common";
-import { channels } from "@tandem-ui/designer";
+import * as channels from "@tandem-ui/workspace-core/lib/channels";
 import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
-import { sockjsClientAdapter, Channel } from "@paperclip-ui/common";
+import { Channel } from "@paperclip-ui/common";
 import { Workspace } from "./workspace";
 import { isPlainTextFile, Logger } from "@tandem-ui/common";
 import * as URL from "url";
@@ -19,6 +18,7 @@ import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
 import { exec } from "child_process";
 import { Options } from "../core/options";
 import { EngineDelegate } from "@paperclip-ui/core";
+import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
 
 export class RPC {
   constructor(
@@ -72,22 +72,30 @@ class Connection {
       .listen(this._loadNodeSources);
     channels.helloChannel(connection).listen(this._initialize);
     channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
-    channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
-    channels.revealNodeSourceChannel(connection).listen(this._revealSource);
-    channels
-      .revealNodeSourceByIdChannel(connection)
-      .listen(this._revealSourceById);
-    channels.popoutWindowChannel(connection).listen(this._popoutWindow);
+    channels.openProjectChannel(connection).listen(this._openProject);
+
+    // TODO
+    // channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
+    // channels.revealNodeSourceChannel(connection).listen(this._revealSource);
+    // channels
+    //   .revealNodeSourceByIdChannel(connection)
+    //   .listen(this._revealSourceById);
+    // channels.popoutWindowChannel(connection).listen(this._popoutWindow);
     channels.openFileChannel(connection).listen(this._openFile);
     channels.editCodeChannel(connection).listen(this._editCode);
     channels.commitChangesChannel(connection).listen(this._commitChanges);
-    channels.setBranchChannel(connection).listen(this._setBranch);
-    channels.editPCSourceChannel(connection).listen(this._editPCSource);
+    // channels.setBranchChannel(connection).listen(this._setBranch);
+    // channels.editPCSourceChannel(connection).listen(this._editPCSource);
   }
 
   private getProject() {
     return this._workspace.getProjectById(this._projectId);
   }
+
+  private _openProject = async ({ uri, branch }) => {
+    const project = await this._workspace.start(uri, branch);
+    return { projectId: project.getId() };
+  };
 
   private _editCode = async ({ uri, value }) => {
     this._vfs.updateFileContent(uri, value);
@@ -129,14 +137,17 @@ class Connection {
     });
   };
 
-  private _loadNodeSources = (sources: VirtNodeSource[]) => {
+  private _loadNodeSources = async (
+    sources: VirtNodeSource[]
+  ): Promise<VirtualNodeSourceInfo[]> => {
     const project = this.getProject();
 
     return sources.map(info => {
-      return {
-        virtualNodePath: info.path,
-        source: this._engine.getVirtualNodeSourceInfo(info.path, info.uri)
-      };
+      return this._engine.getVirtualNodeSourceInfo(info.path, info.uri);
+      // return {
+      //   virtualNodePath: info.path,
+      //   sourceId: this._engine.getVirtualNodeSourceInfo(info.path, info.uri).sourceId
+      // };
     });
   };
 

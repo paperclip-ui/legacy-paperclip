@@ -14,7 +14,7 @@ export class WorkspaceClient {
       domFactory
     });
   }
-  openProject(uri: string) {
-    const project = new Project(uri, this._editorClient, this._client);
+  async openProject(uri: URL) {
+    return await Project.load(uri, this._editorClient, this._client);
   }
 }
