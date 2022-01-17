@@ -12,6 +12,7 @@
 Paperclip is a tiny DSL for HTML & CSS that aims to bring scoped styles & a richer UI development experience to any language. It works by exposing primitive components that you can import into your existing codebase. Here's an example Paperclip file:
 
 ```html
+<!-- Styles here are only applied to the elements in this document -->
 <style>
   div {
     color: red;
