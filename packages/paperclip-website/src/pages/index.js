@@ -27,9 +27,10 @@ function Home() {
           <styles.Header
             title={
               <>
-                Paperclip is a UI layer that brings{" "}
+                Scoped CSS for everyone.
+                {/*Paperclip is a UI layer that brings{" "}
                 <strong>safe, scalable</strong> HTML & CSS to any kind of web
-                application
+                application*/}
                 {/* Paperclip is a fast, scalable UI layer that brings <strong>scoped CSS</strong> to any kind of web application. */}
               </>
             }
