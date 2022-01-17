@@ -85,7 +85,6 @@ function Home() {
                 automation for catching visual regressions. Paperclip is a tiny
                 language that focuses purely on these problems, with features to
                 help you build maintainable UIs more quickly, and accurately.
-                Your users will love you. ❤️
               </>
             }
           />
