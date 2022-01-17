@@ -11,8 +11,13 @@
 
 Paperclip is a tiny DSL for HTML & CSS that aims to bring scoped styles & a richer UI development experience to any web language.
 
+## Features
 
-Paperclip can be used on its own to build static websites, or be used to expose primitive components that you can integrate into your codebase. It's designed for any language to use, and currently works with React out of the box.
+- Styles are scoped by default, global CSS is explicit.
+- [Live preview tooling for HTML & CSS development](https://paperclip.dev/docs/visual-tooling).
+- [Visual regression tooling & code coverage](https://paperclip.dev/docs/visual-regression-tooling) analysis to help you track visual changes across yout app.
+- Compiles to plain, readable code. No runtime.
+
 
 ## Installation
 
