@@ -9,14 +9,38 @@
 <br />
 
 
-Paperclip is a tiny DSL for HTML & CSS that aims to bring scoped styles & a richer UI development experience to any web language.
+Paperclip is a tiny DSL for HTML & CSS that aims to bring scoped styles & a richer UI development experience to any language. It works by exposing primitive components that you can import into your existing codebase. Here's an example Paperclip file:
+
+```html
+<style>
+  div {
+    color: red;
+  }
+</style>
+
+<div export component as="Message">
+  {children}
+</div>
+```
+
+Here's how you use this in your code:
+
+```jsx
+import { Message } from "./styles.pc";
+import React from "react";
+import ReactDOM from "react-dom";
+
+ReactDOM.render(<Message>
+  Hello world
+</Message>, document.getElementById("app"));
+```
 
 ## Why use Paperclip?
 
 - Keeps CSS scoped, and predictable. Global CSS is explicit.
 - Paperclip can help you build UIs more quickly with its [realtime development tooling](https://paperclip.dev/docs/visual-tooling).
 - Paperclip can scope your third-party CSS and help mitigate vendor lock-in.
-- Comes with [visual test & code coverage](https://paperclip.dev/docs/visual-regression-tooling) tools to help you 
+- [Visual test and code coverage](https://paperclip.dev/docs/visual-regression-tooling) tools help make UIs easy to maintain, track visual changes, and catch UIs bugs.
 - Compiles to plain, readable code. No runtime.
 - (soon!) Paperclip will remove unused CSS that you don't use. 
 
@@ -70,7 +94,7 @@ npx @paperclip-ui/cli build
 - To eventually have enough UI tooling that would enable non-engineers to create UIs in tandem with developers.
 
 
-## Example
+## Kitchen sink example
 
 Here's a kitchen sink example of what a Paperclip UI looks like:
 
@@ -152,7 +176,6 @@ Here's an example of a code coverage report that shows how much HTML and CSS is 
 Here's an example of visual tests that are performed using Percy. Paperclip also has a tool for this that you can use locally. 
 
 ![alt coverage report](./assets/percy-screenshot.png)
-
 
 
 
