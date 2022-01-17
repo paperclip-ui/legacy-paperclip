@@ -37,16 +37,6 @@ ReactDOM.render(<Message>
 
 Currently, UIs compile to **React** and **static HTML**. More languages are planned for after Beta. 
 
-
-## Why use Paperclip?
-
-- Keeps CSS scoped, and predictable. Global CSS is explicit.
-- Paperclip can help you build UIs more quickly with its [realtime development tooling](https://paperclip.dev/docs/visual-tooling).
-- Paperclip can scope your third-party CSS and help mitigate vendor lock-in.
-- [Visual test and code coverage](https://paperclip.dev/docs/visual-regression-tooling) tools help make UIs easy to maintain, track visual changes, and catch UIs bugs.
-- Compiles to plain, readable code. No runtime.
-- (soon!) Paperclip will remove unused CSS that you don't use. 
-
 ## Installation
 
 Just run this command in your existing project to get started
@@ -60,6 +50,15 @@ This will walk you through a brief setup process. Next, just run:
 ```
 npx @paperclip-ui/cli build
 ```
+
+## Why use Paperclip?
+
+- Keeps CSS scoped, and predictable. Global CSS is explicit.
+- Paperclip can help you build UIs more quickly with its [realtime development tooling](https://paperclip.dev/docs/visual-tooling).
+- Paperclip can scope your third-party CSS and help mitigate vendor lock-in.
+- [Visual test and code coverage](https://paperclip.dev/docs/visual-regression-tooling) tools help make UIs easy to maintain, track visual changes, and catch UIs bugs.
+- Compiles to plain, readable code. No runtime.
+- (soon!) Paperclip will remove unused CSS that you don't use. 
 
 ## Resources
 
