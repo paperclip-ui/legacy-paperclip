@@ -1,4 +1,4 @@
-import { Frame, FramesRenderer } from "@paperclip-ui/web-renderer";
+import { Frame, FramesRenderer, patchFrame } from "@paperclip-ui/web-renderer";
 import * as path from "path";
 import React, {
   memo,
@@ -9,7 +9,7 @@ import React, {
   useState
 } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
-import { FrameContainer } from "../../../FrameContainer";
+import { FrameContainer, useFrameContainer } from "../../../FrameContainer";
 import * as styles from "./index.pc";
 import { memoize, omitBy, throttle } from "lodash";
 import * as url from "url";
@@ -24,25 +24,28 @@ import {
   VirtualFrame,
   LoadedData,
   EvaluatedDataKind,
-  LoadedPCData
+  LoadedPCData,
+  VirtualNodeKind
 } from "@paperclip-ui/utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "@tandem-ui/design-system";
 import { FilterTextInput } from "../../../TextInput/filter.pc";
+import { renderFrame } from "@paperclip-ui/web-renderer";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
 import { useAllPaperclipDocuments } from "../../../../hocs/workspace";
-omitBy;
+import { useFrameUrlResolver } from "../../../../hooks/useFrameUrlResolver";
 
 type CellFrame = {
   filePath: string;
   fileUri: string;
   index: number;
   relativePath: string;
+  data: LoadedPCData;
   node: VirtualFrame;
-} & Frame;
+};
 
 export const Birdseye = memo(() => {
   const {
@@ -51,8 +54,7 @@ export const Birdseye = memo(() => {
     onFilter,
     filteredCells,
     filter,
-    columns,
-    documents
+    columns
   } = useBirdseye();
 
   let content;
@@ -83,9 +85,9 @@ export const Birdseye = memo(() => {
                     filter={filter}
                     key={frame.fileUri + "-" + frame.index}
                     dispatch={dispatch}
-                    frame={frame}
-                    relativePath={frame.relativePath}
+                    fileContent={frame.data}
                     node={frame.node}
+                    relativePath={frame.relativePath}
                   />
                 );
               });
@@ -101,40 +103,42 @@ export const Birdseye = memo(() => {
 const useBirdseye = () => {
   const { state, dispatch } = useAppStore();
   const filter = state.designer.birdseyeFilter;
-  const [renderers, setRenderers] = useState();
-
-  // const multiFrameState = useMultipleFrames({
-  //   version: state.designer.pcFileDataVersion,
-  //   fileData: getPCFileData(state.designer.allLoadedPCFileData),
-  //   shouldCollectRects: false
-  // });
-
-  // // TODO - can't memoize sinze renderer is _mutable_ but immutableFrames is not
 
   const allFrames: CellFrame[] = [];
 
-  // for (const uri in multiFrameState.frames) {
-  //   if (!state.designer.projectDirectory) {
-  //     continue;
-  //   }
+  for (const uri in state.designer.allLoadedPCFileData) {
+    if (!state.designer.projectDirectory) {
+      continue;
+    }
 
-  //   const filePath = fileURLToPath(uri);
-  //   const info = multiFrameState.frames[uri];
-  //   const relativePath = path.relative(
-  //     state.designer.projectDirectory?.absolutePath,
-  //     filePath
-  //   );
-  //   allFrames.push(
-  //     ...info.frames.map((frame, i) => ({
-  //       ...frame,
-  //       index: i,
-  //       relativePath,
-  //       filePath,
-  //       fileUri: uri,
-  //       node: info.preview.children[i]
-  //     }))
-  //   );
-  // }
+    const data = state.designer.allLoadedPCFileData[uri];
+    if (data.kind !== EvaluatedDataKind.PC) {
+      continue;
+    }
+    const frames =
+      data.preview.kind === VirtualNodeKind.Fragment
+        ? data.preview.children
+        : [data.preview];
+
+    for (let i = 0, { length } = frames; i < length; i++) {
+      const frame = frames[i];
+
+      const filePath = fileURLToPath(uri);
+      const relativePath = path.relative(
+        state.designer.projectDirectory?.absolutePath,
+        filePath
+      );
+
+      allFrames.push({
+        node: frame as VirtualFrame,
+        index: i,
+        relativePath,
+        data,
+        filePath,
+        fileUri: uri
+      });
+    }
+  }
 
   const filteredCells = filterCells(allFrames, filter);
 
@@ -153,8 +157,7 @@ const useBirdseye = () => {
     onFilter,
     filteredCells,
     filter,
-    columns,
-    documents
+    columns
   };
 };
 
@@ -190,8 +193,8 @@ type CellProps = {
   filter?: string;
   uri: string;
   index: number;
-  frame: Frame;
-  node: VirtualText | VirtualElement;
+  fileContent: LoadedPCData;
+  node: VirtualFrame;
   relativePath: string;
   dispatch: any;
 };
@@ -200,9 +203,9 @@ const Cell = ({
   uri,
   index,
   filter,
-  frame,
   node,
   relativePath,
+  fileContent,
   dispatch
 }: CellProps) => {
   const { mountRef, label, frameBox, scale, onClick } = useCell({
@@ -213,6 +216,36 @@ const Cell = ({
     node
   });
 
+  const [state, setState] = useState<{
+    uri: string;
+    index: number;
+    fileContent: LoadedPCData;
+    stage: HTMLElement;
+  }>();
+
+  const resolveUrl = useFrameUrlResolver();
+
+  useEffect(() => {
+    let stage;
+    if (state?.stage && uri === state.uri && index === state.index) {
+      stage = state.stage;
+      patchFrame(state.stage, index, state.fileContent, fileContent, {
+        domFactory: document,
+        resolveUrl
+      });
+    } else {
+      stage = renderFrame(fileContent, index, {
+        domFactory: document,
+        resolveUrl
+      });
+    }
+    setState({ stage, uri, index, fileContent });
+  }, [uri, index, fileContent]);
+
+  const { ref } = useFrameContainer({
+    content: state?.stage
+  });
+
   return (
     <styles.Cell
       mountRef={mountRef}
@@ -221,16 +254,7 @@ const Cell = ({
       dir={relativePath}
       controls={null}
     >
-      <FrameContainer
-        fullscreen={false}
-        style={{
-          width: frameBox.width,
-          height: frameBox.height,
-          transform: `scale(${scale})`,
-          transformOrigin: `top left`
-        }}
-        frame={frame}
-      />
+      <div style={{ width: "100%", height: "100%" }} ref={ref} />
     </styles.Cell>
   );
 };

@@ -86,7 +86,6 @@ const createDefaultConnection = () => new SockConnection();
 export function* handleRPC({
   createConnection = createDefaultConnection
 }: HandleRPCOptions) {
-  return;
   let _client: IConnection = createConnection();
   yield fork(handleServerOptions, _client);
   yield fork(handleProject, _client);

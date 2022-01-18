@@ -34,7 +34,7 @@ describe(__filename + "#", () => {
       uri: url.pathToFileURL(server.testDir).href
     });
     const documents: PCDocument[] = [];
-    for await (const document of project.openAllPaperclipDocuments()) {
+    for (const document of await project.openAllPaperclipDocuments()) {
       documents.push(document);
     }
     expect(documents.length).to.eql(1);

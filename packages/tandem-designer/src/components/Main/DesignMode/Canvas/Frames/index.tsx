@@ -32,6 +32,7 @@ import { debounce } from "lodash";
 import { AppState, isExpanded } from "../../../../../state";
 import { ImmutableStore } from "@paperclip-ui/common";
 import { UrlResolver } from "@paperclip-ui/web-renderer/lib/native-renderer";
+import { useFrameUrlResolver } from "../../../../../hooks/useFrameUrlResolver";
 
 type FramesProps = {
   expandedFrameIndex?: number;
@@ -263,7 +264,7 @@ export const useMultipleFrames = ({
     MultiFrameControllerState
   >(INITIAL_FRAME_CONTROLLER_STATE);
   const { dispatch, state } = useAppStore();
-  const resolveUrl = useUrlResolver();
+  const resolveUrl = useFrameUrlResolver();
 
   useEffect(() => {
     const renderer = new MultiFrameController(
@@ -300,37 +301,6 @@ type UseFramesProps = {
   fileUri: string;
   shouldCollectRects: boolean;
 };
-const useUrlResolver = () => {
-  const {
-    state: {
-      designer: { resourceHost },
-      shared: { documents }
-    }
-  } = useAppStore();
-
-  return useCallback(
-    url => {
-      if (/^https?:\/\//.test(url)) {
-        return url;
-      }
-
-      if (resourceHost) {
-        return resourceHost + encodeURIComponent(url);
-      }
-      const content = documents[url];
-
-      if (!content) {
-        return url;
-      }
-
-      return typeof content === "string"
-        ? `data:${mime.lookup(url)};utf8,${encodeURIComponent(content)}`
-        : URL.createObjectURL(content);
-    },
-    [resourceHost, documents]
-  );
-};
-
 export const useFrames = ({
   fileUri,
   shouldCollectRects = true
@@ -349,7 +319,7 @@ export const useFrames = ({
 
   const frameData = state.designer.allLoadedPCFileData[fileUri] as LoadedPCData;
 
-  const resolveUrl = useUrlResolver();
+  const resolveUrl = useFrameUrlResolver();
 
   useEffect(() => {
     const renderer = new FrameController(

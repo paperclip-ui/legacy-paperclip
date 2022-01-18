@@ -3,6 +3,7 @@
 import {
   LoadedData,
   LoadedPCData,
+  memoize,
   Node,
   NodeKind,
   Sheet,
@@ -36,25 +37,36 @@ export const renderFrames = (
   data: LoadedPCData,
   options: RenderFrameOptions
 ): HTMLElement[] => {
-  const frames: HTMLElement[] = [];
-  const documentStyles = renderDocumentStyles(data, options);
-  const importedStyles = renderImportedStyles(data, options);
-
-  const dataFrames =
-    data.preview.kind === VirtualNodeKind.Fragment
-      ? data.preview.children
-      : [data.preview];
-
-  for (const dataFrame of dataFrames) {
-    frames.push(
-      renderFrame(data, dataFrame, importedStyles, documentStyles, options)
-    );
-  }
-
-  return frames;
+  return getFragmentChildren(data.preview).map((frame, index) => {
+    return renderFrame(data, index, options);
+  });
 };
 
-const renderFrame = (
+export const renderFrame = (
+  data: LoadedPCData,
+  index: number,
+  options: RenderFrameOptions
+) => {
+  const { documentStyles, importedStyles } = createStyles(data, options);
+  const dataFrames = getFragmentChildren(data.preview);
+  return renderFrame2(
+    data,
+    dataFrames[index],
+    importedStyles,
+    documentStyles,
+    options
+  );
+};
+
+const createStyles = memoize(
+  (data: LoadedPCData, options: RenderFrameOptions) => {
+    const documentStyles = renderDocumentStyles(data, options);
+    const importedStyles = renderImportedStyles(data, options);
+    return { documentStyles, importedStyles };
+  }
+);
+
+const renderFrame2 = (
   data: LoadedPCData,
   node: VirtualNode,
   importedStyles: HTMLElement,
@@ -110,23 +122,12 @@ export const patchFrames = (
   if (newData === previousData) {
     return frames;
   }
-  frames = patchHTML(frames, previousData, newData, options);
-
-  return frames;
-};
-
-const patchHTML = (
-  frames: HTMLElement[],
-  previousData: LoadedPCData,
-  newData: LoadedPCData,
-  options: RenderFrameOptions
-) => {
   const prevVirtFrames = getFragmentChildren(previousData.preview);
   const newVirtFrames = getFragmentChildren(newData.preview);
+  const { insert, update } = calcAryPatch(prevVirtFrames, newVirtFrames);
   const newFrames: HTMLElement[] = [];
-  const low = Math.min(prevVirtFrames.length, newVirtFrames.length);
 
-  for (let i = 0; i < low; i++) {
+  for (let i = 0; i < update.length; i++) {
     patchRoot(
       frames[i],
       previousData,
@@ -138,24 +139,32 @@ const patchHTML = (
     newFrames.push(frames[i]);
   }
 
-  // insert
-  if (prevVirtFrames.length < newVirtFrames.length) {
-    const documentStyles = renderDocumentStyles(newData, options);
-    const importedStyles = renderImportedStyles(newData, options);
-    for (let i = prevVirtFrames.length; i < newVirtFrames.length; i++) {
-      newFrames.push(
-        renderFrame(
-          newData,
-          newVirtFrames[i],
-          importedStyles,
-          documentStyles,
-          options
-        )
-      );
-    }
+  for (const newItem of insert) {
+    newFrames.push(
+      renderFrame(newData, newVirtFrames.indexOf(newItem), options)
+    );
   }
 
   return newFrames;
+};
+
+export const patchFrame = (
+  frame: HTMLElement,
+  index: number,
+  prev: LoadedPCData,
+  curr: LoadedPCData,
+  options: RenderFrameOptions
+) => {
+  const prevVirtFrames = getFragmentChildren(prev.preview);
+  const newVirtFrames = getFragmentChildren(curr.preview);
+  return patchRoot(
+    frame,
+    prev,
+    curr,
+    prevVirtFrames[index],
+    newVirtFrames[index],
+    options
+  );
 };
 
 const patchRoot = (

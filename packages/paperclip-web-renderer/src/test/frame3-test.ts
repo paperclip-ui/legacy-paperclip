@@ -1,4 +1,4 @@
-import { patchFrames, renderFrames } from "..";
+import { patchFrame, patchFrames, renderFrame, renderFrames } from "..";
 import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
 import { combineFrameHTML, mockDOMFactory } from "./utils";
 import { expect } from "chai";
@@ -42,6 +42,37 @@ describe(__filename + "#", () => {
 
     expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
       `<div></div><div><style></style></div><div><div class="_cb99d41f _pub-cb99d41f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
+    );
+  });
+
+  it(`Can render a single frame`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `a<span />`
+    });
+    const frame = renderFrame(engine.open("hello.pc"), 0, {
+      domFactory: mockDOMFactory
+    });
+
+    expect(frame.innerHTML).to.eql(
+      `<div></div><div><style></style></div><div>a</div>`
+    );
+  });
+
+  it(`Can patch a single frame`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `a<span />`
+    });
+    const content = engine.open("hello.pc");
+    const frame = renderFrame(content, 0, {
+      domFactory: mockDOMFactory
+    });
+
+    engine.updateVirtualFileContent("hello.pc", "bbb");
+    const newContent = engine.open("hello.pc");
+    patchFrame(frame, 0, content, newContent, { domFactory: mockDOMFactory });
+
+    expect(frame.innerHTML).to.eql(
+      `<div></div><div><style></style></div><div>bbb</div>`
     );
   });
 
