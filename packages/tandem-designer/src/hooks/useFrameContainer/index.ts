@@ -3,27 +3,25 @@ import { noop } from "lodash";
 import { useEffect, useRef, useState } from "react";
 
 export type UseFrameContainerProps = {
-  content: HTMLElement;
-  frameIndex: number;
+  mount: HTMLElement;
   onLoad?: () => void;
   fullscreen?: boolean;
 };
 
 export const useFrameContainer = ({
-  content,
+  mount,
   onLoad = noop,
-  frameIndex,
   fullscreen
 }: UseFrameContainerProps) => {
   const frameRef = useRef<HTMLDivElement>();
-  const [internalContent, setInternalContent] = useState<HTMLElement>(null);
+  const [internalMount, setInternalMount] = useState<HTMLElement>(null);
 
   useEffect(() => {
-    setInternalContent(content);
-  }, [content]);
+    setInternalMount(mount);
+  }, [mount]);
 
   useEffect(() => {
-    if (!frameRef.current || !internalContent) {
+    if (!frameRef.current || !mount) {
       return;
     }
 
@@ -31,7 +29,18 @@ export const useFrameContainer = ({
       ? (frameRef.current.childNodes[0] as HTMLIFrameElement)
       : null;
 
-    if (internalContent === content) {
+    const onIframeLoad = (ev: Event) => {
+      const iframe = ev.target as HTMLIFrameElement;
+      iframe.contentDocument.body.appendChild(mount);
+
+      // wait for the fonts to be loaded - will affect bounding rects
+      (iframe.contentDocument as any).fonts.ready.then(() => {
+        onLoad();
+      });
+    };
+
+    if (internalMount === mount) {
+      existingIframe.onload = onIframeLoad;
       return;
     }
 
@@ -64,16 +73,10 @@ export const useFrameContainer = ({
     </html>
   `;
 
-    iframe.onload = () => {
-      iframe.contentDocument.body.appendChild(content);
-
-      // wait for the fonts to be loaded - will affect bounding rects
-      (iframe.contentDocument as any).fonts.ready.then(() => {
-        onLoad();
-      });
-    };
+    iframe.onload = onIframeLoad;
     frameRef.current.appendChild(iframe);
-  }, [frameRef, content, onLoad]);
+    setInternalMount(mount);
+  }, [frameRef, mount, onLoad]);
 
   const syncOverflow = () => {
     const doc = (frameRef.current.children[0] as HTMLIFrameElement)

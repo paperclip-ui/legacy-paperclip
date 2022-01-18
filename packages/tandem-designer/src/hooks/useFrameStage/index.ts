@@ -5,45 +5,66 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../state";
 import { useFrameUrlResolver } from "../useFrameUrlResolver";
 
-type UseFrameStageProps = {
+type UseFrameStageOuterProps = {
+  onUpdate: (mount: HTMLElement, data: LoadedPCData) => void;
+} & UseFrameStageInnerProps;
+
+type UseFrameStageInnerProps = {
   frameUri: string;
   frameIndex: number;
 };
 
-export const useFrameStage = ({ frameUri, frameIndex }: UseFrameStageProps) => {
-  const fileContent = useSelector(getFileContent(frameUri)) as LoadedPCData;
+export const useFrameStage = ({
+  frameUri,
+  frameIndex,
+  onUpdate
+}: UseFrameStageOuterProps) => {
+  const loadedPCData = useSelector(getFileContent(frameUri)) as LoadedPCData;
 
   const [state, setState] = useState<
-    UseFrameStageProps & {
-      fileContent: LoadedPCData;
-      stage: HTMLElement;
+    UseFrameStageInnerProps & {
+      loadedPCData: LoadedPCData;
+      mount: HTMLElement;
     }
   >();
 
   const resolveUrl = useFrameUrlResolver();
 
   useEffect(() => {
-    let stage;
+    // this will happen if onUpdate changes
     if (
-      state?.stage &&
+      state?.frameIndex === frameIndex &&
+      state?.frameUri === frameUri &&
+      state?.loadedPCData === loadedPCData
+    ) {
+      return;
+    }
+
+    let mount;
+    if (
+      state?.mount &&
       frameUri === state.frameUri &&
       frameIndex === state.frameIndex
     ) {
-      stage = state.stage;
-      patchFrame(state.stage, frameIndex, state.fileContent, fileContent, {
+      mount = state.mount;
+      patchFrame(state.mount, frameIndex, state.loadedPCData, loadedPCData, {
         domFactory: document,
         resolveUrl
       });
     } else {
-      stage = renderFrame(fileContent, frameIndex, {
+      mount = renderFrame(loadedPCData, frameIndex, {
         domFactory: document,
         resolveUrl
       });
     }
-    setState({ stage, frameUri, frameIndex, fileContent });
-  }, [frameUri, frameIndex, fileContent]);
+    onUpdate(mount, loadedPCData);
+    setState({ mount, frameUri, frameIndex, loadedPCData });
+  }, [frameUri, frameIndex, loadedPCData, onUpdate]);
 
-  return state?.stage;
+  return {
+    mount: state?.mount,
+    loadedPCData: state?.loadedPCData
+  };
 };
 
 const getFileContent = memoize((uri: string) => (state: AppState) =>

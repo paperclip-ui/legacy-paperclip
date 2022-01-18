@@ -309,6 +309,7 @@ const useFrames = ({ fileUri, shouldCollectRects = true }: UseFramesProps) => {
   const onFrameLoaded = (
     mount: HTMLElement,
     data: LoadedPCData,
+    frameUri: string,
     index: number
   ) => {
     console.log("FRAME LOADED", mount, data, index);
@@ -374,12 +375,20 @@ export const useFrames2 = ({
     controller.setUrlResolver(resolveUrl);
   }, [resolveUrl]);
 
-  const onFrameLoaded = useCallback(() => {
-    if (!isMounted) {
-      return;
-    }
-    controller.collectRects();
-  }, [isMounted, controller]);
+  const onFrameLoaded = useCallback(
+    (
+      mount: HTMLElement,
+      pcData: LoadedPCData,
+      pcFileUri: string,
+      frameIndex: number
+    ) => {
+      if (!isMounted) {
+        return;
+      }
+      controller.collectRects();
+    },
+    [isMounted, controller]
+  );
 
   useLayoutEffect(() => {
     if (!isMounted) {
@@ -415,7 +424,12 @@ type FrameProps = {
   frameIndex: number;
   expanded: boolean;
   preview: VirtualText | VirtualElement;
-  onLoad: (mount: HTMLElement, index: number) => void;
+  onLoad: (
+    mount: HTMLElement,
+    data: LoadedPCData,
+    frameUri: string,
+    frameIndex: number
+  ) => void;
 };
 
 const Frame = memo(
@@ -425,8 +439,8 @@ const Frame = memo(
     }
 
     const onLoad2 = useCallback(
-      (mount: HTMLElement) => {
-        onLoad(mount, frameIndex);
+      (mount: HTMLElement, data: LoadedPCData) => {
+        onLoad(mount, data, frameUri, frameIndex);
       },
       [frameUri, frameIndex, onLoad]
     );

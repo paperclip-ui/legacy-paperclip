@@ -15,7 +15,8 @@ type FrameContainerProps = {
   frameUri: string;
   frameIndex: number;
   fullscreen: boolean;
-  onLoad?: (mount: HTMLElement, data: LoadedPCData, index: number) => void;
+  onLoad?: (mount: HTMLElement, data: LoadedPCData) => void;
+  onUpdate?: (mount: HTMLElement, data: LoadedPCData) => void;
 };
 
 export const FrameContainer = memo(
@@ -24,10 +25,12 @@ export const FrameContainer = memo(
     frameIndex,
     style = {},
     fullscreen,
-    onLoad = noop
+    onLoad = noop,
+    onUpdate = noop
   }: FrameContainerProps) => {
     const { ref } = useFrame({
       fullscreen,
+      onUpdate,
       onLoad,
       frameUri,
       frameIndex
