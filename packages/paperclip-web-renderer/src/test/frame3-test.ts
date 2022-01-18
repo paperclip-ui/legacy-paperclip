@@ -32,6 +32,18 @@ describe(__filename + "#", () => {
       `<div><style>div._pub-2c5dbed5 {color: blue;} </style></div><div><style>div._cb99d41f {color: red;} </style></div><div><div class="_cb99d41f _pub-cb99d41f">Hello world</div></div>`
     );
   });
+  it(`Can a slot`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `<div component as="Test">{child}</div><Test />`
+    });
+    const frames = renderFrames(engine.open("hello.pc"), {
+      domFactory: mockDOMFactory
+    });
+
+    expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
+      `<div></div><div><style></style></div><div><div class="_cb99d41f _pub-cb99d41f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
+    );
+  });
 
   [
     [
@@ -187,6 +199,15 @@ describe(__filename + "#", () => {
       },
       {
         "hello.pc": `<div></div>`
+      }
+    ],
+    [
+      `can patch a slot`,
+      {
+        "hello.pc": `<div component as="Test">{child}</div><Test />`
+      },
+      {
+        "hello.pc": `<div component as="Test">{child}</div><Test child='b' />`
       }
     ]
   ].forEach(([title, ...graphs]: any) => {
