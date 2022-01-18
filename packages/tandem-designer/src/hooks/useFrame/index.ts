@@ -5,7 +5,7 @@ export type UseFrameProps = {
   frameUri: string;
   frameIndex: number;
   style?: Record<string, any>;
-  onLoad?: () => void;
+  onLoad?: (mount: HTMLElement) => void;
   fullscreen?: boolean;
 };
 

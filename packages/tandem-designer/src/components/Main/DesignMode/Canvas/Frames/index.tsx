@@ -23,16 +23,19 @@ import {
   NodeAnnotations,
   LoadedData,
   EngineDelegateEvent,
-  LoadedPCData
+  LoadedPCData,
+  VirtualNodeKind,
+  VirtualFrame
 } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
 import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
-import { debounce } from "lodash";
+import { debounce, identity } from "lodash";
 import { AppState, isExpanded } from "../../../../../state";
 import { ImmutableStore } from "@paperclip-ui/common";
 import { UrlResolver } from "@paperclip-ui/web-renderer/lib/native-renderer";
 import { useFrameUrlResolver } from "../../../../../hooks/useFrameUrlResolver";
+import { useSelector } from "react-redux";
 
 type FramesProps = {
   expandedFrameIndex?: number;
@@ -40,27 +43,22 @@ type FramesProps = {
 
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
-  const { frames, preview, onFrameLoaded } = useFrames({
+  const { frames, onFrameLoaded } = useFrames({
     fileUri: state.designer.ui.query.canvasFile,
     shouldCollectRects: true
   });
 
-  if (!preview) {
-    return null;
-  }
-
   return (
     <>
       {frames.map((frame, i) => {
-        const framePreview = getFrameVirtualNode(frame, frames, preview);
-
         return (
           <Frame
             key={i}
             onLoad={onFrameLoaded}
             expanded={expandedFrameIndex === i}
-            frame={frame}
-            preview={framePreview}
+            frameUri={state.designer.ui.query.canvasFile}
+            frameIndex={i}
+            preview={frame as VirtualFrame}
           />
         );
       })}
@@ -301,7 +299,30 @@ type UseFramesProps = {
   fileUri: string;
   shouldCollectRects: boolean;
 };
-export const useFrames = ({
+
+const useFrames = ({ fileUri, shouldCollectRects = true }: UseFramesProps) => {
+  const state = useSelector(identity) as AppState;
+  const pcData: LoadedPCData = state.designer.allLoadedPCFileData[
+    state.designer.ui.query.canvasFile
+  ] as LoadedPCData;
+
+  const onFrameLoaded = (mount: HTMLElement, index: number) => {
+    console.log("FRAME LOADED", mount, index);
+  };
+
+  if (!pcData) {
+    return { frames: [], onFrameLoaded };
+  }
+
+  const frames =
+    pcData.preview.kind === VirtualNodeKind.Fragment
+      ? pcData.preview.children
+      : [pcData.preview];
+
+  return { frames, onFrameLoaded };
+};
+
+export const useFrames2 = ({
   fileUri,
   shouldCollectRects = true
 }: UseFramesProps) => {
@@ -386,49 +407,60 @@ export const useFrames = ({
 };
 
 type FrameProps = {
-  frame: Frame2;
+  frameUri: string;
+  frameIndex: number;
   expanded: boolean;
   preview: VirtualText | VirtualElement;
-  onLoad: () => void;
+  onLoad: (mount: HTMLElement, index: number) => void;
 };
 
-const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
-  if (!preview) {
-    return null;
-  }
-
-  const annotations: NodeAnnotations =
-    (preview.annotations && computeVirtScriptObject(preview.annotations)) ||
-    ({} as any);
-
-  const frameStyle = useMemo(() => {
-    const bounds = getFrameBounds(preview);
-
-    if (expanded) {
-      return {
-        width: `100%`,
-        height: `100%`,
-
-        // necessary since client rects include frame position
-        left: bounds.x,
-        top: bounds.y,
-        zIndex: 1,
-        position: "absolute"
-      };
+const Frame = memo(
+  ({ frameUri, frameIndex, preview, expanded, onLoad }: FrameProps) => {
+    if (!preview) {
+      return null;
     }
 
-    return {
-      width: bounds.width,
-      height: bounds.height,
-      left: bounds.x,
-      top: bounds.y,
-      position: "absolute"
-    };
-  }, [preview.annotations, expanded]) as any;
+    const onLoad2 = useCallback(
+      (mount: HTMLElement) => {
+        onLoad(mount, frameIndex);
+      },
+      [frameUri, frameIndex, onLoad]
+    );
 
-  return (
-    <styles.Frame style={frameStyle}>
-      <FrameContainer frame={frame} fullscreen={expanded} onLoad={onLoad} />
-    </styles.Frame>
-  );
-});
+    const frameStyle = useMemo(() => {
+      const bounds = getFrameBounds(preview);
+
+      if (expanded) {
+        return {
+          width: `100%`,
+          height: `100%`,
+
+          // necessary since client rects include frame position
+          left: bounds.x,
+          top: bounds.y,
+          zIndex: 1,
+          position: "absolute"
+        };
+      }
+
+      return {
+        width: bounds.width,
+        height: bounds.height,
+        left: bounds.x,
+        top: bounds.y,
+        position: "absolute"
+      };
+    }, [preview.annotations, expanded]) as any;
+
+    return (
+      <styles.Frame style={frameStyle}>
+        <FrameContainer
+          frameUri={frameUri}
+          frameIndex={frameIndex}
+          fullscreen={expanded}
+          onLoad={onLoad2}
+        />
+      </styles.Frame>
+    );
+  }
+);

@@ -10,15 +10,17 @@ import {
   stringifyCSSRule,
   VirtSheet,
   VirtualElement,
+  VirtualFrame,
   VirtualNode,
   VirtualNodeKind
 } from "@paperclip-ui/utils";
-import { DOMFactory } from "./base";
+import { Box, DOMFactory } from "./base";
 import {
   createNativeNode,
   createNativeStyleFromSheet,
   UrlResolver
 } from "./native-renderer";
+import { getFrameBounds, traverseNativeNode } from "./utils";
 
 const IMP_STYLE_INDEX = 0;
 const DOC_STYLE_INDEX = 1;
@@ -165,6 +167,40 @@ export const patchFrame = (
     newVirtFrames[index],
     options
   );
+};
+
+export const getFrameRects = (
+  mount: HTMLElement,
+  data: LoadedPCData,
+  index: number
+) => {
+  const rects: Record<string, Box> = {};
+
+  const frame = getFragmentChildren(data.preview)[index] as VirtualFrame;
+
+  const bounds = getFrameBounds(frame);
+
+  // mount child node _is_ the frame -- can only ever be one child
+  traverseNativeNode(mount, (node, path) => {
+    if (node.nodeType === 1) {
+      const pathStr = path.length ? index + "." + path.join(".") : index;
+      if (pathStr) {
+        const clientRect = (node as Element).getBoundingClientRect();
+
+        rects[pathStr] = {
+          width: clientRect.width,
+          height: clientRect.height,
+          x: clientRect.left + bounds.x,
+          y: clientRect.top + bounds.y
+        };
+      }
+    }
+  });
+
+  // include frame sizes too
+  rects[index] = bounds;
+
+  return rects;
 };
 
 const patchRoot = (

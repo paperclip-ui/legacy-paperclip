@@ -1,3 +1,10 @@
+import {
+  computeVirtScriptObject,
+  memoize,
+  NodeAnnotations,
+  VirtualFrame
+} from "@paperclip-ui/utils";
+
 export const preventDefault = (event: any) => {
   event.stopPropagation();
   event.preventDefault();
@@ -32,3 +39,15 @@ export const arraySplice = <TArray extends Array<any>>(
     ...array.slice(index + deleteCount)
   ];
 };
+
+export const getFrameBounds = memoize((node: VirtualFrame) => {
+  const annotations: NodeAnnotations =
+    (node.annotations && computeVirtScriptObject(node.annotations)) || {};
+  return {
+    width: 1024,
+    height: 768,
+    x: 0,
+    y: 0,
+    ...(annotations.frame || {})
+  };
+});

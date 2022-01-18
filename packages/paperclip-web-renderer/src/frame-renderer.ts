@@ -21,7 +21,7 @@ import {
   LoadedPCData,
   patchCSSSheet
 } from "@paperclip-ui/utils";
-import { arraySplice, traverseNativeNode } from "./utils";
+import { arraySplice, getFrameBounds, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
 import { patchCSSOM } from "./cssom-patcher";
@@ -452,18 +452,6 @@ export const getFrameVirtualNode = (
 
   return children[frames.indexOf(frame)] as any;
 };
-
-export const getFrameBounds = memoize((node: VirtualElement | VirtualText) => {
-  const annotations: NodeAnnotations =
-    (node.annotations && computeVirtScriptObject(node.annotations)) || {};
-  return {
-    width: 1024,
-    height: 768,
-    x: 0,
-    y: 0,
-    ...(annotations.frame || {})
-  };
-});
 
 const removeAllChildren = (node: HTMLElement) => {
   while (node.childNodes.length) {

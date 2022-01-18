@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 export type UseFrameContainerProps = {
   content: HTMLElement;
-  onLoad?: () => void;
+  onLoad?: (mount: HTMLElement) => void;
   fullscreen?: boolean;
 };
 
@@ -48,7 +48,7 @@ export const useFrameContainer = ({
 
         // wait for the fonts to be loaded - will affect bounding rects
         (iframe.contentDocument as any).fonts.ready.then(() => {
-          onLoad();
+          onLoad(content);
         });
       };
       frameRef.current.appendChild(iframe);
