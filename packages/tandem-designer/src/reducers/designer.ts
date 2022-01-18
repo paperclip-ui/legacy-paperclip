@@ -341,20 +341,6 @@ export const reduceDesigner = (
         newDesigner.loadingBirdseye = true;
       });
     }
-    case ActionType.RENDERER_MOUNTED: {
-      return produce(designer, newDesigner => {
-        newDesigner.mountedRendererIds.push(action.payload.id);
-      });
-    }
-    case ActionType.RENDERER_UNMOUNTED: {
-      return produce(designer, newDesigner => {
-        newDesigner.mountedRendererIds.splice(
-          newDesigner.mountedRendererIds.indexOf(action.payload.id),
-          1
-        );
-        newDesigner.currentEngineEvents[action.payload.id] = undefined;
-      });
-    }
     case ActionType.SYNC_PANELS_CLICKED: {
       return selectNode(null, false, false, designer);
     }
@@ -395,13 +381,6 @@ export const reduceDesigner = (
           newDesigner.currentError = action.payload;
         } else {
           newDesigner.currentError = undefined;
-        }
-
-        for (const id of newDesigner.mountedRendererIds) {
-          if (!newDesigner.currentEngineEvents[id]) {
-            newDesigner.currentEngineEvents[id] = [];
-          }
-          newDesigner.currentEngineEvents[id].push(action.payload);
         }
 
         newDesigner.allLoadedPCFileData = updateAllLoadedData(

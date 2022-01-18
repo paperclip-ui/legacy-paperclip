@@ -186,7 +186,7 @@ export type DesignerState = {
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
   resizerMoving?: boolean;
-  mountedRendererIds: string[];
+
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
   pcFileDataVersion: number;
@@ -275,7 +275,6 @@ export const INITIAL_STATE: AppState = {
     },
     highlightNodePath: null,
     centeredInitial: false,
-    mountedRendererIds: [],
     toolsLayerEnabled: true,
     resourceHost:
       typeof window !== "undefined"
