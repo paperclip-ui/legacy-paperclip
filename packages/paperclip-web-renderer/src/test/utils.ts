@@ -53,6 +53,9 @@ abstract class ParentNode extends BaseNode {
       this.childNodes.push(child);
     }
   }
+  get lastChild() {
+    return this.childNodes[this.childNodes.length - 1];
+  }
   removeChild(child: BaseNode) {
     child.$$parent = null;
     this.childNodes.splice(this.childNodes.indexOf(child), 1);

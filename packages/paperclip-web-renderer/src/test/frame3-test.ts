@@ -13,7 +13,7 @@ describe(__filename + "#", () => {
     });
 
     expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
-      `<div></div><div><style>div._cb99d41f {color: red;} </style></div><div class="_cb99d41f _pub-cb99d41f">Hello world</div>`
+      `<div></div><div><style>div._cb99d41f {color: red;} </style></div><div><div class="_cb99d41f _pub-cb99d41f">Hello world</div></div>`
     );
   });
 
@@ -29,23 +29,168 @@ describe(__filename + "#", () => {
     });
 
     expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
-      `<div><style>div._pub-2c5dbed5 {color: blue;} </style></div><div><style>div._cb99d41f {color: red;} </style></div><div class="_cb99d41f _pub-cb99d41f">Hello world</div>`
+      `<div><style>div._pub-2c5dbed5 {color: blue;} </style></div><div><style>div._cb99d41f {color: red;} </style></div><div><div class="_cb99d41f _pub-cb99d41f">Hello world</div></div>`
     );
   });
 
   [
     [
-      `Can remove a frame`,
+      `Can replace a frame`,
       {
         "hello.pc": "<div></div>"
       },
       {
         "hello.pc": "blah"
       }
+    ],
+    [
+      `Replaces a node if the tag name doesn't match`,
+      {
+        "hello.pc": "<div></div>"
+      },
+      {
+        "hello.pc": "<span />"
+      }
+    ],
+    [
+      `Adds a frame`,
+      {
+        "hello.pc": "a"
+      },
+      {
+        "hello.pc": "a<span />"
+      }
+    ],
+    [
+      `Removes a frame`,
+      {
+        "hello.pc": "a<span />"
+      },
+      {
+        "hello.pc": "<span />"
+      }
+    ],
+    [
+      `Adds a child`,
+      {
+        "hello.pc": "<span></span>"
+      },
+      {
+        "hello.pc": "<span>a</span>"
+      }
+    ],
+    [
+      `Removes a child`,
+      {
+        "hello.pc": "<span>a</span>"
+      },
+      {
+        "hello.pc": "<span></span>"
+      }
+    ],
+    [
+      `Can change text value`,
+      {
+        "hello.pc": "a"
+      },
+      {
+        "hello.pc": "b"
+      }
+    ],
+    [
+      `Can change style`,
+      {
+        "hello.pc": "<style>span { color: blue;}</style>a"
+      },
+      {
+        "hello.pc": "<style>div { color: red;}</style>a"
+      }
+    ],
+    [
+      `Can insert a style`,
+      {
+        "hello.pc": "<style>span { color: blue;}</style>a"
+      },
+      {
+        "hello.pc": "<style>div { color: red;} div { color: black; }</style>a"
+      }
+    ],
+    [
+      `Can remove a style`,
+      {
+        "hello.pc": "<style>span { color: blue;} div { color: black; }</style>a"
+      },
+      {
+        "hello.pc": "<style>div { color: red;}</style>a"
+      }
+    ],
+    [
+      `Can add style in import`,
+      {
+        "hello.pc": "<import src='imp.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>"
+      },
+      {
+        "hello.pc": "<import src='imp.pc' />a",
+        "imp.pc": "<style>div { color: blue } span { color: black } </style>"
+      }
+    ],
+    [
+      `Can add an import`,
+      {
+        "hello.pc": "<import src='imp.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>",
+        "imp2.pc": "<style>div { color: orange } </style>"
+      },
+      {
+        "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
+        "imp2.pc": "<style>div { color: orange } </style>"
+      }
+    ],
+    [
+      `Can remove an import`,
+      {
+        "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>",
+        "imp2.pc": "<style>div { color: orange } </style>"
+      },
+      {
+        "hello.pc": "<import src='imp.pc' />a"
+      }
+    ],
+    [
+      `Can remove an in an import`,
+      {
+        "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>",
+        "imp2.pc": "<style>div { color: orange } </style>",
+        "imp3.pc": "<style>div { color: magenta } </style>"
+      },
+      {
+        "imp2.pc":
+          "<import src='imp3.pc' /><style>div { color: orange } </style>"
+      }
+    ],
+    [
+      `Can add an attribute`,
+      {
+        "hello.pc": `<div></div>`
+      },
+      {
+        "hello.pc": `<div a="b"></div>`
+      }
+    ],
+    [
+      `Can remove an attribute`,
+      {
+        "hello.pc": `<div a="b"></div>`
+      },
+      {
+        "hello.pc": `<div></div>`
+      }
     ]
   ].forEach(([title, ...graphs]: any) => {
     it(title, () => {
-      console.log(graphs);
       const engine = createMockEngine(graphs[0]);
       let data = engine.open("hello.pc");
       let frames = renderFrames(data, { domFactory: mockDOMFactory });
