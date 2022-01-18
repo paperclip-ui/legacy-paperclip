@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import { Provider } from "react-redux";
@@ -7,6 +7,10 @@ import defaultReducer from "../../reducers";
 import { mainSaga, MainSagaOptions } from "../../sagas";
 import { AppState, INITIAL_STATE } from "../../state";
 import produce from "immer";
+import { WorkspaceClient } from "@tandem-ui/workspace-client";
+import { sockjsClientAdapter } from "@paperclip-ui/common";
+import SockJSClient from "sockjs-client";
+import { WorkspaceProjectContext } from "../../contexts";
 
 export type WithAppStoreOptions = {
   showLaunchExternalButton?: boolean;
@@ -26,6 +30,11 @@ export const withAppStore = (Child: React.FC) => (
 ) => {
   let _inited = false;
   let _store;
+  const client = new WorkspaceClient(
+    sockjsClientAdapter(
+      new SockJSClient(location.protocol + "//" + location.host + "/rt")
+    )
+  );
 
   const init = () => {
     if (_inited) {
@@ -49,9 +58,21 @@ export const withAppStore = (Child: React.FC) => (
   return props => {
     init();
 
+    const [project, setProject] = useState(null);
+
+    useEffect(() => {
+      client
+        .openProject({
+          id: new URLSearchParams(location.search).get("projectId")
+        })
+        .then(setProject);
+    }, []);
+
     return (
       <Provider store={_store}>
-        <Child {...props} />
+        <WorkspaceProjectContext.Provider value={project}>
+          <Child {...props} />
+        </WorkspaceProjectContext.Provider>
       </Provider>
     );
   };

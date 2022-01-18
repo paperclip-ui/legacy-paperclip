@@ -10,7 +10,7 @@ import {
   LoadedPCData,
   Mutation,
   patchVirtNode
-} from "@paperclip-ui/core";
+} from "@paperclip-ui/utils";
 import {
   openDocumentSourceChannel,
   engineEventChannel,
@@ -43,7 +43,6 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
   // private _updateNodeAnnotations: ReturnType<typeof insertBeforeNodeChannel>;
   private _engineEvents: ReturnType<typeof engineEventChannel>;
   private _source?: PCSourceDocument;
-  private _framesRenderer: FrameRenderingManager;
 
   /**
    */
@@ -51,10 +50,9 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
   constructor(
     uri: string,
     connection: RPCClientAdapter,
-    options: EditorClientOptions
+    private _options: EditorClientOptions
   ) {
     super(uri, connection);
-    this._framesRenderer = new FrameRenderingManager(this, options);
     this._openDocumentSource = openDocumentSourceChannel(connection);
     this._engineEvents = engineEventChannel(connection);
     this._editVirtualObject = editVirtualObjectsChannel(connection);
@@ -73,8 +71,8 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
   /**
    */
 
-  getRenderer() {
-    return this._framesRenderer;
+  createRenderer() {
+    return new FrameRenderingManager(this, this._options);
   }
 
   /**

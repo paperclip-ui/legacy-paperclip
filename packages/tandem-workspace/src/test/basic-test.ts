@@ -12,13 +12,32 @@ describe(__filename + "#", () => {
       "hello.pc": "Hello world"
     });
     const client = server.createClient();
-    const project = await client.openProject(url.pathToFileURL(server.testDir));
+    const project = await client.openProject({
+      uri: url.pathToFileURL(server.testDir).href
+    });
     const doc = (await project
       .getDocuments()
       .open(server.fixtureUris["hello.pc"])) as PCDocument;
+
     expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
       "Hello world"
     );
     server.stop();
+  });
+
+  it(`Can load Paperclip files `, async () => {
+    server = await createTestServer({
+      "hello.pc": "Hello world"
+    });
+    const client = server.createClient();
+    const project = await client.openProject({
+      uri: url.pathToFileURL(server.testDir).href
+    });
+    const documents: PCDocument[] = [];
+    for await (const document of project.openAllPaperclipDocuments()) {
+      documents.push(document);
+    }
+    expect(documents.length).to.eql(1);
+    expect(documents[0].uri).to.eql(`file:///tmp/__TEST__/fixtures/hello.pc`);
   });
 });

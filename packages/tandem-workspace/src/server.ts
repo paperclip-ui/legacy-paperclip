@@ -9,11 +9,9 @@ import * as sockjs from "sockjs";
 import { VFS } from "./controllers/vfs";
 import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
-import {
-  sockjsServerRPCAdapter,
-  workerRPCClientAdapter
-} from "@paperclip-ui/common";
+import { sockjsServerRPCAdapter } from "@paperclip-ui/common";
 import { RPC } from "./controllers/rpc";
+import { Designer } from "./controllers/designer";
 
 const getPort = require("get-port");
 
@@ -36,6 +34,9 @@ export class Server {
   }
   getPort() {
     return this._port;
+  }
+  getWorkspace() {
+    return this._workspace;
   }
   async start() {
     this._logger.info(`Workspace started 🚀`);
@@ -65,6 +66,8 @@ export class Server {
       this.options,
       httpPort
     ));
+
+    new Designer(expressServer);
 
     addRoutes(expressServer, this._logger, workspace);
     new RPC(

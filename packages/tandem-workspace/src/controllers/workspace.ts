@@ -1,11 +1,9 @@
 import { Logger } from "@tandem-ui/common";
-import * as path from "path";
 import * as url from "url";
 import { getProjectId, Project } from "./project";
 import { SSHKeys } from "./ssh";
 import { VFS } from "./vfs";
 import { Options } from "../core/options";
-import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 import { EngineDelegate } from "@paperclip-ui/core";
 
 export class Workspace {

@@ -33,6 +33,7 @@ import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
+import { useAllPaperclipDocuments } from "../../../../hocs/workspace";
 omitBy;
 
 type CellFrame = {
@@ -44,54 +45,17 @@ type CellFrame = {
 } & Frame;
 
 export const Birdseye = memo(() => {
-  const { state, dispatch } = useAppStore();
-  const filter = state.designer.birdseyeFilter;
-
-  const multiFrameState = useMultipleFrames({
-    version: state.designer.pcFileDataVersion,
-    fileData: getPCFileData(state.designer.allLoadedPCFileData),
-    shouldCollectRects: false
-  });
-
-  // TODO - can't memoize sinze renderer is _mutable_ but immutableFrames is not
-
-  const allFrames: CellFrame[] = [];
-
-  for (const uri in multiFrameState.frames) {
-    if (!state.designer.projectDirectory) {
-      continue;
-    }
-
-    const filePath = fileURLToPath(uri);
-    const info = multiFrameState.frames[uri];
-    const relativePath = path.relative(
-      state.designer.projectDirectory?.absolutePath,
-      filePath
-    );
-    allFrames.push(
-      ...info.frames.map((frame, i) => ({
-        ...frame,
-        index: i,
-        relativePath,
-        filePath,
-        fileUri: uri,
-        node: info.preview.children[i]
-      }))
-    );
-  }
+  const {
+    dispatch,
+    state,
+    onFilter,
+    filteredCells,
+    filter,
+    columns,
+    documents
+  } = useBirdseye();
 
   let content;
-
-  const filteredCells = filterCells(allFrames, filter);
-
-  const columns = 5;
-
-  const onFilter = useCallback(
-    (value: string) => {
-      dispatch(birdseyeFilterChanged({ value }));
-    },
-    [dispatch]
-  );
 
   if (state.designer.loadingBirdseye) {
     content = <Spinner />;
@@ -133,6 +97,66 @@ export const Birdseye = memo(() => {
 
   return <styles.Container>{content}</styles.Container>;
 });
+
+const useBirdseye = () => {
+  const { state, dispatch } = useAppStore();
+  const filter = state.designer.birdseyeFilter;
+  const [renderers, setRenderers] = useState();
+
+  // const multiFrameState = useMultipleFrames({
+  //   version: state.designer.pcFileDataVersion,
+  //   fileData: getPCFileData(state.designer.allLoadedPCFileData),
+  //   shouldCollectRects: false
+  // });
+
+  // // TODO - can't memoize sinze renderer is _mutable_ but immutableFrames is not
+
+  const allFrames: CellFrame[] = [];
+
+  // for (const uri in multiFrameState.frames) {
+  //   if (!state.designer.projectDirectory) {
+  //     continue;
+  //   }
+
+  //   const filePath = fileURLToPath(uri);
+  //   const info = multiFrameState.frames[uri];
+  //   const relativePath = path.relative(
+  //     state.designer.projectDirectory?.absolutePath,
+  //     filePath
+  //   );
+  //   allFrames.push(
+  //     ...info.frames.map((frame, i) => ({
+  //       ...frame,
+  //       index: i,
+  //       relativePath,
+  //       filePath,
+  //       fileUri: uri,
+  //       node: info.preview.children[i]
+  //     }))
+  //   );
+  // }
+
+  const filteredCells = filterCells(allFrames, filter);
+
+  const columns = 5;
+
+  const onFilter = useCallback(
+    (value: string) => {
+      dispatch(birdseyeFilterChanged({ value }));
+    },
+    [dispatch]
+  );
+
+  return {
+    dispatch,
+    state,
+    onFilter,
+    filteredCells,
+    filter,
+    columns,
+    documents
+  };
+};
 
 type HeaderProps = {
   filter: string;

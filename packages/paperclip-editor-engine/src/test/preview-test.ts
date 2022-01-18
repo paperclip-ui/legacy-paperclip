@@ -11,7 +11,7 @@ describe(__filename + "#", () => {
 
     const client = server.createHostClient();
     const doc = (await client.open("/entry.pc")) as PCDocument;
-    const rendererState = doc.getRenderer().getState();
+    const rendererState = doc.createRenderer().getState();
     expect(combineFrameHTML(rendererState)).to.eql(
       `<div></div><div><style></style></div><div>Hello</div>`
     );
@@ -27,7 +27,7 @@ describe(__filename + "#", () => {
 
     const source = await doc.getSource();
     source.insertText("blah".split(""));
-    const rendererState = doc.getRenderer().getState();
+    const rendererState = doc.createRenderer().getState();
     expect(combineFrameHTML(rendererState)).to.eql(
       `<div></div><div><style></style></div><div>blahHello</div>`
     );

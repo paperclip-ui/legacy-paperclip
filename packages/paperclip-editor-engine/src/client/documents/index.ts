@@ -1,5 +1,5 @@
 import { RPCClientAdapter } from "@paperclip-ui/common";
-import { isPaperclipFile } from "@paperclip-ui/core";
+import { isPaperclipFile } from "@paperclip-ui/utils";
 import { EditorClientOptions } from "../client";
 import { PCDocument } from "./pc";
 

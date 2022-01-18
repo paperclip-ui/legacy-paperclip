@@ -14,6 +14,7 @@
     "@paperclip-ui/common": "^18.4.7",
     "@paperclip-ui/core": "^18.4.7",
     "@paperclip-ui/web-renderer": "^18.4.7",
+    "globby": "^8.0.1",
     "automerge": "^1.0.1-preview.6",
     "diff": "^5.0.0",
     "fs-extra": "^10.0.0",

@@ -17,8 +17,9 @@ import { VFS } from "./vfs";
 import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
 import { exec } from "child_process";
 import { Options } from "../core/options";
-import { EngineDelegate } from "@paperclip-ui/core";
+import { EngineDelegate, paperclipSourceGlobPattern } from "@paperclip-ui/core";
 import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
+import globby from "globby";
 
 export class RPC {
   constructor(
@@ -73,6 +74,9 @@ class Connection {
     channels.helloChannel(connection).listen(this._initialize);
     channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
     channels.openProjectChannel(connection).listen(this._openProject);
+    channels
+      .getAllPaperclipFilesChannel(connection)
+      .listen(this._getAllPaperclipFiles);
 
     // TODO
     // channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
@@ -91,6 +95,19 @@ class Connection {
   private getProject() {
     return this._workspace.getProjectById(this._projectId);
   }
+
+  private _getAllPaperclipFiles = async ({ projectId }) => {
+    const project = this._workspace.getProjectById(projectId);
+    const filePaths = await globby(
+      paperclipSourceGlobPattern(project.repository.localDirectory),
+      {
+        cwd: project.repository.localDirectory,
+        ignore: ["**/node_modules/**"],
+        gitignore: true
+      }
+    );
+    return filePaths.map(filePath => URL.pathToFileURL(filePath).href);
+  };
 
   private _openProject = async ({ uri, branch }) => {
     const project = await this._workspace.start(uri, branch);

@@ -1,11 +1,8 @@
 import { EngineDelegate } from "@paperclip-ui/core";
 import { RPCServer } from "@paperclip-ui/common";
 import { EventEmitter } from "events";
-// import { RPCClient } from "../core/rpc";
 import { ClientConnection } from "./connection";
 import { DocumentManager } from "./documents/manager";
-
-export type EditorHostOptions = {};
 
 export class EditorHost {
   /**

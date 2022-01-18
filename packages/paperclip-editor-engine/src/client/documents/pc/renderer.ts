@@ -11,6 +11,8 @@ import { createListener } from "../../../core/utils";
 export class FrameRenderingManager {
   private _renderer: FramesRenderer;
   private _em: EventEmitter;
+  private _disposeContentLoadedListener: () => void;
+  private _disposeOnAppliedChangesListener: () => void;
   constructor(private _document: PCDocument, options: EditorClientOptions) {
     this._em = new EventEmitter();
     this._renderer = new FramesRenderer(
@@ -19,12 +21,24 @@ export class FrameRenderingManager {
       options.domFactory || document,
       this._onChange
     );
-    this._document.onContentLoaded(this._onDocumentContentLoaded);
-    this._document.onAppliedChanges(this._onDocumentAppliedChanges);
+    const content = this._document.getContent();
+    if (content) {
+      this._renderer.initialize(content);
+    }
+    this._disposeContentLoadedListener = this._document.onContentLoaded(
+      this._onDocumentContentLoaded
+    );
+    this._disposeOnAppliedChangesListener = this._document.onAppliedChanges(
+      this._onDocumentAppliedChanges
+    );
   }
   private _resolveUrl = (uri: string) => {
     return uri;
   };
+  dispose() {
+    this._disposeContentLoadedListener();
+    this._disposeOnAppliedChangesListener();
+  }
   private _onDocumentContentLoaded = (content: PCDocumentContent) => {
     this._renderer.initialize(content);
   };

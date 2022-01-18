@@ -81,6 +81,7 @@ abstract class ParentNode extends BaseNode {
 class StyleElement extends ParentNode {
   private _textContent: string;
   private _sheet: CSSOM.StyleSheet;
+  private _attrs: Record<string, string> = {};
 
   get textContent() {
     return this._textContent;
@@ -91,6 +92,12 @@ class StyleElement extends ParentNode {
   }
   get sheet() {
     return this._sheet;
+  }
+  setAttribute(name, value) {
+    this._attrs[name] = value;
+  }
+  getAttribute(name, value) {
+    return this._attrs[name];
   }
   cloneNode() {
     const el = new StyleElement();

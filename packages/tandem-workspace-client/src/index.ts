@@ -1,7 +1,8 @@
 import { RPCClientAdapter } from "@paperclip-ui/common";
-import { Project } from "./project";
+import { LoadOptions, Project } from "./project";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { DOMFactory } from "@paperclip-ui/web-renderer/lib/base";
+import { getAllPaperclipFilesChannel } from "@tandem-ui/workspace-core";
 
 export class WorkspaceClient {
   private _editorClient: EditorClient;
@@ -14,7 +15,7 @@ export class WorkspaceClient {
       domFactory
     });
   }
-  async openProject(uri: URL) {
-    return await Project.load(uri, this._editorClient, this._client);
-  }
+  openProject = async (options: LoadOptions) => {
+    return await Project.load(options, this._editorClient, this._client);
+  };
 }

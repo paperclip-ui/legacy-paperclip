@@ -1,6 +1,6 @@
 import { remoteChannel } from "@paperclip-ui/common";
-import * as pc from "@paperclip-ui/core";
-import { EngineDelegateEvent, VirtualNode } from "@paperclip-ui/core";
+import { LoadedData } from "@paperclip-ui/core";
+import { EngineDelegateEvent } from "@paperclip-ui/core";
 import * as Automerge from "automerge";
 import { BinaryChange } from "automerge";
 import { DocumentKind } from "../documents";
@@ -20,7 +20,7 @@ export type BaseOpenDocumentResult<TKind extends DocumentKind, TContent> = {
 
 export type OpenDocumentPCResult = BaseOpenDocumentResult<
   DocumentKind.Paperclip,
-  pc.LoadedData
+  LoadedData
 >;
 
 export type OpenDocumentResult = OpenDocumentPCResult;

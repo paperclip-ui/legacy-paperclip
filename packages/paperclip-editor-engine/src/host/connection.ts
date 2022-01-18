@@ -1,6 +1,7 @@
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import { EngineDelegate, EngineDelegateEvent } from "@paperclip-ui/core";
 import { EventEmitter } from "events";
+import * as globby from "globby";
 import {
   sourceDocumentCRDTChangesChannel,
   openDocumentChannel,

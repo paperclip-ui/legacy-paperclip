@@ -7,8 +7,6 @@ export type EditorClientOptions = {
 };
 
 export class EditorClient {
-  private _resolveConnection: (Connection) => void;
-
   /**
    */
 

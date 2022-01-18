@@ -31,6 +31,7 @@ import { handleCanvas } from "./canvas";
 import { History } from "history";
 import { omit } from "lodash";
 import { handleRPC, HandleRPCOptions } from "./rpc";
+import { handleWorkspace } from "./workspace";
 
 export type AppStateSelector = (state) => AppState;
 
@@ -61,6 +62,7 @@ export function* mainSaga(
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
   yield fork(handleAppFocus);
+  // yield fork(handleWorkspace);
   yield fork(handleRPC, options);
 }
 

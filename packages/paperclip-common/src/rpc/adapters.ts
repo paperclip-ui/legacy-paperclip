@@ -102,10 +102,6 @@ export const sockjsClientAdapter = (worker: any): RPCClientAdapter => {
     onOpen();
   }
 
-  worker.onclose = () => {
-    console.log("CLOS");
-  };
-
   return {
     onMessage(listener) {
       // is on the server

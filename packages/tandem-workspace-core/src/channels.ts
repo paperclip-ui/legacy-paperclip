@@ -27,7 +27,7 @@ export const revealNodeSourceByIdChannel = remoteChannel<string, void>(
 );
 
 export const openProjectChannel = remoteChannel<
-  { uri: string; branch?: string },
+  { uri?: string; branch?: string },
   { projectId: string }
 >("openProjectChannel");
 
@@ -78,3 +78,8 @@ export const loadVirtualNodeSourcesChannel = remoteChannel<
   VirtNodeSource[],
   VirtualNodeSourceInfo[]
 >("loadVirtualNodeSourcesChannel");
+
+export const getAllPaperclipFilesChannel = remoteChannel<
+  { projectId: string },
+  string[]
+>("getAllPaperclipFilesChannel");
