@@ -4,6 +4,7 @@ import { memo, useEffect } from "react";
 import { noop } from "lodash";
 import { useFrameContainer } from "../../hooks/useFrameContainer";
 import { useFrame } from "../../hooks/useFrame";
+import { LoadedPCData } from "@paperclip-ui/utils";
 
 type FramesProps = {
   expandedFrameIndex?: number;
@@ -14,7 +15,7 @@ type FrameContainerProps = {
   frameUri: string;
   frameIndex: number;
   fullscreen: boolean;
-  onLoad?: (mount: HTMLElement) => void;
+  onLoad?: (mount: HTMLElement, data: LoadedPCData, index: number) => void;
 };
 
 export const FrameContainer = memo(

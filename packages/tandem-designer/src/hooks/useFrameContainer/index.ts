@@ -1,30 +1,51 @@
+import { LoadedPCData } from "@paperclip-ui/utils";
 import { noop } from "lodash";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type UseFrameContainerProps = {
   content: HTMLElement;
-  onLoad?: (mount: HTMLElement) => void;
+  frameIndex: number;
+  onLoad?: () => void;
   fullscreen?: boolean;
 };
 
 export const useFrameContainer = ({
   content,
   onLoad = noop,
+  frameIndex,
   fullscreen
 }: UseFrameContainerProps) => {
   const frameRef = useRef<HTMLDivElement>();
+  const [internalContent, setInternalContent] = useState<HTMLElement>(null);
 
   useEffect(() => {
-    if (frameRef.current && content) {
-      const iframe = document.createElement("iframe");
-      // addresses https://github.com/paperclipui/paperclip/issues/310
-      Object.assign(iframe.style, {
-        border: "none",
-        background: "white",
-        width: "100%",
-        height: "100%"
-      });
-      iframe.srcdoc = `
+    setInternalContent(content);
+  }, [content]);
+
+  useEffect(() => {
+    if (!frameRef.current || !internalContent) {
+      return;
+    }
+
+    const existingIframe = frameRef.current.childElementCount
+      ? (frameRef.current.childNodes[0] as HTMLIFrameElement)
+      : null;
+
+    if (internalContent === content) {
+      return;
+    }
+
+    existingIframe?.remove();
+
+    const iframe = document.createElement("iframe");
+    // addresses https://github.com/paperclipui/paperclip/issues/310
+    Object.assign(iframe.style, {
+      border: "none",
+      background: "white",
+      width: "100%",
+      height: "100%"
+    });
+    iframe.srcdoc = `
     <!doctype html>
     <html>
       <head>
@@ -43,24 +64,16 @@ export const useFrameContainer = ({
     </html>
   `;
 
-      iframe.onload = () => {
-        iframe.contentDocument.body.appendChild(content);
+    iframe.onload = () => {
+      iframe.contentDocument.body.appendChild(content);
 
-        // wait for the fonts to be loaded - will affect bounding rects
-        (iframe.contentDocument as any).fonts.ready.then(() => {
-          onLoad(content);
-        });
-      };
-      frameRef.current.appendChild(iframe);
-    }
-
-    return () => {
-      // remove iframe
-      if (frameRef.current && frameRef.current.childElementCount) {
-        frameRef.current.removeChild(frameRef.current.childNodes[0]);
-      }
+      // wait for the fonts to be loaded - will affect bounding rects
+      (iframe.contentDocument as any).fonts.ready.then(() => {
+        onLoad();
+      });
     };
-  }, [frameRef, content]);
+    frameRef.current.appendChild(iframe);
+  }, [frameRef, content, onLoad]);
 
   const syncOverflow = () => {
     const doc = (frameRef.current.children[0] as HTMLIFrameElement)

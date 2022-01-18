@@ -306,8 +306,12 @@ const useFrames = ({ fileUri, shouldCollectRects = true }: UseFramesProps) => {
     state.designer.ui.query.canvasFile
   ] as LoadedPCData;
 
-  const onFrameLoaded = (mount: HTMLElement, index: number) => {
-    console.log("FRAME LOADED", mount, index);
+  const onFrameLoaded = (
+    mount: HTMLElement,
+    data: LoadedPCData,
+    index: number
+  ) => {
+    console.log("FRAME LOADED", mount, data, index);
   };
 
   if (!pcData) {
