@@ -1,4 +1,3 @@
-import { Frame, FramesRenderer, patchFrame } from "@paperclip-ui/web-renderer";
 import * as path from "path";
 import React, {
   memo,
@@ -9,34 +8,25 @@ import React, {
   useState
 } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
-import { FrameContainer, useFrameContainer } from "../../../FrameContainer";
 import * as styles from "./index.pc";
 import { memoize, omitBy, throttle } from "lodash";
-import * as url from "url";
-import * as qs from "querystring";
 
 import {
-  VirtualElement,
-  VirtualText,
   computeVirtScriptObject,
   NodeAnnotations,
-  VirtualNode,
   VirtualFrame,
-  LoadedData,
   EvaluatedDataKind,
   LoadedPCData,
   VirtualNodeKind
 } from "@paperclip-ui/utils";
+import * as url from "url";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
-import { useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "@tandem-ui/design-system";
 import { FilterTextInput } from "../../../TextInput/filter.pc";
-import { renderFrame } from "@paperclip-ui/web-renderer";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
-import { useAllPaperclipDocuments } from "../../../../hocs/workspace";
-import { useFrameUrlResolver } from "../../../../hooks/useFrameUrlResolver";
+import { useFrame } from "../../../../hooks/useFrame";
 
 type CellFrame = {
   filePath: string;
@@ -199,15 +189,7 @@ type CellProps = {
   dispatch: any;
 };
 
-const Cell = ({
-  uri,
-  index,
-  filter,
-  node,
-  relativePath,
-  fileContent,
-  dispatch
-}: CellProps) => {
+const Cell = ({ uri, index, filter, node, relativePath }: CellProps) => {
   const { mountRef, label, frameBox, scale, onClick } = useCell({
     uri,
     relativePath,
@@ -216,35 +198,7 @@ const Cell = ({
     node
   });
 
-  const [state, setState] = useState<{
-    uri: string;
-    index: number;
-    fileContent: LoadedPCData;
-    stage: HTMLElement;
-  }>();
-
-  const resolveUrl = useFrameUrlResolver();
-
-  useEffect(() => {
-    let stage;
-    if (state?.stage && uri === state.uri && index === state.index) {
-      stage = state.stage;
-      patchFrame(state.stage, index, state.fileContent, fileContent, {
-        domFactory: document,
-        resolveUrl
-      });
-    } else {
-      stage = renderFrame(fileContent, index, {
-        domFactory: document,
-        resolveUrl
-      });
-    }
-    setState({ stage, uri, index, fileContent });
-  }, [uri, index, fileContent]);
-
-  const { ref } = useFrameContainer({
-    content: state?.stage
-  });
+  const { ref } = useFrame({ frameUri: uri, frameIndex: index });
 
   return (
     <styles.Cell
@@ -254,7 +208,15 @@ const Cell = ({
       dir={relativePath}
       controls={null}
     >
-      <div style={{ width: "100%", height: "100%" }} ref={ref} />
+      <div
+        style={{
+          width: frameBox.width,
+          height: frameBox.height,
+          transform: `scale(${scale})`,
+          transformOrigin: `top left`
+        }}
+        ref={ref}
+      />
     </styles.Cell>
   );
 };
@@ -267,13 +229,7 @@ type UseCellProps = {
   node: VirtualFrame;
 };
 
-const useCell = ({
-  filter,
-  uri,
-  frameIndex,
-  relativePath,
-  node
-}: UseCellProps) => {
+const useCell = ({ uri, frameIndex, node }: UseCellProps) => {
   const annotations: NodeAnnotations = node.annotations
     ? computeVirtScriptObject(node.annotations)
     : {};
@@ -394,11 +350,3 @@ const filterCells = (cells: CellFrame[], filter = "") => {
     return visible;
   });
 };
-
-const getPCFileData = memoize(
-  (data: Record<string, LoadedData>): Record<string, LoadedPCData> => {
-    return omitBy(data, value => {
-      return value.kind != EvaluatedDataKind.PC;
-    }) as Record<string, LoadedPCData>;
-  }
-);
