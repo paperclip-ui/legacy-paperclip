@@ -1,39 +1,27 @@
 import * as path from "path";
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import React, { memo, useCallback } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
-import { memoize, omitBy, throttle } from "lodash";
-
 import {
   computeVirtScriptObject,
   NodeAnnotations,
   VirtualFrame,
   EvaluatedDataKind,
-  LoadedPCData,
   VirtualNodeKind
 } from "@paperclip-ui/utils";
-import * as url from "url";
-import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useTextInput } from "@tandem-ui/design-system";
 import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
-import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
-import { useFrame } from "../../../../hooks/useFrame";
+import { birdseyeFilterChanged } from "../../../../actions";
+import { Cell } from "./Cell";
+
+const DEFAULT_COLUMN_COUNT = 5;
 
 type CellFrame = {
-  filePath: string;
   fileUri: string;
   index: number;
   relativePath: string;
-  data: LoadedPCData;
   node: VirtualFrame;
 };
 
@@ -75,7 +63,6 @@ export const Birdseye = memo(() => {
                     filter={filter}
                     key={frame.fileUri + "-" + frame.index}
                     dispatch={dispatch}
-                    fileContent={frame.data}
                     node={frame.node}
                     relativePath={frame.relativePath}
                   />
@@ -123,8 +110,7 @@ const useBirdseye = () => {
         node: frame as VirtualFrame,
         index: i,
         relativePath,
-        data,
-        filePath,
+
         fileUri: uri
       });
     }
@@ -132,7 +118,7 @@ const useBirdseye = () => {
 
   const filteredCells = filterCells(allFrames, filter);
 
-  const columns = 5;
+  const columns = DEFAULT_COLUMN_COUNT;
 
   const onFilter = useCallback(
     (value: string) => {
@@ -177,125 +163,6 @@ const Header = memo(({ filter, onFilter }: HeaderProps) => {
 // builtin is null, so here's a hack
 const fileURLToPath = (uri: string) => {
   return uri.replace("file://", "").replace(/\\/g, "/");
-};
-
-type CellProps = {
-  filter?: string;
-  uri: string;
-  index: number;
-  fileContent: LoadedPCData;
-  node: VirtualFrame;
-  relativePath: string;
-  dispatch: any;
-};
-
-const Cell = ({ uri, index, filter, node, relativePath }: CellProps) => {
-  const { mountRef, label, frameBox, scale, onClick } = useCell({
-    uri,
-    relativePath,
-    filter,
-    frameIndex: index,
-    node
-  });
-
-  const { ref } = useFrame({ frameUri: uri, frameIndex: index });
-
-  return (
-    <styles.Cell
-      mountRef={mountRef}
-      label={label}
-      onClick={onClick}
-      dir={relativePath}
-      controls={null}
-    >
-      <div
-        style={{
-          width: frameBox.width,
-          height: frameBox.height,
-          transform: `scale(${scale})`,
-          transformOrigin: `top left`
-        }}
-        ref={ref}
-      />
-    </styles.Cell>
-  );
-};
-
-type UseCellProps = {
-  filter?: string;
-  relativePath: string;
-  uri: string;
-  frameIndex: number;
-  node: VirtualFrame;
-};
-
-const useCell = ({ uri, frameIndex, node }: UseCellProps) => {
-  const annotations: NodeAnnotations = node.annotations
-    ? computeVirtScriptObject(node.annotations)
-    : {};
-  const frameBox = useMemo(
-    () => ({ ...DEFAULT_FRAME_BOX, ...annotations.frame }),
-    [annotations]
-  );
-  const { dispatch } = useAppStore();
-
-  const [mountBounds, setMountBounds] = useState<ClientRect | undefined>();
-  const [scale, setFrameScale] = useState<number>(1);
-
-  const { label, visible, tags } = getCellInfo(node);
-
-  const mountRef = useRef<HTMLDivElement | undefined>();
-
-  useEffect(() => {
-    if (!frameBox || !mountBounds) {
-      return;
-    }
-    setFrameScale(mountBounds.width / frameBox.width);
-  }, [frameBox, mountBounds]);
-
-  const onClick = useCallback(() => {
-    const parts = url.parse(location.href, true);
-    dispatch(
-      redirectRequest({
-        pathname: "/canvas",
-        query: {
-          ...parts.query,
-          canvasFile: uri,
-          frame: frameIndex,
-          showAll: undefined
-        }
-      })
-    );
-  }, [frameIndex, uri]);
-
-  useEffect(() => {
-    if (!mountRef.current) {
-      // eslint-disable-next-line
-      return () => {};
-    }
-
-    const onResize = throttle(() => {
-      setMountBounds(mountRef.current.getBoundingClientRect());
-    }, 100);
-
-    onResize();
-
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      onResize.cancel();
-      window.removeEventListener("resize", onResize);
-    };
-  }, [mountRef.current]);
-
-  return {
-    frameBox,
-    scale,
-    visible,
-    label,
-    onClick,
-    mountRef
-  };
 };
 
 const getCellInfo = (node: VirtualFrame) => {
