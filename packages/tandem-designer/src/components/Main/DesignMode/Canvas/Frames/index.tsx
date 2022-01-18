@@ -4,6 +4,7 @@ import {
   FramesRenderer,
   FramesRendererState,
   getFrameBounds,
+  getFrameRects,
   getFrameVirtualNode
 } from "@paperclip-ui/web-renderer";
 import { memo, useEffect, useMemo } from "react";
@@ -31,7 +32,11 @@ import * as styles from "./index.pc";
 import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
 import { debounce, identity } from "lodash";
-import { AppState, isExpanded } from "../../../../../state";
+import {
+  AppState,
+  getActiveFrameIndex,
+  isExpanded
+} from "../../../../../state";
 import { ImmutableStore } from "@paperclip-ui/common";
 import { UrlResolver } from "@paperclip-ui/web-renderer/lib/native-renderer";
 import { useFrameUrlResolver } from "../../../../../hooks/useFrameUrlResolver";
@@ -43,7 +48,7 @@ type FramesProps = {
 
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
-  const { frames, onFrameLoaded } = useFrames({
+  const { frames, onFrameLoaded, onFrameUpdated } = useFrames({
     fileUri: state.designer.ui.query.canvasFile,
     shouldCollectRects: true
   });
@@ -55,6 +60,7 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
           <Frame
             key={i}
             onLoad={onFrameLoaded}
+            onUpdate={onFrameUpdated}
             expanded={expandedFrameIndex === i}
             frameUri={state.designer.ui.query.canvasFile}
             frameIndex={i}
@@ -306,13 +312,35 @@ const useFrames = ({ fileUri, shouldCollectRects = true }: UseFramesProps) => {
     state.designer.ui.query.canvasFile
   ] as LoadedPCData;
 
+  const emitFrameRects = useCallback(
+    (
+      mount: HTMLElement,
+      data: LoadedPCData,
+      frameUri: string,
+      frameIndex: number
+    ) => {
+      const rects = getFrameRects(mount, data, frameIndex);
+      console.log(rects);
+    },
+    []
+  );
+
+  const onFrameUpdated = (
+    mount: HTMLElement,
+    data: LoadedPCData,
+    frameUri: string,
+    index: number
+  ) => {
+    emitFrameRects(mount, data, frameUri, index);
+  };
+
   const onFrameLoaded = (
     mount: HTMLElement,
     data: LoadedPCData,
     frameUri: string,
     index: number
   ) => {
-    console.log("FRAME LOADED", mount, data, index);
+    emitFrameRects(mount, data, frameUri, index);
   };
 
   if (!pcData) {
@@ -324,7 +352,7 @@ const useFrames = ({ fileUri, shouldCollectRects = true }: UseFramesProps) => {
       ? pcData.preview.children
       : [pcData.preview];
 
-  return { frames, onFrameLoaded };
+  return { frames, onFrameLoaded, onFrameUpdated };
 };
 
 export const useFrames2 = ({
@@ -430,10 +458,23 @@ type FrameProps = {
     frameUri: string,
     frameIndex: number
   ) => void;
+  onUpdate: (
+    mount: HTMLElement,
+    data: LoadedPCData,
+    frameUri: string,
+    frameIndex: number
+  ) => void;
 };
 
 const Frame = memo(
-  ({ frameUri, frameIndex, preview, expanded, onLoad }: FrameProps) => {
+  ({
+    frameUri,
+    frameIndex,
+    preview,
+    expanded,
+    onLoad,
+    onUpdate
+  }: FrameProps) => {
     if (!preview) {
       return null;
     }
@@ -443,6 +484,13 @@ const Frame = memo(
         onLoad(mount, data, frameUri, frameIndex);
       },
       [frameUri, frameIndex, onLoad]
+    );
+
+    const onUpdate2 = useCallback(
+      (mount: HTMLElement, data: LoadedPCData) => {
+        onUpdate(mount, data, frameUri, frameIndex);
+      },
+      [frameUri, frameIndex, onUpdate]
     );
 
     const frameStyle = useMemo(() => {
@@ -477,6 +525,7 @@ const Frame = memo(
           frameIndex={frameIndex}
           fullscreen={expanded}
           onLoad={onLoad2}
+          onUpdate={onUpdate2}
         />
       </styles.Frame>
     );

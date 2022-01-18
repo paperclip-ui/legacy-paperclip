@@ -14,7 +14,7 @@ type UseFrameStageInnerProps = {
   frameIndex: number;
 };
 
-export const useFrameStage = ({
+export const useFrameMount = ({
   frameUri,
   frameIndex,
   onUpdate
