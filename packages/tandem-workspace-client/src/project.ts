@@ -1,7 +1,7 @@
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import {
   getAllPaperclipFilesChannel,
-  openProjectChannel
+  openProjectChannel,
 } from "@tandem-ui/workspace-core";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { PCDocument } from "@paperclip-ui/editor-engine/lib/client/documents";
@@ -48,7 +48,7 @@ export class Project {
 
   async openAllPaperclipDocuments() {
     const fileUris = await this._getAllPaperclipFiles.call({
-      projectId: this._id
+      projectId: this._id,
     });
     const docs: PCDocument[] = [];
     for (const uri of fileUris) {

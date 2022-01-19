@@ -8,7 +8,7 @@ import {
   ChangeKind,
   EngineDelegateEvent,
   paperclipSourceGlobPattern,
-  isPaperclipFile
+  isPaperclipFile,
 } from "@paperclip-ui/core";
 import * as fs from "fs";
 import * as path from "path";
@@ -68,13 +68,14 @@ export class PaperclipManager {
         gitignore: true,
         ignore: ["**/node_modules/**"],
         followSymbolicLinks: true,
-        cwd: this._cwd
+        cwd: this._cwd,
       }
     );
 
     this._logger.verbose(
-      `Done scanning all PC files (${pcFiles.length}) in ${(Date.now() - ms) /
-        1000}s`
+      `Done scanning all PC files (${pcFiles.length}) in ${
+        (Date.now() - ms) / 1000
+      }s`
     );
 
     for (const pcFile of pcFiles) {
@@ -154,7 +155,7 @@ const readConfig = (cwd: string, logger: Logger) => {
   if (!fs.existsSync(configPath)) {
     logger.warn(`PC config not found, using default values`);
     config = {
-      srcDir: "."
+      srcDir: ".",
     };
   } else {
     config = JSON.parse(fs.readFileSync(configPath, "utf-8"));

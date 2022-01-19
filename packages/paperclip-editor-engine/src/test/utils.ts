@@ -15,9 +15,9 @@ export const createMockServer = () => {
     },
     createHostClient(delay?: boolean) {
       return new EditorClient(rpcServer.createConnection(delay), {
-        domFactory: mockDOMFactory
+        domFactory: mockDOMFactory,
       });
-    }
+    },
   };
 };
 
@@ -29,4 +29,5 @@ export const createMockHost = async (graph: Record<string, string>) => {
   return { host, server };
 };
 
-export const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+export const timeout = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

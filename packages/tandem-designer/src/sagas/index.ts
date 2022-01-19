@@ -24,14 +24,14 @@ import {
   actionHandled,
   redirectRequest,
   windowFocused,
-  windowBlurred
+  windowBlurred,
 } from "../actions";
 import { AppState, SyncLocationMode } from "../state";
 import { handleCanvas } from "./canvas";
 import { History } from "history";
 import { omit } from "lodash";
 import { handleRPC, HandleRPCOptions } from "./rpc";
-import { handleWorkspace } from "./workspace";
+// import { handleWorkspace } from "./workspace";
 
 export type AppStateSelector = (state) => AppState;
 
@@ -45,11 +45,12 @@ export function* mainSaga(
   options: MainSagaOptions
 ) {
   yield fork(handleRenderer, getState);
-  yield takeEvery(ActionType.CANVAS_MOUSE_DOWN, function*(
-    action: CanvasMouseDown
-  ) {
-    yield call(handleCanvasMouseDown, action, getState);
-  });
+  yield takeEvery(
+    ActionType.CANVAS_MOUSE_DOWN,
+    function* (action: CanvasMouseDown) {
+      yield call(handleCanvasMouseDown, action, getState);
+    }
+  );
 
   // wait for client to be loaded to initialize anything so that
   // events properly get sent (like LOCATION_CHANGED)
@@ -63,11 +64,11 @@ export function* mainSaga(
   yield fork(handleVirtualObjectSelected, getState);
   yield fork(handleAppFocus);
   // yield fork(handleWorkspace);
-  yield fork(handleRPC, options);
+  // yield fork(handleRPC, options);
 }
 
 function* handleRenderer(getState: AppStateSelector) {
-  yield takeEvery(["FOCUS"], function() {
+  yield takeEvery(["FOCUS"], function () {
     window.focus();
   });
 }
@@ -108,8 +109,8 @@ function* handleSyncFrameToLocation() {
     redirectRequest({
       query: {
         ...state.designer.ui.query,
-        frame: nodePath[0]
-      }
+        frame: nodePath[0],
+      },
     })
   );
 }
@@ -121,9 +122,9 @@ function* handleKeyCommands(mount: HTMLElement) {
   // the designer to take the whole page.
   const keyBindingMount = state.compact ? mount : document;
   const embedded = state.designer.ui.query.embedded;
-  const chan = eventChannel(emit => {
+  const chan = eventChannel((emit) => {
     const handler = new Mousetrap(keyBindingMount);
-    handler.bind("esc", e => {
+    handler.bind("esc", (e) => {
       if (isInput(e.target)) {
         return;
       }
@@ -174,7 +175,7 @@ function* handleKeyCommands(mount: HTMLElement) {
       emit(zoomOutKeyPressed(null));
       return false;
     });
-    handler.bind("meta+s", e => {
+    handler.bind("meta+s", (e) => {
       emit(globalSaveKeyPress(null));
       if (!embedded) {
         e.preventDefault();
@@ -185,7 +186,7 @@ function* handleKeyCommands(mount: HTMLElement) {
       emit(globalYKeyDown(null));
       return false;
     });
-    handler.bind("backspace", e => {
+    handler.bind("backspace", (e) => {
       if (isInput(e.target)) {
         return;
       }
@@ -209,8 +210,8 @@ const isInput = (node: HTMLElement) =>
   /textarea|input/.test(node.tagName.toLowerCase());
 
 function* handleDocumentEvents() {
-  yield fork(function*() {
-    const chan = eventChannel(emit => {
+  yield fork(function* () {
+    const chan = eventChannel((emit) => {
       document.addEventListener("wheel", emit, { passive: false });
       document.addEventListener("keydown", emit);
       return () => {
@@ -242,18 +243,18 @@ function* handleLocationChanged() {
       protocol: parts.protocol,
       host: parts.host,
       pathname: parts.pathname,
-      query: parts.query
+      query: parts.query,
     })
   );
 }
 
 function* handleLocation(getState: AppStateSelector, history: History) {
-  const chan = eventChannel(emit => {
+  const chan = eventChannel((emit) => {
     return history.listen(emit);
   });
 
   yield takeEvery(chan, handleLocationChanged);
-  yield takeEvery(ActionType.REDIRECT_REQUESTED, function*() {
+  yield takeEvery(ActionType.REDIRECT_REQUESTED, function* () {
     const state = yield select(getState);
     const pathname = history.location.pathname;
     const search =
@@ -285,13 +286,13 @@ function* handleActions(getState: AppStateSelector) {
 function* handleVirtualObjectSelected(getState: AppStateSelector) {}
 
 function* handleAppFocus() {
-  const chan = eventChannel(emit => {
-    document.addEventListener("mouseenter", ev => {
+  const chan = eventChannel((emit) => {
+    document.addEventListener("mouseenter", (ev) => {
       if (ev.target === document) {
         emit(windowFocused(null));
       }
     });
-    document.addEventListener("mouseleave", ev => {
+    document.addEventListener("mouseleave", (ev) => {
       if (ev.target === document) {
         emit(windowBlurred(null));
       }
@@ -299,7 +300,7 @@ function* handleAppFocus() {
     return () => {};
   });
 
-  yield takeEvery(chan, function*(event: any) {
+  yield takeEvery(chan, function* (event: any) {
     yield put(event);
   });
 }

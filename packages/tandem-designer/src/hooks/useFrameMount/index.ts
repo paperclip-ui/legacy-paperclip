@@ -17,7 +17,7 @@ type UseFrameStageInnerProps = {
 export const useFrameMount = ({
   frameUri,
   frameIndex,
-  onUpdate
+  onUpdate,
 }: UseFrameStageOuterProps) => {
   const loadedPCData = useSelector(getFileContent(frameUri)) as LoadedPCData;
 
@@ -49,12 +49,12 @@ export const useFrameMount = ({
       mount = state.mount;
       patchFrame(state.mount, frameIndex, state.loadedPCData, loadedPCData, {
         domFactory: document,
-        resolveUrl
+        resolveUrl,
       });
     } else {
       mount = renderFrame(loadedPCData, frameIndex, {
         domFactory: document,
-        resolveUrl
+        resolveUrl,
       });
     }
     onUpdate(mount, loadedPCData);
@@ -63,10 +63,10 @@ export const useFrameMount = ({
 
   return {
     mount: state?.mount,
-    loadedPCData: state?.loadedPCData
+    loadedPCData: state?.loadedPCData,
   };
 };
 
-const getFileContent = memoize((uri: string) => (state: AppState) =>
-  state.designer.allLoadedPCFileData[uri]
+const getFileContent = memoize(
+  (uri: string) => (state: AppState) => state.designer.allLoadedPCFileData[uri]
 );

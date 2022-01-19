@@ -16,13 +16,13 @@ import {
   nodePathToAry,
   NodeStyleInspection,
   VirtualFrame,
-  VirtualNodeKind
+  VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import {
   VirtualNode,
   EngineErrorEvent,
   EngineDelegateEvent,
-  LoadedData
+  LoadedData,
 } from "@paperclip-ui/utils";
 import {
   Transform,
@@ -31,7 +31,7 @@ import {
   Size,
   mergeBoxes,
   centerTransformZoom,
-  getScaledPoint
+  getScaledPoint,
 } from "./geom";
 import * as os from "os";
 import { Result } from "./result";
@@ -48,7 +48,7 @@ const ALT_MIME_TYPES = [
   "font/woff2",
   "application/font-woff",
   "application/font-ttf",
-  "application/font-woff2"
+  "application/font-woff2",
 ];
 
 const MEDIA_MIME_TYPES = [
@@ -57,21 +57,21 @@ const MEDIA_MIME_TYPES = [
   "image/gif",
   "image/svg+xml",
   "video/quicktime",
-  "video/mp4"
+  "video/mp4",
 ];
 const PREVIEW_MIME_TYPES = [...MEDIA_MIME_TYPES, "text/plain", "image/svg+xml"];
 
 const ACCEPTED_MIME_TYPES = [
   ...ALT_MIME_TYPES,
   ...MEDIA_MIME_TYPES,
-  ...EDITABLE_MIME_TYPES
+  ...EDITABLE_MIME_TYPES,
 ];
 
 export const DEFAULT_FRAME_BOX = {
   width: 1024,
   height: 768,
   x: 0,
-  y: 0
+  y: 0,
 };
 
 export type Canvas = {
@@ -90,7 +90,7 @@ export type BoxNodeInfo = {
 
 export enum FSItemKind {
   FILE = "file",
-  DIRECTORY = "directory"
+  DIRECTORY = "directory",
 }
 
 export type File = {
@@ -142,7 +142,7 @@ export type SharedState = {
 export enum SyncLocationMode {
   None = 0,
   Query = 1,
-  Location = 1 << 1
+  Location = 1 << 1,
 }
 
 export type BranchInfo = {
@@ -235,7 +235,7 @@ export type AppState = {
 export enum EnvOptionKind {
   Public = "Public",
   Private = "Private",
-  Browserstack = "Browserstack"
+  Browserstack = "Browserstack",
 }
 
 export type EnvOption = {
@@ -255,10 +255,10 @@ export const INITIAL_STATE: AppState = {
   actions: [],
   history: {
     past: [],
-    future: []
+    future: [],
   },
   shared: {
-    documents: {}
+    documents: {},
   },
   designer: {
     useLiteEditor: false,
@@ -271,7 +271,7 @@ export const INITIAL_STATE: AppState = {
     syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,
     sharable: true,
     ui: {
-      query: {}
+      query: {},
     },
     highlightNodePath: null,
     centeredInitial: false,
@@ -295,10 +295,10 @@ export const INITIAL_STATE: AppState = {
       transform: {
         x: 0,
         y: 0,
-        z: 1
-      }
-    }
-  }
+        z: 1,
+      },
+    },
+  },
 };
 
 export const isExpanded = (designer: DesignerState) => {
@@ -314,7 +314,7 @@ export const IS_WINDOWS = os.platform() === "win32";
 export const resetCanvas = (canvas: Canvas) => ({
   ...canvas,
   scrollPosition: { x: 0, y: 0 },
-  transform: { x: 0, y: 0, z: 1 }
+  transform: { x: 0, y: 0, z: 1 },
 });
 
 export const mergeBoxesFromClientRects = (
@@ -363,7 +363,7 @@ export const findBoxNodeInfo = memoize(
 
     return {
       nodePath: bestIntersetingNodePath,
-      box: bestIntersetingBox
+      box: bestIntersetingBox,
     };
   }
 );
@@ -386,7 +386,7 @@ export const calcFrameBox = memoize((rects: Record<string, Box>) => {
     x,
     y,
     width,
-    height
+    height,
   };
 });
 
@@ -409,7 +409,7 @@ export const getFSItem = (absolutePath: string, current: FSItem) => {
 
 export const getSelectedFrames = (designer: DesignerState): VirtualFrame[] => {
   return designer.selectedNodePaths
-    .map(nodePath => {
+    .map((nodePath) => {
       const frameIndex = Number(nodePath);
       return getFrameFromIndex(frameIndex, designer);
     })
@@ -423,9 +423,9 @@ export const getFrameFromIndex = (
   if (!designer.allLoadedPCFileData) {
     return null;
   }
-  const preview = (designer.allLoadedPCFileData[
-    designer.ui.query.canvasFile
-  ] as LoadedPCData)?.preview;
+  const preview = (
+    designer.allLoadedPCFileData[designer.ui.query.canvasFile] as LoadedPCData
+  )?.preview;
   if (!preview) {
     return null;
   }
@@ -475,7 +475,7 @@ const getHoverableNodePaths = memoize(
       addHoverableChildren(scope, true, hoverable);
     }
 
-    return hoverable.map(node => getNodePath(node, root));
+    return hoverable.map((node) => getNodePath(node, root));
   }
 );
 
@@ -555,7 +555,7 @@ export const getNewFilePath = (name: string, previousNameOrExt: string) => {
   return cleanupPath(name.replace(/\.\w+$/, "") + "." + ext);
 };
 export const canUpload = (files: FileList) => {
-  return Array.from(files).every(file => {
+  return Array.from(files).every((file) => {
     if (file.size > MAX_FILE_SIZE) {
       return false;
     }
@@ -586,7 +586,7 @@ export const maybeCenterCanvas = (designer: DesignerState, force?: boolean) => {
       designer.canvas.size?.width &&
       designer.canvas.size?.height)
   ) {
-    designer = produce(designer, newDesigner => {
+    designer = produce(designer, (newDesigner) => {
       newDesigner.centeredInitial = true;
     });
 
@@ -595,9 +595,11 @@ export const maybeCenterCanvas = (designer: DesignerState, force?: boolean) => {
 
     if (currentFrameIndex != null) {
       const frameBoxes = getPreviewFrameBoxes(
-        (designer.allLoadedPCFileData[
-          designer.ui.query.canvasFile
-        ] as LoadedPCData).preview
+        (
+          designer.allLoadedPCFileData[
+            designer.ui.query.canvasFile
+          ] as LoadedPCData
+        ).preview
       );
       targetBounds = frameBoxes[currentFrameIndex];
     }
@@ -614,8 +616,8 @@ export const updateShared = (state: AppState, shared: Partial<SharedState>) => {
     ...state,
     shared: {
       ...state.shared,
-      ...shared
-    }
+      ...shared,
+    },
   };
 };
 
@@ -641,13 +643,13 @@ export const centerEditorCanvas = (
   const {
     canvas: {
       transform,
-      size: { width, height }
-    }
+      size: { width, height },
+    },
   } = designer;
 
   const centered = {
     x: -innerBounds.x + width / 2 - innerBounds.width / 2,
-    y: -innerBounds.y + height / 2 - innerBounds.height / 2
+    y: -innerBounds.y + height / 2 - innerBounds.height / 2,
   };
 
   const scale =
@@ -660,17 +662,17 @@ export const centerEditorCanvas = (
       ? zoomOrZoomToFit
       : transform.z;
 
-  designer = produce(designer, newDesigner => {
+  designer = produce(designer, (newDesigner) => {
     newDesigner.canvas.transform = centerTransformZoom(
       {
         ...centered,
-        z: 1
+        z: 1,
       },
       {
         x: 0,
         y: 0,
         width,
-        height
+        height,
       },
       Math.min(scale, 1)
     );
@@ -684,9 +686,9 @@ export const cleanupPath = (path: string) => {
 };
 
 export const getActivePCData = (designer: DesignerState) =>
-  (designer.allLoadedPCFileData[
+  designer.allLoadedPCFileData[
     designer.ui.query.canvasFile
-  ] as any) as LoadedPCData;
+  ] as any as LoadedPCData;
 
 export const getAppActivePCData = (state: AppState) =>
   getActivePCData(state.designer);
@@ -697,7 +699,7 @@ export const getInspectionInfo = (state: AppState) =>
   state.designer.selectedNodeStyleInspections;
 
 export const pruneDeletedNodes = (designer: DesignerState) => {
-  return produce(designer, newDesigner => {
+  return produce(designer, (newDesigner) => {
     const pruneAry = (ary: string[]) => {
       let pruned = false;
       for (let i = ary.length; i--; ) {

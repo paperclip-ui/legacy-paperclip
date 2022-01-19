@@ -44,5 +44,5 @@ export const stringifyVirtualNode = (
 
 const stringifyChildren = (node, slotPlaceholder) =>
   node.children
-    .map(child => stringifyVirtualNode(child, slotPlaceholder))
+    .map((child) => stringifyVirtualNode(child, slotPlaceholder))
     .join("");

@@ -1,51 +1,9 @@
-import React, { useCallback, useLayoutEffect, useState } from "react";
-import {
-  Frame as Frame2,
-  FramesRenderer,
-  FramesRendererState,
-  getFrameBounds,
-  getFrameRects,
-  getFrameVirtualNode
-} from "@paperclip-ui/web-renderer";
-import { memo, useEffect, useMemo } from "react";
-import mime from "mime-types";
-import {
-  engineDelegateEventsHandled,
-  rectsCaptured,
-  rendererMounted,
-  rendererUnounted
-} from "../../../../../actions";
-import { useAppStore } from "../../../../../hooks/useAppStore";
-import {
-  computeVirtScriptObject,
-  VirtualElement,
-  VirtualNode,
-  VirtualText,
-  NodeAnnotations,
-  LoadedData,
-  EngineDelegateEvent,
-  LoadedPCData,
-  VirtualNodeKind,
-  VirtualFrame
-} from "@paperclip-ui/utils";
+import React, { useCallback } from "react";
+import { getFrameBounds } from "@paperclip-ui/web-renderer";
+import { memo, useMemo } from "react";
+import { VirtualElement, VirtualText, LoadedPCData } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
-import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
-import { debounce, identity } from "lodash";
-import {
-  AppState,
-  getActiveFrameIndex,
-  isExpanded
-} from "../../../../../state";
-import { ImmutableStore } from "@paperclip-ui/common";
-import { UrlResolver } from "@paperclip-ui/web-renderer/lib/native-renderer";
-import { useFrameUrlResolver } from "../../../../../hooks/useFrameUrlResolver";
-import { useDispatch, useSelector } from "react-redux";
-
-type UseFramesProps = {
-  fileUri: string;
-  shouldCollectRects: boolean;
-};
 
 type FrameProps = {
   frameUri: string;
@@ -73,7 +31,7 @@ export const Frame = memo(
     preview,
     expanded,
     onLoad,
-    onUpdate
+    onUpdate,
   }: FrameProps) => {
     if (!preview) {
       return null;
@@ -105,7 +63,7 @@ export const Frame = memo(
           left: bounds.x,
           top: bounds.y,
           zIndex: 1,
-          position: "absolute"
+          position: "absolute",
         };
       }
 
@@ -114,7 +72,7 @@ export const Frame = memo(
         height: bounds.height,
         left: bounds.x,
         top: bounds.y,
-        position: "absolute"
+        position: "absolute",
       };
     }, [preview.annotations, expanded]) as any;
 

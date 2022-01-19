@@ -30,7 +30,7 @@ export const createMockRPCServer = () => {
 
       hostEm.emit("connection", localCon);
       return remoteCon;
-    }
+    },
   };
 };
 
@@ -49,7 +49,7 @@ const createMockClient = (
       }
     },
     onMessage(listener) {
-      const listener2 = v => {
+      const listener2 = (v) => {
         listener(v);
       };
       b.on("message", listener2);
@@ -57,7 +57,7 @@ const createMockClient = (
         b.off("message", listener2);
       };
     },
-    onDisconnect() {}
+    onDisconnect() {},
   };
 };
 
@@ -65,19 +65,19 @@ export const workerRPCClientAdapter = (
   worker: Window | Worker
 ): RPCClientAdapter => ({
   onMessage(listener) {
-    return spy(worker, "onmessage", event => listener(event.data));
+    return spy(worker, "onmessage", (event) => listener(event.data));
   },
   onDisconnect(listener: () => void) {},
   send(message) {
     (worker as any).postMessage(message);
-  }
+  },
 });
 
 // sockjs adapter
 export const sockjsClientAdapter = (worker: any): RPCClientAdapter => {
   let prebuff = [];
 
-  const send = message => {
+  const send = (message) => {
     if (prebuff) {
       prebuff.push(message);
       return;
@@ -105,13 +105,13 @@ export const sockjsClientAdapter = (worker: any): RPCClientAdapter => {
   return {
     onMessage(listener) {
       // is on the server
-      const onMessage = message => {
+      const onMessage = (message) => {
         listener(JSON.parse(message));
       };
 
       // is on the client
       if (!worker.on) {
-        return spy(worker, "onmessage", event => {
+        return spy(worker, "onmessage", (event) => {
           onMessage(event.data);
         });
       }
@@ -122,15 +122,15 @@ export const sockjsClientAdapter = (worker: any): RPCClientAdapter => {
     onDisconnect(listener: () => void) {
       worker.on("disconnect", listener);
     },
-    send
+    send,
   };
 };
 
 // sockjs adapter
 export const sockjsServerRPCAdapter = (server: sockjs.Server): RPCServer => ({
   onConnection(listener: (connection: RPCClientAdapter) => void) {
-    server.on("connection", connection => {
+    server.on("connection", (connection) => {
       listener(sockjsClientAdapter(connection));
     });
-  }
+  },
 });

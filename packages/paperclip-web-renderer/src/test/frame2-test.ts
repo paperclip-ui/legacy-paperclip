@@ -7,7 +7,7 @@ import { createMockFramesRenderer, createMockEngineDelegate } from "./utils";
 describe(__filename + "#", () => {
   it("Can render basic text", async () => {
     const graph = {
-      "/entry.pc": "Hello World"
+      "/entry.pc": "Hello World",
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -21,7 +21,7 @@ describe(__filename + "#", () => {
 
   it("Can render an element", async () => {
     const graph = {
-      "/entry.pc": "<a href='#'>abc</a>"
+      "/entry.pc": "<a href='#'>abc</a>",
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -35,7 +35,7 @@ describe(__filename + "#", () => {
 
   it("Re-renders a basic text change", async () => {
     const graph = {
-      "/entry.pc": "a"
+      "/entry.pc": "a",
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -53,7 +53,7 @@ describe(__filename + "#", () => {
 
   it("Re-renders a basic attribute change", async () => {
     const graph = {
-      "/entry.pc": `<span><div a="b"></div></span>`
+      "/entry.pc": `<span><div a="b"></div></span>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -74,7 +74,7 @@ describe(__filename + "#", () => {
 
   it("Renders a basic style", async () => {
     const graph = {
-      "/entry.pc": `<style> a { color: blue; } </style><span></span>`
+      "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -89,7 +89,7 @@ describe(__filename + "#", () => {
   it("Renders imported styles", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -104,7 +104,7 @@ describe(__filename + "#", () => {
   it("Removes styles if import is removed", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -127,7 +127,7 @@ describe(__filename + "#", () => {
   it("Adds styles if import is added", async () => {
     const graph = {
       "file:///entry.pc": `<style> a { color: blue; } </style><span></span>`,
-      "file:///module.pc": `<style> a { color: black; } </style>`
+      "file:///module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -148,7 +148,7 @@ describe(__filename + "#", () => {
   it("Adds styles if import is added of module that is already loaded", async () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -171,7 +171,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style>a`,
       "/module.pc": `<style> a { color: black; } </style>`,
-      "/module2.pc": `<style> a { color: orange; } </style>`
+      "/module2.pc": `<style> a { color: orange; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -198,7 +198,7 @@ describe(__filename + "#", () => {
   it("styles that are _added_ before renderer initializes are rendered", async () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -221,7 +221,7 @@ describe(__filename + "#", () => {
   it("styles that are _removed_ before renderer initializes are rendered", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span><style> a { color: blue; } </style>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -254,7 +254,7 @@ describe(__filename + "#", () => {
       "/module-a.pc": `<style> a { color: a; } </style>`,
       "/module-b.pc": `<style> a { color: b; } </style>`,
       "/module-c.pc": `<style> a { color: c; } </style>`,
-      "/module-d.pc": `<style> a { color: d; } </style>`
+      "/module-d.pc": `<style> a { color: d; } </style>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -302,7 +302,7 @@ describe(__filename + "#", () => {
         <StyledHeader open>
           Content
         </StyledHeader>
-      </preview>`
+      </preview>`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -351,7 +351,7 @@ describe(__filename + "#", () => {
         <img src="/file.jpg" />
       `,
       "file:///file.jpg": `a`,
-      "file:///something-else.jpg": `a`
+      "file:///something-else.jpg": `a`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -365,9 +365,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///file.jpg"></img></div>`
     );
@@ -380,9 +378,7 @@ describe(__filename + "#", () => {
     );
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\/g, "/Z/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\/g, "/Z/")
     ).to.eql(
       `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///something-else.jpg"></img></div>`
     );
@@ -394,11 +390,11 @@ describe(__filename + "#", () => {
         
         <span class="a">
         </span>
-      `
+      `,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
-    const renderer = createMockFramesRenderer("file:///entry.pc", url =>
+    const renderer = createMockFramesRenderer("file:///entry.pc", (url) =>
       url.replace("file", "blah")
     );
     renderer.initialize(
@@ -407,9 +403,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style></style></div><div><span class="_80f4925f_a _pub-80f4925f_a a _80f4925f _pub-80f4925f"></span></div>`
     );
@@ -422,9 +416,7 @@ describe(__filename + "#", () => {
     );
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\/g, "/Z/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\/g, "/Z/")
     ).to.eql(
       `<div></div><div><style></style></div><div><span class="true _80f4925f _pub-80f4925f"></span></div>`
     );
@@ -437,9 +429,7 @@ describe(__filename + "#", () => {
     );
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\/g, "/Z/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\/g, "/Z/")
     ).to.eql(
       `<div></div><div><style></style></div><div><span class="_80f4925f_b _pub-80f4925f_b b _80f4925f _pub-80f4925f"></span></div>`
     );
@@ -468,7 +458,7 @@ describe(__filename + "#", () => {
           }
         </style>
         <div></div>
-      `
+      `,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -480,9 +470,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: orange;} @media screen and (max-width: 100px) {[class]._80f4925f_b {color: blue;}} @keyframes _80f4925f_ {    0% {color: blue;}    100% {color: black;}  } </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
@@ -498,9 +486,7 @@ describe(__filename + "#", () => {
     );
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style>[class]._80f4925f_d {color: orange;} </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
@@ -515,7 +501,7 @@ describe(__filename + "#", () => {
           }
         </style>
         <div></div>
-      `
+      `,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -527,9 +513,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style>[class]._80f4925f_a {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
@@ -548,9 +532,7 @@ describe(__filename + "#", () => {
     );
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: blue;} </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
@@ -603,7 +585,7 @@ describe(__filename + "#", () => {
         Hello world
       </Test>
       `,
-      "file:///Eina03-Regular.woff": `a`
+      "file:///Eina03-Regular.woff": `a`,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -617,9 +599,7 @@ describe(__filename + "#", () => {
     await engine.updateVirtualFileContent("file:///main.pc", ``);
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style>._a0539270._a0539270 {font-family: sans-serif; color: rgb(100, 172, 86); font-size: 24px;} </style></div><div><div class="_6bcf0994 _pub-6bcf0994 _a0539270"> Hello world </div></div>`
     );
@@ -632,7 +612,7 @@ describe(__filename + "#", () => {
           {children}
         </div>
         <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
@@ -644,9 +624,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(
-      combineFrameHTML(renderer)
-        .replace("\n", "")
-        .replace(/\\+/g, "/")
+      combineFrameHTML(renderer).replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
       `<div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div><div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
     );
@@ -656,6 +634,6 @@ describe(__filename + "#", () => {
 const combineFrameHTML = (renderer: FramesRenderer) => {
   return renderer
     .getState()
-    .frames.map(frame => frame.stage.innerHTML)
+    .frames.map((frame) => frame.stage.innerHTML)
     .join("");
 };

@@ -3,7 +3,7 @@ import { ContentChange, PCMutation } from "@paperclip-ui/source-writer";
 import {
   NodeStyleInspection,
   VirtNodeSource,
-  LoadedData
+  LoadedData,
 } from "@paperclip-ui/utils";
 import { Directory, WorkspaceState } from "./state";
 import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";

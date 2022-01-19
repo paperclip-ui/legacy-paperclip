@@ -133,9 +133,9 @@ impl DependencyGraph {
 
     if let Some(dep) = entry_option {
       let deps = dep
-        .dependencies
+        .sorted_import_ids
         .iter()
-        .map(|(_, uri)| uri)
+        .map(|(src)| dep.dependencies.get(src).unwrap())
         .collect::<Vec<&String>>();
 
       for dep_uri in deps {
@@ -262,6 +262,9 @@ pub struct Dependency {
 
   #[serde(rename = "dependencyUriMaps")]
   pub dependency_uri_maps: BTreeMap<String, String>,
+
+  // necessary since BTree maps don't sort based on insertion
+  pub sorted_import_ids: Vec<String>,
   pub content: DependencyContent,
 }
 
@@ -306,6 +309,7 @@ impl<'a> Dependency {
       content: DependencyContent::StyleSheet(expression),
       dependencies: BTreeMap::new(),
       dependency_uri_maps: BTreeMap::new(),
+      sorted_import_ids: vec![]
     })
   }
 
@@ -327,20 +331,23 @@ impl<'a> Dependency {
 
     let mut dependencies = BTreeMap::new();
     let mut dependency_uri_maps = BTreeMap::new();
+    let mut sorted_import_ids = vec![];
     for import in &imports {
       let src = pc_ast::get_attribute_value("src", import).unwrap();
 
       let resolved_src_option = vfs.resolve(uri, &src);
 
       if let Some(resolved_src) = resolved_src_option {
+        let import_id = pc_ast::get_import_identifier(import)
+        .unwrap()
+        .as_str()
+        .to_string();
+
         dependencies.insert(
-          pc_ast::get_import_identifier(import)
-            .unwrap()
-            .as_str()
-            .to_string(),
+          import_id.to_string(),
           resolved_src.to_string(),
         );
-
+        sorted_import_ids.push(import_id.to_string());
         dependency_uri_maps.insert(src.to_string(), resolved_src.to_string());
       } else {
         return Err(ParseError::unexpected(
@@ -353,6 +360,7 @@ impl<'a> Dependency {
     Ok(Dependency {
       uri: uri.to_string(),
       content: DependencyContent::Node(expression),
+      sorted_import_ids,
       dependencies,
       dependency_uri_maps,
     })

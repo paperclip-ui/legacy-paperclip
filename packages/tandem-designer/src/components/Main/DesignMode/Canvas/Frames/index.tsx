@@ -1,45 +1,15 @@
-import React, { useCallback, useLayoutEffect, useState } from "react";
-import {
-  Frame as Frame2,
-  FramesRenderer,
-  FramesRendererState,
-  getFrameBounds,
-  getFrameRects,
-  getFrameVirtualNode
-} from "@paperclip-ui/web-renderer";
-import { memo, useEffect, useMemo } from "react";
-import mime from "mime-types";
-import {
-  engineDelegateEventsHandled,
-  rectsCaptured,
-  rendererMounted,
-  rendererUnounted
-} from "../../../../../actions";
+import React, { useCallback } from "react";
+import { getFrameRects } from "@paperclip-ui/web-renderer";
+import { memo } from "react";
+import { rectsCaptured } from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
-  computeVirtScriptObject,
-  VirtualElement,
-  VirtualNode,
-  VirtualText,
-  NodeAnnotations,
-  LoadedData,
-  EngineDelegateEvent,
   LoadedPCData,
   VirtualNodeKind,
-  VirtualFrame
+  VirtualFrame,
 } from "@paperclip-ui/utils";
-import * as styles from "./index.pc";
-import { render } from "react-dom";
-import { FrameContainer } from "../../../../FrameContainer";
-import { debounce, identity } from "lodash";
-import {
-  AppState,
-  getActiveFrameIndex,
-  isExpanded
-} from "../../../../../state";
-import { ImmutableStore } from "@paperclip-ui/common";
-import { UrlResolver } from "@paperclip-ui/web-renderer/lib/native-renderer";
-import { useFrameUrlResolver } from "../../../../../hooks/useFrameUrlResolver";
+import { identity } from "lodash";
+import { AppState } from "../../../../../state";
 import { useDispatch, useSelector } from "react-redux";
 import { Frame } from "./Frame";
 
@@ -50,7 +20,7 @@ type FramesProps = {
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
   const { frames, onFrameLoaded, onFrameUpdated } = useFrames({
-    shouldCollectRects: true
+    shouldCollectRects: true,
   });
 
   return (

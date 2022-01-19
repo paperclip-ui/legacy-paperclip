@@ -8,7 +8,7 @@ import {
   openDocumentSourceChannel,
   OpenDocumentResult,
   engineEventChannel,
-  VirtualObjectEdit
+  VirtualObjectEdit,
 } from "../core";
 import { editVirtualObjectsChannel } from "../core/channels";
 import { DocumentManager } from "./documents/manager";
@@ -102,7 +102,7 @@ export class ClientConnection {
     const doc = this._documents.open(uri);
     return {
       kind: doc.kind,
-      content: await doc.load()
+      content: await doc.load(),
     };
   };
 
@@ -118,7 +118,7 @@ export class ClientConnection {
   /**
    */
 
-  _onSourceDocumentCRDTChanges = async result => {
+  _onSourceDocumentCRDTChanges = async (result) => {
     this._events.emit("incommingCRDTChanges", result, this);
   };
 

@@ -22,9 +22,8 @@ export class PCSourceDocument {
     private _textDocument: CRDTTextDocument,
     connection: RPCClientAdapter
   ) {
-    this._sourceDocumentCRDTChanges = sourceDocumentCRDTChangesChannel(
-      connection
-    );
+    this._sourceDocumentCRDTChanges =
+      sourceDocumentCRDTChangesChannel(connection);
     this._sourceDocumentCRDTChanges.listen(this._onSourceDocumentCRDTChanges);
   }
 

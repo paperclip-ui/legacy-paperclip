@@ -10,7 +10,7 @@ import {
   VirtualFragment,
   VirtualNode,
   VirtualNodeKind,
-  VirtualSlot
+  VirtualSlot,
 } from "@paperclip-ui/utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
@@ -122,8 +122,8 @@ export const createNativeStyleFromSheet = (
   // fix case where certain rules are invalid - e.g: &:within(:not(.on)) does some
   // funny stuff.
   const ruleTexts = sheet.rules
-    .map(rule => stringifyCSSRule(rule, { resolveUrl }))
-    .map(text => {
+    .map((rule) => stringifyCSSRule(rule, { resolveUrl }))
+    .map((text) => {
       // OOF! This is expensive! This should be done in the rust engine instead. Not here!
       const isValid = ruleIsValid(text);
 

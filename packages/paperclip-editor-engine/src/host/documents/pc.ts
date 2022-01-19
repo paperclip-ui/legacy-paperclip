@@ -6,7 +6,7 @@ import {
   LoadedPCData,
   ScriptExpressionKind,
   ScriptObject,
-  VirtualElement
+  VirtualElement,
 } from "@paperclip-ui/core";
 import * as Automerge from "automerge";
 import { CRDTTextDocument, TextEdit } from "../../core/crdt-document";

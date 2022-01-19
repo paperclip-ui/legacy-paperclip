@@ -11,7 +11,7 @@ import {
   engineDelegateChanged,
   Expression,
   isPaperclipFile,
-  VirtNodeSource
+  VirtNodeSource,
 } from "@paperclip-ui/utils";
 import { VFS } from "./vfs";
 import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
@@ -103,10 +103,10 @@ class Connection {
       {
         cwd: project.repository.localDirectory,
         ignore: ["**/node_modules/**"],
-        gitignore: true
+        gitignore: true,
       }
     );
-    return filePaths.map(filePath => URL.pathToFileURL(filePath).href);
+    return filePaths.map((filePath) => URL.pathToFileURL(filePath).href);
   };
 
   private _openProject = async ({ uri, branch }) => {
@@ -149,8 +149,8 @@ class Connection {
       sourceId,
       textSource: {
         range: expr.range,
-        uri
-      }
+        uri,
+      },
     });
   };
 
@@ -159,7 +159,7 @@ class Connection {
   ): Promise<VirtualNodeSourceInfo[]> => {
     const project = this.getProject();
 
-    return sources.map(info => {
+    return sources.map((info) => {
       return this._engine.getVirtualNodeSourceInfo(info.path, info.uri);
       // return {
       //   virtualNodePath: info.path,
@@ -176,9 +176,9 @@ class Connection {
 
   private _inspectNode = (sources: VirtNodeSource[]) => {
     const project = this.getProject();
-    return sources.map(source => [
+    return sources.map((source) => [
       source,
-      this._engine.inspectNodeStyles(source, 0)
+      this._engine.inspectNodeStyles(source, 0),
     ]);
   };
 
@@ -194,14 +194,14 @@ class Connection {
       return {
         uri,
         data: project.openPCFile(uri),
-        document: project.getPCContent(uri)
+        document: project.getPCContent(uri),
       };
     }
 
     return {
       uri,
       data: null,
-      document: isPlainTextFile(uri) ? fs.readFileSync(uri, "utf-8") : null
+      document: isPlainTextFile(uri) ? fs.readFileSync(uri, "utf-8") : null,
     };
   };
   private _commitChanges = async ({ description }) => {
@@ -221,9 +221,9 @@ class Connection {
         branchInfo: {
           branchable: false,
           branches: [],
-          currentBranch: null
+          currentBranch: null,
         },
-        localResourceRoots: []
+        localResourceRoots: [],
       };
     }
 
@@ -235,9 +235,9 @@ class Connection {
       branchInfo: {
         branches: await project.repository.getBranches(),
         branchable: project.isBranchable(),
-        currentBranch: await project.repository.getCurrentBranch()
+        currentBranch: await project.repository.getCurrentBranch(),
       },
-      localResourceRoots: [project.repository.localDirectory]
+      localResourceRoots: [project.repository.localDirectory],
     };
   };
 
@@ -248,7 +248,7 @@ class Connection {
 
     const project = this.getProject();
 
-    this._disposeEngineListener = project.onPCEngineEvent(event => {
+    this._disposeEngineListener = project.onPCEngineEvent((event) => {
       this._events.call(engineDelegateChanged(event));
     });
   }
@@ -271,7 +271,7 @@ class Connection {
           url: URL.pathToFileURL(dirPath).toString(),
           kind: FSItemKind.DIRECTORY,
           name: path.basename(dirPath),
-          children: basenames.map(basename => {
+          children: basenames.map((basename) => {
             const absolutePath = path.join(dirPath, basename);
             const isDir = fs.lstatSync(absolutePath).isDirectory();
             return {
@@ -279,9 +279,9 @@ class Connection {
               url: URL.pathToFileURL(absolutePath).toString(),
               name: basename,
               kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
-              children: isDir ? [] : undefined
+              children: isDir ? [] : undefined,
             };
-          })
+          }),
         });
       });
     });

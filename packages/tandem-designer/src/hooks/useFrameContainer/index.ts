@@ -11,7 +11,7 @@ export type UseFrameContainerProps = {
 export const useFrameContainer = ({
   mount,
   onLoad = noop,
-  fullscreen
+  fullscreen,
 }: UseFrameContainerProps) => {
   const frameRef = useRef<HTMLDivElement>();
   const [internalMount, setInternalMount] = useState<HTMLElement>(null);
@@ -52,7 +52,7 @@ export const useFrameContainer = ({
       border: "none",
       background: "white",
       width: "100%",
-      height: "100%"
+      height: "100%",
     });
     iframe.srcdoc = `
     <!doctype html>

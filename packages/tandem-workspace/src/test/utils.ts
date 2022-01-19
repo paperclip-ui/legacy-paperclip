@@ -20,7 +20,7 @@ export const createTestServer = async (
   const server = await start({
     logLevel: LogLevel.All,
     pause: false,
-    project: { installDependencies: false }
+    project: { installDependencies: false },
   });
   return {
     testDir: fixtures.testDir,
@@ -36,6 +36,6 @@ export const createTestServer = async (
         ),
         mockDOMFactory
       );
-    }
+    },
   };
 };

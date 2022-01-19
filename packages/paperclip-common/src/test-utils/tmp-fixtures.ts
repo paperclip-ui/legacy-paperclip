@@ -28,6 +28,6 @@ export const saveTmpFixtureFiles = (
     saveFiles,
     dispose: () => {
       fsa.rmSync(testDir, { recursive: true });
-    }
+    },
   };
 };

@@ -11,6 +11,7 @@ import { WorkspaceClient } from "@tandem-ui/workspace-client";
 import { sockjsClientAdapter } from "@paperclip-ui/common";
 import SockJSClient from "sockjs-client";
 import { WorkspaceProjectContext } from "../../contexts";
+import { engineMiddleware } from "../../engines";
 
 export type WithAppStoreOptions = {
   showLaunchExternalButton?: boolean;
@@ -25,58 +26,57 @@ export type WithAppStoreOptions = {
   showCodeEditorOnStartup?: boolean;
 } & MainSagaOptions;
 
-export const withAppStore = (Child: React.FC) => (
-  options: WithAppStoreOptions
-) => {
-  let _inited = false;
-  let _store;
-  const client = new WorkspaceClient(
-    sockjsClientAdapter(
-      new SockJSClient(location.protocol + "//" + location.host + "/rt")
-    )
-  );
-
-  const init = () => {
-    if (_inited) {
-      return;
-    }
-
-    const state = createState(options);
-
-    _inited = true;
-    const sagaMiddleware = createSagaMiddleware();
-    _store = createStore(
-      defaultReducer,
-      state,
-      applyMiddleware(sagaMiddleware)
+export const withAppStore =
+  (Child: React.FC) => (options: WithAppStoreOptions) => {
+    let _inited = false;
+    let _store;
+    const client = new WorkspaceClient(
+      sockjsClientAdapter(
+        new SockJSClient(location.protocol + "//" + location.host + "/rt")
+      )
     );
 
-    // DEPRECATED
-    sagaMiddleware.run(mainSaga, document.body, state => state, options);
+    const init = () => {
+      if (_inited) {
+        return;
+      }
+
+      const state = createState(options);
+
+      _inited = true;
+      const sagaMiddleware = createSagaMiddleware();
+      _store = createStore(
+        defaultReducer,
+        state,
+        applyMiddleware(sagaMiddleware, engineMiddleware)
+      );
+
+      // DEPRECATED
+      sagaMiddleware.run(mainSaga, document.body, (state) => state, options);
+    };
+
+    return (props) => {
+      init();
+
+      const [project, setProject] = useState(null);
+
+      useEffect(() => {
+        client
+          .openProject({
+            id: new URLSearchParams(location.search).get("projectId"),
+          })
+          .then(setProject);
+      }, []);
+
+      return (
+        <Provider store={_store}>
+          <WorkspaceProjectContext.Provider value={project}>
+            <Child {...props} />
+          </WorkspaceProjectContext.Provider>
+        </Provider>
+      );
+    };
   };
-
-  return props => {
-    init();
-
-    const [project, setProject] = useState(null);
-
-    useEffect(() => {
-      client
-        .openProject({
-          id: new URLSearchParams(location.search).get("projectId")
-        })
-        .then(setProject);
-    }, []);
-
-    return (
-      <Provider store={_store}>
-        <WorkspaceProjectContext.Provider value={project}>
-          <Child {...props} />
-        </WorkspaceProjectContext.Provider>
-      </Provider>
-    );
-  };
-};
 
 const createState = ({
   showLaunchExternalButton,
@@ -88,16 +88,16 @@ const createState = ({
   codeEditorWidth,
   activeFrame,
   floatingPreview,
-  rounded
+  rounded,
 }: WithAppStoreOptions) => {
   let state: AppState = {
     ...INITIAL_STATE,
     designer: {
       ...INITIAL_STATE.designer,
-      codeEditorWidth
-    }
+      codeEditorWidth,
+    },
   };
-  state = produce(state, newState => {
+  state = produce(state, (newState) => {
     if (showLaunchExternalButton != null) {
       newState.designer.sharable = showLaunchExternalButton;
     }

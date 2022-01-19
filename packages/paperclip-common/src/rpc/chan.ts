@@ -16,7 +16,7 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
       let id = Math.random();
 
       return new Promise((resolve, reject) => {
-        const onMessage = message => {
+        const onMessage = (message) => {
           if (message.id === id) {
             disposeListener();
             if (message.error) {
@@ -32,21 +32,21 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
     };
 
     const listen = (call: (payload: any) => Promise<any>) => {
-      const dispose = chan.onMessage(async message => {
+      const dispose = chan.onMessage(async (message) => {
         if (message.name === requestName && message.channelId !== channelId) {
           try {
             chan.send({
               name: responseName,
               id: message.id,
               channelId,
-              payload: await call(message.payload)
+              payload: await call(message.payload),
             });
           } catch (error) {
             chan.send({
               name: responseName,
               id: message.id,
               channelId,
-              error
+              error,
             });
           }
         }

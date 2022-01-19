@@ -7,7 +7,7 @@ import {
   NodeAnnotations,
   VirtualFrame,
   EvaluatedDataKind,
-  VirtualNodeKind
+  VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import { useTextInput } from "@tandem-ui/design-system";
 import { FilterTextInput } from "../../../TextInput/filter.pc";
@@ -26,14 +26,8 @@ type CellFrame = {
 };
 
 export const Birdseye = memo(() => {
-  const {
-    dispatch,
-    state,
-    onFilter,
-    filteredCells,
-    filter,
-    columns
-  } = useBirdseye();
+  const { dispatch, state, onFilter, filteredCells, filter, columns } =
+    useBirdseye();
 
   let content;
 
@@ -55,7 +49,7 @@ export const Birdseye = memo(() => {
 
             return filteredCells
               .slice(start, start + maxRows * columns)
-              .map(frame => {
+              .map((frame) => {
                 return (
                   <Cell
                     uri={frame.fileUri}
@@ -84,9 +78,9 @@ const useBirdseye = () => {
   const allFrames: CellFrame[] = [];
 
   for (const uri in state.designer.allLoadedPCFileData) {
-    if (!state.designer.projectDirectory) {
-      continue;
-    }
+    // if (!state.designer.projectDirectory) {
+    //   continue;
+    // }
 
     const data = state.designer.allLoadedPCFileData[uri];
     if (data.kind !== EvaluatedDataKind.PC) {
@@ -101,17 +95,16 @@ const useBirdseye = () => {
       const frame = frames[i];
 
       const filePath = fileURLToPath(uri);
-      const relativePath = path.relative(
-        state.designer.projectDirectory?.absolutePath,
-        filePath
-      );
+      const relativePath =
+        state.designer.projectDirectory &&
+        path.relative(state.designer.projectDirectory?.absolutePath, filePath);
 
       allFrames.push({
         node: frame as VirtualFrame,
         index: i,
         relativePath,
 
-        fileUri: uri
+        fileUri: uri,
       });
     }
   }
@@ -133,7 +126,7 @@ const useBirdseye = () => {
     onFilter,
     filteredCells,
     filter,
-    columns
+    columns,
   };
 };
 
@@ -145,7 +138,7 @@ type HeaderProps = {
 const Header = memo(({ filter, onFilter }: HeaderProps) => {
   const { inputProps: filterInputProps } = useTextInput({
     value: filter,
-    onValueChange: onFilter
+    onValueChange: onFilter,
   });
 
   // don't autofocus
@@ -187,12 +180,9 @@ const getCellInfo = (node: VirtualFrame) => {
 };
 
 const filterCells = (cells: CellFrame[], filter = "") => {
-  const filterParts = filter
-    .toLowerCase()
-    .trim()
-    .split(" ");
+  const filterParts = filter.toLowerCase().trim().split(" ");
 
-  return cells.filter(cell => {
+  return cells.filter((cell) => {
     const info = getCellInfo(cell.node);
 
     let visible = info.visible;
@@ -202,10 +192,10 @@ const filterCells = (cells: CellFrame[], filter = "") => {
       const filterable: string[] = [
         info.label,
         cell.relativePath,
-        ...info.tags
+        ...info.tags,
       ];
 
-      visible = filterParts.every(filterPart => {
+      visible = filterParts.every((filterPart) => {
         for (const filterableItem of filterable) {
           if (filterableItem.toLowerCase().indexOf(filterPart) !== -1) {
             return true;

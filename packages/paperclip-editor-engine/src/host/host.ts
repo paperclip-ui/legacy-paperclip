@@ -32,7 +32,7 @@ export class EditorHost {
    */
 
   private _start() {
-    this._server.onConnection(connection => {
+    this._server.onConnection((connection) => {
       new ClientConnection(
         this._documents,
         connection,

@@ -12,13 +12,13 @@ import {
   VirtualElement,
   VirtualFrame,
   VirtualNode,
-  VirtualNodeKind
+  VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import { Box, DOMFactory } from "./base";
 import {
   createNativeNode,
   createNativeStyleFromSheet,
-  UrlResolver
+  UrlResolver,
 } from "./native-renderer";
 import { getFrameBounds, traverseNativeNode } from "./utils";
 
@@ -191,7 +191,7 @@ export const getFrameRects = (
           width: clientRect.width,
           height: clientRect.height,
           x: clientRect.left + bounds.x,
-          y: clientRect.top + bounds.y
+          y: clientRect.top + bounds.y,
         };
       }
     }
@@ -249,7 +249,7 @@ const calcAryPatch = <TItem>(oldItems: TItem[], newItems: TItem[]) => {
   const low = Math.min(oldItems.length, newItems.length);
   const update = Array.from({ length: low }).map((v, i) => [
     oldItems[i],
-    newItems[i]
+    newItems[i],
   ]);
   const insert = newItems.slice(oldItems.length);
   const removeCount = Math.max(oldItems.length - newItems.length, 0);

@@ -1,7 +1,7 @@
 import { EngineDelegateEvent, LoadedPCData } from "@paperclip-ui/core";
 import {
   FramesRenderer,
-  FramesRendererState
+  FramesRendererState,
 } from "@paperclip-ui/web-renderer";
 import { EditorClientOptions } from "../../client";
 import { EventEmitter } from "events";

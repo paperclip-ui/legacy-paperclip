@@ -18,7 +18,7 @@ export const useFrame = ({
   onUpdate = noop,
   fullscreen,
   frameUri,
-  frameIndex
+  frameIndex,
 }: UseFrameProps) => {
   const [loaded, setLoaded] = useState(false);
 
@@ -37,7 +37,7 @@ export const useFrame = ({
   const { mount, loadedPCData } = useFrameMount({
     frameUri,
     frameIndex,
-    onUpdate: onUpdate2
+    onUpdate: onUpdate2,
   });
 
   // once the container loads, _then_ we can fire subsequent updates

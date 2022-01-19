@@ -9,11 +9,11 @@ describe(__filename + "#", () => {
 
   it(`Can open a project`, async () => {
     server = await createTestServer({
-      "hello.pc": "Hello world"
+      "hello.pc": "Hello world",
     });
     const client = server.createClient();
     const project = await client.openProject({
-      uri: url.pathToFileURL(server.testDir).href
+      uri: url.pathToFileURL(server.testDir).href,
     });
     const doc = (await project
       .getDocuments()
@@ -27,11 +27,11 @@ describe(__filename + "#", () => {
 
   it(`Can load Paperclip files `, async () => {
     server = await createTestServer({
-      "hello.pc": "Hello world"
+      "hello.pc": "Hello world",
     });
     const client = server.createClient();
     const project = await client.openProject({
-      uri: url.pathToFileURL(server.testDir).href
+      uri: url.pathToFileURL(server.testDir).href,
     });
     const documents: PCDocument[] = [];
     for (const document of await project.openAllPaperclipDocuments()) {

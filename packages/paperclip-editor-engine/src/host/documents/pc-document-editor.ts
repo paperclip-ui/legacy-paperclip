@@ -7,7 +7,7 @@ import {
   SetAnnotations,
   InsertNodeBefore,
   ChildInsertionKind,
-  ChildInsertion
+  ChildInsertion,
 } from "../../core";
 import { DocumentManager } from "./manager";
 import {
@@ -25,7 +25,7 @@ import {
   ScriptExpressionKind,
   ScriptObject,
   Slot,
-  VirtualElement
+  VirtualElement,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { VirtualobjectEditKind } from "../../core";
@@ -62,29 +62,27 @@ export class PCDocumentEditor {
   }
 }
 
-const mapVirtualSourceEdit = (
-  uri: string,
-  documents: DocumentManager,
-  engine: EngineDelegate
-) => (edit: VirtualObjectEdit): DocumentTextEdit => {
-  switch (edit.kind) {
-    case VirtualobjectEditKind.InsertNodeBefore:
-      return insertNodeBefore(uri, engine, edit);
-    case VirtualobjectEditKind.AppendChild:
-      return appendChild(uri, documents, engine, edit);
-    case VirtualobjectEditKind.SetTextNodeValue:
-      return setTextNodeValue(uri, engine, edit);
-    case VirtualobjectEditKind.AddAttribute:
-      return addAttribute(uri, engine, edit);
-    case VirtualobjectEditKind.UpdateAttribute:
-      return updateAttribute(uri, engine, edit);
-    case VirtualobjectEditKind.SetAnnotations:
-      return setAnnotations(uri, engine, edit);
-    default: {
-      throw new Error(`Unhandled edit`);
+const mapVirtualSourceEdit =
+  (uri: string, documents: DocumentManager, engine: EngineDelegate) =>
+  (edit: VirtualObjectEdit): DocumentTextEdit => {
+    switch (edit.kind) {
+      case VirtualobjectEditKind.InsertNodeBefore:
+        return insertNodeBefore(uri, engine, edit);
+      case VirtualobjectEditKind.AppendChild:
+        return appendChild(uri, documents, engine, edit);
+      case VirtualobjectEditKind.SetTextNodeValue:
+        return setTextNodeValue(uri, engine, edit);
+      case VirtualobjectEditKind.AddAttribute:
+        return addAttribute(uri, engine, edit);
+      case VirtualobjectEditKind.UpdateAttribute:
+        return updateAttribute(uri, engine, edit);
+      case VirtualobjectEditKind.SetAnnotations:
+        return setAnnotations(uri, engine, edit);
+      default: {
+        throw new Error(`Unhandled edit`);
+      }
     }
-  }
-};
+  };
 
 const getSourceNodeFromPath = (
   uri: string,
@@ -101,7 +99,7 @@ const insertNodeBefore = (
   return {
     uri: info.textSource.uri,
     chars: getChildInsertionContent(edit.node, false).split(""),
-    index: info.textSource.range.start.pos
+    index: info.textSource.range.start.pos,
   };
 };
 
@@ -124,7 +122,7 @@ const addAttribute = (
   return {
     uri: sourceUri,
     chars: (" " + buffer.join("")).split(""),
-    index: expr.tagNameRange.end.pos
+    index: expr.tagNameRange.end.pos,
   };
 };
 
@@ -157,7 +155,7 @@ const updateAttribute = (
   return {
     uri: sourceUri,
     chars: (" " + buffer.join("")).split(""),
-    index: expr.tagNameRange.end.pos
+    index: expr.tagNameRange.end.pos,
   };
 };
 
@@ -193,7 +191,7 @@ const setAnnotations = (
       uri,
       chars: buffer.join("").split(""),
       index: expr.range.start.pos,
-      deleteCount: expr.range.end.pos
+      deleteCount: expr.range.end.pos,
     };
   } else {
     const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
@@ -201,7 +199,7 @@ const setAnnotations = (
     return {
       uri: sourceUri,
       chars: buffer.join("").split(""),
-      index: info.textSource.range.start.pos
+      index: info.textSource.range.start.pos,
     };
   }
 };
@@ -274,7 +272,7 @@ const appendSlot = (
     kind: VirtualobjectEditKind.UpdateAttribute,
     nodePath: instancePath,
     name: exprName,
-    value: getChildInsertionContent(edit.child, true)
+    value: getChildInsertionContent(edit.child, true),
   });
 };
 
@@ -284,10 +282,7 @@ const appendElement = (
   exprUri: string,
   edit: AppendChild
 ) => {
-  const source = documents
-    .open(exprUri)
-    .openSource()
-    .getText();
+  const source = documents.open(exprUri).openSource().getText();
 
   const tagBuffer = source.substring(
     expr.openTagRange.start.pos,
@@ -301,12 +296,12 @@ const appendElement = (
       chars: [
         ">",
         getChildInsertionContent(edit.child, false),
-        `</${expr.tagName}>`
+        `</${expr.tagName}>`,
       ]
         .join("")
         .split(""),
       index: tagBuffer.trim().lastIndexOf("/>"),
-      deleteCount: 2
+      deleteCount: 2,
     };
   }
 
@@ -319,7 +314,7 @@ const appendElement = (
   return {
     uri: exprUri,
     chars: getChildInsertionContent(edit.child, false).split(""),
-    index: endTagPos
+    index: endTagPos,
   };
 };
 
@@ -335,7 +330,7 @@ const setTextNodeValue = (
       chars: edit.value.split(""),
       index: info.textSource.range.start.pos,
       deleteCount:
-        info.textSource.range.end.pos - info.textSource.range.start.pos
+        info.textSource.range.end.pos - info.textSource.range.start.pos,
     };
   }
 };

@@ -50,7 +50,7 @@ export class Server {
     io.installHandlers(httpServer, { prefix: "/rt" });
 
     const paperclipEngine = createEngineDelegate({
-      mode: EngineMode.MultiFrame
+      mode: EngineMode.MultiFrame,
     });
 
     const sockServer = sockjsServerRPCAdapter(io);
@@ -83,7 +83,7 @@ export class Server {
     // need to wait for http server to spin up. This is a really dumb approach.
     // pause option specifically for testing.
     if (this.options.pause !== false) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         setTimeout(resolve, 500);
       });
     }

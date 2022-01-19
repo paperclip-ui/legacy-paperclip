@@ -13,7 +13,7 @@ export type WorkspaceState = {
 
 export enum FSItemKind {
   FILE = "file",
-  DIRECTORY = "directory"
+  DIRECTORY = "directory",
 }
 
 export type File = {

@@ -6,7 +6,7 @@ export enum VirtScriptObjectKind {
   Array = "Array",
   Boolean = "Boolean",
   Number = "Number",
-  Str = "Str"
+  Str = "Str",
 }
 
 type BaseVirtScriptObject<TKind extends VirtScriptObjectKind> = {
@@ -49,7 +49,7 @@ export const toVirtScriptValue = memoize((value: any) => {
   if (Array.isArray(value)) {
     return {
       kind: VirtScriptObjectKind.Array,
-      values: value.map(toVirtScriptValue)
+      values: value.map(toVirtScriptValue),
     };
   } else if (value && typeof value === "object") {
     const values = {};
@@ -58,22 +58,22 @@ export const toVirtScriptValue = memoize((value: any) => {
     }
     return {
       kind: VirtScriptObjectKind.Object,
-      values
+      values,
     };
   } else if (typeof value === "number") {
     return {
       kind: VirtScriptObjectKind.Number,
-      value
+      value,
     };
   } else if (typeof value === "string") {
     return {
       kind: VirtScriptObjectKind.Str,
-      value
+      value,
     };
   } else if (typeof value === "boolean") {
     return {
       kind: VirtScriptObjectKind.Boolean,
-      value
+      value,
     };
   }
 });

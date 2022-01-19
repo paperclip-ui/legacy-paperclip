@@ -4,7 +4,7 @@ export enum LogLevel {
   Warn = 1 << 2,
   Error = 1 << 3,
   All = LogLevel.Verbose | LogLevel.Info | LogLevel.Warn | LogLevel.Error,
-  None = 0
+  None = 0,
 }
 
 export class Logger {

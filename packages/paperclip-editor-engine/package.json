@@ -13,17 +13,18 @@
   "dependencies": {
     "@paperclip-ui/common": "^18.4.7",
     "@paperclip-ui/core": "^18.4.7",
-    "@paperclip-ui/web-renderer": "^18.4.7",
-    "globby": "^8.0.1",
     "automerge": "^1.0.1-preview.6",
     "diff": "^5.0.0",
     "fs-extra": "^10.0.0",
+    "globby": "^8.0.1",
+    "immer": "^9.0.12",
     "paperclip-preview": "^1.0.0",
     "prettier-plugin-paperclip": "^18.4.7",
     "sockjs": "^0.3.24"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
+    "@paperclip-ui/web-renderer": "^18.4.7",
     "@types/diff": "^5.0.2",
     "@types/mocha": "^9.0.0",
     "chai": "^4.3.4",

@@ -3,7 +3,8 @@ import * as channels from "./channel";
 import { workerRPCClientAdapter } from "@paperclip-ui/common";
 
 export class PaperclipEngineAsyncInfoProvider
-  implements IPaperclipEngineInfoProvider {
+  implements IPaperclipEngineInfoProvider
+{
   private _worker: Worker;
   private _colorsChannel: ReturnType<typeof channels.documentColors>;
   private _updateDocument: ReturnType<typeof channels.updateDocument>;

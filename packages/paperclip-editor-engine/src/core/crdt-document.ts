@@ -52,7 +52,7 @@ export class CRDTTextDocument {
     let curr = this._doc;
 
     for (const edit of edits) {
-      curr = Automerge.change(curr, doc => {
+      curr = Automerge.change(curr, (doc) => {
         applyTextEdit(edit, doc.text);
       });
     }
@@ -77,12 +77,12 @@ export class CRDTTextDocument {
    */
 
   setText(chars: string[], index = 0, deleteCount = 0) {
-    const newDoc = Automerge.change(this._doc, newDoc => {
+    const newDoc = Automerge.change(this._doc, (newDoc) => {
       applyTextEdit(
         {
           chars,
           index,
-          deleteCount
+          deleteCount,
         },
         newDoc.text
       );

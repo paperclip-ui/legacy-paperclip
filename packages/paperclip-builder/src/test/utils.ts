@@ -37,7 +37,9 @@ export const saveTmpFixtureFiles = (
         { cwd: testDir, config, gitignore: false, watch: options.watch },
         engine
       );
-      const ended = new Promise(resolve => builder.onEnd(() => resolve(null)));
+      const ended = new Promise((resolve) =>
+        builder.onEnd(() => resolve(null))
+      );
       builder.onFile((filePath, content) => {
         emittedFiles[path.relative(testDir, filePath)] = content;
       });
@@ -50,6 +52,6 @@ export const saveTmpFixtureFiles = (
         builder.stop();
       }
       fixtures.dispose();
-    }
+    },
   };
 };

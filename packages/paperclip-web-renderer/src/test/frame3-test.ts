@@ -6,13 +6,13 @@ import { expect } from "chai";
 describe(__filename + "#", () => {
   it(`Can render simple frames`, () => {
     const engine = createMockEngine({
-      "hello.pc": `<style>div {color: red;}</style><div>Hello world</div>`
+      "hello.pc": `<style>div {color: red;}</style><div>Hello world</div>`,
     });
     const frames = renderFrames(engine.open("hello.pc"), {
-      domFactory: mockDOMFactory
+      domFactory: mockDOMFactory,
     });
 
-    expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
       `<div></div><div><style>div._cb99d41f {color: red;} </style></div><div><div class="_cb99d41f _pub-cb99d41f">Hello world</div></div>`
     );
   });
@@ -22,35 +22,35 @@ describe(__filename + "#", () => {
       "hello.pc": `
       <import src="/imp.css" />
       <style>div {color: red;}</style><div>Hello world</div>`,
-      "/imp.css": `div {color: blue;}`
+      "/imp.css": `div {color: blue;}`,
     });
     const frames = renderFrames(engine.open("hello.pc"), {
-      domFactory: mockDOMFactory
+      domFactory: mockDOMFactory,
     });
 
-    expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
       `<div><style>div._pub-2c5dbed5 {color: blue;} </style></div><div><style>div._cb99d41f {color: red;} </style></div><div><div class="_cb99d41f _pub-cb99d41f">Hello world</div></div>`
     );
   });
   it(`Can a slot`, () => {
     const engine = createMockEngine({
-      "hello.pc": `<div component as="Test">{child}</div><Test />`
+      "hello.pc": `<div component as="Test">{child}</div><Test />`,
     });
     const frames = renderFrames(engine.open("hello.pc"), {
-      domFactory: mockDOMFactory
+      domFactory: mockDOMFactory,
     });
 
-    expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
       `<div></div><div><style></style></div><div><div class="_cb99d41f _pub-cb99d41f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
     );
   });
 
   it(`Can render a single frame`, () => {
     const engine = createMockEngine({
-      "hello.pc": `a<span />`
+      "hello.pc": `a<span />`,
     });
     const frame = renderFrame(engine.open("hello.pc"), 0, {
-      domFactory: mockDOMFactory
+      domFactory: mockDOMFactory,
     });
 
     expect(frame.innerHTML).to.eql(
@@ -60,11 +60,11 @@ describe(__filename + "#", () => {
 
   it(`Can patch a single frame`, () => {
     const engine = createMockEngine({
-      "hello.pc": `a<span />`
+      "hello.pc": `a<span />`,
     });
     const content = engine.open("hello.pc");
     const frame = renderFrame(content, 0, {
-      domFactory: mockDOMFactory
+      domFactory: mockDOMFactory,
     });
 
     engine.updateVirtualFileContent("hello.pc", "bbb");
@@ -80,126 +80,127 @@ describe(__filename + "#", () => {
     [
       `Can replace a frame`,
       {
-        "hello.pc": "<div></div>"
+        "hello.pc": "<div></div>",
       },
       {
-        "hello.pc": "blah"
-      }
+        "hello.pc": "blah",
+      },
     ],
     [
       `Replaces a node if the tag name doesn't match`,
       {
-        "hello.pc": "<div></div>"
+        "hello.pc": "<div></div>",
       },
       {
-        "hello.pc": "<span />"
-      }
+        "hello.pc": "<span />",
+      },
     ],
     [
       `Adds a frame`,
       {
-        "hello.pc": "a"
+        "hello.pc": "a",
       },
       {
-        "hello.pc": "a<span />"
-      }
+        "hello.pc": "a<span />",
+      },
     ],
     [
       `Removes a frame`,
       {
-        "hello.pc": "a<span />"
+        "hello.pc": "a<span />",
       },
       {
-        "hello.pc": "<span />"
-      }
+        "hello.pc": "<span />",
+      },
     ],
     [
       `Adds a child`,
       {
-        "hello.pc": "<span></span>"
+        "hello.pc": "<span></span>",
       },
       {
-        "hello.pc": "<span>a</span>"
-      }
+        "hello.pc": "<span>a</span>",
+      },
     ],
     [
       `Removes a child`,
       {
-        "hello.pc": "<span>a</span>"
+        "hello.pc": "<span>a</span>",
       },
       {
-        "hello.pc": "<span></span>"
-      }
+        "hello.pc": "<span></span>",
+      },
     ],
     [
       `Can change text value`,
       {
-        "hello.pc": "a"
+        "hello.pc": "a",
       },
       {
-        "hello.pc": "b"
-      }
+        "hello.pc": "b",
+      },
     ],
     [
       `Can change style`,
       {
-        "hello.pc": "<style>span { color: blue;}</style>a"
+        "hello.pc": "<style>span { color: blue;}</style>a",
       },
       {
-        "hello.pc": "<style>div { color: red;}</style>a"
-      }
+        "hello.pc": "<style>div { color: red;}</style>a",
+      },
     ],
     [
       `Can insert a style`,
       {
-        "hello.pc": "<style>span { color: blue;}</style>a"
+        "hello.pc": "<style>span { color: blue;}</style>a",
       },
       {
-        "hello.pc": "<style>div { color: red;} div { color: black; }</style>a"
-      }
+        "hello.pc": "<style>div { color: red;} div { color: black; }</style>a",
+      },
     ],
     [
       `Can remove a style`,
       {
-        "hello.pc": "<style>span { color: blue;} div { color: black; }</style>a"
+        "hello.pc":
+          "<style>span { color: blue;} div { color: black; }</style>a",
       },
       {
-        "hello.pc": "<style>div { color: red;}</style>a"
-      }
+        "hello.pc": "<style>div { color: red;}</style>a",
+      },
     ],
     [
       `Can add style in import`,
       {
         "hello.pc": "<import src='imp.pc' />a",
-        "imp.pc": "<style>div { color: blue }</style>"
+        "imp.pc": "<style>div { color: blue }</style>",
       },
       {
         "hello.pc": "<import src='imp.pc' />a",
-        "imp.pc": "<style>div { color: blue } span { color: black } </style>"
-      }
+        "imp.pc": "<style>div { color: blue } span { color: black } </style>",
+      },
     ],
     [
       `Can add an import`,
       {
         "hello.pc": "<import src='imp.pc' />a",
         "imp.pc": "<style>div { color: blue }</style>",
-        "imp2.pc": "<style>div { color: orange } </style>"
+        "imp2.pc": "<style>div { color: orange } </style>",
       },
       {
         "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
-        "imp2.pc": "<style>div { color: orange } </style>"
-      }
+        "imp2.pc": "<style>div { color: orange } </style>",
+      },
     ],
     [
       `Can remove an import`,
       {
         "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
         "imp.pc": "<style>div { color: blue }</style>",
-        "imp2.pc": "<style>div { color: orange } </style>"
+        "imp2.pc": "<style>div { color: orange } </style>",
       },
       {
-        "hello.pc": "<import src='imp.pc' />a"
-      }
+        "hello.pc": "<import src='imp.pc' />a",
+      },
     ],
     [
       `Can remove an in an import`,
@@ -207,40 +208,40 @@ describe(__filename + "#", () => {
         "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
         "imp.pc": "<style>div { color: blue }</style>",
         "imp2.pc": "<style>div { color: orange } </style>",
-        "imp3.pc": "<style>div { color: magenta } </style>"
+        "imp3.pc": "<style>div { color: magenta } </style>",
       },
       {
         "imp2.pc":
-          "<import src='imp3.pc' /><style>div { color: orange } </style>"
-      }
+          "<import src='imp3.pc' /><style>div { color: orange } </style>",
+      },
     ],
     [
       `Can add an attribute`,
       {
-        "hello.pc": `<div></div>`
+        "hello.pc": `<div></div>`,
       },
       {
-        "hello.pc": `<div a="b"></div>`
-      }
+        "hello.pc": `<div a="b"></div>`,
+      },
     ],
     [
       `Can remove an attribute`,
       {
-        "hello.pc": `<div a="b"></div>`
+        "hello.pc": `<div a="b"></div>`,
       },
       {
-        "hello.pc": `<div></div>`
-      }
+        "hello.pc": `<div></div>`,
+      },
     ],
     [
       `can patch a slot`,
       {
-        "hello.pc": `<div component as="Test">{child}</div><Test />`
+        "hello.pc": `<div component as="Test">{child}</div><Test />`,
       },
       {
-        "hello.pc": `<div component as="Test">{child}</div><Test child='b' />`
-      }
-    ]
+        "hello.pc": `<div component as="Test">{child}</div><Test child='b' />`,
+      },
+    ],
   ].forEach(([title, ...graphs]: any) => {
     it(title, () => {
       const engine = createMockEngine(graphs[0]);
@@ -253,11 +254,11 @@ describe(__filename + "#", () => {
         }
         const newData = engine.open("hello.pc");
         frames = patchFrames(frames, data, newData, {
-          domFactory: mockDOMFactory
+          domFactory: mockDOMFactory,
         });
         const newFrames = renderFrames(newData, { domFactory: mockDOMFactory });
-        expect(frames.map(frame => frame.innerHTML).join("")).to.eql(
-          newFrames.map(frame => frame.innerHTML).join("")
+        expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+          newFrames.map((frame) => frame.innerHTML).join("")
         );
       }
     });

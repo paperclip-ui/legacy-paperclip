@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
@@ -13,7 +13,7 @@ import { throttle } from "lodash";
 import {
   computeVirtScriptObject,
   NodeAnnotations,
-  VirtualFrame
+  VirtualFrame,
 } from "@paperclip-ui/utils";
 import * as url from "url";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
@@ -37,7 +37,7 @@ export const Cell = ({ uri, index, filter, node, relativePath }: CellProps) => {
     relativePath,
     filter,
     frameIndex: index,
-    node
+    node,
   });
 
   const { ref } = useFrame({ frameUri: uri, frameIndex: index });
@@ -55,7 +55,7 @@ export const Cell = ({ uri, index, filter, node, relativePath }: CellProps) => {
           width: frameBox.width,
           height: frameBox.height,
           transform: `scale(${scale})`,
-          transformOrigin: `top left`
+          transformOrigin: `top left`,
         }}
         ref={ref}
       />
@@ -104,8 +104,8 @@ const useCell = ({ uri, frameIndex, node }: UseCellProps) => {
           ...parts.query,
           canvasFile: uri,
           frame: frameIndex,
-          showAll: undefined
-        }
+          showAll: undefined,
+        },
       })
     );
   }, [frameIndex, uri]);
@@ -136,7 +136,7 @@ const useCell = ({ uri, frameIndex, node }: UseCellProps) => {
     visible,
     label,
     onClick,
-    mountRef
+    mountRef,
   };
 };
 

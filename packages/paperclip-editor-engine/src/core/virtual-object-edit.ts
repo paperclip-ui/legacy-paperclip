@@ -18,13 +18,13 @@ export enum VirtualobjectEditKind {
   RenameReferenceName = "RenameReferenceName",
 
   // Should
-  RenameComponentName = "RenameComponentName"
+  RenameComponentName = "RenameComponentName",
 }
 
 export enum ChildInsertionKind {
   Text = "Text",
   Element = "Element",
-  Instance = "Instance"
+  Instance = "Instance",
 }
 
 type BaseChildInsertion<TKind extends ChildInsertionKind> = {

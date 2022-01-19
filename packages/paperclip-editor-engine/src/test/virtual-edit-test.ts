@@ -1,7 +1,7 @@
 import {
   computeVirtScriptObject,
   stringifyVirtualNode,
-  VirtualElement
+  VirtualElement,
 } from "@paperclip-ui/core";
 import { expect } from "chai";
 import { ChildInsertionKind, VirtualobjectEditKind } from "../core";
@@ -13,7 +13,7 @@ describe(__filename + "#", () => {
   describe("html", () => {
     it(`Can update the text of a virtual node`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div>blah</div>"
+        "/hello.pc": "<div>blah</div>",
       });
 
       const client = server.createHostClient();
@@ -23,8 +23,8 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<span />" }
-        }
+          node: { kind: ChildInsertionKind.Element, value: "<span />" },
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
@@ -33,7 +33,7 @@ describe(__filename + "#", () => {
 
     it(`Can insert multiple nodes in the same edit`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div>blah</div>"
+        "/hello.pc": "<div>blah</div>",
       });
 
       const client = server.createHostClient();
@@ -43,13 +43,13 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<a />" }
+          node: { kind: ChildInsertionKind.Element, value: "<a />" },
         },
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<b />" }
-        }
+          node: { kind: ChildInsertionKind.Element, value: "<b />" },
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.equals(
         `<div class="_5cd17222 _pub-5cd17222"><b class="_5cd17222 _pub-5cd17222"></b><a class="_5cd17222 _pub-5cd17222"></a>blah</div>`
@@ -58,7 +58,7 @@ describe(__filename + "#", () => {
 
     it(`Can update the text of a node`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div>blah</div>"
+        "/hello.pc": "<div>blah</div>",
       });
 
       const client = server.createHostClient();
@@ -68,8 +68,8 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.SetTextNodeValue,
           nodePath: "0.0",
-          value: "Hello world"
-        }
+          value: "Hello world",
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">Hello world</div>`
@@ -78,7 +78,7 @@ describe(__filename + "#", () => {
 
     it(`Can insert new node annotations`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div>blah</div>"
+        "/hello.pc": "<div>blah</div>",
       });
 
       const client = server.createHostClient();
@@ -87,15 +87,15 @@ describe(__filename + "#", () => {
       const annotations = {
         tags: ["a", "b"],
         desc: "Some description",
-        frame: { width: 100, height: 100 }
+        frame: { width: 100, height: 100 },
       };
 
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.SetAnnotations,
           nodePath: "0",
-          value: annotations
-        }
+          value: annotations,
+        },
       ]);
 
       const node = doc.getNodeFromPath("0") as VirtualElement;
@@ -110,7 +110,7 @@ describe(__filename + "#", () => {
       const { server } = await createMockHost({
         "/hello.pc": `<!--
           @frame { width: 100, height: 100 }
-        --> <div>blah</div>`
+        --> <div>blah</div>`,
       });
 
       const client = server.createHostClient();
@@ -119,15 +119,15 @@ describe(__filename + "#", () => {
       const annotations = {
         tags: ["a", "b"],
         desc: "Some description",
-        frame: { width: 100, height: 100 }
+        frame: { width: 100, height: 100 },
       };
 
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.SetAnnotations,
           nodePath: "0",
-          value: annotations
-        }
+          value: annotations,
+        },
       ]);
 
       const node = doc.getNodeFromPath("0") as VirtualElement;
@@ -144,7 +144,7 @@ describe(__filename + "#", () => {
 
     it(`Can add a new element attribute`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div>blah</div>"
+        "/hello.pc": "<div>blah</div>",
       });
 
       const client = server.createHostClient();
@@ -155,8 +155,8 @@ describe(__filename + "#", () => {
           kind: VirtualobjectEditKind.AddAttribute,
           nodePath: "0",
           name: "a",
-          value: '"b"'
-        }
+          value: '"b"',
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
@@ -165,7 +165,7 @@ describe(__filename + "#", () => {
 
     xit(`Can update an element attribute value`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div a>blah</div>"
+        "/hello.pc": "<div a>blah</div>",
       });
 
       const client = server.createHostClient();
@@ -176,8 +176,8 @@ describe(__filename + "#", () => {
           kind: VirtualobjectEditKind.UpdateAttribute,
           nodePath: "0",
           name: "a",
-          value: '"b"'
-        }
+          value: '"b"',
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222" a="b">blah</div>`
@@ -186,7 +186,7 @@ describe(__filename + "#", () => {
 
     it(`Can append a child to a self-closing element`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div />"
+        "/hello.pc": "<div />",
       });
       const client = server.createHostClient();
 
@@ -195,8 +195,8 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" }
-        }
+          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span></div>`
@@ -205,7 +205,7 @@ describe(__filename + "#", () => {
 
     it(`Can append a child to an element with a closing tag`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div></div>"
+        "/hello.pc": "<div></div>",
       });
       const client = server.createHostClient();
 
@@ -214,8 +214,8 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" }
-        }
+          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span></div>`
@@ -224,7 +224,7 @@ describe(__filename + "#", () => {
 
     it(`Can append a child to an element with children`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": "<div>abba</div>"
+        "/hello.pc": "<div>abba</div>",
       });
       const client = server.createHostClient();
 
@@ -233,8 +233,8 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" }
-        }
+          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+        },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">abba<span class="_5cd17222 _pub-5cd17222"></span></div>`
@@ -243,7 +243,7 @@ describe(__filename + "#", () => {
 
     it(`If text is inserted into a slot placeholder, that slot is assigned as a regular key/value attribute`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": `<div component as="Test">{child}</div><Test />`
+        "/hello.pc": `<div component as="Test">{child}</div><Test />`,
       });
       const client = server.createHostClient();
 
@@ -256,8 +256,8 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Text, value: "blarg" }
-        }
+          child: { kind: ChildInsertionKind.Text, value: "blarg" },
+        },
       ]);
       expect(source.getText()).to.eql(
         `<div component as="Test">{child}</div><Test child="blarg" />`
@@ -269,7 +269,7 @@ describe(__filename + "#", () => {
 
     it(`If an element is inserted into a slot placeholder, that slot is assigned as a regular key/script attribute`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": `<div component as="Test">{child}</div><Test />`
+        "/hello.pc": `<div component as="Test">{child}</div><Test />`,
       });
       const client = server.createHostClient();
 
@@ -282,8 +282,8 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" }
-        }
+          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+        },
       ]);
       expect(source.getText()).to.eql(
         `<div component as="Test">{child}</div><Test child={<span />} />`
@@ -296,7 +296,7 @@ describe(__filename + "#", () => {
     // just a quick smoke test
     it(`Can insert multiple slots at the same time`, async () => {
       const { server } = await createMockHost({
-        "/hello.pc": `<div component as="Test">{child}{child2}</div><Test />`
+        "/hello.pc": `<div component as="Test">{child}{child2}</div><Test />`,
       });
       const client = server.createHostClient();
 
@@ -309,13 +309,13 @@ describe(__filename + "#", () => {
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Element, value: "<a />" }
+          child: { kind: ChildInsertionKind.Element, value: "<a />" },
         },
         {
           kind: VirtualobjectEditKind.AppendChild,
           nodePath: "0.1",
-          child: { kind: ChildInsertionKind.Element, value: "<b />" }
-        }
+          child: { kind: ChildInsertionKind.Element, value: "<b />" },
+        },
       ]);
       expect(source.getText()).to.eql(
         `<div component as="Test">{child}{child2}</div><Test child2={<b />} child={<a />} />`

@@ -2,7 +2,7 @@ import {
   computeVirtScriptObject,
   memoize,
   NodeAnnotations,
-  VirtualFrame
+  VirtualFrame,
 } from "@paperclip-ui/utils";
 
 export const preventDefault = (event: any) => {
@@ -12,7 +12,7 @@ export const preventDefault = (event: any) => {
 };
 
 export const ATTR_ALIASES = {
-  className: "class"
+  className: "class",
 };
 
 export const traverseNativeNode = (
@@ -36,7 +36,7 @@ export const arraySplice = <TArray extends Array<any>>(
   return [
     ...array.slice(0, index),
     ...newValues,
-    ...array.slice(index + deleteCount)
+    ...array.slice(index + deleteCount),
   ];
 };
 
@@ -48,6 +48,6 @@ export const getFrameBounds = memoize((node: VirtualFrame) => {
     height: 768,
     x: 0,
     y: 0,
-    ...(annotations.frame || {})
+    ...(annotations.frame || {}),
   };
 });

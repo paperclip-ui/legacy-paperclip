@@ -6,7 +6,7 @@ import { stringifyVirtualNode } from "@paperclip-ui/core";
 describe(__filename + "#", () => {
   it(`Can open a simple document`, async () => {
     const { server } = await createMockHost({
-      "/hello.pc": "div"
+      "/hello.pc": "div",
     });
 
     const client = server.createHostClient();
@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
 
   it(`Text changes are synchronized between documents`, async () => {
     const { server } = await createMockHost({
-      "/hello.pc": "div"
+      "/hello.pc": "div",
     });
 
     const client = server.createHostClient();
@@ -37,7 +37,7 @@ describe(__filename + "#", () => {
 
   it(`The engine updates when the source doc changes`, async () => {
     const { server } = await createMockHost({
-      "/hello.pc": "Hello World"
+      "/hello.pc": "Hello World",
     });
 
     const client = server.createHostClient();
@@ -56,7 +56,7 @@ describe(__filename + "#", () => {
 
   it(`Changes from two docs converge into one`, async () => {
     const { server } = await createMockHost({
-      "/hello.pc": "Hello World"
+      "/hello.pc": "Hello World",
     });
 
     const client = server.createHostClient(true);

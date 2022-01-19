@@ -26,14 +26,14 @@ export const FrameContainer = memo(
     style = {},
     fullscreen,
     onLoad = noop,
-    onUpdate = noop
+    onUpdate = noop,
   }: FrameContainerProps) => {
     const { ref } = useFrame({
       fullscreen,
       onUpdate,
       onLoad,
       frameUri,
-      frameIndex
+      frameIndex,
     });
 
     return (

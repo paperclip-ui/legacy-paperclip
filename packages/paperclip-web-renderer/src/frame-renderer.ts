@@ -1,7 +1,7 @@
 import {
   createNativeNode,
   createNativeStyleFromSheet,
-  UrlResolver
+  UrlResolver,
 } from "./native-renderer";
 import {
   EngineDelegateEvent,
@@ -19,7 +19,7 @@ import {
   DiffedDataKind,
   EvaluatedDataKind,
   LoadedPCData,
-  patchCSSSheet
+  patchCSSSheet,
 } from "@paperclip-ui/utils";
 import { arraySplice, getFrameBounds, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
@@ -88,15 +88,15 @@ class FramesProxy implements Patchable {
     }
   }
   applyStylePatches(mutations: any[], uri?: string) {
-    const styleIndex = this._importedStyles.findIndex(style => {
+    const styleIndex = this._importedStyles.findIndex((style) => {
       return style.uri === uri;
     });
 
     // first do the frames
     for (const frame of this.getState().frames) {
-      const styleElement = ((styleIndex !== -1
+      const styleElement = (styleIndex !== -1
         ? frame._importedStylesContainer.childNodes[styleIndex]
-        : frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
+        : frame._mainStylesContainer.childNodes[0]) as any as HTMLStyleElement;
 
       patchCSSOM(
         styleElement.sheet as any,
@@ -112,7 +112,7 @@ class FramesProxy implements Patchable {
     } else {
       this._importedStyles[styleIndex] = {
         ...this._importedStyles[styleIndex],
-        sheet: patchCSSSheet(this._importedStyles[styleIndex].sheet, mutations)
+        sheet: patchCSSSheet(this._importedStyles[styleIndex].sheet, mutations),
       };
     }
   }
@@ -165,13 +165,13 @@ class FramesProxy implements Patchable {
   insertBefore(child: Node, existing: HTMLElement) {
     this.insert(
       child,
-      this._childNodes.findIndex(_child => _child === existing)
+      this._childNodes.findIndex((_child) => _child === existing)
     );
   }
   removeChild(child: Node) {
-    const index = this._childNodes.findIndex(_child => _child === child);
+    const index = this._childNodes.findIndex((_child) => _child === child);
     this._childNodes.splice(index, 1);
-    this._store.update(state => {
+    this._store.update((state) => {
       state.frames = arraySplice(state.frames, index, 1);
     });
   }
@@ -205,13 +205,13 @@ class FramesProxy implements Patchable {
 
     this._childNodes.splice(index, 0, child as ChildNode);
 
-    this._store.update(state => {
+    this._store.update((state) => {
       state.frames = arraySplice(state.frames, index, 0, {
         stage,
         _importedStylesContainer,
         _mainStylesContainer,
         _mount,
-        sourceUri: null
+        sourceUri: null,
       });
     });
   }
@@ -245,7 +245,7 @@ export class FramesRenderer {
     this._store = new ImmutableStore(
       {
         uri: targetUri,
-        frames: []
+        frames: [],
       },
       connectState
     );
@@ -266,7 +266,7 @@ export class FramesRenderer {
   }
 
   setPreview(preview: VirtualNode) {
-    this._store.update(newState => {
+    this._store.update((newState) => {
       newState.preview = preview;
     });
   }
@@ -280,7 +280,7 @@ export class FramesRenderer {
   }
 
   private _onFramesProxyChange = (frameState: FramesProxyState) => {
-    this._store.update(newState => {
+    this._store.update((newState) => {
       newState.frames = frameState.frames;
     });
   };
@@ -289,7 +289,7 @@ export class FramesRenderer {
     sheet,
     importedSheets,
     preview,
-    allImportedSheetUris
+    allImportedSheetUris,
   }: LoadedPCData) {
     const children =
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
@@ -349,8 +349,8 @@ export class FramesRenderer {
                 {
                   uri: event.uri,
                   sheet: event.data.sheet,
-                  index: this._dependencies.indexOf(event.uri)
-                }
+                  index: this._dependencies.indexOf(event.uri),
+                },
               ],
               [event.uri]
             );
@@ -426,7 +426,7 @@ export class FramesRenderer {
               width: clientRect.width,
               height: clientRect.height,
               x: clientRect.left + bounds.x,
-              y: clientRect.top + bounds.y
+              y: clientRect.top + bounds.y,
             };
           }
         }

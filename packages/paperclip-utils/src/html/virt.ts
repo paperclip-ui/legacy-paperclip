@@ -12,7 +12,7 @@ export enum VirtualNodeKind {
   Text = "Text",
   Slot = "Slot",
   Fragment = "Fragment",
-  StyleElement = "StyleElement"
+  StyleElement = "StyleElement",
 }
 
 export type VirtNodeSource = {
@@ -37,7 +37,7 @@ export type NodeAnnotations = {
 
 export enum EvaluatedDataKind {
   PC = "PC",
-  CSS = "CSS"
+  CSS = "CSS",
 }
 
 type BaseEvaluatedData<TKind = EvaluatedDataKind> = {
@@ -66,7 +66,7 @@ export type EvaluatedData = EvaluatedPCData | EvaluatedCSSData;
 
 export enum DiffedDataKind {
   CSS = "CSS",
-  PC = "PC"
+  PC = "PC",
 }
 
 export type BaseDiffedData<TKind = DiffedDataKind> = {

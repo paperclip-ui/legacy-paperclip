@@ -12,7 +12,7 @@ export class WorkspaceClient {
   ) {
     // for managing documents,
     this._editorClient = new EditorClient(_client, {
-      domFactory
+      domFactory,
     });
   }
   openProject = async (options: LoadOptions) => {

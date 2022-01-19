@@ -6,12 +6,12 @@ export const useFrameUrlResolver = () => {
   const {
     state: {
       designer: { resourceHost },
-      shared: { documents }
-    }
+      shared: { documents },
+    },
   } = useAppStore();
 
   return useCallback(
-    url => {
+    (url) => {
       if (/^https?:\/\//.test(url)) {
         return url;
       }

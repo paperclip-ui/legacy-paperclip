@@ -385,20 +385,6 @@ impl Engine {
     Ok(())
   }
 
-  pub async fn splice_file_content(
-    &mut self,
-    ui: &String,
-    splices: &Vec<StringSplice>
-  ) -> Result<(), EngineError> {
-
-    // 1. update the content
-    // 2. generate new AST
-    // 3. patch dependency graph
-    // 4. generate new vdom (for now)
-
-
-    Ok(())
-  }
 
   fn set_diagnostic_error<'a>(&mut self, uri: &String, error: EngineError) {
     self.diagnostics.insert(
@@ -451,19 +437,15 @@ impl Engine {
       .collect::<Vec<(String, String)>>();
 
     for (id, dep_uri) in relative_deps {
-      let data = if let Some(dep_result) = self.evaluated_data.get(dep_uri) {
-        dep_result
-      } else {
+      if  self.evaluated_data.get(dep_uri) == None {
         self.evaluate(dep_uri, stack)?;
-
-        self.evaluated_data.get(dep_uri).unwrap()
-      };
+      }
     }
 
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
     let eval_result: Result<DependencyEvalInfo, RuntimeError> = match &dependency.content {
-      DependencyContent::StyleSheet(sheet) => {
+      DependencyContent::StyleSheet(_) => {
         evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data, self.id_generator.new_id())
           .and_then(|info| Ok(DependencyEvalInfo::CSS(info)))
       }
