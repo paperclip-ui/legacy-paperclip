@@ -23,10 +23,11 @@ export const createMockServer = () => {
 
 export const createMockHost = async (graph: Record<string, string>) => {
   const server = createMockServer();
+  const engine = createMockEngine(graph);
 
-  const host = await EditorHost.start(createMockEngine(graph), server);
+  const host = await EditorHost.start(engine, server);
 
-  return { host, server };
+  return { host, server, engine };
 };
 
 export const timeout = (ms) =>

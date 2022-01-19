@@ -9,10 +9,15 @@ import {
   OpenDocumentResult,
   engineEventChannel,
   VirtualObjectEdit,
+  OpenDocumentPCResult,
 } from "../core";
 import { editVirtualObjectsChannel } from "../core/channels";
 import { DocumentManager } from "./documents/manager";
 import { PCDocumentEditor } from "./documents/pc-document-editor";
+
+// process.on("unhandledRejection", reason => {
+//   console.log(reason);
+// });
 
 export class ClientConnection {
   /**
@@ -100,10 +105,11 @@ export class ClientConnection {
 
   private _openDocument = async (uri: string): Promise<OpenDocumentResult> => {
     const doc = this._documents.open(uri);
-    return {
+    const ret = {
       kind: doc.kind,
       content: await doc.load(),
     };
+    return ret as OpenDocumentPCResult;
   };
 
   /**
@@ -138,6 +144,8 @@ export class ClientConnection {
   };
 
   private _onEngineEvent = (event: EngineDelegateEvent) => {
-    this._engineEvents.call(event);
+    this._engineEvents.call(event).catch((e) => {
+      console.error(`Failed to emit engine event`);
+    });
   };
 }

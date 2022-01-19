@@ -10,6 +10,7 @@ import {
   LoadedPCData,
   patchCSSSheet,
   Mutation,
+  DiffedDataKind,
   patchVirtNode,
 } from "@paperclip-ui/utils";
 import {
@@ -108,6 +109,10 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
    */
 
   private _onEngineEvent = async (event: EngineDelegateEvent) => {
+    if (!this._content) {
+      return;
+    }
+
     const newData = patchPCData(this.uri, this._content, event);
     if (newData !== this._content) {
       this._updateContent(newData);
@@ -126,11 +131,20 @@ const patchPCData = (
     if (newData.allImportedSheetUris.includes(event.uri)) {
       if (event.kind === EngineDelegateEventKind.Diffed) {
         newData = produce(newData, (newData) => {
+          const sheetMutations =
+            event.data.kind === DiffedDataKind.PC
+              ? event.data.sheetMutations
+              : event.data.mutations;
+
           const i = newData.allImportedSheetUris.indexOf(event.uri);
-          newData.importedSheets[i] = patchCSSSheet(
-            newData.importedSheets[i],
-            event.data.mutations
-          );
+          try {
+            newData.importedSheets[i].sheet = patchCSSSheet(
+              newData.importedSheets[i].sheet,
+              sheetMutations
+            );
+          } catch (e) {
+            console.error(e);
+          }
         });
       }
     }

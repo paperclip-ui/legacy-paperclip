@@ -6,6 +6,7 @@ import {
   mockDOMFactory,
 } from "@paperclip-ui/web-renderer/lib/test/utils";
 import { renderFrames, patchFrames } from "@paperclip-ui/web-renderer";
+import { stringifyVirtualNode } from "@paperclip-ui/core";
 
 describe(__filename + "#", () => {
   it(`Can render basic HTML`, async () => {
@@ -60,7 +61,7 @@ describe(__filename + "#", () => {
         renderFrames(doc.getContent(), { domFactory: mockDOMFactory })
       )
     ).to.eql(
-      `<div><style>div._f7127f1d {color: red;} </style></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
+      `<div><style>div._f7127f1d {color: blue;} </style></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
   });
 
@@ -184,6 +185,35 @@ describe(__filename + "#", () => {
       )
     ).to.eql(
       `<div></div><div><style>div._80f4925f {color: orange;} </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
+    );
+  });
+
+  it(`Imported CSS can be updated`, async () => {
+    const { server, engine } = await createMockHost({
+      "/entry.pc": `<import src="/imp.css" /><div />`,
+      "/imp.css": `div { color: blue }`,
+    });
+
+    const client = server.createHostClient();
+    const doc = (await client.open("/entry.pc")) as PCDocument;
+    // const doc2 = (await client.open("/imp.css")) as PCDocument;
+
+    // cheat
+    engine.updateVirtualFileContent("/imp.css", `div { color: orange }`);
+
+    // const source = await doc2.getSource();
+    // source.insertText(
+    //   `div { color: orange }`.split(""),
+    //   0,
+    //   source.getText().length
+    // );
+
+    expect(
+      combineFrameHTML2(
+        renderFrames(doc.getContent(), { domFactory: mockDOMFactory })
+      )
+    ).to.eql(
+      `<div><style>div._pub-2c5dbed5 {color: orange;} </style></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
   });
 });
