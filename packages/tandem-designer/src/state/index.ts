@@ -207,7 +207,7 @@ export type DesignerState = {
   canvas: Canvas;
   scrollSize?: Size;
   frameSize?: Size;
-  boxes: Record<string, Box>;
+  frameBoxes: Record<string, Record<string, Box>>;
   zoomLevel: number;
 };
 
@@ -283,7 +283,7 @@ export const INITIAL_STATE: AppState = {
     availableBrowsers: [],
     currentEngineEvents: {},
     allLoadedPCFileData: {},
-    boxes: {},
+    frameBoxes: {},
     zoomLevel: 1,
     selectedNodePaths: [],
     canvas: {
@@ -300,6 +300,16 @@ export const INITIAL_STATE: AppState = {
     },
   },
 };
+
+export const flattenFrameBoxes = memoize(
+  (frameBoxes: Record<string, Record<string, Box>>) => {
+    const all = {};
+    for (const id in frameBoxes) {
+      Object.assign(all, frameBoxes[id]);
+    }
+    return all;
+  }
+);
 
 export const isExpanded = (designer: DesignerState) => {
   return Boolean(designer.ui.query.expanded);

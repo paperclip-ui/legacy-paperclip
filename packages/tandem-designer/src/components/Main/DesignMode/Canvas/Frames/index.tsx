@@ -63,8 +63,8 @@ const useFrames = ({ shouldCollectRects = true }: UseFramesProps) => {
       if (!shouldCollectRects) {
         return false;
       }
-      const rects = getFrameRects(mount, data, frameIndex);
-      dispatch(rectsCaptured(rects));
+      const boxes = getFrameRects(mount, data, frameIndex);
+      dispatch(rectsCaptured({ frameIndex, boxes }));
     },
     [dispatch, shouldCollectRects]
   );

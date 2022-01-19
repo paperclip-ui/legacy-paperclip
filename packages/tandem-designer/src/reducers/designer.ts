@@ -22,6 +22,8 @@ import {
   getScopedBoxes,
   Point,
   FSItemKind,
+  flattenFrameBoxes,
+  getCurrentPreview,
 } from "../state";
 import { produce } from "immer";
 import { compare, applyPatch } from "fast-json-patch";
@@ -33,7 +35,7 @@ import {
   RedirectRequested,
   ServerActionType,
 } from "../actions";
-import { clamp, without } from "lodash";
+import { clamp, pick, without } from "lodash";
 import {
   updateAllLoadedData,
   VirtualFrame,
@@ -52,6 +54,7 @@ import {
   getNodeAncestors,
   isInstance,
   stripFileProtocol,
+  VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import * as path from "path";
 import { workspaceActions } from "../actions/workspace-actions";
@@ -478,9 +481,21 @@ export const reduceDesigner = (
     }
     case ActionType.RECTS_CAPTURED: {
       return produce(designer, (newDesigner) => {
-        newDesigner.boxes = mergeBoxesFromClientRects(
-          newDesigner.boxes,
-          action.payload
+        newDesigner.frameBoxes[action.payload.frameIndex] =
+          mergeBoxesFromClientRects(
+            newDesigner.frameBoxes[action.payload.frameIndex] || {},
+            action.payload.boxes
+          );
+
+        const preview = getCurrentPreview(newDesigner);
+        newDesigner.frameBoxes = pick(
+          newDesigner.frameBoxes,
+          Array.from({
+            length:
+              preview.kind === VirtualNodeKind.Fragment
+                ? preview.children.length
+                : 0,
+          }).map((v, i) => String(i))
         );
       });
     }
@@ -548,7 +563,7 @@ export const reduceDesigner = (
         designer.canvas.mousePosition,
         designer.canvas.transform,
         getScopedBoxes(
-          designer.boxes,
+          flattenFrameBoxes(designer.frameBoxes),
           designer.scopedElementPath,
           getActivePCData(designer).preview
         ),
@@ -566,7 +581,7 @@ export const reduceDesigner = (
         newDesigner.canvas = setCanvasZoom(
           action.payload.value / 100,
           designer.canvas,
-          newDesigner.boxes,
+          flattenFrameBoxes(designer.frameBoxes),
           true
         );
       });
@@ -577,7 +592,7 @@ export const reduceDesigner = (
         newDesigner.canvas = setCanvasZoom(
           normalizeZoom(designer.canvas.transform.z) * 2,
           designer.canvas,
-          newDesigner.boxes
+          flattenFrameBoxes(designer.frameBoxes)
         );
       });
     }
@@ -587,7 +602,7 @@ export const reduceDesigner = (
         newDesigner.canvas = setCanvasZoom(
           normalizeZoom(designer.canvas.transform.z) / 2,
           designer.canvas,
-          newDesigner.boxes
+          flattenFrameBoxes(designer.frameBoxes)
         );
       });
     }
@@ -645,10 +660,10 @@ export const reduceDesigner = (
           return;
         }
 
+        const boxes = flattenFrameBoxes(newDesigner.frameBoxes);
+
         const oldBox = mergeBoxes(
-          designer.selectedNodePaths.map(
-            (nodePath) => newDesigner.boxes[nodePath]
-          )
+          designer.selectedNodePaths.map((nodePath) => boxes[nodePath])
         );
 
         for (
@@ -662,7 +677,7 @@ export const reduceDesigner = (
             frame,
             updateAnnotations(frame, {
               frame: updateBox(
-                newDesigner.boxes[nodePath],
+                boxes[nodePath],
                 oldBox,
                 action.payload.newBounds
               ),
@@ -756,7 +771,10 @@ export const reduceDesigner = (
         }
         Object.assign(
           newDesigner.canvas,
-          clampCanvasTransform(newDesigner.canvas, newDesigner.boxes)
+          clampCanvasTransform(
+            newDesigner.canvas,
+            flattenFrameBoxes(newDesigner.frameBoxes)
+          )
         );
       });
     }
@@ -817,7 +835,7 @@ const handleDoubleClick = (
     designer.canvas.mousePosition,
     designer.canvas.transform,
     getScopedBoxes(
-      designer.boxes,
+      flattenFrameBoxes(designer.frameBoxes),
       designer.scopedElementPath,
       getActivePCData(designer).preview
     ),
@@ -845,7 +863,7 @@ const highlightNode = (designer: DesignerState, mousePosition: Point) => {
       mousePosition,
       canvas.transform,
       getScopedBoxes(
-        designer.boxes,
+        flattenFrameBoxes(designer.frameBoxes),
         designer.scopedElementPath,
         getActivePCData(designer).preview
       ),

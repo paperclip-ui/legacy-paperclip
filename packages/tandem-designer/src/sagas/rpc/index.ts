@@ -8,7 +8,7 @@ import {
   cancel,
   takeEvery,
   throttle,
-  delay
+  delay,
 } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 
@@ -38,7 +38,7 @@ import {
   Action,
   CommitMessageEntered,
   virtualNodeSourcesLoaded,
-  virtualNodeStylesInspected
+  virtualNodeStylesInspected,
 } from "../../actions";
 import {
   commitChangesChannel,
@@ -54,23 +54,24 @@ import {
   openFileChannel,
   popoutWindowChannel,
   revealNodeSourceByIdChannel,
-  revealNodeSourceChannel
+  revealNodeSourceChannel,
 } from "../../rpc/channels";
 import {
   AppState,
+  flattenFrameBoxes,
   FSItemKind,
   getActiveFrameIndex,
   getActivePCData,
   getFrameFromIndex,
   getNodeInfoAtPoint,
   getScopedBoxes,
-  isExpanded
+  isExpanded,
 } from "../../state";
 
 import {
   computeVirtScriptObject,
   nodePathToAry,
-  VirtNodeSource
+  VirtNodeSource,
 } from "@paperclip-ui/utils";
 import { PCMutation, PCMutationActionKind } from "@paperclip-ui/source-writer";
 import path from "path";
@@ -84,7 +85,7 @@ export type HandleRPCOptions = {
 const createDefaultConnection = () => new SockConnection();
 
 export function* handleRPC({
-  createConnection = createDefaultConnection
+  createConnection = createDefaultConnection,
 }: HandleRPCOptions) {
   let _client: IConnection = createConnection();
   yield fork(handleServerOptions, _client);
@@ -124,25 +125,26 @@ function* handleProject(client: IConnection) {
   yield fork(handleProjectDirectory, loadDirectory);
   yield fork(handleEngineEvents, events);
   yield fork(handleClientComunication, client);
-  yield takeEvery(ActionType.COMMIT_MESSAGE_ENTERED, function*(
-    event: CommitMessageEntered
-  ) {
-    yield call(handleCommitMessageEntered, event, commitChanges);
-  });
-  yield takeEvery(ActionType.BRANCH_CHANGED, function*(event: BranchChanged) {
+  yield takeEvery(
+    ActionType.COMMIT_MESSAGE_ENTERED,
+    function* (event: CommitMessageEntered) {
+      yield call(handleCommitMessageEntered, event, commitChanges);
+    }
+  );
+  yield takeEvery(ActionType.BRANCH_CHANGED, function* (event: BranchChanged) {
     yield call(handleBranchChanged, event, setBranch);
   });
 }
 
 function* handleEngineEvents(events: ReturnType<typeof eventsChannel>) {
-  const chan = eventChannel(emit => {
-    events.listen(async ev => {
+  const chan = eventChannel((emit) => {
+    events.listen(async (ev) => {
       emit(ev);
     });
     return () => {};
   });
 
-  yield takeEvery(chan, function*(ev) {
+  yield takeEvery(chan, function* (ev) {
     yield put(ev as Action);
   });
 }
@@ -151,7 +153,7 @@ function* handleCommitMessageEntered(
   { payload: { message: description } }: CommitMessageEntered,
   commitChanges: ReturnType<typeof commitChangesChannel>
 ) {
-  yield request(commitRequestStateChanged, function*() {
+  yield request(commitRequestStateChanged, function* () {
     return yield call(commitChanges.call, { description });
   });
 }
@@ -160,7 +162,7 @@ function* handleBranchChanged(
   { payload: { branchName } }: BranchChanged,
   setBranch: ReturnType<typeof setBranchChannel>
 ) {
-  yield request(setBranchRequestStateChanged, function*() {
+  yield request(setBranchRequestStateChanged, function* () {
     return yield call(setBranch.call, { branchName });
   });
 }
@@ -169,16 +171,19 @@ function* handleProjectDirectory(
   loadRemoteDirectory: ReturnType<typeof loadDirectoryChannel>
 ) {
   // TODO - needs to be take state instead
-  yield takeLatest(ActionType.SERVER_OPTIONS_LOADED, function*({
-    payload: { localResourceRoots, canvasFile }
-  }: ServerOptionsLoaded) {
-    yield call(
-      loadProjectDirectory,
-      loadRemoteDirectory,
-      localResourceRoots[0],
-      true
-    );
-  });
+  yield takeLatest(
+    ActionType.SERVER_OPTIONS_LOADED,
+    function* ({
+      payload: { localResourceRoots, canvasFile },
+    }: ServerOptionsLoaded) {
+      yield call(
+        loadProjectDirectory,
+        loadRemoteDirectory,
+        localResourceRoots[0],
+        true
+      );
+    }
+  );
 }
 
 function* loadProjectDirectory(
@@ -226,33 +231,39 @@ function* handleClientComunication(client) {
     }
   }
 
-  yield takeEvery([ActionType.FS_ITEM_CLICKED], function*(
-    action: FSItemClicked
-  ) {
-    if (action.payload.kind == FSItemKind.DIRECTORY) {
-      yield call(
-        loadProjectDirectory,
-        loadRemoteDirectory,
-        action.payload.absolutePath
+  yield takeEvery(
+    [ActionType.FS_ITEM_CLICKED],
+    function* (action: FSItemClicked) {
+      if (action.payload.kind == FSItemKind.DIRECTORY) {
+        yield call(
+          loadProjectDirectory,
+          loadRemoteDirectory,
+          action.payload.absolutePath
+        );
+      }
+      if (action.payload.kind === FSItemKind.FILE) {
+        yield put(
+          redirectRequest({ query: { canvasFile: action.payload.url } })
+        );
+      }
+    }
+  );
+
+  yield takeEvery(
+    [ActionType.SYNC_PANELS_CLICKED],
+    function* (action: SyncPanelsClicked) {
+      const state: AppState = yield select();
+      yield put(
+        redirectRequest({
+          query: { canvasFile: state.designer.currentCodeFile },
+        })
       );
     }
-    if (action.payload.kind === FSItemKind.FILE) {
-      yield put(redirectRequest({ query: { canvasFile: action.payload.url } }));
-    }
-  });
-
-  yield takeEvery([ActionType.SYNC_PANELS_CLICKED], function*(
-    action: SyncPanelsClicked
-  ) {
-    const state: AppState = yield select();
-    yield put(
-      redirectRequest({ query: { canvasFile: state.designer.currentCodeFile } })
-    );
-  });
+  );
 
   yield takeEvery(
     [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
-    function*() {
+    function* () {
       const state: AppState = yield select();
       if (
         state.designer.showBirdseye &&
@@ -288,9 +299,9 @@ function* handleClientComunication(client) {
     [
       ActionType.CANVAS_MOUSE_DOWN,
       ActionType.FRAME_TITLE_CLICKED,
-      ActionType.ENGINE_DELEGATE_CHANGED
+      ActionType.ENGINE_DELEGATE_CHANGED,
     ],
-    function*() {
+    function* () {
       const state: AppState = yield select();
 
       if (!state.designer.selectedNodePaths.length) {
@@ -298,10 +309,10 @@ function* handleClientComunication(client) {
       }
       const sources = yield call(
         loadVirtualNodeSources.call,
-        state.designer.selectedNodePaths.map(nodePath => {
+        state.designer.selectedNodePaths.map((nodePath) => {
           return {
             path: nodePath.split(".").map(Number),
-            uri: state.designer.ui.query.canvasFile!
+            uri: state.designer.ui.query.canvasFile!,
           };
         })
       );
@@ -310,11 +321,12 @@ function* handleClientComunication(client) {
     }
   );
 
-  yield takeEvery(ActionType.STYLE_RULE_FILE_NAME_CLICKED, function*({
-    payload: { styleRuleSourceId }
-  }: StyleRuleFileNameClicked) {
-    yield call(revealNodeSourceById.call, styleRuleSourceId);
-  });
+  yield takeEvery(
+    ActionType.STYLE_RULE_FILE_NAME_CLICKED,
+    function* ({ payload: { styleRuleSourceId } }: StyleRuleFileNameClicked) {
+      yield call(revealNodeSourceById.call, styleRuleSourceId);
+    }
+  );
 
   yield throttle(
     500,
@@ -324,9 +336,9 @@ function* handleClientComunication(client) {
       ActionType.FRAME_TITLE_CLICKED,
       ActionType.LAYER_LEAF_CLICKED,
       ActionType.ENGINE_DELEGATE_CHANGED,
-      ActionType.FILE_OPENED
+      ActionType.FILE_OPENED,
     ],
-    function*() {
+    function* () {
       const state: AppState = yield select();
       if (!state.designer.selectedNodePaths.length) {
         return;
@@ -334,9 +346,9 @@ function* handleClientComunication(client) {
 
       const inspectionInfo = yield call(
         inspectNodeStyle.call,
-        state.designer.selectedNodePaths.map(path => ({
+        state.designer.selectedNodePaths.map((path) => ({
           path: nodePathToAry(path),
-          uri: state.designer.ui.query.canvasFile
+          uri: state.designer.ui.query.canvasFile,
         }))
       );
 
@@ -346,8 +358,8 @@ function* handleClientComunication(client) {
 
   yield takeEvery(
     [ActionType.NODE_BREADCRUMB_CLICKED, ActionType.LAYER_LEAF_CLICKED],
-    function*({
-      payload: { metaKey, nodePath }
+    function* ({
+      payload: { metaKey, nodePath },
     }: NodeBreadcrumbClicked | LayerLeafClicked) {
       if (!metaKey) {
         return;
@@ -355,45 +367,46 @@ function* handleClientComunication(client) {
       const state: AppState = yield select();
       yield call(revealNodeSource.call, {
         path: nodePathToAry(nodePath),
-        uri: state.designer.ui.query.canvasFile
+        uri: state.designer.ui.query.canvasFile,
       } as VirtNodeSource);
     }
   );
 
-  yield takeEvery([ActionType.CANVAS_MOUSE_DOWN], function*({
-    payload: { metaKey }
-  }: CanvasMouseDown) {
-    if (!metaKey) {
-      return;
+  yield takeEvery(
+    [ActionType.CANVAS_MOUSE_DOWN],
+    function* ({ payload: { metaKey } }: CanvasMouseDown) {
+      if (!metaKey) {
+        return;
+      }
+
+      const state: AppState = yield select();
+
+      const nodeInfo = getNodeInfoAtPoint(
+        state.designer.canvas.mousePosition,
+        state.designer.canvas.transform,
+        getScopedBoxes(
+          flattenFrameBoxes(state.designer.frameBoxes),
+          state.designer.scopedElementPath,
+          getActivePCData(state.designer).preview
+        ),
+        isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
+      );
+
+      // maybe offscreen
+      if (!nodeInfo) {
+        return;
+      }
+
+      yield call(revealNodeSource.call, {
+        path: nodePathToAry(nodeInfo.nodePath),
+        uri: state.designer.ui.query.canvasFile,
+      } as VirtNodeSource);
     }
+  );
 
-    const state: AppState = yield select();
-
-    const nodeInfo = getNodeInfoAtPoint(
-      state.designer.canvas.mousePosition,
-      state.designer.canvas.transform,
-      getScopedBoxes(
-        state.designer.boxes,
-        state.designer.scopedElementPath,
-        getActivePCData(state.designer).preview
-      ),
-      isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
-    );
-
-    // maybe offscreen
-    if (!nodeInfo) {
-      return;
-    }
-
-    yield call(revealNodeSource.call, {
-      path: nodePathToAry(nodeInfo.nodePath),
-      uri: state.designer.ui.query.canvasFile
-    } as VirtNodeSource);
-  });
-
-  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function*() {
+  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function* () {
     yield call(popoutWindow.call, {
-      path: window.location.pathname + window.location.search
+      path: window.location.pathname + window.location.search,
     });
   });
 
@@ -405,21 +418,22 @@ function* handleClientComunication(client) {
       ActionType.CLIENT_CONNECTED,
       ActionType.FS_ITEM_CLICKED,
       ActionType.SERVER_OPTIONS_LOADED,
-      ActionType.DIR_LOADED
+      ActionType.DIR_LOADED,
     ],
     maybeLoadCanvasFile
   );
 
-  yield takeEvery([ActionType.FILE_ITEM_CLICKED], function*(
-    action: FileItemClicked
-  ) {
-    yield call(loadFile, action.payload.uri);
-  });
+  yield takeEvery(
+    [ActionType.FILE_ITEM_CLICKED],
+    function* (action: FileItemClicked) {
+      yield call(loadFile, action.payload.uri);
+    }
+  );
 
   // application may have been loaded in an error state, so evaluated data
   // won't be loaded in this case. When that happens, we need to reload the current
   // canvas file
-  yield takeEvery([ActionType.ENGINE_DELEGATE_CHANGED], function*() {
+  yield takeEvery([ActionType.ENGINE_DELEGATE_CHANGED], function* () {
     const state: AppState = yield select();
     const currUri = state.designer.ui.query.canvasFile;
 
@@ -457,9 +471,9 @@ function* handleClientComunication(client) {
       ActionType.RESIZER_STOPPED_MOVING,
       ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
       ActionType.FRAME_TITLE_CHANGED,
-      ActionType.GLOBAL_H_KEY_DOWN
+      ActionType.GLOBAL_H_KEY_DOWN,
     ],
-    function*() {
+    function* () {
       const state: AppState = yield select();
 
       yield call(
@@ -475,11 +489,11 @@ function* handleClientComunication(client) {
               targetId: state.designer.selectedNodeSources[i]?.source.sourceId,
               action: {
                 kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-                annotations: computeVirtScriptObject(frame.annotations)
-              }
+                annotations: computeVirtScriptObject(frame.annotations),
+              },
             };
           })
-          .filter(v => v?.targetId) as PCMutation[]
+          .filter((v) => v?.targetId) as PCMutation[]
       );
     }
   );
@@ -489,7 +503,7 @@ function* handleClientComunication(client) {
     yield put(sourcesEdited(changes));
   }
 
-  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
+  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function* () {
     const state: AppState = yield select();
 
     if (state.designer.selectedNodePaths.length) {
@@ -502,11 +516,11 @@ function* handleClientComunication(client) {
               targetId:
                 state.designer.selectedNodeSources[index]?.source.sourceId,
               action: {
-                kind: PCMutationActionKind.EXPRESSION_DELETED
-              }
+                kind: PCMutationActionKind.EXPRESSION_DELETED,
+              },
             };
           })
-          .filter(v => v.targetId) as PCMutation[]
+          .filter((v) => v.targetId) as PCMutation[]
       );
     }
 
@@ -519,21 +533,22 @@ function* handleClientComunication(client) {
 const handleCodeChanged = (
   editCode: Channel<{ uri: string; value: string }, void>
 ) =>
-  function*({ payload: { value } }: CodeChanged) {
+  function* ({ payload: { value } }: CodeChanged) {
     const state: AppState = yield select();
     yield call(editCode.call, {
       uri: state.designer.currentCodeFile,
-      value
+      value,
     });
   };
 
 function* handleCanvasRedirect() {
-  yield takeLatest(ActionType.SERVER_OPTIONS_LOADED, function*({
-    payload: { canvasFile }
-  }: ServerOptionsLoaded) {
-    const state: AppState = yield select();
-    if (!state.designer.ui.query.canvasFile && canvasFile) {
-      yield put(redirectRequest({ query: { canvasFile } }));
+  yield takeLatest(
+    ActionType.SERVER_OPTIONS_LOADED,
+    function* ({ payload: { canvasFile } }: ServerOptionsLoaded) {
+      const state: AppState = yield select();
+      if (!state.designer.ui.query.canvasFile && canvasFile) {
+        yield put(redirectRequest({ query: { canvasFile } }));
+      }
     }
-  });
+  );
 }
