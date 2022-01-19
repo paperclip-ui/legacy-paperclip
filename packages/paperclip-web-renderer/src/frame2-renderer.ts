@@ -31,6 +31,7 @@ export type FrameInfo = {
 };
 
 export type RenderFrameOptions = {
+  showSlotPlaceholders?: boolean;
   domFactory: DOMFactory;
   resolveUrl?: UrlResolver;
 };
@@ -80,7 +81,13 @@ const renderFrame2 = (
   frame.appendChild(documentStyles.cloneNode(true));
   const stage = options.domFactory.createElement("div");
   stage.appendChild(
-    createNativeNode(node, options.domFactory, options.resolveUrl, null)
+    createNativeNode(
+      node,
+      options.domFactory,
+      options.resolveUrl,
+      null,
+      options.showSlotPlaceholders
+    )
   );
   frame.appendChild(stage);
   return frame;
@@ -353,7 +360,8 @@ const patchNode = (
       currVirtNode,
       options.domFactory,
       options.resolveUrl,
-      (node as HTMLElement).namespaceURI
+      (node as HTMLElement).namespaceURI,
+      options.showSlotPlaceholders
     );
     node.parentNode.insertBefore(repl, node);
     node.parentNode.removeChild(node);
@@ -415,7 +423,13 @@ const patchChildren = (
   if (prev.length < curr.length) {
     for (let i = prev.length; i < curr.length; i++) {
       parent.appendChild(
-        createNativeNode(curr[i], options.domFactory, options.resolveUrl, null)
+        createNativeNode(
+          curr[i],
+          options.domFactory,
+          options.resolveUrl,
+          null,
+          options.showSlotPlaceholders
+        )
       );
     }
   } else {

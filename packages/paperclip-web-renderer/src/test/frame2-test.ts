@@ -605,7 +605,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Render slots`, async () => {
+  xit(`Render slots`, async () => {
     const graph = {
       "file:///entry.pc": `
         <div component as="Test">

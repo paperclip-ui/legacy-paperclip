@@ -42,6 +42,7 @@ export const createNativeNode = (
   factory: DOMFactory,
   resolveUrl: UrlResolver,
   namespaceURI: string,
+  showSlotPlaceholders: boolean,
   inInstance?: boolean
 ) => {
   if (!node) {
@@ -59,14 +60,21 @@ export const createNativeNode = (
           factory,
           resolveUrl,
           namespaceURI,
+          showSlotPlaceholders,
           inInstance
         );
       case VirtualNodeKind.StyleElement:
         return createNativeStyleFromSheet(node.sheet, factory, resolveUrl);
       case VirtualNodeKind.Fragment:
-        return createNativeFragment(node, factory, resolveUrl, inInstance);
+        return createNativeFragment(
+          node,
+          factory,
+          resolveUrl,
+          showSlotPlaceholders,
+          inInstance
+        );
       case VirtualNodeKind.Slot: {
-        return createSlot(node, factory, inInstance);
+        return createSlot(node, factory, showSlotPlaceholders, inInstance);
       }
     }
   } catch (e) {
@@ -79,9 +87,10 @@ let _dummyStyle: HTMLStyleElement;
 const createSlot = (
   node: VirtualSlot,
   domFactory: DOMFactory,
+  showSlotPlaceholders?: boolean,
   inInstance?: boolean
 ) => {
-  if (!inInstance) {
+  if (!inInstance || !showSlotPlaceholders) {
     return domFactory.createTextNode("");
   }
   const placeholder = domFactory.createElement("div");
@@ -150,6 +159,7 @@ const createNativeElement = (
   factory: DOMFactory,
   resolveUrl: UrlResolver,
   namespaceUri?: string,
+  showSlotPlaceholders?: boolean,
   inInstance?: boolean
 ) => {
   const nativeElement =
@@ -180,6 +190,7 @@ const createNativeElement = (
         factory,
         resolveUrl,
         childNamespaceUri,
+        showSlotPlaceholders,
         inInstance ||
           Boolean(element.sourceInfo && element.sourceInfo.instanceOf)
       )
@@ -200,6 +211,7 @@ const createNativeFragment = (
   fragment: VirtualFragment,
   factory: DOMFactory,
   resolveUrl: UrlResolver,
+  showSlotPlaceholders?: boolean,
   inInstance?: boolean
 ) => {
   const nativeFragment = factory.createDocumentFragment() as any;
@@ -210,6 +222,7 @@ const createNativeFragment = (
         factory,
         resolveUrl,
         nativeFragment.namespaceURI,
+        showSlotPlaceholders,
         inInstance
       )
     );

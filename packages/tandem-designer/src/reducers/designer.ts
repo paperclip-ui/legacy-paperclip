@@ -21,6 +21,7 @@ import {
   getActivePCData,
   getScopedBoxes,
   Point,
+  FSItemKind,
 } from "../state";
 import { produce } from "immer";
 import { compare, applyPatch } from "fast-json-patch";
@@ -367,6 +368,18 @@ export const reduceDesigner = (
         }, {});
       });
       return designer;
+    }
+    case workspaceActions.projectLoaded.type: {
+      return produce(designer, (newDesigner) => {
+        const { directoryUri, directoryPath } = action.payload.getProperties();
+        newDesigner.projectDirectory = {
+          kind: FSItemKind.DIRECTORY,
+          url: directoryUri,
+          absolutePath: directoryPath,
+          name: path.dirname(directoryPath),
+          children: [],
+        };
+      });
     }
     case workspaceActions.pcContentUpdated.type: {
       designer = produce(designer, (newDesigner) => {

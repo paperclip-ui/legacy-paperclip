@@ -78,9 +78,9 @@ const useBirdseye = () => {
   const allFrames: CellFrame[] = [];
 
   for (const uri in state.designer.allLoadedPCFileData) {
-    // if (!state.designer.projectDirectory) {
-    //   continue;
-    // }
+    if (!state.designer.projectDirectory) {
+      continue;
+    }
 
     const data = state.designer.allLoadedPCFileData[uri];
     if (data.kind !== EvaluatedDataKind.PC) {

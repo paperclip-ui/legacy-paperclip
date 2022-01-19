@@ -21,8 +21,8 @@ const loadAllFramesHandler = ({ localStore, dispatch }: Kernel) => {
   let dispose;
 
   localStore.bind(
-    async ([project, showAllScreens]: [Project, boolean]) => {
-      if (!project || !showAllScreens) {
+    async ([project]: [Project]) => {
+      if (!project) {
         return;
       }
 
@@ -31,7 +31,7 @@ const loadAllFramesHandler = ({ localStore, dispatch }: Kernel) => {
       // notify the rest of the app
       dispatch(workspaceActions.allFramesLoaded(allDocs));
     },
-    (v) => [v.currentProject, v.showAllScreens]
+    (v) => [v.currentProject]
   );
 };
 
@@ -79,6 +79,7 @@ const loadProjectHandler = ({ client, localStore, dispatch }: Kernel) => {
       console.log("loading project");
 
       const project = await client.openProject({ id: projectId });
+      console.log("loaded project");
 
       dispatch(workspaceActions.projectLoaded(project));
     },

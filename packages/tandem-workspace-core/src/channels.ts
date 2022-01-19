@@ -27,8 +27,8 @@ export const revealNodeSourceByIdChannel = remoteChannel<string, void>(
 );
 
 export const openProjectChannel = remoteChannel<
-  { uri?: string; branch?: string },
-  { projectId: string }
+  { uri?: string; branch?: string; id?: string },
+  { id: string; directoryPath: string; directoryUri: string }
 >("openProjectChannel");
 
 export const editPCSourceChannel = remoteChannel<

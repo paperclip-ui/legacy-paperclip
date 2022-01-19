@@ -11,10 +11,19 @@ export type LoadOptions = {
   uri?: string;
 };
 
+type ProjectProperties = {
+  id: string;
+  directoryPath: string;
+  directoryUri: string;
+};
+
 export class Project {
+  private _properties: ProjectProperties;
   private _openProject: ReturnType<typeof openProjectChannel>;
-  private _id: string;
   private _getAllPaperclipFiles: ReturnType<typeof getAllPaperclipFilesChannel>;
+
+  /**
+   */
 
   private constructor(
     private _loadOptions: LoadOptions,
@@ -24,6 +33,16 @@ export class Project {
     this._openProject = openProjectChannel(_client);
     this._getAllPaperclipFiles = getAllPaperclipFilesChannel(_client);
   }
+
+  /**
+   */
+
+  getProperties() {
+    return this._properties;
+  }
+
+  /**
+   */
 
   static async load(
     options: LoadOptions,
@@ -35,20 +54,26 @@ export class Project {
     return project;
   }
 
+  /**
+   */
+
   getDocuments() {
     return this._documents;
   }
 
+  /**
+   */
+
   private async _open() {
-    const projectId =
-      this._loadOptions.id ||
-      (await this._openProject.call(this._loadOptions)).projectId;
-    this._id = projectId;
+    this._properties = await this._openProject.call(this._loadOptions);
   }
+
+  /**
+   */
 
   async openAllPaperclipDocuments() {
     const fileUris = await this._getAllPaperclipFiles.call({
-      projectId: this._id,
+      projectId: this._properties.id,
     });
     const docs: PCDocument[] = [];
     for (const uri of fileUris) {

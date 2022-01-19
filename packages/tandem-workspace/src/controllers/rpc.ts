@@ -109,9 +109,18 @@ class Connection {
     return filePaths.map((filePath) => URL.pathToFileURL(filePath).href);
   };
 
-  private _openProject = async ({ uri, branch }) => {
-    const project = await this._workspace.start(uri, branch);
-    return { projectId: project.getId() };
+  private _openProject = async ({ id, uri, branch }) => {
+    const project = id
+      ? this._workspace.getProjectById(id)
+      : await this._workspace.start(uri, branch);
+
+    return {
+      id: project.getId(),
+      directoryPath: project.repository.localDirectory,
+      directoryUri: URL.pathToFileURL(
+        project.repository.localDirectory
+      ).toString(),
+    };
   };
 
   private _editCode = async ({ uri, value }) => {

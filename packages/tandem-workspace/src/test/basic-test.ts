@@ -39,5 +39,18 @@ describe(__filename + "#", () => {
     }
     expect(documents.length).to.eql(1);
     expect(documents[0].uri).to.eql(`file:///tmp/__TEST__/fixtures/hello.pc`);
+    server.stop();
+  });
+
+  it(`Loaded projects contain project directory info`, async () => {
+    server = await createTestServer({
+      "hello.pc": "Hello world",
+    });
+    const client = server.createClient();
+    const project = await client.openProject({
+      uri: url.pathToFileURL(server.testDir).href,
+    });
+    expect(project.getProperties().directory).to.eql("/tmp/__TEST__/fixtures");
+    server.stop();
   });
 });
