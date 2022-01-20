@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
 
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
@@ -38,7 +38,7 @@ describe(__filename + "#", () => {
 
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.InsertNodeBefore,
@@ -63,7 +63,7 @@ describe(__filename + "#", () => {
 
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.SetTextNodeValue,
@@ -83,7 +83,7 @@ describe(__filename + "#", () => {
 
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       const annotations = {
         tags: ["a", "b"],
         desc: "Some description",
@@ -115,7 +115,7 @@ describe(__filename + "#", () => {
 
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       const annotations = {
         tags: ["a", "b"],
         desc: "Some description",
@@ -149,7 +149,7 @@ describe(__filename + "#", () => {
 
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.AddAttribute,
@@ -170,7 +170,7 @@ describe(__filename + "#", () => {
 
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.UpdateAttribute,
@@ -190,7 +190,7 @@ describe(__filename + "#", () => {
       });
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.AppendChild,
@@ -209,7 +209,7 @@ describe(__filename + "#", () => {
       });
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.AppendChild,
@@ -228,7 +228,7 @@ describe(__filename + "#", () => {
       });
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
           kind: VirtualobjectEditKind.AppendChild,
@@ -247,7 +247,7 @@ describe(__filename + "#", () => {
       });
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       const source = await doc.getSource();
       expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">[slot]</div>`
@@ -273,7 +273,7 @@ describe(__filename + "#", () => {
       });
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       const source = await doc.getSource();
       expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">[slot]</div>`
@@ -300,7 +300,7 @@ describe(__filename + "#", () => {
       });
       const client = server.createHostClient();
 
-      const doc = await client.open("/hello.pc");
+      const doc = await client.getDocuments().open("/hello.pc");
       const source = await doc.getSource();
       expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
         `<div class="_5cd17222 _pub-5cd17222">[slot][slot]</div>`

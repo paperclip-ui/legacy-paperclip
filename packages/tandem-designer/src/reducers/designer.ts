@@ -332,7 +332,7 @@ export const reduceDesigner = (
         newDesigner.availableBrowsers = action.payload;
       });
     }
-    case mainActions: {
+    case mainActions.locationChanged.type: {
       return handleLocationChange(designer, action, designer.syncLocationMode);
     }
     case ActionType.REDIRECT_REQUESTED: {
@@ -367,17 +367,20 @@ export const reduceDesigner = (
     case workspaceActions.allFramesLoaded.type: {
       designer = produce(designer, (newDesigner) => {
         newDesigner.loadingBirdseye = false;
-        newDesigner.allLoadedPCFileData = action.payload.reduce((docs, doc) => {
-          docs[doc.uri] = doc.getContent();
-          return docs;
-        }, {});
+        newDesigner.allLoadedPCFileData = Object.keys(action.payload).reduce(
+          (docs, docUri) => {
+            docs[docUri] = action.payload[docUri];
+            return docs;
+          },
+          {}
+        );
       });
       designer = maybeCenterCanvas(designer);
       return designer;
     }
     case workspaceActions.projectLoaded.type: {
       return produce(designer, (newDesigner) => {
-        const { directoryUri, directoryPath } = action.payload.getProperties();
+        const { directoryUri, directoryPath } = action.payload;
         newDesigner.projectDirectory = {
           kind: FSItemKind.DIRECTORY,
           url: directoryUri,

@@ -783,7 +783,6 @@ export type InstanceAction =
   | FileOpened
   | MetaClicked
   | SetBranchRequestStateChanged
-  | LocationChanged
   | TitleDoubleClicked
   | PopoutButtonClicked
   | CollapseFrameButtonClicked

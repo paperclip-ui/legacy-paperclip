@@ -22,7 +22,7 @@ type ActionCreator<
   : () => BaseAction<TType>;
 export declare type ActionCreators<
   TCreators extends ActionCreatorsBase,
-  TNamespace extends Key = ""
+  TNamespace extends Key
 > = {
   [key in keyof TCreators & Key]: ActionCreator<
     Namespaced<key, TNamespace>,
@@ -41,11 +41,12 @@ export declare type ActionCreators<
  * })
  */
 export const actionCreators = <
-  TCreators extends Record<string, PayloadCreator>
+  TCreators extends Record<string, PayloadCreator>,
+  TNamespace extends string
 >(
   payloadCreators: TCreators,
-  namespace: string
-): ActionCreators<TCreators> => {
+  namespace: TNamespace
+): ActionCreators<TCreators, TNamespace> => {
   return Object.entries(payloadCreators).reduce(
     (actionCreators, [type, createPayload]) => {
       // create new factory for action types
@@ -64,7 +65,7 @@ export const actionCreators = <
       return actionCreators;
     },
     {}
-  ) as ActionCreators<TCreators>;
+  ) as ActionCreators<TCreators, TNamespace>;
 };
 
 /**

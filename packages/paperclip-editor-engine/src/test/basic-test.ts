@@ -11,7 +11,7 @@ describe(__filename + "#", () => {
 
     const client = server.createHostClient();
 
-    const doc = await client.open("/hello.pc");
+    const doc = await client.getDocuments().open("/hello.pc");
 
     expect((await doc.getSource()).getText()).to.eql("div");
   });
@@ -22,12 +22,12 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = await client.open("/hello.pc");
+    const doc = await client.getDocuments().open("/hello.pc");
     const docSource = await doc.getSource();
     expect(docSource.getText()).to.eql("div");
 
     const client2 = server.createHostClient();
-    const doc2 = await client2.open("/hello.pc");
+    const doc2 = await client2.getDocuments().open("/hello.pc");
     const doc2Source = await doc2.getSource();
 
     docSource.insertText("blahh".split(""));
@@ -41,7 +41,7 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/hello.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/hello.pc")) as PCDocument;
     expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
       "Hello World"
     );
@@ -60,12 +60,12 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient(true);
-    const doc1 = (await client.open("/hello.pc")) as PCDocument;
+    const doc1 = (await client.getDocuments().open("/hello.pc")) as PCDocument;
     const src1 = await doc1.getSource();
     src1.insertText("111".split(""));
 
     const client2 = server.createHostClient(true);
-    const doc2 = (await client2.open("/hello.pc")) as PCDocument;
+    const doc2 = (await client2.getDocuments().open("/hello.pc")) as PCDocument;
     const src2 = await doc2.getSource();
     src2.insertText("222".split(""));
 

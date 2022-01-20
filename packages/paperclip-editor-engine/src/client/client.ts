@@ -1,4 +1,4 @@
-import { createDocument } from "./documents";
+import { DocumentManager } from "./documents";
 import { DOMFactory } from "@paperclip-ui/web-renderer/lib/base";
 import { RPCClientAdapter } from "@paperclip-ui/common";
 
@@ -7,25 +7,22 @@ export type EditorClientOptions = {
 };
 
 export class EditorClient {
+  private _documents: DocumentManager;
+
   /**
    */
 
   constructor(
     private _connection: RPCClientAdapter,
     private _options: EditorClientOptions
-  ) {}
+  ) {
+    this._documents = new DocumentManager(this._connection, this._options);
+  }
 
   /**
-   * Opens a new editable document
    */
 
-  async open(documentUri: string) {
-    const document = createDocument(
-      documentUri,
-      await this._connection,
-      this._options
-    );
-    await document.open();
-    return document;
+  getDocuments() {
+    return this._documents;
   }
 }

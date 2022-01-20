@@ -12,7 +12,7 @@ export type LoadOptions = {
   uri?: string;
 };
 
-type ProjectProperties = {
+export type ProjectProperties = {
   id: string;
   directoryPath: string;
   directoryUri: string;
@@ -29,7 +29,7 @@ export class Project {
 
   private constructor(
     private _loadOptions: LoadOptions,
-    private _documents: EditorClient,
+    private _editorClient: EditorClient,
     private _client: RPCClientAdapter
   ) {
     this._openProject = openProjectChannel(_client);
@@ -61,7 +61,7 @@ export class Project {
    */
 
   getDocuments() {
-    return this._documents;
+    return this._editorClient.getDocuments();
   }
 
   /**
@@ -80,7 +80,7 @@ export class Project {
     });
     const docs: PCDocument[] = [];
     for (const uri of fileUris) {
-      docs.push(await this._documents.open(uri));
+      docs.push(await this._editorClient.getDocuments().open(uri));
     }
     return docs;
   }

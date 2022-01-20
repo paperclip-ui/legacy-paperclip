@@ -1,15 +1,21 @@
 import { EngineDelegate, isPaperclipFile } from "@paperclip-ui/core";
 import { EventEmitter } from "events";
 import { OpenDocumentResult } from "../../core";
+import { createListener } from "../../core/utils";
 import { BaseDocument } from "./base";
 import { PCDocument } from "./pc";
 
 export class DocumentManager {
   private _documents: Record<string, Document>;
+  private _em: EventEmitter;
 
   constructor(private _events: EventEmitter, private _engine: EngineDelegate) {
     this._documents = {};
+    this._em = new EventEmitter();
   }
+
+  /**
+   */
 
   open(uri: string): Document {
     if (this._documents[uri]) {
@@ -20,6 +26,13 @@ export class DocumentManager {
       this._events,
       this._engine
     ));
+  }
+
+  /**
+   */
+
+  onDocumentChanged(listener: (document: PCDocument) => void) {
+    return createListener(this._em, "documentChanged", listener);
   }
 }
 

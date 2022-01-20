@@ -1,13 +1,18 @@
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
 import { Project } from "@tandem-ui/workspace-client/lib/project";
-import { Action, mainActions } from "../../actions";
-import { Store } from "../base";
+import { Action, mainActions, workspaceActions } from "../../../actions";
+import { Store } from "../../base";
 
 export class ProjectManager {
   private _mainProjectId: string;
   private _mainProject: Project;
 
   constructor(private _client: WorkspaceClient, private _store: Store) {}
+
+  getMainProject() {
+    return this._mainProject;
+  }
+
   handleAction(action: Action) {
     switch (action.type) {
       case mainActions.locationChanged.type:
@@ -28,6 +33,8 @@ export class ProjectManager {
     const project = (this._mainProject = await this._client.openProject({
       id,
     }));
-    console.log(project);
+    this._store.dispatch(
+      workspaceActions.projectLoaded(project.getProperties())
+    );
   };
 }

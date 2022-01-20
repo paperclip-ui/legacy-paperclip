@@ -1,15 +1,11 @@
 import { Store } from "../base";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
-import { ImmutableStore, sockjsClientAdapter } from "@paperclip-ui/common";
+import { sockjsClientAdapter } from "@paperclip-ui/common";
 import SockJSClient from "sockjs-client";
-import { Kernel, WorkspaceEngineState } from "./core";
-import { Dispatch } from "redux";
 import { Action } from "../..";
-import { manageLocalState } from "./local-state";
-import { manageSideEffects } from "./side-effects";
-import { DocumentsManager } from "./documents-manager";
-import { PaperclipEngineManager } from "./paperclip-engine";
-import { ProjectManager } from "./project-manager";
+import { DocumentsManager } from "./managers/documents";
+import { PaperclipEngineManager } from "./managers/paperclip-engine";
+import { ProjectManager } from "./managers/project";
 
 class WorkspaceEngine {
   private _documents: DocumentsManager;
@@ -24,7 +20,7 @@ class WorkspaceEngine {
     );
 
     this._project = new ProjectManager(client, _store);
-    this._documents = new DocumentsManager(client, _store);
+    this._documents = new DocumentsManager(client, this._project, _store);
     this._paperclip = new PaperclipEngineManager(client, _store);
   }
 

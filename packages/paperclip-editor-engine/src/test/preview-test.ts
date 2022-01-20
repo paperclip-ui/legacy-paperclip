@@ -15,7 +15,7 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
     expect(
       combineFrameHTML2(
         renderFrames(doc.getContent(), { domFactory: mockDOMFactory })
@@ -29,7 +29,7 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
 
     const source = await doc.getSource();
     source.insertText("blah".split(""));
@@ -47,8 +47,8 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
-    const doc2 = (await client.open("/imp.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
+    const doc2 = (await client.getDocuments().open("/imp.pc")) as PCDocument;
 
     const source = await doc2.getSource();
     source.insertText(
@@ -73,7 +73,7 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
     expect(
       combineFrameHTML2(
         renderFrames(doc.getContent(), { domFactory: mockDOMFactory })
@@ -106,7 +106,7 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
     expect(
       combineFrameHTML2(
         renderFrames(doc.getContent(), { domFactory: mockDOMFactory })
@@ -139,7 +139,7 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
     expect(
       combineFrameHTML2(
         renderFrames(doc.getContent(), { domFactory: mockDOMFactory })
@@ -170,7 +170,7 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
 
     const source = await doc.getSource();
     source.insertText(
@@ -195,8 +195,8 @@ describe(__filename + "#", () => {
     });
 
     const client = server.createHostClient();
-    const doc = (await client.open("/entry.pc")) as PCDocument;
-    // const doc2 = (await client.open("/imp.css")) as PCDocument;
+    const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
+    // const doc2 = (await client.getDocuments().open("/imp.css")) as PCDocument;
 
     // cheat
     engine.updateVirtualFileContent("/imp.css", `div { color: orange }`);
