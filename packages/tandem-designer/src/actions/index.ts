@@ -6,6 +6,7 @@ import { WorkspaceAction } from "./workspace-actions";
 export * from "./instance-actions";
 export * from "./server-actions";
 export * from "./external-actions";
+export * from "./workspace-actions";
 
 export type Action =
   | InstanceAction

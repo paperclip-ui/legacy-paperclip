@@ -7,7 +7,6 @@ import {
 } from "@paperclip-ui/utils";
 import { Directory, WorkspaceState } from "./state";
 import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
-import { Channel } from "@paperclip-ui/common";
 
 export const inspectNodeStyleChannel = remoteChannel<
   VirtNodeSource[],

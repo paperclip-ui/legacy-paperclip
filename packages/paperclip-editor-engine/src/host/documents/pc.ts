@@ -1,19 +1,9 @@
-import {
-  AttributeKind,
-  Element,
-  EngineDelegate,
-  getNodeByPath,
-  LoadedPCData,
-  ScriptExpressionKind,
-  ScriptObject,
-  VirtualElement,
-} from "@paperclip-ui/core";
+import { EngineDelegate, LoadedPCData } from "@paperclip-ui/core";
 import * as Automerge from "automerge";
-import { CRDTTextDocument, TextEdit } from "../../core/crdt-document";
+import { CRDTTextDocument } from "../../core/crdt-document";
 import { DocumentKind } from "../../core/documents";
 import { BaseDocument } from "./base";
 import { EventEmitter } from "events";
-import { VirtualObjectEdit, VirtualobjectEditKind } from "../../core";
 
 export class PCDocument extends BaseDocument<LoadedPCData> {
   readonly kind = DocumentKind.Paperclip;

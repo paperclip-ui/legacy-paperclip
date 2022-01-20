@@ -7,26 +7,35 @@ import { Dispatch } from "redux";
 import { Action } from "../..";
 import { manageLocalState } from "./local-state";
 import { manageSideEffects } from "./side-effects";
+import { DocumentsManager } from "./documents-manager";
+import { PaperclipEngineManager } from "./paperclip-engine";
+import { ProjectManager } from "./project-manager";
+
+class WorkspaceEngine {
+  private _documents: DocumentsManager;
+  private _paperclip: PaperclipEngineManager;
+  private _project: ProjectManager;
+
+  constructor(private _store: Store) {
+    const client = new WorkspaceClient(
+      sockjsClientAdapter(
+        new SockJSClient(location.protocol + "//" + location.host + "/rt")
+      )
+    );
+
+    this._project = new ProjectManager(client, _store);
+    this._documents = new DocumentsManager(client, _store);
+    this._paperclip = new PaperclipEngineManager(client, _store);
+  }
+
+  handleAction = (action: Action) => {
+    this._project.handleAction(action);
+    this._documents.handleAction(action);
+    this._paperclip.handleAction(action);
+  };
+}
 
 export const workspaceEngine = (globalStore: Store) => {
-  const localStore = new ImmutableStore<WorkspaceEngineState>({
-    currentAppState: globalStore.getState(),
-  });
-
-  const client = new WorkspaceClient(
-    sockjsClientAdapter(
-      new SockJSClient(location.protocol + "//" + location.host + "/rt")
-    )
-  );
-
-  const kernel: Kernel = {
-    localStore,
-    client,
-    globalStore,
-    dispatch: globalStore.dispatch as Dispatch<Action>,
-  };
-
-  manageSideEffects(kernel);
-
-  return manageLocalState(kernel);
+  const engine = new WorkspaceEngine(globalStore);
+  return engine.handleAction;
 };

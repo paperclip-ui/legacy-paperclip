@@ -22,6 +22,7 @@ import {
   allPCContentLoaded,
   globalBackspaceKeySent,
   FileItemClicked,
+  mainActions,
   fileOpened,
   FSItemClicked,
   CanvasMouseDown,
@@ -32,7 +33,6 @@ import {
   ActionType,
   commitRequestStateChanged,
   BranchChanged,
-  serverOptionsLoaded,
   setBranchRequestStateChanged,
   ServerOptionsLoaded,
   Action,
@@ -48,7 +48,6 @@ import {
   eventsChannel,
   getAllScreensChannel,
   helloChannel,
-  inspectNodeStyleChannel,
   loadDirectoryChannel,
   loadVirtualNodeSourcesChannel,
   openFileChannel,
@@ -88,33 +87,8 @@ export function* handleRPC({
   createConnection = createDefaultConnection,
 }: HandleRPCOptions) {
   let _client: IConnection = createConnection();
-  yield fork(handleServerOptions, _client);
   yield fork(handleProject, _client);
   yield fork(handleCanvasRedirect);
-}
-
-function* handleServerOptions(client: IConnection) {
-  const hello = helloChannel(client);
-
-  ///oof... need to delay so that query state is populated. What a hack!
-  yield delay(100);
-
-  yield takeState(
-    (state: AppState) => {
-      return state.designer.ui.query.projectId;
-    },
-    loadServerOptions,
-    [ActionType.LOCATION_CHANGED],
-    [hello]
-  );
-}
-
-function* loadServerOptions(
-  projectId: string,
-  getOptions: ReturnType<typeof helloChannel>
-) {
-  const options = yield call(getOptions.call, { projectId });
-  yield put(serverOptionsLoaded(options));
 }
 
 function* handleProject(client: IConnection) {
@@ -196,7 +170,6 @@ function* loadProjectDirectory(
 }
 
 function* handleClientComunication(client) {
-  const inspectNodeStyle = inspectNodeStyleChannel(client);
   const revealNodeSource = revealNodeSourceChannel(client);
   const popoutWindow = popoutWindowChannel(client);
   const getAllScreens = getAllScreensChannel(client);
@@ -274,7 +247,7 @@ function* handleClientComunication(client) {
     }
   );
 
-  yield takeEvery([ActionType.LOCATION_CHANGED], maybeLoadScreens);
+  yield takeEvery([mainActions.locationChanged.type], maybeLoadScreens);
 
   function* maybeLoadScreens() {
     const state: AppState = yield select();
@@ -414,7 +387,7 @@ function* handleClientComunication(client) {
 
   yield takeEvery(
     [
-      ActionType.LOCATION_CHANGED,
+      mainActions.locationChanged.type,
       ActionType.CLIENT_CONNECTED,
       ActionType.FS_ITEM_CLICKED,
       ActionType.SERVER_OPTIONS_LOADED,

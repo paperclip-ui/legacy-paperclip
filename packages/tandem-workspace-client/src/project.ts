@@ -5,6 +5,7 @@ import {
 } from "@tandem-ui/workspace-core";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { PCDocument } from "@paperclip-ui/editor-engine/lib/client/documents";
+import { PaperclipManager } from "./paperclip";
 
 export type LoadOptions = {
   id?: string;
@@ -19,6 +20,7 @@ type ProjectProperties = {
 
 export class Project {
   private _properties: ProjectProperties;
+  private _paperclip: PaperclipManager;
   private _openProject: ReturnType<typeof openProjectChannel>;
   private _getAllPaperclipFiles: ReturnType<typeof getAllPaperclipFilesChannel>;
 
@@ -32,6 +34,7 @@ export class Project {
   ) {
     this._openProject = openProjectChannel(_client);
     this._getAllPaperclipFiles = getAllPaperclipFilesChannel(_client);
+    this._paperclip = new PaperclipManager(this._client);
   }
 
   /**

@@ -3,14 +3,9 @@ import { ContentChange, PCMutation } from "@paperclip-ui/source-writer";
 import {
   NodeStyleInspection,
   VirtNodeSource,
-  LoadedData
+  LoadedData,
 } from "@paperclip-ui/utils";
 import { Directory, VirtualNodeSourceInfo, WorkspaceState } from "../state";
-
-export const inspectNodeStyleChannel = remoteChannel<
-  VirtNodeSource[],
-  Array<[VirtNodeSource, NodeStyleInspection]>
->("inspectNodeStyleChannel");
 
 export const setProjectIdChannel = remoteChannel<string, void>(
   "setProjectIdChannel"

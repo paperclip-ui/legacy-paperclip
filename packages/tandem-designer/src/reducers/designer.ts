@@ -31,7 +31,8 @@ import {
   Action,
   ActionType,
   CanvasMouseDown,
-  LocationChanged,
+  mainActions,
+  workspaceActions,
   RedirectRequested,
   ServerActionType,
 } from "../actions";
@@ -57,7 +58,6 @@ import {
   VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import * as path from "path";
-import { workspaceActions } from "../actions/workspace-actions";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -236,7 +236,9 @@ const expandFilePath = (newDesigner: DesignerState, oldCanvasFile: string) => {
 
 const handleLocationChange = (
   designer: DesignerState,
-  { payload }: LocationChanged | RedirectRequested,
+  {
+    payload,
+  }: ReturnType<typeof mainActions.locationChanged> | RedirectRequested,
   mode: SyncLocationMode
 ) => {
   return produce(designer, (newDesigner) => {
@@ -330,7 +332,7 @@ export const reduceDesigner = (
         newDesigner.availableBrowsers = action.payload;
       });
     }
-    case ActionType.LOCATION_CHANGED: {
+    case mainActions: {
       return handleLocationChange(designer, action, designer.syncLocationMode);
     }
     case ActionType.REDIRECT_REQUESTED: {

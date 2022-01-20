@@ -14,8 +14,8 @@ import {
   globalMetaKeyUp,
   CanvasMouseDown,
   globalSaveKeyPress,
+  mainActions,
   globalHKeyDown,
-  locationChanged,
   gridHotkeyPressed,
   zoomOutKeyPressed,
   zoomInKeyPressed,
@@ -239,7 +239,7 @@ function* handleDocumentEvents() {
 function* handleLocationChanged() {
   const parts = Url.parse(location.href, true);
   yield put(
-    locationChanged({
+    mainActions.locationChanged({
       protocol: parts.protocol,
       host: parts.host,
       pathname: parts.pathname,

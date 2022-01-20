@@ -25,11 +25,11 @@ import {
   Size,
   WorkspaceState,
 } from "../state";
+import { actionCreators, ExtractJoinedActionFromCreators } from "./util";
 
 export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   REMOVE_FILE_CLICKED = "REMOVE_FILE_CLICKED",
-  LOCATION_CHANGED = "LOCATION_CHANGED",
   FILE_RENAMED = "FILE_RENAMED",
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
   REDIRECT_REQUESTED = "REDIRECT_REQUESTED",
@@ -114,6 +114,18 @@ export enum ActionType {
   WINDOW_FOCUSED = "WINDOW_FOCUSED",
   WINDOW_BLURRED = "WINDOW_BLURRED",
 }
+
+export const mainActions = actionCreators(
+  {
+    locationChanged: (payload: {
+      protocol: string;
+      host: string;
+      pathname: string;
+      query: any;
+    }) => payload,
+  },
+  "main"
+);
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
   sourceEvent: T;
@@ -261,15 +273,6 @@ export type FileLoaded = BaseAction<
   }
 >;
 export type ClientConnected = BaseAction<ActionType.CLIENT_CONNECTED>;
-export type LocationChanged = BaseAction<
-  ActionType.LOCATION_CHANGED,
-  {
-    protocol: string;
-    host: string;
-    pathname: string;
-    query: any;
-  }
->;
 export type LayerLeafClicked = BaseAction<
   ActionType.LAYER_LEAF_CLICKED,
   { nodePath: string; metaKey: boolean }
@@ -556,9 +559,6 @@ export const collapseFrameButtonClicked =
 export const resizerPathMoved = actionCreator<ResizerPathMoved>(
   ActionType.RESIZER_PATH_MOUSE_MOVED
 );
-export const locationChanged = publicActionCreator<LocationChanged>(
-  ActionType.LOCATION_CHANGED
-);
 
 export const fileItemClicked = actionCreator<FileItemClicked>(
   ActionType.FILE_ITEM_CLICKED
@@ -736,11 +736,8 @@ export const virtualNodesSelected = actionCreator<VirtualNodesSelected>(
   ActionType.VIRTUAL_NODES_SELECTED
 );
 
-export const serverOptionsLoaded = actionCreator<ServerOptionsLoaded>(
-  ActionType.SERVER_OPTIONS_LOADED
-);
-
 export type InstanceAction =
+  | ExtractJoinedActionFromCreators<typeof mainActions>
   // | RendererInitialized
   | RectsCaptured
   | CanvasMouseUp
