@@ -596,7 +596,6 @@ export const maybeCenterCanvas = (designer: DesignerState, force?: boolean) => {
       designer.canvas.size?.width &&
       designer.canvas.size?.height)
   ) {
-    console.log("CENTERING");
     designer = produce(designer, (newDesigner) => {
       newDesigner.centeredInitial = true;
     });
