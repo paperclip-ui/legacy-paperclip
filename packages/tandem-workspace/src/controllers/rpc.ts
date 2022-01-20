@@ -11,6 +11,7 @@ import {
   engineDelegateChanged,
   Expression,
   isPaperclipFile,
+  NodeStyleInspection,
   VirtNodeSource,
 } from "@paperclip-ui/utils";
 import { VFS } from "./vfs";
@@ -79,7 +80,7 @@ class Connection {
       .listen(this._getAllPaperclipFiles);
 
     // TODO
-    // channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
+    channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
     // channels.revealNodeSourceChannel(connection).listen(this._revealSource);
     // channels
     //   .revealNodeSourceByIdChannel(connection)
@@ -183,7 +184,9 @@ class Connection {
     exec(`open "${url}"`);
   };
 
-  private _inspectNode = (sources: VirtNodeSource[]) => {
+  private _inspectNode = async (
+    sources: VirtNodeSource[]
+  ): Promise<Array<[VirtNodeSource, NodeStyleInspection]>> => {
     const project = this.getProject();
     return sources.map((source) => [
       source,

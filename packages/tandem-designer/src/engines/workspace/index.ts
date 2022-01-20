@@ -21,7 +21,7 @@ class WorkspaceEngine {
 
     this._project = new ProjectManager(client, _store);
     this._documents = new DocumentsManager(client, this._project, _store);
-    this._paperclip = new PaperclipEngineManager(client, _store);
+    this._paperclip = new PaperclipEngineManager(client, this._project, _store);
   }
 
   handleAction = (action: Action) => {

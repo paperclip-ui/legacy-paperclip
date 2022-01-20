@@ -9,8 +9,6 @@ import { Store } from "../../base";
 import { ProjectManager } from "./project";
 
 export class DocumentsManager {
-  private _showAll: boolean;
-
   constructor(
     private _client: WorkspaceClient,
     private _projectManager: ProjectManager,
@@ -22,21 +20,9 @@ export class DocumentsManager {
 
   handleAction(action: Action) {
     switch (action.type) {
-      case mainActions.locationChanged.type:
-        return this._handleLocationChanged(action);
       case workspaceActions.projectLoaded.type:
         return this._handleProjectLoaded();
     }
-  }
-
-  /**
-   */
-
-  private _handleLocationChanged(
-    action: ReturnType<typeof mainActions.locationChanged>
-  ) {
-    this._showAll = action.payload.query.showAll !== false;
-    this._maybeLoadAllDocuments();
   }
 
   /**
@@ -46,7 +32,6 @@ export class DocumentsManager {
     const project = this._projectManager.getMainProject();
 
     project.getDocuments().onDocumentChanged((document) => {
-      console.log("CHANGED!");
       this._store.dispatch(
         workspaceActions.pcContentUpdated({
           uri: document.uri,
@@ -63,8 +48,9 @@ export class DocumentsManager {
 
   private async _maybeLoadAllDocuments() {
     const mainProject = this._projectManager.getMainProject();
+    const state = this._store.getState();
 
-    if (!this._showAll || !mainProject) {
+    if (!mainProject) {
       return;
     }
 

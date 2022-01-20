@@ -2,7 +2,6 @@ import { RPCClientAdapter } from "@paperclip-ui/common";
 import { LoadOptions, Project } from "./project";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { DOMFactory } from "@paperclip-ui/web-renderer/lib/base";
-import { getAllPaperclipFilesChannel } from "@tandem-ui/workspace-core";
 
 export class WorkspaceClient {
   private _editorClient: EditorClient;

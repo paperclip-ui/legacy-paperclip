@@ -47,6 +47,13 @@ export class Project {
   /**
    */
 
+  getPaperclip() {
+    return this._paperclip;
+  }
+
+  /**
+   */
+
   static async load(
     options: LoadOptions,
     documents: EditorClient,
