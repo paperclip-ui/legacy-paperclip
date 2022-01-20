@@ -370,6 +370,7 @@ export const reduceDesigner = (
           return docs;
         }, {});
       });
+      designer = maybeCenterCanvas(designer);
       return designer;
     }
     case workspaceActions.projectLoaded.type: {
@@ -480,7 +481,7 @@ export const reduceDesigner = (
       return designer;
     }
     case ActionType.RECTS_CAPTURED: {
-      return produce(designer, (newDesigner) => {
+      designer = produce(designer, (newDesigner) => {
         newDesigner.frameBoxes[action.payload.frameIndex] =
           mergeBoxesFromClientRects(
             newDesigner.frameBoxes[action.payload.frameIndex] || {},
@@ -488,6 +489,8 @@ export const reduceDesigner = (
           );
 
         const preview = getCurrentPreview(newDesigner);
+
+        // ensure that any old frames are removed
         newDesigner.frameBoxes = pick(
           newDesigner.frameBoxes,
           Array.from({
@@ -498,6 +501,8 @@ export const reduceDesigner = (
           }).map((v, i) => String(i))
         );
       });
+
+      return designer;
     }
     case ActionType.ENGINE_ERRORED: {
       return produce(designer, (newDesigner) => {

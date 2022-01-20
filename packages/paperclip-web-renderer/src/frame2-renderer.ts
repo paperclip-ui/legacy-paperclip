@@ -188,21 +188,24 @@ export const getFrameRects = (
   const bounds = getFrameBounds(frame);
 
   // mount child node _is_ the frame -- can only ever be one child
-  traverseNativeNode(mount, (node, path) => {
-    if (node.nodeType === 1) {
-      const pathStr = path.length ? index + "." + path.join(".") : index;
-      if (pathStr) {
-        const clientRect = (node as Element).getBoundingClientRect();
+  traverseNativeNode(
+    mount.childNodes[STAGE_INDEX].childNodes[0],
+    (node, path) => {
+      if (node.nodeType === 1) {
+        const pathStr = path.length ? index + "." + path.join(".") : index;
+        if (pathStr) {
+          const clientRect = (node as Element).getBoundingClientRect();
 
-        rects[pathStr] = {
-          width: clientRect.width,
-          height: clientRect.height,
-          x: clientRect.left + bounds.x,
-          y: clientRect.top + bounds.y,
-        };
+          rects[pathStr] = {
+            width: clientRect.width,
+            height: clientRect.height,
+            x: clientRect.left + bounds.x,
+            y: clientRect.top + bounds.y,
+          };
+        }
       }
     }
-  });
+  );
 
   // include frame sizes too
   rects[index] = bounds;
