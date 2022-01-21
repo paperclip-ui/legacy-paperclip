@@ -9,6 +9,8 @@
     "strict": false /* Enable all strict type-checking options. */
   },
   "exclude": [
+    "*.config.ts",
+    "./jest.config.ts",
     "**/*.d.ts",
     "lib/**/*.d.ts",
     "esm",

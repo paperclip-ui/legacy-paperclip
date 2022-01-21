@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Provider } from "react-redux";
-import { withAppStore } from "../../hocs";
 import { useAppStore } from "../../hooks/useAppStore";
 import { CodeMode } from "./CodeMode";
 import { createAppStore, CreateAppStoreOptions } from "./create-app-store";

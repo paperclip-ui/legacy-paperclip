@@ -1,6 +1,6 @@
 import { RPCClientAdapter, RPCServer } from "@paperclip-ui/common";
 import * as channels from "@tandem-ui/workspace-core/lib/channels";
-import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
+// import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
 import { Channel } from "@paperclip-ui/common";
 import { Workspace } from "./workspace";
 import { isPlainTextFile, Logger } from "@tandem-ui/common";
@@ -73,7 +73,7 @@ class Connection {
       .loadVirtualNodeSourcesChannel(connection)
       .listen(this._loadNodeSources);
     channels.helloChannel(connection).listen(this._initialize);
-    channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
+    // channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
     channels.openProjectChannel(connection).listen(this._openProject);
     channels
       .getAllPaperclipFilesChannel(connection)
@@ -268,34 +268,34 @@ class Connection {
   private _setBranch = ({ branchName }) => {
     this.getProject().checkout(branchName);
   };
-  private _loadDirectory = async ({
-    path: dirPath,
-    ...rest
-  }): Promise<Directory> => {
-    return new Promise((resolve, reject) => {
-      fs.readdir(dirPath, (err, basenames) => {
-        if (err) {
-          return reject(err);
-        }
+  // private _loadDirectory = async ({
+  //   path: dirPath,
+  //   ...rest
+  // }): Promise<Directory> => {
+  //   return new Promise((resolve, reject) => {
+  //     fs.readdir(dirPath, (err, basenames) => {
+  //       if (err) {
+  //         return reject(err);
+  //       }
 
-        resolve({
-          absolutePath: dirPath,
-          url: URL.pathToFileURL(dirPath).toString(),
-          kind: FSItemKind.DIRECTORY,
-          name: path.basename(dirPath),
-          children: basenames.map((basename) => {
-            const absolutePath = path.join(dirPath, basename);
-            const isDir = fs.lstatSync(absolutePath).isDirectory();
-            return {
-              absolutePath,
-              url: URL.pathToFileURL(absolutePath).toString(),
-              name: basename,
-              kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
-              children: isDir ? [] : undefined,
-            };
-          }),
-        });
-      });
-    });
-  };
+  //       resolve({
+  //         absolutePath: dirPath,
+  //         url: URL.pathToFileURL(dirPath).toString(),
+  //         kind: FSItemKind.DIRECTORY,
+  //         name: path.basename(dirPath),
+  //         children: basenames.map((basename) => {
+  //           const absolutePath = path.join(dirPath, basename);
+  //           const isDir = fs.lstatSync(absolutePath).isDirectory();
+  //           return {
+  //             absolutePath,
+  //             url: URL.pathToFileURL(absolutePath).toString(),
+  //             name: basename,
+  //             kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
+  //             children: isDir ? [] : undefined,
+  //           };
+  //         }),
+  //       });
+  //     });
+  //   });
+  // };
 }

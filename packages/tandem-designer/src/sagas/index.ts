@@ -1,5 +1,4 @@
 import Mousetrap, { addKeycodes } from "mousetrap";
-import SockJSClient from "sockjs-client";
 import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
@@ -30,7 +29,7 @@ import { AppState, SyncLocationMode } from "../state";
 import { handleCanvas } from "./canvas";
 import { History } from "history";
 import { omit } from "lodash";
-import { handleRPC, HandleRPCOptions } from "./rpc";
+import { HandleRPCOptions } from "./rpc";
 
 export type AppStateSelector = (state) => AppState;
 
@@ -57,7 +56,7 @@ export function* mainSaga(
   yield fork(handleDocumentEvents);
   yield fork(handleCanvas, getState);
   // yield fork(handleClipboard, getState);
-  yield fork(handleLocationChanged);
+  yield fork(handleLocationChanged, options.history);
   yield fork(handleLocation, getState, options.history);
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
@@ -235,14 +234,15 @@ function* handleDocumentEvents() {
   });
 }
 
-function* handleLocationChanged() {
+function* handleLocationChanged(history: History) {
   const parts = Url.parse(location.href, true);
+
   yield put(
     mainActions.locationChanged({
       protocol: parts.protocol,
       host: parts.host,
-      pathname: parts.pathname,
-      query: parts.query,
+      pathname: history.location.pathname,
+      query: qs.parse(history.location.search.substring(1)),
     })
   );
 }
@@ -252,7 +252,9 @@ function* handleLocation(getState: AppStateSelector, history: History) {
     return history.listen(emit);
   });
 
-  yield takeEvery(chan, handleLocationChanged);
+  yield takeEvery(chan, function* () {
+    yield call(handleLocationChanged, history);
+  });
   yield takeEvery(ActionType.REDIRECT_REQUESTED, function* () {
     const state = yield select(getState);
     const pathname = history.location.pathname;

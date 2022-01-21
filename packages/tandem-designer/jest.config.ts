@@ -8,6 +8,8 @@ export default {
   // collectCoverage: true,
   // coverageDirectory: "coverage",
   // coverageProvider: "v8",
+  testPathIgnorePatterns: ["/node_modules/", "lib"],
+  setupFilesAfterEnv: ["./test/jest.setup.js"],
   testEnvironment: "jsdom",
 
   transform: {

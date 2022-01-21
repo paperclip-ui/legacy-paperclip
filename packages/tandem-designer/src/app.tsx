@@ -2,11 +2,11 @@ import React from "react";
 import * as ReactDOM from "react-dom";
 import { createMain } from "./components/Main";
 import { createBrowserHistory } from "history";
-import { WithAppStoreOptions } from "./hocs";
+import { CreateAppStoreOptions } from "./components/Main/create-app-store";
 
 export type InitOptions = {
   mount?: HTMLElement;
-} & Partial<WithAppStoreOptions>;
+} & Partial<CreateAppStoreOptions>;
 
 export const init = ({
   mount = document.getElementById("app"),

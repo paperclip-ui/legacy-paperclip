@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
+import { Middleware } from "redux";
 
 import defaultReducer from "../../reducers";
 import { mainSaga, MainSagaOptions } from "../../sagas";
@@ -18,8 +19,11 @@ export type CreateAppStoreOptions = {
   codeEditorWidth?: string;
   activeFrame?: number;
   showCodeEditorOnStartup?: boolean;
+  middleware: Middleware;
 } & MainSagaOptions &
   EngineOptions;
+
+const noMiddleware = () => (next) => (action) => next(action);
 
 export const createAppStore = (options: CreateAppStoreOptions) => {
   const state = createState(options);
@@ -28,7 +32,11 @@ export const createAppStore = (options: CreateAppStoreOptions) => {
   const store = createStore(
     defaultReducer,
     state,
-    applyMiddleware(sagaMiddleware, engineMiddleware(options))
+    applyMiddleware(
+      sagaMiddleware,
+      engineMiddleware(options),
+      options.middleware || noMiddleware
+    )
   );
 
   // DEPRECATED
