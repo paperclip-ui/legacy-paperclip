@@ -2,6 +2,7 @@ import { ExprSource } from "@paperclip-ui/utils";
 import { WorkspaceFolder } from "vscode-languageserver";
 import { Project } from "@tandem-ui/workspace/lib/server";
 import { ContentChange } from "@paperclip-ui/source-writer";
+import { EngineDelegate } from "@paperclip-ui/core";
 
 export class RevealSourceRequested {
   static TYPE = "RevealSourceRequested";
@@ -57,13 +58,14 @@ export class DesignServerStarted {
   constructor(
     readonly httpPort: number,
     readonly projectId: string,
-    readonly project: Project
+    readonly project: Project,
+    readonly engine: EngineDelegate
   ) {}
   toJSON() {
     return {
       httpPort: this.httpPort,
       type: this.type,
-      projectId: this.projectId
+      projectId: this.projectId,
     };
   }
 }

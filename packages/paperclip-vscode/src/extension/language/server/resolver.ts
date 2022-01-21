@@ -16,7 +16,7 @@ import {
   ColorPresentationParams,
   DefinitionParams,
   DocumentLinkParams,
-  CompletionParams
+  CompletionParams,
 } from "vscode-languageserver";
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -31,7 +31,7 @@ import {
   DesignServerStarted,
   DesignServerUpdated,
   DesignServerUpdating,
-  ProjectStarted
+  ProjectStarted,
 } from "./events";
 import { SourceLinted } from "@paperclip-ui/language-service";
 
@@ -54,10 +54,10 @@ export class LanguageRequestResolver {
   handleEvent(event) {
     if (event.type === DesignServerStarted.TYPE) {
       this._service = new PaperclipLanguageService(
-        (event as DesignServerStarted).project.engine
+        (event as DesignServerStarted).engine
       );
       this._service.events.observe({
-        handleEvent: this._onServiceEvent
+        handleEvent: this._onServiceEvent,
       });
       this._resolveEngineReady();
     } else if (event.type === DesignServerUpdating.TYPE) {
@@ -109,15 +109,15 @@ export class LanguageRequestResolver {
       textDocument = TextDocument.create(uri, "@paperclip-ui/core", 0, content);
       this._connection.sendDiagnostics({
         uri: uri,
-        diagnostics: diagnostics.map(diagnostic => {
+        diagnostics: diagnostics.map((diagnostic) => {
           return {
             ...diagnostic,
             range: {
               start: textDocument.positionAt(diagnostic.range.start.pos),
-              end: textDocument.positionAt(diagnostic.range.end.pos)
-            }
+              end: textDocument.positionAt(diagnostic.range.end.pos),
+            },
           };
-        })
+        }),
       });
     }
   };
@@ -143,14 +143,14 @@ export class LanguageRequestResolver {
       return {
         range: {
           start: document.positionAt(start),
-          end: document.positionAt(end)
+          end: document.positionAt(end),
         },
-        color: value
+        color: value,
       };
     });
   };
 
-  private _onCompletionResolveRequest = async item => {
+  private _onCompletionResolveRequest = async (item) => {
     await this._engineReady;
     return item;
   };
@@ -175,7 +175,7 @@ export class LanguageRequestResolver {
 
     const info = this._service
       .getDefinitions(uri)
-      .filter(info => {
+      .filter((info) => {
         const offset = document.offsetAt(params.position);
         return (
           offset >= info.instanceRange.start.pos &&
@@ -187,16 +187,16 @@ export class LanguageRequestResolver {
           sourceUri,
           instanceRange: {
             start: { pos: instanceStart },
-            end: { pos: instanceEnd }
+            end: { pos: instanceEnd },
           },
           sourceRange: {
             start: { pos: sourceStart },
-            end: { pos: sourceEnd }
+            end: { pos: sourceEnd },
           },
           sourceDefinitionRange: {
             start: { pos: definitionStart },
-            end: { pos: definitionEnd }
-          }
+            end: { pos: definitionEnd },
+          },
         }) => {
           const sourceDocument =
             this._documents.getDocument(sourceUri) ||
@@ -211,16 +211,16 @@ export class LanguageRequestResolver {
             targetUri: sourceDocument.uri,
             targetRange: {
               start: sourceDocument.positionAt(definitionStart),
-              end: sourceDocument.positionAt(definitionEnd)
+              end: sourceDocument.positionAt(definitionEnd),
             },
             targetSelectionRange: {
               start: sourceDocument.positionAt(sourceStart),
-              end: sourceDocument.positionAt(sourceEnd)
+              end: sourceDocument.positionAt(sourceEnd),
             },
             originSelectionRange: {
               start: document.positionAt(instanceStart),
-              end: document.positionAt(instanceEnd)
-            }
+              end: document.positionAt(instanceEnd),
+            },
           };
         }
       ) as DefinitionLink[];
@@ -236,8 +236,8 @@ export class LanguageRequestResolver {
         target: uri,
         range: {
           start: document.positionAt(start.pos),
-          end: document.positionAt(end.pos)
-        }
+          end: document.positionAt(end.pos),
+        },
       })) as DocumentLink[];
   };
 }
@@ -260,7 +260,7 @@ const getColorPresentation = (
 const deferPromise = () => {
   let _resolve;
 
-  const promise = new Promise(resolve => {
+  const promise = new Promise((resolve) => {
     _resolve = resolve;
   });
 

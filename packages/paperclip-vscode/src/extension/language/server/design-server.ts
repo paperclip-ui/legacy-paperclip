@@ -10,15 +10,16 @@ import {
   PCSourceEdited,
   RevealSourceRequested,
   TextDocumentChanged,
-  TextDocumentOpened
+  TextDocumentOpened,
 } from "./events";
 import {
   start as startWorkspace,
   Workspace,
-  Project
+  Project,
 } from "@tandem-ui/workspace/lib/server";
 import { ExprSource } from "@paperclip-ui/utils";
 import { ContentChange } from "@paperclip-ui/source-writer";
+import { LogLevel } from "@tandem-ui/common";
 
 const UPDATE_THROTTLE = 10;
 
@@ -47,20 +48,28 @@ export class PaperclipDesignServer implements Observer {
   }
 
   private _start = async ({ workspaceFolders }: Initialized) => {
-    this._workspace = await startWorkspace({
+    const server = await startWorkspace({
+      logLevel: LogLevel.All,
       http: {
-        port: this._port = await getPort()
+        port: (this._port = await getPort()),
       },
       project: {
-        installDependencies: false
+        installDependencies: false,
       },
-      adapter: new WorkspaceAadapter(this.events)
+      adapter: new WorkspaceAadapter(this.events),
     });
+
+    this._workspace = server.getWorkspace();
 
     const cwd = workspaceFolders[0].uri;
     this._project = await this._workspace.start(cwd);
     this.events.dispatch(
-      new DesignServerStarted(this._port, this._project.id, this._project)
+      new DesignServerStarted(
+        this._port,
+        this._project.getId(),
+        this._project,
+        server.getEngine()
+      )
     );
   };
 
@@ -85,7 +94,7 @@ export class PaperclipDesignServer implements Observer {
 
     this._updatingDocuments = true;
     this._latestDocuments = {
-      [uri]: content
+      [uri]: content,
     };
 
     // throttle for updating doc to ensure that the engine doesn't
@@ -112,7 +121,7 @@ export class PaperclipDesignServer implements Observer {
   handleEvent = eventHandlers({
     [Initialized.TYPE]: this._start,
     [TextDocumentOpened.TYPE]: this._onTextDocumentOpened,
-    [TextDocumentChanged.TYPE]: this._onTextDocumentChanged
+    [TextDocumentChanged.TYPE]: this._onTextDocumentChanged,
     // [ActionType.WINDOW_FOCUSED]: this._onWindowFocused,
     // [ActionType.WINDOW_BLURRED]: this._onWindowBlurred
   });

@@ -7,7 +7,11 @@ import { Options } from "./core/options";
 import { addRoutes } from "./routes";
 import * as sockjs from "sockjs";
 import { VFS } from "./controllers/vfs";
-import { createEngineDelegate, EngineMode } from "@paperclip-ui/core";
+import {
+  createEngineDelegate,
+  EngineDelegate,
+  EngineMode,
+} from "@paperclip-ui/core";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 import { sockjsServerRPCAdapter } from "@paperclip-ui/common";
 import { RPC } from "./controllers/rpc";
@@ -28,6 +32,7 @@ export class Server {
   private _httpServer: http.Server;
   private _port: number;
   private _workspace: Workspace;
+  private _engine: EngineDelegate;
 
   constructor(readonly options: Options) {
     this._logger = new Logger(options.logLevel);
@@ -37,6 +42,9 @@ export class Server {
   }
   getWorkspace() {
     return this._workspace;
+  }
+  getEngine() {
+    return this._engine;
   }
   async start() {
     this._logger.info(`Workspace started 🚀`);
@@ -49,9 +57,9 @@ export class Server {
     const io = sockjs.createServer();
     io.installHandlers(httpServer, { prefix: "/rt" });
 
-    const paperclipEngine = createEngineDelegate({
+    const paperclipEngine = (this._engine = createEngineDelegate({
       mode: EngineMode.MultiFrame,
-    });
+    }));
 
     const sockServer = sockjsServerRPCAdapter(io);
 

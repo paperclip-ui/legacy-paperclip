@@ -12,6 +12,7 @@ export type CreateAppStoreOptions = {
   showLaunchExternalButton?: boolean;
   useLiteEditor?: boolean;
   showCodeToolbar?: boolean;
+  m;
   showLeftSidebar?: boolean;
   showInspectorPanels?: boolean;
   floatingPreview?: boolean;
@@ -19,7 +20,7 @@ export type CreateAppStoreOptions = {
   codeEditorWidth?: string;
   activeFrame?: number;
   showCodeEditorOnStartup?: boolean;
-  middleware: Middleware;
+  middleware?: Middleware;
 } & MainSagaOptions &
   EngineOptions;
 
