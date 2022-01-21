@@ -182,28 +182,6 @@ function* handleClientComunication(client) {
 
   yield takeEvery(ActionType.CODE_CHANGED, handleCodeChanged(editCode));
 
-  function* loadNested(uri: string) {
-    const state: AppState = yield select();
-    const filePath = uri.replace("file://", "");
-    let current = path.dirname(filePath);
-
-    const toLoad = [];
-
-    while (
-      current &&
-      current !== "." &&
-      current !== "/" &&
-      current !== state.designer.projectDirectory?.absolutePath
-    ) {
-      toLoad.unshift(current);
-      current = path.dirname(current);
-    }
-
-    for (const dir of toLoad) {
-      yield call(loadProjectDirectory, loadRemoteDirectory, dir);
-    }
-  }
-
   yield takeEvery(
     [ActionType.FS_ITEM_CLICKED],
     function* (action: FSItemClicked) {
@@ -294,100 +272,7 @@ function* handleClientComunication(client) {
     }
   );
 
-  yield takeEvery(
-    ActionType.STYLE_RULE_FILE_NAME_CLICKED,
-    function* ({ payload: { styleRuleSourceId } }: StyleRuleFileNameClicked) {
-      yield call(revealNodeSourceById.call, styleRuleSourceId);
-    }
-  );
-
-  // yield throttle(
-  //   500,
-  //9 ],
-  //   function* () {
-  //     const state: AppState = yield select();
-  //     if (!state.designer.selectedNodePaths.length) {
-  //       return;
-  //     }
-
-  //     const inspectionInfo = yield call(
-  //       inspectNodeStyle.call,
-  //       state.designer.selectedNodePaths.map((path) => ({
-  //         path: nodePathToAry(path),
-  //         uri: state.designer.ui.query.canvasFile,
-  //       }))
-  //     );
-
-  //     yield put(virtualNodeStylesInspected(inspectionInfo));
-  //   }
-  // );
-
-  yield takeEvery(
-    [ActionType.NODE_BREADCRUMB_CLICKED, ActionType.LAYER_LEAF_CLICKED],
-    function* ({
-      payload: { metaKey, nodePath },
-    }: NodeBreadcrumbClicked | LayerLeafClicked) {
-      if (!metaKey) {
-        return;
-      }
-      const state: AppState = yield select();
-      yield call(revealNodeSource.call, {
-        path: nodePathToAry(nodePath),
-        uri: state.designer.ui.query.canvasFile,
-      } as VirtNodeSource);
-    }
-  );
-
-  yield takeEvery(
-    [ActionType.CANVAS_MOUSE_DOWN],
-    function* ({ payload: { metaKey } }: CanvasMouseDown) {
-      if (!metaKey) {
-        return;
-      }
-
-      const state: AppState = yield select();
-
-      const nodeInfo = getNodeInfoAtPoint(
-        state.designer.canvas.mousePosition,
-        state.designer.canvas.transform,
-        getScopedBoxes(
-          flattenFrameBoxes(state.designer.frameBoxes),
-          state.designer.scopedElementPath,
-          getActivePCData(state.designer).preview
-        ),
-        isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
-      );
-
-      // maybe offscreen
-      if (!nodeInfo) {
-        return;
-      }
-
-      yield call(revealNodeSource.call, {
-        path: nodePathToAry(nodeInfo.nodePath),
-        uri: state.designer.ui.query.canvasFile,
-      } as VirtNodeSource);
-    }
-  );
-
-  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function* () {
-    yield call(popoutWindow.call, {
-      path: window.location.pathname + window.location.search,
-    });
-  });
-
   let _previousFileUri;
-
-  yield takeEvery(
-    [
-      mainActions.locationChanged.type,
-      ActionType.CLIENT_CONNECTED,
-      ActionType.FS_ITEM_CLICKED,
-      ActionType.SERVER_OPTIONS_LOADED,
-      ActionType.DIR_LOADED,
-    ],
-    maybeLoadCanvasFile
-  );
 
   yield takeEvery(
     [ActionType.FILE_ITEM_CLICKED],
@@ -395,31 +280,6 @@ function* handleClientComunication(client) {
       yield call(loadFile, action.payload.uri);
     }
   );
-
-  // application may have been loaded in an error state, so evaluated data
-  // won't be loaded in this case. When that happens, we need to reload the current
-  // canvas file
-  yield takeEvery([ActionType.ENGINE_DELEGATE_CHANGED], function* () {
-    const state: AppState = yield select();
-    const currUri = state.designer.ui.query.canvasFile;
-
-    if (!state.designer.allLoadedPCFileData[currUri]) {
-      yield call(maybeLoadCanvasFile);
-    }
-  });
-
-  function* maybeLoadCanvasFile() {
-    const state: AppState = yield select();
-    const currUri = state.designer.ui.query.canvasFile;
-    if (state.designer.projectDirectory && currUri !== _previousFileUri) {
-      _previousFileUri = currUri;
-      if (currUri) {
-        yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
-        yield call(loadNested, currUri);
-        yield call(loadFile, currUri);
-      }
-    }
-  }
 
   function* loadFile(uri: string) {
     try {
@@ -492,8 +352,6 @@ function* handleClientComunication(client) {
 
     yield put(globalBackspaceKeySent(null));
   });
-
-  yield call(maybeLoadCanvasFile);
 }
 
 const handleCodeChanged = (

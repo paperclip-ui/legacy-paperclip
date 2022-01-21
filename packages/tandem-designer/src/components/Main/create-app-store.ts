@@ -12,7 +12,6 @@ export type CreateAppStoreOptions = {
   showLaunchExternalButton?: boolean;
   useLiteEditor?: boolean;
   showCodeToolbar?: boolean;
-  m;
   showLeftSidebar?: boolean;
   showInspectorPanels?: boolean;
   floatingPreview?: boolean;

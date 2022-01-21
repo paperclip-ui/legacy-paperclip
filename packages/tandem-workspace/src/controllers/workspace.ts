@@ -1,10 +1,10 @@
-import { Logger } from "@tandem-ui/common";
-import * as url from "url";
-import { getProjectId, Project } from "./project";
-import { SSHKeys } from "./ssh";
 import { VFS } from "./vfs";
+import * as url from "url";
+import { Logger } from "@tandem-ui/common";
+import { SSHKeys } from "./ssh";
 import { Options } from "../core/options";
 import { EngineDelegate } from "@paperclip-ui/core";
+import { getProjectId, Project } from "./project";
 
 export class Workspace {
   private _projects: Record<string, Project> = {};

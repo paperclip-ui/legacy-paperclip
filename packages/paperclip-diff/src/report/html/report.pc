@@ -232,8 +232,7 @@
   </fragment>}
   content={<fragment>
     <Comparison>
-      <Screenshot a
-        title="A: devffsklfdsfdsfsdfjsdfskdfsdjkflsdfjkjklfsjnfdskl">
+      <Screenshot a title="A: devffsklfdsfdsfsdfjsdfskdfsdjkflsdfjkjklfsjk">
         A
       </Screenshot>
       <Screenshot b title="B: latest">B</Screenshot>

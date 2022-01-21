@@ -33,4 +33,7 @@ describe(`With a basic project`, () => {
     state = mock.store.getState() as AppState;
     expect(state.designer.canvas.transform).toEqual({ x: 988, y: 1116, z: 1 });
   });
+  test.todo("Can reveal source by clicking a canvas element");
+  test.todo("Can reveal source code by clicking a breadcrumb");
+  test.todo("Can pop windows out of the editor");
 });

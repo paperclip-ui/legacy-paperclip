@@ -81,11 +81,11 @@ class Connection {
 
     // TODO
     channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
-    // channels.revealNodeSourceChannel(connection).listen(this._revealSource);
-    // channels
-    //   .revealNodeSourceByIdChannel(connection)
-    //   .listen(this._revealSourceById);
-    // channels.popoutWindowChannel(connection).listen(this._popoutWindow);
+    channels.revealNodeSourceChannel(connection).listen(this._revealSource);
+    channels
+      .revealNodeSourceByIdChannel(connection)
+      .listen(this._revealSourceById);
+    channels.popoutWindowChannel(connection).listen(this._popoutWindow);
     channels.openFileChannel(connection).listen(this._openFile);
     channels.editCodeChannel(connection).listen(this._editCode);
     channels.commitChangesChannel(connection).listen(this._commitChanges);
@@ -136,7 +136,7 @@ class Connection {
     this._options.adapter?.applyCodeChanges(changes);
   };
 
-  private _revealSource = (source: VirtNodeSource) => {
+  private _revealSource = async (source: VirtNodeSource) => {
     const info = this._engine.getVirtualNodeSourceInfo(source.path, source.uri);
 
     if (info) {
@@ -149,7 +149,7 @@ class Connection {
     }
   };
 
-  private _revealSourceById = (sourceId: string) => {
+  private _revealSourceById = async (sourceId: string) => {
     const [uri, expr] = this._engine.getExpressionById(sourceId) as [
       string,
       Expression
@@ -178,7 +178,7 @@ class Connection {
     });
   };
 
-  private _popoutWindow = ({ path }) => {
+  private _popoutWindow = async ({ path }) => {
     let host = `http://localhost:${this._httpPort}`;
     let url = host + path;
     exec(`open "${url}"`);

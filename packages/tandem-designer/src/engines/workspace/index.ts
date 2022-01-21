@@ -22,13 +22,13 @@ class WorkspaceEngine {
   private _project: ProjectManager;
 
   constructor(private _store: Store, private _options: WorkspaceEngineOptions) {
-    const client = new WorkspaceClient(
-      (_options.createRPCClient || createDefaultRPCClient)()
-    );
+    const connection = (_options.createRPCClient || createDefaultRPCClient)();
+
+    const client = new WorkspaceClient(connection);
 
     this._project = new ProjectManager(client, _store);
     this._documents = new DocumentsManager(client, this._project, _store);
-    this._paperclip = new PaperclipEngineManager(client, this._project, _store);
+    this._paperclip = new PaperclipEngineManager(this._project, _store);
   }
 
   handleAction = (action: Action) => {
