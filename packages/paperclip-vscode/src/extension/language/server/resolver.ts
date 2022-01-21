@@ -23,17 +23,13 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "@paperclip-ui/language-service";
 // import { PCEngineInitialized } from "@tandem-ui/designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
-import { DocumentManager } from "./connection";
+import { DocumentManager } from "./documents";
 import * as parseColor from "color";
 import { BaseEvent, Observable } from "@paperclip-ui/common";
 import { stripFileProtocol } from "@paperclip-ui/utils";
-import {
-  DesignServerStarted,
-  DesignServerUpdated,
-  DesignServerUpdating,
-  ProjectStarted,
-} from "./events";
+import { DesignServerUpdated, DesignServerUpdating } from "./events";
 import { SourceLinted } from "@paperclip-ui/language-service";
+import { PaperclipDesignServer } from "./design-server";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
@@ -43,6 +39,7 @@ export class LanguageRequestResolver {
   readonly events: Observable;
 
   constructor(
+    private _designServer: PaperclipDesignServer,
     private _connection: Connection,
     private _documents: DocumentManager
   ) {
@@ -106,7 +103,7 @@ export class LanguageRequestResolver {
     if (event.type === SourceLinted.TYPE) {
       const { uri, content, diagnostics } = event as SourceLinted;
       let textDocument = this._documents.getDocument(uri);
-      textDocument = TextDocument.create(uri, "@paperclip-ui/core", 0, content);
+      textDocument = TextDocument.create(uri, "paperclip", 0, content);
       this._connection.sendDiagnostics({
         uri: uri,
         diagnostics: diagnostics.map((diagnostic) => {
@@ -202,7 +199,7 @@ export class LanguageRequestResolver {
             this._documents.getDocument(sourceUri) ||
             TextDocument.create(
               sourceUri,
-              "@paperclip-ui/core",
+              "paperclip",
               null,
               fs.readFileSync(stripFileProtocol(sourceUri), "utf8")
             );

@@ -324,6 +324,10 @@ describe(__filename + "#", () => {
         `<div class="_5cd17222 _pub-5cd17222"><a class="_5cd17222 _pub-5cd17222"></a><b class="_5cd17222 _pub-5cd17222"></b></div>`
       );
     });
+    xit(`Annotations don't add extra whitespace when edited`);
+
+    // Need to ensure that we're not out of range
+    xit(`Replaced annotations properly set the delete count`);
 
     xit(
       `Slotted children are wrapped in a fragment if another child is inserted`

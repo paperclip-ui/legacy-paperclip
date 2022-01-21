@@ -1,53 +1,59 @@
-import { eventHandlers, Observable, Observer } from "@paperclip-ui/common";
+import {
+  eventHandlers,
+  Observable,
+  Observer,
+  RPCClientAdapter,
+} from "@paperclip-ui/common";
 
 // eslint-disable-next-line
 const getPort = require("get-port");
-import {
-  DesignServerStarted,
-  DesignServerUpdated,
-  DesignServerUpdating,
-  Initialized,
-  PCSourceEdited,
-  RevealSourceRequested,
-  TextDocumentChanged,
-  TextDocumentOpened,
-} from "./events";
+import { TextDocumentChanged, TextDocumentOpened } from "./events";
 import {
   start as startWorkspace,
   Workspace,
   Project,
 } from "@tandem-ui/workspace/lib/server";
 import { ExprSource } from "@paperclip-ui/utils";
-import { ContentChange } from "@paperclip-ui/source-writer";
 import { LogLevel } from "@tandem-ui/common";
+import EventEmitter from "events";
+import { DesignServerStartedInfo, revealSourceChannel } from "../../channels";
+import { PaperclipLanguageServerConnectionManager } from "./connection";
+import { createListener } from "../../utils";
 
 const UPDATE_THROTTLE = 10;
 
 class WorkspaceAadapter {
-  constructor(private _events: Observable) {}
-  revealSource(source: ExprSource) {
-    this._events.dispatch(new RevealSourceRequested(source));
+  private _revealSourceChannel: ReturnType<typeof revealSourceChannel>;
+  constructor(private _rpcClientAdapter: RPCClientAdapter) {
+    this._revealSourceChannel = revealSourceChannel(this._rpcClientAdapter);
   }
-  applyCodeChanges(changes: Record<string, ContentChange[]>) {
-    this._events.dispatch(new PCSourceEdited(changes));
+  revealSource(source: ExprSource) {
+    return this._revealSourceChannel.call(source);
   }
 }
 
-export class PaperclipDesignServer implements Observer {
-  readonly events: Observable;
-  // private _engine: EngineDelegate;
+export class PaperclipDesignServer {
   private _workspace: Workspace;
   private _project: Project;
   private _windowFocused: boolean;
   private _latestDocuments: Record<string, string>;
   private _updatingDocuments: boolean;
   private _port: number;
+  private _em: EventEmitter;
 
-  constructor() {
-    this.events = new Observable();
+  constructor(
+    private _connection: RPCClientAdapter,
+    private _connectionManager: PaperclipLanguageServerConnectionManager
+  ) {
+    this._em = new EventEmitter();
+    this._connectionManager.onInitialize(this._onConnectionInit);
   }
 
-  private _start = async ({ workspaceFolders }: Initialized) => {
+  onStarted(listener: (info: DesignServerStartedInfo) => void) {
+    return createListener(this._em, "started", listener);
+  }
+
+  private _start = async ({ workspaceFolders }) => {
     const server = await startWorkspace({
       logLevel: LogLevel.All,
       http: {
@@ -56,22 +62,23 @@ export class PaperclipDesignServer implements Observer {
       project: {
         installDependencies: false,
       },
-      adapter: new WorkspaceAadapter(this.events),
+      adapter: new WorkspaceAadapter(this._connection),
     });
 
     this._workspace = server.getWorkspace();
 
     const cwd = workspaceFolders[0].uri;
     this._project = await this._workspace.start(cwd);
-    this.events.dispatch(
-      new DesignServerStarted(
-        this._port,
-        this._project.getId(),
-        this._project,
-        server.getEngine()
-      )
-    );
+    this._project.commitAndPushChanges;
+    this._em.emit("started", {
+      projectId: this._project.getId(),
+      httpPort: this._port,
+    } as DesignServerStartedInfo);
   };
+
+  private _onConnectionInit(details) {
+    this._start(details);
+  }
 
   private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {
     // this will happen if text document is open on vscode open
@@ -84,13 +91,6 @@ export class PaperclipDesignServer implements Observer {
     if (this._windowFocused || !this._project) {
       return;
     }
-
-    if (this._updatingDocuments) {
-      this._latestDocuments[uri] = content;
-      return;
-    }
-
-    this.events.dispatch(new DesignServerUpdating());
 
     this._updatingDocuments = true;
     this._latestDocuments = {
@@ -105,24 +105,12 @@ export class PaperclipDesignServer implements Observer {
       for (const uri in changes) {
         this._project.updatePCContent(uri, changes[uri]);
       }
-      this.events.dispatch(new DesignServerUpdated());
       this._updatingDocuments = false;
     }, UPDATE_THROTTLE);
   };
 
-  // private _onWindowFocused = () => {
-  //   this._windowFocused = true;
-  // };
-
-  // private _onWindowBlurred = () => {
-  //   this._windowFocused = false;
-  // };
-
   handleEvent = eventHandlers({
-    [Initialized.TYPE]: this._start,
     [TextDocumentOpened.TYPE]: this._onTextDocumentOpened,
     [TextDocumentChanged.TYPE]: this._onTextDocumentChanged,
-    // [ActionType.WINDOW_FOCUSED]: this._onWindowFocused,
-    // [ActionType.WINDOW_BLURRED]: this._onWindowBlurred
   });
 }

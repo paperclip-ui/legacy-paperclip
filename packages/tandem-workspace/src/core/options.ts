@@ -8,7 +8,6 @@ export type ProjectOptions = {
 
 export type WorkspaceAdapter = {
   revealSource: (source: ExprSource) => void;
-  applyCodeChanges: (changes: Record<string, ContentChange[]>) => void;
 };
 
 export type Options = {

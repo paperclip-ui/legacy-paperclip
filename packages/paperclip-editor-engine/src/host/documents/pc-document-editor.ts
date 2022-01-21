@@ -205,13 +205,7 @@ const appendChild = (
   engine: EngineDelegate,
   edit: AppendChild
 ) => {
-  // console.log(JSON.stringify(engine.getLoadedAst(uri), null, 2));
-  // const doc = documents.open(uri);
-  // console.log(JSON.stringify(doc.getContent(), null, 2));
   const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
-  // console.log(JSON.stringify(getSourceNodeFromPath(uri, engine, "0"), null, 2));
-  // console.log(JSON.stringify(engine.getExpressionById("be76bb9c"), null, 2));
-
   const [exprUri, expr] = engine.getExpressionById(info.sourceId) as [
     string,
     Element | Reference

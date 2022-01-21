@@ -1,24 +1,24 @@
 import { WebviewPanel, window } from "vscode";
 import { eventHandlers, Observable, Observer } from "@paperclip-ui/common";
 import { LiveWindow, LiveWindowState } from "./live-window";
-import { DesignServerStarted } from "../language/server/events";
 import { isPaperclipFile } from "@paperclip-ui/utils";
+import { PaperclipLanguageClient } from "../language";
+import { DesignServerStartedInfo } from "../channels";
 // import { HTTPServerStarted } from "@tandem-ui/designer/lib/server/services/http-server";
 // import {
 //   ActionType,
 //   LocationChanged
 // } from "../../../../@paperclip-ui/designer/lib";
 
-export class LiveWindowManager implements Observer {
-  readonly events: Observable;
+export class LiveWindowManager {
   private _windows: LiveWindow[];
   private _devServerPort: number;
   private _projectId: string;
-  constructor() {
+  constructor(private _languageClient: PaperclipLanguageClient) {
     this._windows = [];
-    this.events = new Observable();
+    this._languageClient.onDesignServerStarted(this._onDevServerStarted);
   }
-  _onDevServerStarted = ({ httpPort, projectId }: DesignServerStarted) => {
+  _onDevServerStarted = ({ httpPort, projectId }: DesignServerStartedInfo) => {
     this._devServerPort = httpPort;
     this._projectId = projectId;
     for (const window of this._windows) {
@@ -29,7 +29,9 @@ export class LiveWindowManager implements Observer {
     return this._windows.length;
   }
   setStickyWindowUri(uri: string) {
-    const stickyWindow = this._windows.find(window => window.getState().sticky);
+    const stickyWindow = this._windows.find(
+      (window) => window.getState().sticky
+    );
     if (stickyWindow && isPaperclipFile(uri)) {
       stickyWindow.setTargetUri(uri);
       return true;
@@ -65,11 +67,7 @@ export class LiveWindowManager implements Observer {
             this._projectId
           )
         );
-      }
+      },
     });
   }
-
-  handleEvent = eventHandlers({
-    [DesignServerStarted.TYPE]: this._onDevServerStarted
-  });
 }

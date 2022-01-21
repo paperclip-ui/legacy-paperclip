@@ -1,26 +1,48 @@
+// TODO: need to simplify event flow because it's a cluster F
+import {
+  Connection,
+  createConnection,
+  ProposedFeatures,
+  TextDocumentSyncKind,
+  InitializeParams,
+  WorkspaceFolder,
+  DidChangeTextDocumentParams,
+  DidOpenTextDocumentParams,
+  DidCloseTextDocumentParams,
+} from "vscode-languageserver";
+
 import { Observable } from "@paperclip-ui/common";
-import { PaperclipLanguageServerConnection } from "./connection";
+import { PaperclipLanguageServerConnectionManager } from "./connection";
 import { PaperclipDesignServer } from "./design-server";
+import { DocumentManager } from "./documents";
+import { LanguageRequestResolver } from "./resolver";
+import { languageClientRPCAdapter } from "../../rpc";
+import { connect } from "http2";
 
 export class PaperclipLanguageServer {
-  private _connection: PaperclipLanguageServerConnection;
-  private _designServer: PaperclipDesignServer;
-  private _events: Observable;
-
   constructor() {
-    this._events = new Observable();
-    this._connection = new PaperclipLanguageServerConnection({});
-    this._events.source(this._connection.events);
-    this._events.observe(this._connection);
+    const connection = createConnection(ProposedFeatures.all);
+    const rpcClient = languageClientRPCAdapter(connection);
+    const documents = new DocumentManager();
+    const connectionManager = new PaperclipLanguageServerConnectionManager(
+      documents,
+      connection,
+      {}
+    );
 
-    this._designServer = new PaperclipDesignServer();
-    this._events.source(this._designServer.events);
-    this._events.observe(this._designServer);
-  }
-  activate() {
-    this._connection.activate();
+    const designServer = new PaperclipDesignServer(
+      rpcClient,
+      connectionManager
+    );
+
+    const requestResolver = new LanguageRequestResolver(
+      designServer,
+      connection,
+      documents
+    );
+
+    connectionManager.activate();
   }
 }
 
 const server = new PaperclipLanguageServer();
-server.activate();

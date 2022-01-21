@@ -246,32 +246,6 @@ function* handleClientComunication(client) {
     yield put(allPCContentLoaded(screens));
   }
 
-  yield takeEvery(
-    [
-      ActionType.CANVAS_MOUSE_DOWN,
-      ActionType.FRAME_TITLE_CLICKED,
-      ActionType.ENGINE_DELEGATE_CHANGED,
-    ],
-    function* () {
-      const state: AppState = yield select();
-
-      if (!state.designer.selectedNodePaths.length) {
-        return;
-      }
-      const sources = yield call(
-        loadVirtualNodeSources.call,
-        state.designer.selectedNodePaths.map((nodePath) => {
-          return {
-            path: nodePath.split(".").map(Number),
-            uri: state.designer.ui.query.canvasFile!,
-          };
-        })
-      );
-
-      yield put(virtualNodeSourcesLoaded(sources));
-    }
-  );
-
   let _previousFileUri;
 
   yield takeEvery(

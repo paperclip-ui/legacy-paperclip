@@ -87,7 +87,6 @@ class Connection {
       .listen(this._revealSourceById);
     channels.popoutWindowChannel(connection).listen(this._popoutWindow);
     channels.openFileChannel(connection).listen(this._openFile);
-    channels.editCodeChannel(connection).listen(this._editCode);
     channels.commitChangesChannel(connection).listen(this._commitChanges);
     // channels.setBranchChannel(connection).listen(this._setBranch);
     // channels.editPCSourceChannel(connection).listen(this._editPCSource);
@@ -126,14 +125,6 @@ class Connection {
 
   private _editCode = async ({ uri, value }) => {
     this._vfs.updateFileContent(uri, value);
-  };
-
-  // TODO - need to remove this eventually in favor of CRDT document sync
-
-  private _editPCSource = async (mutations: PCMutation[]) => {
-    const writer = new PCSourceWriter(this._engine);
-    const changes = writer.apply(mutations);
-    this._options.adapter?.applyCodeChanges(changes);
   };
 
   private _revealSource = async (source: VirtNodeSource) => {

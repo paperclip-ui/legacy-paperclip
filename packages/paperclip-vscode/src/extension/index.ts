@@ -8,12 +8,6 @@ import { DocumentManager } from "./document-manager";
 
 class PaperclipExtension implements Disposable {
   /**
-   * Event bus
-   */
-
-  private _events: Observable;
-
-  /**
    * Manages PC language features + the server
    */
 
@@ -37,8 +31,6 @@ class PaperclipExtension implements Disposable {
   private _documentManager: DocumentManager;
 
   constructor(readonly context: ExtensionContext) {
-    this._events = new Observable();
-
     this._languageClient = new PaperclipLanguageClient(context);
     this._events.source(this._languageClient.events);
 

@@ -12,13 +12,6 @@ export class RevealSourceRequested {
     return { type: this.type, source: this.source };
   }
 }
-
-export class Initialized {
-  static TYPE = "PaperclipLanguageServerConnection/Initialized";
-  readonly type = Initialized.TYPE;
-  constructor(readonly workspaceFolders: WorkspaceFolder[]) {}
-}
-
 export class TextDocumentChanged {
   static TYPE = "PaperclipLanguageServerConnection/TextDocumentChanged";
   readonly type = TextDocumentChanged.TYPE;
@@ -51,25 +44,6 @@ export class ProjectStarted {
   readonly type = ProjectStarted.TYPE;
   constructor(readonly project: Project) {}
 }
-
-export class DesignServerStarted {
-  static TYPE = "PaperclipDesignServer/DesignServerStarted";
-  readonly type = DesignServerStarted.TYPE;
-  constructor(
-    readonly httpPort: number,
-    readonly projectId: string,
-    readonly project: Project,
-    readonly engine: EngineDelegate
-  ) {}
-  toJSON() {
-    return {
-      httpPort: this.httpPort,
-      type: this.type,
-      projectId: this.projectId,
-    };
-  }
-}
-
 export class UpdatedTextDocuments {
   static TYPE = "PaperclipDesignServer/UpdatedTextDocuments";
   readonly type = TextDocumentChanged.TYPE;
@@ -80,14 +54,4 @@ export class PCContentChanged {
   readonly type = PCContentChanged.TYPE;
   readonly url: string;
   readonly content: string;
-}
-
-export class DesignServerUpdating {
-  static TYPE = "PaperclipDesignServer/DesignServerUpdating";
-  readonly type = DesignServerUpdating.TYPE;
-}
-
-export class DesignServerUpdated {
-  static TYPE = "PaperclipDesignServer/DesignServerUpdated";
-  readonly type = DesignServerUpdated.TYPE;
 }

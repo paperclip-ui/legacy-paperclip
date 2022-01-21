@@ -22,6 +22,9 @@ export class EditorHost {
     this._documents = new DocumentManager(this._events, this._engine);
   }
 
+  /**
+   */
+
   static async start(engine: EngineDelegate, server: RPCServer) {
     const host = new EditorHost(engine, server);
     await host._start();
