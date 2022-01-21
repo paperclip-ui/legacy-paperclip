@@ -301,33 +301,33 @@ function* handleClientComunication(client) {
     }
   );
 
-  yield throttle(
-    500,
-    [
-      ActionType.NODE_BREADCRUMB_CLICKED,
-      ActionType.CANVAS_MOUSE_DOWN,
-      ActionType.FRAME_TITLE_CLICKED,
-      ActionType.LAYER_LEAF_CLICKED,
-      ActionType.ENGINE_DELEGATE_CHANGED,
-      ActionType.FILE_OPENED,
-    ],
-    function* () {
-      const state: AppState = yield select();
-      if (!state.designer.selectedNodePaths.length) {
-        return;
-      }
+  // yield throttle(
+  //   500,
+  //   [
+  //     ActionType.NODE_BREADCRUMB_CLICKED,
+  //     ActionType.CANVAS_MOUSE_DOWN,
+  //     ActionType.FRAME_TITLE_CLICKED,
+  //     ActionType.LAYER_LEAF_CLICKED,
+  //     ActionType.ENGINE_DELEGATE_CHANGED,
+  //     ActionType.FILE_OPENED,
+  //   ],
+  //   function* () {
+  //     const state: AppState = yield select();
+  //     if (!state.designer.selectedNodePaths.length) {
+  //       return;
+  //     }
 
-      const inspectionInfo = yield call(
-        inspectNodeStyle.call,
-        state.designer.selectedNodePaths.map((path) => ({
-          path: nodePathToAry(path),
-          uri: state.designer.ui.query.canvasFile,
-        }))
-      );
+  //     const inspectionInfo = yield call(
+  //       inspectNodeStyle.call,
+  //       state.designer.selectedNodePaths.map((path) => ({
+  //         path: nodePathToAry(path),
+  //         uri: state.designer.ui.query.canvasFile,
+  //       }))
+  //     );
 
-      yield put(virtualNodeStylesInspected(inspectionInfo));
-    }
-  );
+  //     yield put(virtualNodeStylesInspected(inspectionInfo));
+  //   }
+  // );
 
   yield takeEvery(
     [ActionType.NODE_BREADCRUMB_CLICKED, ActionType.LAYER_LEAF_CLICKED],

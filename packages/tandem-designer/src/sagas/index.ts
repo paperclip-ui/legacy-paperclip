@@ -31,7 +31,6 @@ import { handleCanvas } from "./canvas";
 import { History } from "history";
 import { omit } from "lodash";
 import { handleRPC, HandleRPCOptions } from "./rpc";
-// import { handleWorkspace } from "./workspace";
 
 export type AppStateSelector = (state) => AppState;
 

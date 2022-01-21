@@ -5,19 +5,18 @@ import {
   eventsChannel,
   getAllScreensChannel,
   helloChannel,
-  inspectNodeStyleChannel,
   loadDirectoryChannel,
   loadVirtualNodeSourcesChannel,
   openFileChannel,
   popoutWindowChannel,
   revealNodeSourceByIdChannel,
-  revealNodeSourceChannel
+  revealNodeSourceChannel,
 } from "../../rpc/channels";
 import { IConnection } from "./connection";
 
 export class Channels {
   readonly hello: ReturnType<typeof helloChannel>;
-  readonly inspectNodeStyle: ReturnType<typeof inspectNodeStyleChannel>;
+  // readonly inspectNodeStyle: ReturnType<typeof inspectNodeStyleChannel>;
   readonly revealNodeSource: ReturnType<typeof revealNodeSourceChannel>;
   readonly popoutWindow: ReturnType<typeof popoutWindowChannel>;
   readonly getAllScreens: ReturnType<typeof getAllScreensChannel>;
@@ -34,7 +33,7 @@ export class Channels {
 
   constructor(connection: IConnection) {
     this.hello = helloChannel(connection);
-    this.inspectNodeStyle = inspectNodeStyleChannel(connection);
+    // this.inspectNodeStyle = inspectNodeStyleChannel(connection);
     this.revealNodeSource = revealNodeSourceChannel(connection);
     this.popoutWindow = popoutWindowChannel(connection);
     this.getAllScreens = getAllScreensChannel(connection);

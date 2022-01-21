@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
-import { Provider } from "react-redux";
 
 import defaultReducer from "../../reducers";
 import { mainSaga, MainSagaOptions } from "../../sagas";
 import { AppState, INITIAL_STATE } from "../../state";
 import produce from "immer";
-import { engineMiddleware } from "../../engines";
+import { engineMiddleware, EngineOptions } from "../../engines";
 
-export type WithAppStoreOptions = {
+export type CreateAppStoreOptions = {
   showLaunchExternalButton?: boolean;
   useLiteEditor?: boolean;
   showCodeToolbar?: boolean;
@@ -20,42 +18,24 @@ export type WithAppStoreOptions = {
   codeEditorWidth?: string;
   activeFrame?: number;
   showCodeEditorOnStartup?: boolean;
-} & MainSagaOptions;
+} & MainSagaOptions &
+  EngineOptions;
 
-export const withAppStore =
-  (Child: React.FC) => (options: WithAppStoreOptions) => {
-    let _inited = false;
-    let _store;
+export const createAppStore = (options: CreateAppStoreOptions) => {
+  const state = createState(options);
 
-    const init = () => {
-      if (_inited) {
-        return;
-      }
+  const sagaMiddleware = createSagaMiddleware();
+  const store = createStore(
+    defaultReducer,
+    state,
+    applyMiddleware(sagaMiddleware, engineMiddleware(options))
+  );
 
-      const state = createState(options);
+  // DEPRECATED
+  sagaMiddleware.run(mainSaga, document.body, (state) => state, options);
 
-      _inited = true;
-      const sagaMiddleware = createSagaMiddleware();
-      _store = createStore(
-        defaultReducer,
-        state,
-        applyMiddleware(sagaMiddleware, engineMiddleware)
-      );
-
-      // DEPRECATED
-      sagaMiddleware.run(mainSaga, document.body, (state) => state, options);
-    };
-
-    return (props) => {
-      init();
-
-      return (
-        <Provider store={_store}>
-          <Child {...props} />
-        </Provider>
-      );
-    };
-  };
+  return store;
+};
 
 const createState = ({
   showLaunchExternalButton,
@@ -68,7 +48,7 @@ const createState = ({
   activeFrame,
   floatingPreview,
   rounded,
-}: WithAppStoreOptions) => {
+}: CreateAppStoreOptions) => {
   let state: AppState = {
     ...INITIAL_STATE,
     designer: {

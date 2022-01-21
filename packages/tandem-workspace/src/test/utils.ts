@@ -1,4 +1,4 @@
-import { sockjsClientAdapter } from "@paperclip-ui/common";
+import { RPCClientAdapter, sockjsClientAdapter } from "@paperclip-ui/common";
 import { saveTmpFixtureFiles } from "@paperclip-ui/common/lib/test-utils";
 import SockJSClient from "sockjs-client";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
@@ -9,6 +9,7 @@ import { LogLevel } from "@tandem-ui/common";
 export type TestServer = {
   stop: () => void;
   createClient: () => WorkspaceClient;
+  createConnection: () => RPCClientAdapter;
   testDir: string;
   fixtureUris: Record<string, string>;
 };
@@ -22,6 +23,11 @@ export const createTestServer = async (
     pause: false,
     project: { installDependencies: false },
   });
+  const createConnection = () => {
+    return sockjsClientAdapter(
+      new SockJSClient(`http://localhost:${server.getPort()}/rt`)
+    );
+  };
   return {
     testDir: fixtures.testDir,
     fixtureUris: fixtures.fixtureUris,
@@ -29,13 +35,9 @@ export const createTestServer = async (
       server.stop();
       fixtures.dispose();
     },
+    createConnection,
     createClient() {
-      return new WorkspaceClient(
-        sockjsClientAdapter(
-          new SockJSClient(`http://localhost:${server.getPort()}/rt`)
-        ),
-        mockDOMFactory
-      );
+      return new WorkspaceClient(createConnection(), mockDOMFactory);
     },
   };
 };
