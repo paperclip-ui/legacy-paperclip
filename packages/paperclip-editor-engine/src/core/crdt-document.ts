@@ -56,6 +56,7 @@ export class CRDTTextDocument {
         applyTextEdit(edit, doc.text);
       });
     }
+
     return this._setDoc(curr, this._doc);
   }
 

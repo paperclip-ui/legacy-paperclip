@@ -11,7 +11,6 @@ import {
 } from "../../core";
 import { DocumentManager } from "./manager";
 import {
-  AttributeKind,
   Element,
   EngineDelegate,
   getNodeByPath,
@@ -20,11 +19,8 @@ import {
   LoadedPCData,
   NodeKind,
   Reference,
-  ScriptBoolean,
-  ScriptExpression,
   ScriptExpressionKind,
   ScriptObject,
-  Slot,
   VirtualElement,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
@@ -56,7 +52,6 @@ export class PCDocumentEditor {
     }
     for (const uri in sourceEditsByDocument) {
       const doc = this._manager.open(uri);
-
       doc.openSource().applyEdits(sourceEditsByDocument[uri]);
     }
   }
@@ -177,7 +172,7 @@ const setAnnotations = (
       )}\n`
     );
   }
-  buffer.push("-->\n");
+  buffer.push("-->");
 
   const virtualElement = getNodeByPath(
     edit.nodePath,
@@ -191,7 +186,7 @@ const setAnnotations = (
       uri,
       chars: buffer.join("").split(""),
       index: expr.range.start.pos,
-      deleteCount: expr.range.end.pos,
+      deleteCount: expr.range.end.pos - expr.range.start.pos,
     };
   } else {
     const info = getSourceNodeFromPath(uri, engine, edit.nodePath);

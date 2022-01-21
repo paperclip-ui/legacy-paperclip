@@ -6,6 +6,7 @@ import { Action } from "../..";
 import { DocumentsManager } from "./managers/documents";
 import { PaperclipEngineManager } from "./managers/paperclip-engine";
 import { ProjectManager } from "./managers/project";
+import { EditManager } from "./managers/edit";
 
 const createDefaultRPCClient = () =>
   sockjsClientAdapter(
@@ -20,8 +21,9 @@ class WorkspaceEngine {
   private _documents: DocumentsManager;
   private _paperclip: PaperclipEngineManager;
   private _project: ProjectManager;
+  private _edits: EditManager;
 
-  constructor(private _store: Store, private _options: WorkspaceEngineOptions) {
+  constructor(_store: Store, _options: WorkspaceEngineOptions) {
     const connection = (_options.createRPCClient || createDefaultRPCClient)();
 
     const client = new WorkspaceClient(connection);
@@ -29,12 +31,14 @@ class WorkspaceEngine {
     this._project = new ProjectManager(client, _store);
     this._documents = new DocumentsManager(client, this._project, _store);
     this._paperclip = new PaperclipEngineManager(this._project, _store);
+    this._edits = new EditManager(this._project, _store);
   }
 
   handleAction = (action: Action) => {
     this._project.handleAction(action);
     this._documents.handleAction(action);
     this._paperclip.handleAction(action);
+    this._edits.handleAction(action);
   };
 }
 

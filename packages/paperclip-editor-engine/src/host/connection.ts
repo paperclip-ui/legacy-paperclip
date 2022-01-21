@@ -95,8 +95,12 @@ export class ClientConnection {
   private _handleEditVirtualObjects = async (
     allEdits: Record<string, VirtualObjectEdit[]>
   ) => {
-    for (const uri in allEdits) {
-      this._pcDocumentEditor.applyVirtualObjectEdits(uri, allEdits[uri]);
+    try {
+      for (const uri in allEdits) {
+        this._pcDocumentEditor.applyVirtualObjectEdits(uri, allEdits[uri]);
+      }
+    } catch (e) {
+      console.error(e.stack);
     }
   };
 
