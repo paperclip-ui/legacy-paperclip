@@ -1,6 +1,5 @@
 import { TextEdit } from "vscode-languageserver";
 import { BaseEvent, Observable, Observer } from "@paperclip-ui/common";
-import { TextDocumentChanged, TextDocumentOpened } from "./events";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export class DocumentManager {
@@ -18,15 +17,17 @@ export class DocumentManager {
 
     this._documents[uri] = document;
 
-    if (exists) {
-      this.events.dispatch(new TextDocumentChanged(uri, document.getText()));
-    } else {
-      this.events.dispatch(new TextDocumentOpened(uri, document.getText()));
-    }
+    // TODO - sync with client host
+
+    // if (exists) {
+    //   this.events.dispatch(new TextDocumentChanged(uri, document.getText()));
+    // } else {
+    //   this.events.dispatch(new TextDocumentOpened(uri, document.getText()));
+    // }
   }
   appleDocumentEdits(uri: string, edits: TextEdit[]) {
     const text = TextDocument.applyEdits(this._documents[uri], edits);
-    this.events.dispatch(new TextDocumentChanged(uri, text));
+    // this.events.dispatch(new TextDocumentChanged(uri, text));
   }
   removeDocument(uri: string) {
     delete this._documents[uri];
