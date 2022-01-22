@@ -32,15 +32,14 @@ class PaperclipExtension implements Disposable {
 
   constructor(readonly context: ExtensionContext) {
     this._languageClient = new PaperclipLanguageClient(context);
-    this._events.source(this._languageClient.events);
 
-    this._windows = new LiveWindowManager();
-    this._events.source(this._windows.events);
-    this._events.observe(this._windows);
+    this._windows = new LiveWindowManager(this._languageClient);
 
     this._commandManager = new CommandManager(this._windows);
-    this._documentManager = new DocumentManager(this._windows);
-    this._events.observe(this._documentManager);
+    this._documentManager = new DocumentManager(
+      this._windows,
+      this._languageClient
+    );
   }
   activate() {
     this._windows.activate();

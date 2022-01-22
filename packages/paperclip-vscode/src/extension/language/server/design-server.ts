@@ -1,17 +1,12 @@
-import {
-  eventHandlers,
-  Observable,
-  Observer,
-  RPCClientAdapter,
-} from "@paperclip-ui/common";
+import { RPCClientAdapter } from "@paperclip-ui/common";
 
 // eslint-disable-next-line
 const getPort = require("get-port");
-import { TextDocumentChanged, TextDocumentOpened } from "./events";
 import {
   start as startWorkspace,
   Workspace,
   Project,
+  Server,
 } from "@tandem-ui/workspace/lib/server";
 import { ExprSource } from "@paperclip-ui/utils";
 import { LogLevel } from "@tandem-ui/common";
@@ -35,9 +30,8 @@ class WorkspaceAadapter {
 export class PaperclipDesignServer {
   private _workspace: Workspace;
   private _project: Project;
-  private _windowFocused: boolean;
   private _latestDocuments: Record<string, string>;
-  private _updatingDocuments: boolean;
+  private _server: Server;
   private _port: number;
   private _em: EventEmitter;
 
@@ -54,7 +48,7 @@ export class PaperclipDesignServer {
   }
 
   private _start = async ({ workspaceFolders }) => {
-    const server = await startWorkspace({
+    const server = (this._server = await startWorkspace({
       logLevel: LogLevel.All,
       http: {
         port: (this._port = await getPort()),
@@ -63,7 +57,7 @@ export class PaperclipDesignServer {
         installDependencies: false,
       },
       adapter: new WorkspaceAadapter(this._connection),
-    });
+    }));
 
     this._workspace = server.getWorkspace();
 
@@ -76,41 +70,43 @@ export class PaperclipDesignServer {
     } as DesignServerStartedInfo);
   };
 
+  getEngine() {
+    return this._server.getEngine();
+  }
+
   private _onConnectionInit(details) {
     this._start(details);
   }
 
-  private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {
-    // this will happen if text document is open on vscode open
-    if (!this._project) {
-      return;
-    }
-    this._project.updatePCContent(uri, content);
-  };
-  private _onTextDocumentChanged = ({ uri, content }: TextDocumentChanged) => {
-    if (this._windowFocused || !this._project) {
-      return;
-    }
+  // private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {
+  //   // this will happen if text document is open on vscode open
+  //   if (!this._project) {
+  //     return;
+  //   }
+  //   this._project.updatePCContent(uri, content);
+  // };
+  // private _onTextDocumentChanged = ({ uri, content }: TextDocumentChanged) => {
+  //   if (!this._project) {
+  //     return;
+  //   }
 
-    this._updatingDocuments = true;
-    this._latestDocuments = {
-      [uri]: content,
-    };
+  //   this._latestDocuments = {
+  //     [uri]: content,
+  //   };
 
-    // throttle for updating doc to ensure that the engine doesn't
-    // get flooded
-    setTimeout(() => {
-      const changes = this._latestDocuments;
-      this._latestDocuments = {};
-      for (const uri in changes) {
-        this._project.updatePCContent(uri, changes[uri]);
-      }
-      this._updatingDocuments = false;
-    }, UPDATE_THROTTLE);
-  };
+  //   // throttle for updating doc to ensure that the engine doesn't
+  //   // get flooded
+  //   setTimeout(() => {
+  //     const changes = this._latestDocuments;
+  //     this._latestDocuments = {};
+  //     for (const uri in changes) {
+  //       this._project.updatePCContent(uri, changes[uri]);
+  //     }
+  //   }, UPDATE_THROTTLE);
+  // };
 
-  handleEvent = eventHandlers({
-    [TextDocumentOpened.TYPE]: this._onTextDocumentOpened,
-    [TextDocumentChanged.TYPE]: this._onTextDocumentChanged,
-  });
+  // handleEvent = eventHandlers({
+  //   [TextDocumentOpened.TYPE]: this._onTextDocumentOpened,
+  //   [TextDocumentChanged.TYPE]: this._onTextDocumentChanged,
+  // });
 }

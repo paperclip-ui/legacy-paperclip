@@ -21,21 +21,18 @@ import {
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "@paperclip-ui/language-service";
-// import { PCEngineInitialized } from "@tandem-ui/designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./documents";
 import * as parseColor from "color";
-import { BaseEvent, Observable } from "@paperclip-ui/common";
+import { Observable } from "@paperclip-ui/common";
 import { stripFileProtocol } from "@paperclip-ui/utils";
-import { DesignServerUpdated, DesignServerUpdating } from "./events";
-import { SourceLinted } from "@paperclip-ui/language-service";
 import { PaperclipDesignServer } from "./design-server";
+import { DesignServerStartedInfo } from "../../channels";
+import { LintInfo } from "@paperclip-ui/language-service/src/error-service";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
   private _listening: boolean;
-  private _engineReady: Promise<any>;
-  private _resolveEngineReady: (value?: any) => void;
   readonly events: Observable;
 
   constructor(
@@ -43,27 +40,17 @@ export class LanguageRequestResolver {
     private _connection: Connection,
     private _documents: DocumentManager
   ) {
-    [this._engineReady, this._resolveEngineReady] = deferPromise();
+    this._designServer.onStarted(this._onDesignServerStarted);
     this.events = new Observable();
     this._listen();
   }
 
-  handleEvent(event) {
-    if (event.type === DesignServerStarted.TYPE) {
-      this._service = new PaperclipLanguageService(
-        (event as DesignServerStarted).engine
-      );
-      this._service.events.observe({
-        handleEvent: this._onServiceEvent,
-      });
-      this._resolveEngineReady();
-    } else if (event.type === DesignServerUpdating.TYPE) {
-      [this._engineReady, this._resolveEngineReady] = deferPromise();
-    } else if (event.type === DesignServerUpdated.TYPE) {
-      this._resolveEngineReady();
-      this._engineReady = undefined;
-    }
-  }
+  private _onDesignServerStarted = (options: DesignServerStartedInfo) => {
+    this._service = new PaperclipLanguageService(
+      this._designServer.getEngine()
+    );
+    this._service.onLinted(this._onLinted);
+  };
 
   private _listen() {
     if (this._listening) {
@@ -99,30 +86,27 @@ export class LanguageRequestResolver {
     );
   }
 
-  private _onServiceEvent = (event: BaseEvent) => {
-    if (event.type === SourceLinted.TYPE) {
-      const { uri, content, diagnostics } = event as SourceLinted;
-      let textDocument = this._documents.getDocument(uri);
-      textDocument = TextDocument.create(uri, "paperclip", 0, content);
-      this._connection.sendDiagnostics({
-        uri: uri,
-        diagnostics: diagnostics.map((diagnostic) => {
-          return {
-            ...diagnostic,
-            range: {
-              start: textDocument.positionAt(diagnostic.range.start.pos),
-              end: textDocument.positionAt(diagnostic.range.end.pos),
-            },
-          };
-        }),
-      });
-    }
+  private _onLinted = (info: LintInfo) => {
+    const { uri, content, diagnostics } = info;
+    let textDocument = this._documents.getDocument(uri);
+    textDocument = TextDocument.create(uri, "paperclip", 0, content);
+    this._connection.sendDiagnostics({
+      uri: uri,
+      diagnostics: diagnostics.map((diagnostic) => {
+        return {
+          ...diagnostic,
+          range: {
+            start: textDocument.positionAt(diagnostic.range.start.pos),
+            end: textDocument.positionAt(diagnostic.range.end.pos),
+          },
+        };
+      }),
+    });
   };
 
   private _onColorPresentationRequest = async (
     params: ColorPresentationParams
   ) => {
-    await this._engineReady;
     const presentation = getColorPresentation(params.color, params.range);
     const uri = fixFileUrlCasing(params.textDocument.uri);
 
@@ -133,7 +117,6 @@ export class LanguageRequestResolver {
   };
 
   private _onDocumentColorRequest = async (params: DocumentColorParams) => {
-    await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
     return this._service.getDocumentColors(uri).map(({ value, start, end }) => {
@@ -148,13 +131,10 @@ export class LanguageRequestResolver {
   };
 
   private _onCompletionResolveRequest = async (item) => {
-    await this._engineReady;
     return item;
   };
 
   private _onCompletionRequest = async (params: CompletionParams) => {
-    await this._engineReady;
-
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
     const items = this._service.getAutoCompletionSuggestions(
@@ -166,7 +146,6 @@ export class LanguageRequestResolver {
   };
 
   private _onDefinitionRequest = async (params: DefinitionParams) => {
-    await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
 
@@ -224,7 +203,6 @@ export class LanguageRequestResolver {
     return info;
   };
   private _onDocumentLinkRequest = async (params: DocumentLinkParams) => {
-    await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
     return this._service
@@ -252,14 +230,4 @@ const getColorPresentation = (
   );
   const label = info.toString();
   return { label, textEdit: TextEdit.replace(range, label) };
-};
-
-const deferPromise = () => {
-  let _resolve;
-
-  const promise = new Promise((resolve) => {
-    _resolve = resolve;
-  });
-
-  return [promise, _resolve];
 };

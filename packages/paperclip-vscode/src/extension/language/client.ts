@@ -13,8 +13,10 @@ import { languageClientRPCAdapter } from "../rpc";
 import { createListener } from "../utils";
 import {
   designServerStartedChannel,
+  revealSourceChannel,
   DesignServerStartedInfo,
 } from "../channels";
+import { ExprSource } from "@paperclip-ui/utils";
 // import { PCEngineCrashed } from "@tandem-ui/designer/lib/server/services/pc-engine";
 
 /**
@@ -28,6 +30,7 @@ export class PaperclipLanguageClient implements Disposable {
 
   private _rpcClient: RPCClientAdapter;
   private _designServerStarted: ReturnType<typeof designServerStartedChannel>;
+  private _revealSourceRequest: ReturnType<typeof revealSourceChannel>;
 
   constructor(context: ExtensionContext) {
     this._em = new EventEmitter();
@@ -67,6 +70,13 @@ export class PaperclipLanguageClient implements Disposable {
     this._rpcClient = languageClientRPCAdapter(this._client);
     this._designServerStarted = designServerStartedChannel(this._rpcClient);
     this._designServerStarted.listen(this._onDesignServerStarted);
+
+    this._revealSourceRequest = revealSourceChannel(this._rpcClient);
+    this._revealSourceRequest.listen(this._onRevealSourceRequest);
+  }
+
+  onRevealSourceRequest(listener: (info: ExprSource) => void) {
+    return createListener(this._em, "revealSource", listener);
   }
 
   onDesignServerStarted(listener: (info: DesignServerStartedInfo) => void) {
@@ -76,6 +86,10 @@ export class PaperclipLanguageClient implements Disposable {
   private async _onDesignServerStarted(info: DesignServerStartedInfo) {
     this._em.emit("designServerStarted", info);
   }
+
+  private _onRevealSourceRequest = async (info: ExprSource) => {
+    this._em.emit("revealSource", info);
+  };
 
   async activate() {
     this._client.start();

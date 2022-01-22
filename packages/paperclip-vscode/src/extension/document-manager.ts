@@ -1,34 +1,24 @@
 import { LiveWindowManager } from "./preview/live-window-manager";
-import {
-  Selection,
-  TextEditor,
-  ViewColumn,
-  Uri,
-  window,
-  workspace,
-  WorkspaceEdit,
-  TextEdit,
-  Range
-} from "vscode";
+import { Selection, TextEditor, ViewColumn, window, workspace } from "vscode";
 import { fixFileUrlCasing } from "./utils";
-import { eventHandlers, Observer } from "@paperclip-ui/common";
-import {
-  PCSourceEdited,
-  RevealSourceRequested
-} from "./language/server/events";
-import { stripFileProtocol } from "@paperclip-ui/utils";
-import * as URL from "url";
+import { ExprSource, stripFileProtocol } from "@paperclip-ui/utils";
+import { PaperclipLanguageClient } from "./language";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
   Always = "Always",
-  No = "No"
+  No = "No",
 }
 
-export class DocumentManager implements Observer {
+export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
 
-  constructor(private _windows: LiveWindowManager) {}
+  constructor(
+    private _windows: LiveWindowManager,
+    private _client: PaperclipLanguageClient
+  ) {
+    this._client.onRevealSourceRequest(this._onRevealSourceRequested);
+  }
 
   activate() {
     window.onDidChangeActiveTextEditor(this._onActiveTextEditorChange);
@@ -72,9 +62,7 @@ export class DocumentManager implements Observer {
     }
   };
 
-  private _onRevealSourceRequested = async ({
-    source: { textSource }
-  }: RevealSourceRequested) => {
+  private _onRevealSourceRequested = async ({ textSource }: ExprSource) => {
     // shouldn't happen, but might if text isn't loaded
     if (!textSource) {
       return;
@@ -85,7 +73,7 @@ export class DocumentManager implements Observer {
 
     const editor: TextEditor =
       window.visibleTextEditors.find(
-        editor =>
+        (editor) =>
           editor.document &&
           fixFileUrlCasing(String(editor.document.uri)) ===
             fixFileUrlCasing(textSource.uri)
@@ -99,32 +87,27 @@ export class DocumentManager implements Observer {
 
   private _openDoc = async (uri: string) => {
     return (
-      workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
+      workspace.textDocuments.find((doc) => String(doc.uri) === uri) ||
       (await workspace.openTextDocument(stripFileProtocol(uri)))
     );
   };
 
-  private _onPCSourceEdited = async ({
-    changes: changesByUri
-  }: PCSourceEdited) => {
-    for (const uri in changesByUri) {
-      const changes = changesByUri[uri];
-      const filePath = URL.fileURLToPath(uri);
-      const doc = await workspace.openTextDocument(filePath);
-      const tedits = changes.map(change => {
-        return new TextEdit(
-          new Range(doc.positionAt(change.start), doc.positionAt(change.end)),
-          change.value
-        );
-      });
-      const wsEdit = new WorkspaceEdit();
-      wsEdit.set(Uri.parse(uri), tedits);
-      await workspace.applyEdit(wsEdit);
-    }
-  };
-
-  handleEvent = eventHandlers({
-    [RevealSourceRequested.TYPE]: this._onRevealSourceRequested,
-    [PCSourceEdited.TYPE]: this._onPCSourceEdited
-  });
+  // private _onPCSourceEdited = async ({
+  //   changes: changesByUri
+  // }: PCSourceEdited) => {
+  //   for (const uri in changesByUri) {
+  //     const changes = changesByUri[uri];
+  //     const filePath = URL.fileURLToPath(uri);
+  //     const doc = await workspace.openTextDocument(filePath);
+  //     const tedits = changes.map(change => {
+  //       return new TextEdit(
+  //         new Range(doc.positionAt(change.start), doc.positionAt(change.end)),
+  //         change.value
+  //       );
+  //     });
+  //     const wsEdit = new WorkspaceEdit();
+  //     wsEdit.set(Uri.parse(uri), tedits);
+  //     await workspace.applyEdit(wsEdit);
+  //   }
+  // };
 }

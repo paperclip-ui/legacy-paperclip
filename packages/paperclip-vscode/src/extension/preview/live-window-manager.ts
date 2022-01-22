@@ -1,14 +1,8 @@
 import { WebviewPanel, window } from "vscode";
-import { eventHandlers, Observable, Observer } from "@paperclip-ui/common";
 import { LiveWindow, LiveWindowState } from "./live-window";
 import { isPaperclipFile } from "@paperclip-ui/utils";
 import { PaperclipLanguageClient } from "../language";
 import { DesignServerStartedInfo } from "../channels";
-// import { HTTPServerStarted } from "@tandem-ui/designer/lib/server/services/http-server";
-// import {
-//   ActionType,
-//   LocationChanged
-// } from "../../../../@paperclip-ui/designer/lib";
 
 export class LiveWindowManager {
   private _windows: LiveWindow[];
