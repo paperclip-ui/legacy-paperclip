@@ -24,7 +24,6 @@ import { PaperclipLanguageService } from "@paperclip-ui/language-service";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./documents";
 import * as parseColor from "color";
-import { Observable } from "@paperclip-ui/common";
 import { stripFileProtocol } from "@paperclip-ui/utils";
 import { PaperclipDesignServer } from "./design-server";
 import { DesignServerStartedInfo } from "../../channels";
@@ -33,7 +32,6 @@ import { LintInfo } from "@paperclip-ui/language-service/src/error-service";
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
   private _listening: boolean;
-  readonly events: Observable;
 
   constructor(
     private _designServer: PaperclipDesignServer,
@@ -41,7 +39,6 @@ export class LanguageRequestResolver {
     private _documents: DocumentManager
   ) {
     this._designServer.onStarted(this._onDesignServerStarted);
-    this.events = new Observable();
     this._listen();
   }
 

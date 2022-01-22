@@ -17,6 +17,7 @@ export class DocumentManager {
     private _windows: LiveWindowManager,
     private _client: PaperclipLanguageClient
   ) {
+    console.log("DocumentManager::constructor");
     this._client.onRevealSourceRequest(this._onRevealSourceRequested);
   }
 
@@ -63,6 +64,7 @@ export class DocumentManager {
   };
 
   private _onRevealSourceRequested = async ({ textSource }: ExprSource) => {
+    console.log("On Reveal Source request");
     // shouldn't happen, but might if text isn't loaded
     if (!textSource) {
       return;

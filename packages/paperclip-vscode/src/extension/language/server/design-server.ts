@@ -10,22 +10,11 @@ import {
 } from "@tandem-ui/workspace/lib/server";
 import { ExprSource } from "@paperclip-ui/utils";
 import { LogLevel } from "@tandem-ui/common";
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import { DesignServerStartedInfo, revealSourceChannel } from "../../channels";
-import { PaperclipLanguageServerConnectionManager } from "./connection";
 import { createListener } from "../../utils";
 
 const UPDATE_THROTTLE = 10;
-
-class WorkspaceAadapter {
-  private _revealSourceChannel: ReturnType<typeof revealSourceChannel>;
-  constructor(private _rpcClientAdapter: RPCClientAdapter) {
-    this._revealSourceChannel = revealSourceChannel(this._rpcClientAdapter);
-  }
-  revealSource(source: ExprSource) {
-    return this._revealSourceChannel.call(source);
-  }
-}
 
 export class PaperclipDesignServer {
   private _workspace: Workspace;
@@ -35,19 +24,15 @@ export class PaperclipDesignServer {
   private _port: number;
   private _em: EventEmitter;
 
-  constructor(
-    private _connection: RPCClientAdapter,
-    private _connectionManager: PaperclipLanguageServerConnectionManager
-  ) {
+  constructor() {
     this._em = new EventEmitter();
-    this._connectionManager.onInitialize(this._onConnectionInit);
   }
 
   onStarted(listener: (info: DesignServerStartedInfo) => void) {
     return createListener(this._em, "started", listener);
   }
 
-  private _start = async ({ workspaceFolders }) => {
+  public start = async ({ workspaceFolders }) => {
     const server = (this._server = await startWorkspace({
       logLevel: LogLevel.All,
       http: {
@@ -56,7 +41,9 @@ export class PaperclipDesignServer {
       project: {
         installDependencies: false,
       },
-      adapter: new WorkspaceAadapter(this._connection),
+      adapter: {
+        revealSource: this._revealSource,
+      },
     }));
 
     this._workspace = server.getWorkspace();
@@ -74,9 +61,13 @@ export class PaperclipDesignServer {
     return this._server.getEngine();
   }
 
-  private _onConnectionInit(details) {
-    this._start(details);
-  }
+  onRevealSourceRequest = (listener: (source: ExprSource) => void) => {
+    return createListener(this._em, "revealSourceRequest", listener);
+  };
+
+  private _revealSource = (source: ExprSource) => {
+    this._em.emit("revealSourceRequest", source);
+  };
 
   // private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {
   //   // this will happen if text document is open on vscode open

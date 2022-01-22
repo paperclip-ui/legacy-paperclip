@@ -10,26 +10,23 @@ import { languageClientRPCAdapter } from "../../rpc";
 export class PaperclipLanguageServer {
   constructor() {
     const connection = createConnection(ProposedFeatures.all);
-    const rpcClient = languageClientRPCAdapter(connection);
     const documents = new DocumentManager();
+    const designServer = new PaperclipDesignServer();
+
     const connectionManager = new PaperclipLanguageServerConnectionManager(
+      designServer,
       documents,
       connection,
       {}
     );
 
-    const designServer = new PaperclipDesignServer(
-      rpcClient,
-      connectionManager
-    );
-
-    const requestResolver = new LanguageRequestResolver(
-      designServer,
-      connection,
-      documents
-    );
+    new LanguageRequestResolver(designServer, connection, documents);
 
     connectionManager.activate();
+
+    connectionManager.onInitialize((info) => {
+      designServer.start(info);
+    });
   }
 }
 

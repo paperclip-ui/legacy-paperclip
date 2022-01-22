@@ -1,5 +1,5 @@
 import { TextEdit } from "vscode-languageserver";
-import { BaseEvent, Observable, Observer } from "@paperclip-ui/common";
+import { Observable } from "@paperclip-ui/common";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export class DocumentManager {

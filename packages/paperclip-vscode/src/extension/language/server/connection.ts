@@ -9,7 +9,12 @@ import {
   DidOpenTextDocumentParams,
   DidCloseTextDocumentParams,
 } from "vscode-languageserver";
-import { BaseEvent, Observable, Observer } from "@paperclip-ui/common";
+import {
+  BaseEvent,
+  Observable,
+  Observer,
+  RPCClientAdapter,
+} from "@paperclip-ui/common";
 import { createListener, fixFileUrlCasing } from "../../utils";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { LanguageRequestResolver } from "./resolver";
@@ -17,13 +22,22 @@ import { DocumentManager } from "./documents";
 import { ExprSource } from "@paperclip-ui/utils";
 import { ContentChange } from "@paperclip-ui/source-writer";
 import { EventEmitter } from "stream";
+import { languageClientRPCAdapter } from "../../rpc";
+import {
+  designServerStartedChannel,
+  DesignServerStartedInfo,
+  revealSourceChannel,
+} from "../../channels";
+import { PaperclipDesignServer } from "./design-server";
 
 export class PaperclipLanguageServerConnectionManager {
+  private _designServerStarted: ReturnType<typeof designServerStartedChannel>;
+  private _revealSource: ReturnType<typeof revealSourceChannel>;
   private _workspaceFolders: WorkspaceFolder[];
-  readonly events: Observable;
   private _em: EventEmitter;
 
   constructor(
+    private _designServer: PaperclipDesignServer,
     private _documents: DocumentManager,
     private _connection: Connection,
     readonly config: any
@@ -31,22 +45,33 @@ export class PaperclipLanguageServerConnectionManager {
     this._em = new EventEmitter();
   }
   activate() {
-    this._connection = createConnection(ProposedFeatures.all);
+    this._designServer.onRevealSourceRequest(() => {});
+
     this._connection.onInitialize(this._onConnectionInitialize);
     this._connection.onInitialized(this._onConnectionInitialized);
     this._connection.onDidOpenTextDocument(this._onDidOpenTextDocument);
     this._connection.onDidCloseTextDocument(this._onDidCloseTextDocument);
     this._connection.onDidChangeTextDocument(this._onDidChangeTextDocument);
+
+    const adapter = languageClientRPCAdapter(this._connection);
+    this._designServerStarted = designServerStartedChannel(adapter);
+    this._revealSource = revealSourceChannel(adapter);
+
+    this._designServer.onStarted((info) => {
+      this._designServerStarted.call(info);
+    });
+
+    this._designServer.onRevealSourceRequest((info) => {
+      console.log(`On reveal source request`);
+      this._revealSource.call(info);
+    });
+
     this._connection.listen();
   }
 
   onInitialize(listener: (details: { workspaceFolders: string[] }) => void) {
     return createListener(this._em, "init", listener);
   }
-
-  _onNotification = (event) => {
-    this.events.dispatch(event);
-  };
 
   private _onDidOpenTextDocument = ({
     textDocument,

@@ -8,7 +8,7 @@ import {
   LanguageClientOptions,
 } from "vscode-languageclient";
 import * as path from "path";
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import { languageClientRPCAdapter } from "../rpc";
 import { createListener } from "../utils";
 import {
@@ -66,13 +66,6 @@ export class PaperclipLanguageClient implements Disposable {
       serverOptions,
       clientOptions
     );
-
-    this._rpcClient = languageClientRPCAdapter(this._client);
-    this._designServerStarted = designServerStartedChannel(this._rpcClient);
-    this._designServerStarted.listen(this._onDesignServerStarted);
-
-    this._revealSourceRequest = revealSourceChannel(this._rpcClient);
-    this._revealSourceRequest.listen(this._onRevealSourceRequest);
   }
 
   onRevealSourceRequest(listener: (info: ExprSource) => void) {
@@ -83,17 +76,26 @@ export class PaperclipLanguageClient implements Disposable {
     return createListener(this._em, "designServerStarted", listener);
   }
 
-  private async _onDesignServerStarted(info: DesignServerStartedInfo) {
+  private _onDesignServerStarted = async (info: DesignServerStartedInfo) => {
+    console.log(`PaperclipLanguageClient::_onDesignServerStarted`);
     this._em.emit("designServerStarted", info);
-  }
+  };
 
   private _onRevealSourceRequest = async (info: ExprSource) => {
+    console.log("PaperclipLanguageClient::onRevealSourceRequest");
     this._em.emit("revealSource", info);
   };
 
   async activate() {
     this._client.start();
     await this.ready();
+
+    this._rpcClient = languageClientRPCAdapter(this._client);
+    this._designServerStarted = designServerStartedChannel(this._rpcClient);
+    this._designServerStarted.listen(this._onDesignServerStarted);
+
+    this._revealSourceRequest = revealSourceChannel(this._rpcClient);
+    this._revealSourceRequest.listen(this._onRevealSourceRequest);
   }
   ready() {
     return this._client.onReady();
