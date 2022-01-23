@@ -11,7 +11,6 @@ import { getFrameFromIndex } from "../../../state";
 export class EditManager {
   constructor(private _pm: ProjectManager, private _store: Store) {}
   handleAction(action: Action) {
-    console.log(action.type);
     switch (action.type) {
       case ActionType.RESIZER_STOPPED_MOVING:
       case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING:
@@ -42,8 +41,6 @@ export class EditManager {
         };
       }
     );
-
-    console.log(edits);
 
     document.editVirtualObjects(edits);
   }

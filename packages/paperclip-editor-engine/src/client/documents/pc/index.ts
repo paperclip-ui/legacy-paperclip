@@ -23,11 +23,11 @@ import { DocumentKind } from "../../../core/documents";
 
 import { BaseDocument } from "../base";
 import { PCSourceDocument } from "./source";
-import { EditorClientOptions } from "../../client";
 import { createListener } from "../../../core/utils";
 import { editVirtualObjectsChannel } from "../../../core/channels";
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import { produce } from "immer";
+import { EventEmitter } from "events";
 
 export type PCDocumentContent = LoadedPCData;
 
@@ -42,7 +42,6 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
 
   private _openDocumentSource: ReturnType<typeof openDocumentSourceChannel>;
   private _editVirtualObject: ReturnType<typeof editVirtualObjectsChannel>;
-  // private _updateNodeAnnotations: ReturnType<typeof insertBeforeNodeChannel>;
   private _engineEvents: ReturnType<typeof engineEventChannel>;
   private _source?: PCSourceDocument;
 
@@ -51,8 +50,8 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
 
   constructor(
     uri: string,
-    connection: RPCClientAdapter,
-    private _options: EditorClientOptions
+    private _bus: EventEmitter,
+    connection: RPCClientAdapter
   ) {
     super(uri, connection);
     this._openDocumentSource = openDocumentSourceChannel(connection);
@@ -87,8 +86,8 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
 
     return (this._source = new PCSourceDocument(
       this.uri,
-      CRDTTextDocument.load(await this._openDocumentSource.call(this.uri)),
-      this._connection
+      this._em,
+      CRDTTextDocument.load(await this._openDocumentSource.call(this.uri))
     ));
   }
 

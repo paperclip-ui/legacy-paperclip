@@ -1,7 +1,5 @@
 import {
   Connection,
-  createConnection,
-  ProposedFeatures,
   TextDocumentSyncKind,
   InitializeParams,
   WorkspaceFolder,
@@ -9,27 +7,23 @@ import {
   DidOpenTextDocumentParams,
   DidCloseTextDocumentParams,
 } from "vscode-languageserver";
-import {
-  BaseEvent,
-  Observable,
-  Observer,
-  RPCClientAdapter,
-} from "@paperclip-ui/common";
 import { createListener, fixFileUrlCasing } from "../../utils";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { LanguageRequestResolver } from "./resolver";
 import { DocumentManager } from "./documents";
-import { ExprSource } from "@paperclip-ui/utils";
-import { ContentChange } from "@paperclip-ui/source-writer";
 import { EventEmitter } from "stream";
 import { languageClientRPCAdapter } from "../../rpc";
+import { WorkspaceClient } from "@tandem-ui/workspace-client";
 import {
   designServerStartedChannel,
   DesignServerStartedInfo,
   revealSourceChannel,
 } from "../../channels";
 import { PaperclipDesignServer } from "./design-server";
+import { sockjsClientAdapter } from "@paperclip-ui/common";
+import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
+import SockJS from "sockjs-client";
 
+// TODO - need better SRP here, this class is doing too much
 export class PaperclipLanguageServerConnectionManager {
   private _designServerStarted: ReturnType<typeof designServerStartedChannel>;
   private _revealSource: ReturnType<typeof revealSourceChannel>;
@@ -49,17 +43,15 @@ export class PaperclipLanguageServerConnectionManager {
 
     this._connection.onInitialize(this._onConnectionInitialize);
     this._connection.onInitialized(this._onConnectionInitialized);
-    this._connection.onDidOpenTextDocument(this._onDidOpenTextDocument);
-    this._connection.onDidCloseTextDocument(this._onDidCloseTextDocument);
-    this._connection.onDidChangeTextDocument(this._onDidChangeTextDocument);
+    // this._connection.onDidOpenTextDocument(this._onDidOpenTextDocument);
+    // this._connection.onDidCloseTextDocument(this._onDidCloseTextDocument);
+    // this._connection.onDidChangeTextDocument(this._onDidChangeTextDocument);
 
     const adapter = languageClientRPCAdapter(this._connection);
     this._designServerStarted = designServerStartedChannel(adapter);
     this._revealSource = revealSourceChannel(adapter);
 
-    this._designServer.onStarted((info) => {
-      this._designServerStarted.call(info);
-    });
+    this._designServer.onStarted(this._onDesignServerStarted);
 
     this._designServer.onRevealSourceRequest((info) => {
       console.log(`On reveal source request`);
@@ -73,43 +65,50 @@ export class PaperclipLanguageServerConnectionManager {
     return createListener(this._em, "init", listener);
   }
 
-  private _onDidOpenTextDocument = ({
-    textDocument,
-  }: DidOpenTextDocumentParams) => {
-    const uri = fixFileUrlCasing(textDocument.uri);
-    this._documents.updateDocument(
-      uri,
-      TextDocument.create(
-        uri,
-        textDocument.languageId,
-        textDocument.version,
-        textDocument.text
-      )
-    );
-  };
+  // private _onDidOpenTextDocument = ({
+  //   textDocument,
+  // }: DidOpenTextDocumentParams) => {
+  //   const uri = fixFileUrlCasing(textDocument.uri);
+  //   this._documents.updateDocument(
+  //     uri,
+  //     TextDocument.create(
+  //       uri,
+  //       textDocument.languageId,
+  //       textDocument.version,
+  //       textDocument.text
+  //     )
+  //   );
+  // };
 
-  private _onDidCloseTextDocument = ({
-    textDocument,
-  }: DidCloseTextDocumentParams) => {
-    const uri = fixFileUrlCasing(textDocument.uri);
-    this._documents.removeDocument(uri);
-  };
+  // private _onDidCloseTextDocument = ({
+  //   textDocument,
+  // }: DidCloseTextDocumentParams) => {
+  //   const uri = fixFileUrlCasing(textDocument.uri);
+  //   this._documents.removeDocument(uri);
+  // };
 
-  private _onDidChangeTextDocument = ({
-    contentChanges,
-    textDocument,
-  }: DidChangeTextDocumentParams) => {
-    const uri = fixFileUrlCasing(textDocument.uri);
+  // private _onDidChangeTextDocument = ({
+  //   contentChanges,
+  //   textDocument,
+  // }: DidChangeTextDocumentParams) => {
+  //   const uri = fixFileUrlCasing(textDocument.uri);
 
-    const oldDocument = this._documents.getDocument(uri);
+  //   const oldDocument = this._documents.getDocument(uri);
 
-    const newDocument = TextDocument.update(
-      oldDocument,
-      contentChanges,
-      oldDocument.version + 1
-    );
+  //   const newDocument = TextDocument.update(
+  //     oldDocument,
+  //     contentChanges,
+  //     oldDocument.version + 1
+  //   );
 
-    this._documents.updateDocument(uri, newDocument);
+  //   this._documents.updateDocument(uri, newDocument);
+  // };
+
+  private _onDesignServerStarted = async (info: DesignServerStartedInfo) => {
+    this._designServerStarted.call(info);
+
+    // const client = new WorkspaceClient();
+    // client.
   };
 
   private _onConnectionInitialize = (params: InitializeParams) => {

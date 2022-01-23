@@ -17,7 +17,7 @@ describe(__filename + "#", () => {
     });
     const doc = (await project
       .getDocuments()
-      .open(server.fixtureUris["hello.pc"])) as PCDocument;
+      .open(server.fixtureUris["hello.pc"])) as any as PCDocument;
 
     expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
       "Hello world"
@@ -29,6 +29,7 @@ describe(__filename + "#", () => {
     server = await createTestServer({
       "hello.pc": "Hello world",
     });
+    await new Promise((resolve) => setTimeout(resolve, 100));
     const client = server.createClient();
     const project = await client.openProject({
       uri: url.pathToFileURL(server.testDir).href,
@@ -50,7 +51,9 @@ describe(__filename + "#", () => {
     const project = await client.openProject({
       uri: url.pathToFileURL(server.testDir).href,
     });
-    expect(project.getProperties().directory).to.eql("/tmp/__TEST__/fixtures");
+    expect(project.getProperties().directoryPath).to.eql(
+      "/tmp/__TEST__/fixtures"
+    );
     server.stop();
   });
 });

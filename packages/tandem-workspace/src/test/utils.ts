@@ -1,10 +1,10 @@
-import { RPCClientAdapter, sockjsClientAdapter } from "@paperclip-ui/common";
+import { RPCClientAdapter, wsAdapter } from "@paperclip-ui/common";
 import { saveTmpFixtureFiles } from "@paperclip-ui/common/lib/test-utils";
-import SockJSClient from "sockjs-client";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
 import { mockDOMFactory } from "@paperclip-ui/web-renderer/lib/test/utils";
 import { start } from "../server";
 import { LogLevel } from "@tandem-ui/common";
+import * as ws from "ws";
 
 export type TestServer = {
   stop: () => void;
@@ -24,9 +24,7 @@ export const createTestServer = async (
     project: { installDependencies: false },
   });
   const createConnection = () => {
-    return sockjsClientAdapter(
-      new SockJSClient(`http://localhost:${server.getPort()}/rt`)
-    );
+    return wsAdapter(new ws.WebSocket(`ws://127.0.0.1:${server.getPort()}/ws`));
   };
   return {
     testDir: fixtures.testDir,

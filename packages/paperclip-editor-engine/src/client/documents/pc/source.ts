@@ -5,6 +5,7 @@
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import { sourceDocumentCRDTChangesChannel } from "../../../core";
 import { CRDTTextDocument } from "../../../core/crdt-document";
+import { EventEmitter } from "events";
 
 /**
  */
@@ -19,12 +20,10 @@ export class PCSourceDocument {
 
   constructor(
     private _uri: string,
-    private _textDocument: CRDTTextDocument,
-    connection: RPCClientAdapter
+    private _bus: EventEmitter,
+    private _textDocument: CRDTTextDocument
   ) {
-    this._sourceDocumentCRDTChanges =
-      sourceDocumentCRDTChangesChannel(connection);
-    this._sourceDocumentCRDTChanges.listen(this._onSourceDocumentCRDTChanges);
+    this._bus.on("documentSourceChanged", this._onSourceDocumentCRDTChanges);
   }
 
   /**

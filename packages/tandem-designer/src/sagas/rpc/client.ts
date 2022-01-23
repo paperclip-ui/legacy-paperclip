@@ -1,5 +1,6 @@
 import { sockjsClientAdapter } from "@paperclip-ui/common";
 import SockJSClient from "sockjs-client";
+import * as ws from "ws";
 
 export function connect(onMessage, onClient) {
   if (!/^http/.test(location.protocol)) {

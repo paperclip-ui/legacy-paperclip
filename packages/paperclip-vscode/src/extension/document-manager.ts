@@ -1,8 +1,21 @@
 import { LiveWindowManager } from "./preview/live-window-manager";
-import { Selection, TextEditor, ViewColumn, window, workspace } from "vscode";
+import {
+  Selection,
+  TextEdit,
+  TextEditor,
+  ViewColumn,
+  window,
+  workspace,
+} from "vscode";
 import { fixFileUrlCasing } from "./utils";
 import { ExprSource, stripFileProtocol } from "@paperclip-ui/utils";
 import { PaperclipLanguageClient } from "./language";
+import { DesignServerStartedInfo } from "./channels";
+import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
+import { sockjsClientAdapter, wsAdapter } from "@paperclip-ui/common";
+import * as SockJS from "sockjs-client";
+import * as diff from "diff";
+import * as ws from "ws";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -12,6 +25,7 @@ enum OpenLivePreviewOptions {
 
 export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
+  private _editorClient: EditorClient;
 
   constructor(
     private _windows: LiveWindowManager,
@@ -19,6 +33,7 @@ export class DocumentManager {
   ) {
     console.log("DocumentManager::constructor");
     this._client.onRevealSourceRequest(this._onRevealSourceRequested);
+    this._client.onDesignServerStarted(this._onDesignServerStarted);
   }
 
   activate() {
@@ -63,6 +78,30 @@ export class DocumentManager {
     }
   };
 
+  private _onDesignServerStarted = (info: DesignServerStartedInfo) => {
+    console.log("DESIGN ERVER");
+    this._editorClient = new EditorClient(
+      wsAdapter(new ws.WebSocket(`ws://localhost:${info.httpPort}/ws`))
+    );
+    console.log("CLIENT!");
+
+    this._editorClient
+      .getDocuments()
+      .onDocumentSourceChanged(this._onDesignServerDocumentChange);
+  };
+
+  private _onDesignServerDocumentChange = async ({ uri }) => {
+    return;
+    const doc = await this._editorClient.getDocuments().open(uri);
+    const source = await doc.getSource();
+    const vscodeDoc = await this._openDoc(uri);
+    const changes = diff.diffChars(vscodeDoc.getText(), source.getText());
+
+    // const edits = diff(vscodeDoc.getText(), source.getText()).map(change => {
+    //   return new TextEdit(new Range(vscodeDoc.positionAt(change.count)))
+    // });
+  };
+
   private _onRevealSourceRequested = async ({ textSource }: ExprSource) => {
     console.log("On Reveal Source request");
     // shouldn't happen, but might if text isn't loaded
@@ -70,7 +109,6 @@ export class DocumentManager {
       return;
     }
 
-    // TODO - no globals here
     const textDocument = await this._openDoc(textSource.uri);
 
     const editor: TextEditor =

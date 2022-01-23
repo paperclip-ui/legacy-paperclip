@@ -1,6 +1,10 @@
 import { Store } from "../base";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
-import { RPCClientAdapter, sockjsClientAdapter } from "@paperclip-ui/common";
+import {
+  RPCClientAdapter,
+  sockjsClientAdapter,
+  wsAdapter,
+} from "@paperclip-ui/common";
 import SockJSClient from "sockjs-client";
 import { Action } from "../..";
 import { DocumentsManager } from "./managers/documents";
@@ -9,9 +13,7 @@ import { ProjectManager } from "./managers/project";
 import { EditManager } from "./managers/edit";
 
 const createDefaultRPCClient = () =>
-  sockjsClientAdapter(
-    new SockJSClient(location.protocol + "//" + location.host + "/rt")
-  );
+  wsAdapter(new WebSocket("ws://" + location.host + "/ws"));
 
 export type WorkspaceEngineOptions = {
   createRPCClient?: () => RPCClientAdapter;

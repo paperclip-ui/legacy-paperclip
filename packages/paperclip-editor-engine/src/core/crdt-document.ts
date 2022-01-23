@@ -42,6 +42,8 @@ export class CRDTTextDocument {
    */
 
   static load(document: Automerge.BinaryDocument) {
+    console.log(ArrayBuffer);
+
     return new CRDTTextDocument(Automerge.load(document));
   }
 

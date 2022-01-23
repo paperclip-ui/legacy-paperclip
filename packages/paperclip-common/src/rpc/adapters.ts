@@ -1,6 +1,7 @@
 import { spy } from "./spy";
 import { EventEmitter } from "events";
 import * as sockjs from "sockjs";
+import { WebSocket, WebSocketServer } from "ws";
 
 type Message = any;
 
@@ -82,10 +83,13 @@ export const sockjsClientAdapter = (worker: any): RPCClientAdapter => {
       prebuff.push(message);
       return;
     }
-    ((worker as any).send || (worker as any).write).call(
-      worker,
-      JSON.stringify(message)
-    );
+
+    try {
+      ((worker as any).send || (worker as any).write).call(worker, message);
+    } catch (e) {
+      console.error(e.stack);
+      throw e;
+    }
   };
 
   const onOpen = () => {
@@ -106,7 +110,7 @@ export const sockjsClientAdapter = (worker: any): RPCClientAdapter => {
     onMessage(listener) {
       // is on the server
       const onMessage = (message) => {
-        listener(JSON.parse(message));
+        listener(message);
       };
 
       // is on the client
@@ -131,6 +135,63 @@ export const sockjsServerRPCAdapter = (server: sockjs.Server): RPCServer => ({
   onConnection(listener: (connection: RPCClientAdapter) => void) {
     server.on("connection", (connection) => {
       listener(sockjsClientAdapter(connection));
+    });
+  },
+});
+
+export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
+  let buffer = isOpen ? undefined : [];
+
+  const em = new EventEmitter();
+
+  if (ws.on) {
+    ws.on("open", em.on.bind(em, "open"));
+    ws.on("message", em.on.bind(em, "message"));
+  } else {
+    ws.onopen = () => em.emit("open");
+    ws.onmessage = (event) => em.emit("message", event.data);
+  }
+
+  const send = (message) => {
+    if (buffer) {
+      return buffer.push(message);
+    }
+
+    if (!(message instanceof ArrayBuffer)) {
+      message = JSON.stringify(message);
+    }
+
+    ws.send(message);
+  };
+
+  em.on("open", () => {
+    const buff = buffer;
+    buffer = null;
+    for (const item of buff) {
+      send(item);
+    }
+  });
+  return {
+    onDisconnect(listener: () => void) {},
+    onMessage(listener: (message: any) => void) {
+      const listener2 = (data) => {
+        // eesh
+        try {
+          data = JSON.parse(String(data));
+        } catch (e) {}
+        listener(data);
+      };
+      em.on("message", listener2);
+      return () => em.off("message", listener2);
+    },
+    send,
+  };
+};
+
+export const wsServerAdapter = (wss: WebSocketServer): RPCServer => ({
+  onConnection(listener: (connection: RPCClientAdapter) => void) {
+    wss.on("connection", (ws) => {
+      listener(wsAdapter(ws, true));
     });
   },
 });
