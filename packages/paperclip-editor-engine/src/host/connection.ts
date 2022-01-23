@@ -1,7 +1,7 @@
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import { EngineDelegate, EngineDelegateEvent } from "@paperclip-ui/core";
 import { EventEmitter } from "events";
-import * as globby from "globby";
+import { Logger } from "@paperclip-ui/common";
 import {
   sourceDocumentCRDTChangesChannel,
   openDocumentChannel,
@@ -41,7 +41,8 @@ export class ClientConnection {
     private _documents: DocumentManager,
     private _connection: RPCClientAdapter,
     private _events: EventEmitter,
-    private _engine: EngineDelegate
+    private _engine: EngineDelegate,
+    private _logger: Logger
   ) {
     this._pcDocumentEditor = new PCDocumentEditor(
       this._documents,
@@ -100,7 +101,7 @@ export class ClientConnection {
         this._pcDocumentEditor.applyVirtualObjectEdits(uri, allEdits[uri]);
       }
     } catch (e) {
-      console.error(e.stack);
+      this._logger.error(e.stack);
     }
   };
 
@@ -129,6 +130,7 @@ export class ClientConnection {
    */
 
   _onSourceDocumentCRDTChanges = async (result) => {
+    this._logger.verbose("ClientConnection::_onSourceDocumentCRDTChanges");
     this._events.emit("incommingCRDTChanges", result, this);
   };
 
@@ -144,12 +146,16 @@ export class ClientConnection {
       return;
     }
 
+    this._logger.verbose(
+      "ClientConnection::_onInternalSourceDocumentCRDTChanges"
+    );
+
     this._sourceDocumentCRDTChangesChannel.call(result);
   };
 
   private _onEngineEvent = (event: EngineDelegateEvent) => {
     this._engineEvents.call(event).catch((e) => {
-      console.error(`Failed to emit engine event`);
+      this._logger.error(`Failed to emit engine event`);
     });
   };
 }

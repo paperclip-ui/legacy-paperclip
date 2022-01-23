@@ -1,5 +1,4 @@
-import { mockDOMFactory } from "@paperclip-ui/web-renderer/lib/test/utils";
-import { createMockRPCServer } from "@paperclip-ui/common";
+import { createMockRPCServer, Logger, LogLevel } from "@paperclip-ui/common";
 import { EventEmitter } from "events";
 import { EditorHost } from "../host/host";
 import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
@@ -14,9 +13,7 @@ export const createMockServer = () => {
       rpcServer.onConnection(listener);
     },
     createHostClient(delay?: boolean) {
-      return new EditorClient(rpcServer.createConnection(delay), {
-        domFactory: mockDOMFactory,
-      });
+      return new EditorClient(rpcServer.createConnection(delay));
     },
   };
 };
@@ -25,7 +22,7 @@ export const createMockHost = async (graph: Record<string, string>) => {
   const server = createMockServer();
   const engine = createMockEngine(graph);
 
-  const host = await EditorHost.start(engine, server);
+  const host = await EditorHost.start(engine, server, new Logger(LogLevel.All));
 
   return { host, server, engine };
 };

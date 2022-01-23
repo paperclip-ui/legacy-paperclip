@@ -4,17 +4,13 @@
 
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import { sourceDocumentCRDTChangesChannel } from "../../../core";
-import { CRDTTextDocument } from "../../../core/crdt-document";
+import { CRDTTextDocument, TextEdit } from "../../../core/crdt-document";
 import { EventEmitter } from "events";
 
 /**
  */
 
 export class PCSourceDocument {
-  private _sourceDocumentCRDTChanges: ReturnType<
-    typeof sourceDocumentCRDTChangesChannel
-  >;
-
   /**
    */
 
@@ -26,20 +22,15 @@ export class PCSourceDocument {
     this._bus.on("documentSourceChanged", this._onSourceDocumentCRDTChanges);
   }
 
+  applyEdits(edits: TextEdit[]) {
+    this._textDocument.applyEdits(edits);
+  }
+
   /**
    */
 
-  insertText(
-    charClusters: string[],
-    start: number = 0,
-    deleteCount: number = 0
-  ) {
-    const changes = this._textDocument.setText(
-      charClusters,
-      start,
-      deleteCount
-    );
-    this._sourceDocumentCRDTChanges.call({ uri: this._uri, changes });
+  insertText(chars: string[], index: number = 0, deleteCount: number = 0) {
+    return this.applyEdits([{ chars, index, deleteCount }]);
   }
 
   /**

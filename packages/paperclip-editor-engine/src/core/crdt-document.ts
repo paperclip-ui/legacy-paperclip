@@ -32,6 +32,13 @@ export class CRDTTextDocument {
   /**
    */
 
+  onEdit(listener: (changes: Automerge.BinaryChange[]) => void) {
+    return createListener(this._em, "edited", listener);
+  }
+
+  /**
+   */
+
   static fromText(text: string) {
     return new CRDTTextDocument(
       Automerge.from({ text: new Automerge.Text(text) })
@@ -57,7 +64,9 @@ export class CRDTTextDocument {
       });
     }
 
-    return this._setDoc(curr, this._doc);
+    const changes = this._setDoc(curr, this._doc);
+    this._em.emit("edited", changes);
+    return changes;
   }
 
   /**
@@ -78,17 +87,7 @@ export class CRDTTextDocument {
    */
 
   setText(chars: string[], index = 0, deleteCount = 0) {
-    const newDoc = Automerge.change(this._doc, (newDoc) => {
-      applyTextEdit(
-        {
-          chars,
-          index,
-          deleteCount,
-        },
-        newDoc.text
-      );
-    });
-    return this._setDoc(newDoc, this._doc);
+    return this.applyEdits([{ chars, index, deleteCount }]);
   }
 
   /**

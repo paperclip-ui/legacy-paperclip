@@ -1,15 +1,18 @@
+import { Logger } from "@paperclip-ui/common";
 import { EngineDelegate, isPaperclipFile } from "@paperclip-ui/core";
 import { EventEmitter } from "events";
-import { OpenDocumentResult } from "../../core";
 import { createListener } from "../../core/utils";
-import { BaseDocument } from "./base";
 import { PCDocument } from "./pc";
 
 export class DocumentManager {
   private _documents: Record<string, Document>;
   private _em: EventEmitter;
 
-  constructor(private _events: EventEmitter, private _engine: EngineDelegate) {
+  constructor(
+    private _events: EventEmitter,
+    private _engine: EngineDelegate,
+    private _logger: Logger
+  ) {
     this._documents = {};
     this._em = new EventEmitter();
   }
@@ -24,7 +27,8 @@ export class DocumentManager {
     return (this._documents[uri] = createDocument(
       uri,
       this._events,
-      this._engine
+      this._engine,
+      this._logger
     ));
   }
 
@@ -41,10 +45,11 @@ type Document = PCDocument;
 const createDocument = (
   uri: string,
   events: EventEmitter,
-  engine: EngineDelegate
+  engine: EngineDelegate,
+  logger: Logger
 ): Document => {
   if (isPaperclipFile(uri)) {
-    return new PCDocument(uri, events, engine);
+    return new PCDocument(uri, events, engine, logger);
   }
   throw new Error(`Unable to load ${uri}`);
   return null;

@@ -114,16 +114,15 @@ export class PaperclipLanguageServerConnectionManager {
     return {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental as any,
-        // Tell the client that the server supports code completion
-        completionProvider: {
-          resolveProvider: true,
-          triggerCharacters: [".", "<", '"', "'", "{", ":", " ", "(", ">", "$"],
-        },
-        documentLinkProvider: {
-          resolveProvider: true,
-        },
-        colorProvider: true,
-        definitionProvider: true,
+        // completionProvider: {
+        //   resolveProvider: true,
+        //   triggerCharacters: [".", "<", '"', "'", "{", ":", " ", "(", ">", "$"],
+        // },
+        // documentLinkProvider: {
+        //   resolveProvider: true,
+        // },
+        // colorProvider: true,
+        // definitionProvider: true,
       },
     };
   };

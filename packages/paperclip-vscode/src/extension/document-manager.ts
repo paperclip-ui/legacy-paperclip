@@ -16,6 +16,7 @@ import {
 } from "@paperclip-ui/utils";
 import { PaperclipLanguageClient } from "./language";
 import { DesignServerStartedInfo } from "./channels";
+import * as pce from "@paperclip-ui/editor-engine/lib/core/crdt-document";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { sockjsClientAdapter, wsAdapter } from "@paperclip-ui/common";
 import * as diff from "diff";
@@ -88,6 +89,17 @@ export class DocumentManager {
     if (isPaperclipResourceFile(uri)) {
       const doc = await this._editorClient.getDocuments().open(uri);
       const source = await doc.getSource();
+
+      const edits: pce.TextEdit[] = event.contentChanges.map((change) => {
+        return {
+          chars: change.text.split(""),
+          index: change.rangeOffset,
+          deleteCount: change.rangeLength,
+        };
+      });
+
+      source.applyEdits(edits);
+      console.log("DocumentManager::_onTextDocumentChange emit edits");
     }
   };
 
@@ -108,10 +120,6 @@ export class DocumentManager {
     const changes = diff.parsePatch(
       diff.createPatch("a.pc", vscodeDoc.getText(), source.getText())
     );
-
-    // const edits = diff(vscodeDoc.getText(), source.getText()).map(change => {
-    //   return new TextEdit(new Range(vscodeDoc.positionAt(change.count)))
-    // });
   };
 
   private _onRevealSourceRequested = async ({ textSource }: ExprSource) => {

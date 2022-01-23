@@ -28,6 +28,7 @@ import { editVirtualObjectsChannel } from "../../../core/channels";
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import { produce } from "immer";
 import { EventEmitter } from "events";
+import { BinaryChange } from "automerge";
 
 export type PCDocumentContent = LoadedPCData;
 
@@ -44,6 +45,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
   private _editVirtualObject: ReturnType<typeof editVirtualObjectsChannel>;
   private _engineEvents: ReturnType<typeof engineEventChannel>;
   private _source?: PCSourceDocument;
+  private _textDocument: CRDTTextDocument;
 
   /**
    */
@@ -58,6 +60,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
     this._engineEvents = engineEventChannel(connection);
     this._editVirtualObject = editVirtualObjectsChannel(connection);
     this._engineEvents.listen(this._onEngineEvent);
+    this._bus.on("documentSourceChanged", this._onSourceDocumentChanged);
   }
 
   /**
@@ -67,6 +70,13 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
     listener: (content: PCDocumentContent, event: EngineDelegateEvent) => void
   ) => {
     return createListener(this._em as any, "appliedChanges", listener);
+  };
+
+  /**
+   */
+
+  public onSourceEdited = (listener: (content: BinaryChange[]) => void) => {
+    return createListener(this._em as any, "sourceEdited", listener);
   };
 
   /**
@@ -84,10 +94,15 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
       return this._source;
     }
 
+    this._textDocument = CRDTTextDocument.load(
+      await this._openDocumentSource.call(this.uri)
+    );
+    this._textDocument.onEdit(this._em.emit.bind(this._em, "sourceEdited"));
+
     return (this._source = new PCSourceDocument(
       this.uri,
       this._em,
-      CRDTTextDocument.load(await this._openDocumentSource.call(this.uri))
+      this._textDocument
     ));
   }
 
@@ -117,6 +132,16 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
       this._updateContent(newData);
       this._em.emit("appliedChanges", this._content, event);
     }
+  };
+
+  /**
+   */
+
+  private _onSourceDocumentChanged = ({ uri, changes }) => {
+    if (uri !== this.uri || !this._source) {
+      return;
+    }
+    this._textDocument.applyChanges(changes);
   };
 }
 

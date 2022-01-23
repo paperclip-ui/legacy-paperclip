@@ -4,6 +4,7 @@ import { CRDTTextDocument } from "../../core/crdt-document";
 import { DocumentKind } from "../../core/documents";
 import { BaseDocument } from "./base";
 import { EventEmitter } from "events";
+import { Logger } from "@paperclip-ui/common";
 
 export class PCDocument extends BaseDocument<LoadedPCData> {
   readonly kind = DocumentKind.Paperclip;
@@ -15,7 +16,8 @@ export class PCDocument extends BaseDocument<LoadedPCData> {
   constructor(
     uri: string,
     events: EventEmitter,
-    private _engine: EngineDelegate
+    private _engine: EngineDelegate,
+    private _logger: Logger
   ) {
     super(uri, events);
   }
@@ -27,7 +29,7 @@ export class PCDocument extends BaseDocument<LoadedPCData> {
     try {
       return this._engine.open(this.uri) as LoadedPCData;
     } catch (e) {
-      console.error(`Unable to open ${this.uri}`);
+      this._logger.error(`Unable to open ${this.uri}`);
       return null;
     }
   }
@@ -39,6 +41,7 @@ export class PCDocument extends BaseDocument<LoadedPCData> {
     if (this._source) {
       return this._source;
     }
+    this._logger.verbose("PCDocument::openSource()", this.uri);
     this._events.on("incommingCRDTChanges", this._onSourceDocumentCRDTChanges);
     this._source = CRDTTextDocument.fromText(
       this._engine.getVirtualContent(this.uri)
@@ -54,6 +57,7 @@ export class PCDocument extends BaseDocument<LoadedPCData> {
     if (uri !== this.uri) {
       return;
     }
+    this._logger.verbose("PCDocument::_onSourceDocumentCRDTChanges()");
 
     this._source.applyChanges(changes);
   };

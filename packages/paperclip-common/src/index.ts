@@ -6,3 +6,4 @@ export * from "./services";
 export * from "./kernel";
 export * from "./rpc";
 export * from "./em";
+export * from "./log";

@@ -43,6 +43,10 @@ export class DocumentManager {
     doc.onAppliedChanges(() => {
       this._em.emit("documentChanged", doc);
     });
+    doc.onSourceEdited((changes) => {
+      console.log("DocumentManager::onSourceEdited");
+      this._sourceDocumentCRDTChanges.call({ uri: doc.uri, changes });
+    });
     await doc.open();
     return doc;
   }
