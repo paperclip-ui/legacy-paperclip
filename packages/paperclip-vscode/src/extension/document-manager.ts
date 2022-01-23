@@ -99,7 +99,7 @@ export class DocumentManager {
       });
 
       source.applyEdits(edits);
-      console.log("DocumentManager::_onTextDocumentChange emit edits");
+      console.log("DocumentManager::_onDocumentChange");
     }
   };
 

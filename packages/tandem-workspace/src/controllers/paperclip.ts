@@ -12,7 +12,7 @@ import {
 } from "@paperclip-ui/core";
 import * as fs from "fs";
 import * as path from "path";
-import { Logger } from "@tandem-ui/common";
+import { Logger } from "@paperclip-ui/common";
 import globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";

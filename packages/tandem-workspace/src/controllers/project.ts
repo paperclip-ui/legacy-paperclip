@@ -1,7 +1,7 @@
 import execa from "execa";
 import { VFS } from "./vfs";
 import * as URL from "url";
-import { Logger } from "@tandem-ui/common";
+import { Logger } from "@paperclip-ui/common";
 import { Options } from "../core/options";
 import { Package } from "./package";
 import * as crypto from "crypto";

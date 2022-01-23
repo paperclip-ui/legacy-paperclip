@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as URL from "url";
 import { EventEmitter } from "events";
-import { Logger } from "@tandem-ui/common";
+import { Logger } from "@paperclip-ui/common";
 
 export class VFS {
   private _contents: Record<string, string>;
@@ -28,8 +28,8 @@ export class VFS {
   async readFileContent(uri: string) {
     return (
       this._contents[uri] ||
-      new Promise(resolve => {
-        fs.readFile(URL.fileURLToPath(uri), "utf-8", function(err, result) {
+      new Promise((resolve) => {
+        fs.readFile(URL.fileURLToPath(uri), "utf-8", function (err, result) {
           resolve(result);
         });
       })

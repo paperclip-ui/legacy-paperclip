@@ -2,7 +2,7 @@ import express from "express";
 import * as path from "path";
 import * as URL from "url";
 import { Server, Workspace } from "../server";
-import { Logger } from "@tandem-ui/common";
+import { Logger } from "@paperclip-ui/common";
 
 export const addRoutes = (
   expressServer: express.Express,

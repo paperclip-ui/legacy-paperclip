@@ -3,7 +3,7 @@ import { saveTmpFixtureFiles } from "@paperclip-ui/common/lib/test-utils";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
 import { mockDOMFactory } from "@paperclip-ui/web-renderer/lib/test/utils";
 import { start } from "../server";
-import { LogLevel } from "@tandem-ui/common";
+import { LogLevel } from "@paperclip-ui/common";
 import * as ws from "ws";
 
 export type TestServer = {

@@ -1,6 +1,6 @@
 import { ContentChange } from "@paperclip-ui/source-writer";
 import { ExprSource } from "@paperclip-ui/utils";
-import { LogLevel } from "@tandem-ui/common";
+import { LogLevel } from "@paperclip-ui/common";
 
 export type ProjectOptions = {
   installDependencies?: boolean;

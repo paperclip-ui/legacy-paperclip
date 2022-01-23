@@ -1,6 +1,6 @@
 // TODO - identify yarn lock
 import execa from "execa";
-import { Logger } from "@tandem-ui/common";
+import { Logger } from "@paperclip-ui/common";
 
 // TODO - add ident script for repo type
 export class Package {
@@ -15,7 +15,7 @@ export class Package {
     this._logger.info(`Running install script ⏱`);
     await execa(`yarn`, [`install`, `--silent`], {
       cwd: this._cwd,
-      stdio: "inherit"
+      stdio: "inherit",
     });
     this._logger.info(`Done installing package ✅`);
   }
