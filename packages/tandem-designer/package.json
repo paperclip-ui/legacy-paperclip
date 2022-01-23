@@ -55,7 +55,6 @@
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
     "sockjs": "^0.3.21",
-    "sockjs-client": "^1.5.0",
     "ws": "^8.4.2"
   },
   "devDependencies": {
@@ -83,6 +82,7 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "babel-jest": "^27.4.6",
+    "crypto-browserify": "^3.12.0",
     "css-loader": "^5.0.1",
     "css-minimizer-webpack-plugin": "^3.2.0",
     "eslint": "^7.4.0",
@@ -93,6 +93,7 @@
     "lru-cache": "^6.0.0",
     "mini-css-extract-plugin": "1.3.4",
     "paperclip-loader": "^18.4.7",
+    "stream-browserify": "^3.0.0",
     "style-loader": "^1.2.1",
     "ts-loader": "^9.2.5",
     "ts-node": "^10.4.0",

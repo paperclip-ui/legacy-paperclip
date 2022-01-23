@@ -3,17 +3,21 @@ import {
   Selection,
   TextEdit,
   TextEditor,
+  TextDocumentChangeEvent,
   ViewColumn,
   window,
   workspace,
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
-import { ExprSource, stripFileProtocol } from "@paperclip-ui/utils";
+import {
+  ExprSource,
+  isPaperclipResourceFile,
+  stripFileProtocol,
+} from "@paperclip-ui/utils";
 import { PaperclipLanguageClient } from "./language";
 import { DesignServerStartedInfo } from "./channels";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { sockjsClientAdapter, wsAdapter } from "@paperclip-ui/common";
-import * as SockJS from "sockjs-client";
 import * as diff from "diff";
 import * as ws from "ws";
 
@@ -34,6 +38,7 @@ export class DocumentManager {
     console.log("DocumentManager::constructor");
     this._client.onRevealSourceRequest(this._onRevealSourceRequested);
     this._client.onDesignServerStarted(this._onDesignServerStarted);
+    workspace.onDidChangeTextDocument(this._onTextDocumentChange);
   }
 
   activate() {
@@ -78,12 +83,18 @@ export class DocumentManager {
     }
   };
 
+  private _onTextDocumentChange = async (event: TextDocumentChangeEvent) => {
+    const uri = event.document.uri.toString();
+    if (isPaperclipResourceFile(uri)) {
+      const doc = await this._editorClient.getDocuments().open(uri);
+      const source = await doc.getSource();
+    }
+  };
+
   private _onDesignServerStarted = (info: DesignServerStartedInfo) => {
-    console.log("DESIGN ERVER");
     this._editorClient = new EditorClient(
       wsAdapter(new ws.WebSocket(`ws://localhost:${info.httpPort}/ws`))
     );
-    console.log("CLIENT!");
 
     this._editorClient
       .getDocuments()
@@ -91,11 +102,12 @@ export class DocumentManager {
   };
 
   private _onDesignServerDocumentChange = async ({ uri }) => {
-    return;
     const doc = await this._editorClient.getDocuments().open(uri);
     const source = await doc.getSource();
     const vscodeDoc = await this._openDoc(uri);
-    const changes = diff.diffChars(vscodeDoc.getText(), source.getText());
+    const changes = diff.parsePatch(
+      diff.createPatch("a.pc", vscodeDoc.getText(), source.getText())
+    );
 
     // const edits = diff(vscodeDoc.getText(), source.getText()).map(change => {
     //   return new TextEdit(new Range(vscodeDoc.positionAt(change.count)))

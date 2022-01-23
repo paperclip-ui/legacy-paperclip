@@ -2,6 +2,7 @@ import { spy } from "./spy";
 import { EventEmitter } from "events";
 import * as sockjs from "sockjs";
 import { WebSocket, WebSocketServer } from "ws";
+import * as mpack from "@msgpack/msgpack";
 
 type Message = any;
 
@@ -141,12 +142,13 @@ export const sockjsServerRPCAdapter = (server: sockjs.Server): RPCServer => ({
 
 export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
   let buffer = isOpen ? undefined : [];
+  ws.binaryType = "arraybuffer";
 
   const em = new EventEmitter();
 
   if (ws.on) {
-    ws.on("open", em.on.bind(em, "open"));
-    ws.on("message", em.on.bind(em, "message"));
+    ws.on("open", em.emit.bind(em, "open"));
+    ws.on("message", em.emit.bind(em, "message"));
   } else {
     ws.onopen = () => em.emit("open");
     ws.onmessage = (event) => em.emit("message", event.data);
@@ -156,12 +158,7 @@ export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
     if (buffer) {
       return buffer.push(message);
     }
-
-    if (!(message instanceof ArrayBuffer)) {
-      message = JSON.stringify(message);
-    }
-
-    ws.send(message);
+    ws.send(mpack.encode(message));
   };
 
   em.on("open", () => {
@@ -175,11 +172,7 @@ export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
     onDisconnect(listener: () => void) {},
     onMessage(listener: (message: any) => void) {
       const listener2 = (data) => {
-        // eesh
-        try {
-          data = JSON.parse(String(data));
-        } catch (e) {}
-        listener(data);
+        listener(mpack.decode(data));
       };
       em.on("message", listener2);
       return () => em.off("message", listener2);

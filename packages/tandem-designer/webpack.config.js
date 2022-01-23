@@ -25,7 +25,7 @@ module.exports = {
   output: {
     filename: "[name]-[contenthash].js",
     path: path.resolve(__dirname, "dist"),
-    publicPath: "/"
+    publicPath: "/",
   },
   devtool: false,
 
@@ -34,24 +34,24 @@ module.exports = {
       filename: devMode
         ? "[name]-[contenthash].css"
         : "[name]-[contenthash].css",
-      chunkFilename: devMode ? "[id].css" : "[id]-[contenthash].css"
+      chunkFilename: devMode ? "[id].css" : "[id]-[contenthash].css",
     }),
     new HtmlWebpackPlugin({
       publicPath: "/",
       title: "Paperclip",
-      template: path.resolve(__dirname, "src", "index.html")
+      template: path.resolve(__dirname, "src", "index.html"),
     }),
     new webpack.ProvidePlugin({
       process: "process/browser.js",
-      Buffer: ["buffer", "Buffer"]
+      Buffer: ["buffer", "Buffer"],
     }),
     new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
-    })
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+    }),
   ],
   externals: {
     chokidar: "{}",
-    fs: "{}"
+    fs: "{}",
   },
 
   module: {
@@ -60,39 +60,43 @@ module.exports = {
         test: /\.(ts|tsx)?$/,
         loader: "ts-loader",
         include: [path.resolve(__dirname, "src")],
-        exclude: []
+        exclude: [],
       },
       {
         test: /\.pc$/,
         loader: "paperclip-loader",
         include: [
           path.resolve(__dirname, "src"),
-          path.resolve(__dirname, "..")
+          path.resolve(__dirname, ".."),
         ],
         options: {
-          config: require("./paperclip.config.json")
-        }
+          config: require("./paperclip.config.json"),
+        },
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"]
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
         use: [
           {
-            loader: "file-loader"
-          }
-        ]
-      }
-    ]
+            loader: "file-loader",
+          },
+        ],
+      },
+    ],
   },
 
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      crypto: require.resolve("crypto-browserify"),
+      stream: require.resolve("stream-browserify"),
+    },
     alias: {
-      os: "os-browserify/browser"
-    }
+      os: "os-browserify/browser",
+    },
   },
 
   optimization: {
@@ -104,8 +108,8 @@ module.exports = {
       maxInitialRequests: Infinity,
       cacheGroups: {
         vendor: {
-          test: /[\\/]node_modules[\\/]/
-        }
+          test: /[\\/]node_modules[\\/]/,
+        },
       },
 
       chunks: "all",
@@ -116,7 +120,7 @@ module.exports = {
 
       // make sure that chunks are smaller than 1.5 MB
       maxSize: 1000 * 1500,
-      name: false
-    }
-  }
+      name: false,
+    },
+  },
 };

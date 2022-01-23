@@ -19,9 +19,6 @@ import {
   revealSourceChannel,
 } from "../../channels";
 import { PaperclipDesignServer } from "./design-server";
-import { sockjsClientAdapter } from "@paperclip-ui/common";
-import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
-import SockJS from "sockjs-client";
 
 // TODO - need better SRP here, this class is doing too much
 export class PaperclipLanguageServerConnectionManager {
