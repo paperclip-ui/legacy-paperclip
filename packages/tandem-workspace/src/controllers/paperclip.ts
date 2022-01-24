@@ -1,7 +1,5 @@
 import {
   EngineDelegate,
-  createEngineDelegate,
-  EngineMode,
   PaperclipConfig,
   PC_CONFIG_FILE_NAME,
   PaperclipResourceWatcher,
@@ -16,7 +14,6 @@ import { Logger } from "@paperclip-ui/common";
 import globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";
-import { DocumentManager } from "@paperclip-ui/editor-engine/lib/client/documents";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 
 export class PaperclipManager {
@@ -37,7 +34,6 @@ export class PaperclipManager {
 
   async start() {
     const config = readConfig(this._cwd, this._logger);
-    // this._startEngine();
     this._startWatcher(config);
     await this._addAllProjects(config);
   }

@@ -1,7 +1,6 @@
 import { EventEmitter } from "events";
 import { RPCClientAdapter } from "@paperclip-ui/common";
 import { isPaperclipFile } from "@paperclip-ui/utils";
-import { EditorClientOptions } from "../client";
 import { PCDocument } from "./pc";
 import { createListener } from "../../core/utils";
 import { sourceDocumentCRDTChangesChannel } from "../../core";
@@ -14,6 +13,8 @@ export type Document = PCDocument;
 export class DocumentManager {
   private _documents: Record<string, Document> = {};
   private _em: EventEmitter;
+  private _updating: boolean;
+  private _changeBuffer: Record<string, BinaryChange[]> = {};
   private _sourceDocumentCRDTChanges: ReturnType<
     typeof sourceDocumentCRDTChangesChannel
   >;
@@ -43,9 +44,31 @@ export class DocumentManager {
     doc.onAppliedChanges(() => {
       this._em.emit("documentChanged", doc);
     });
-    doc.onSourceEdited((changes) => {
+
+    const pubChanges = async (uri: string, changes: BinaryChange[]) => {
+      this._updating = true;
+      await this._sourceDocumentCRDTChanges.call({ uri, changes });
+      this._updating = false;
+      const nextUri = Object.keys(this._changeBuffer)[0];
+      if (!nextUri) {
+        return;
+      }
+      const buffer = this._changeBuffer[nextUri];
+      delete this._changeBuffer[nextUri];
+      await pubChanges(nextUri, buffer);
+    };
+
+    doc.onSourceEdited(async (changes) => {
+      if (this._updating) {
+        if (!this._changeBuffer[doc.uri]) {
+          this._changeBuffer[doc.uri] = [];
+        }
+        this._changeBuffer[doc.uri].push(...changes);
+        return;
+      }
+
       console.log("DocumentManager::onSourceEdited");
-      this._sourceDocumentCRDTChanges.call({ uri: doc.uri, changes });
+      await pubChanges(doc.uri, changes);
     });
     await doc.open();
     return doc;

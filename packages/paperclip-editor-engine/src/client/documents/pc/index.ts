@@ -18,6 +18,7 @@ import {
   engineEventChannel,
   VirtualObjectEdit,
 } from "../../../core";
+import * as Automerge from "automerge";
 import { CRDTTextDocument } from "../../../core/crdt-document";
 import { DocumentKind } from "../../../core/documents";
 import { BaseDocument } from "../base";
@@ -95,7 +96,9 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
       await this._openDocumentSource.call(this.uri)
     );
 
-    this._source.onEdit(this._em.emit.bind(this._em, "sourceEdited"));
+    this._source.onEdit((changes) => {
+      this._em.emit(`sourceEdited`, changes);
+    });
 
     return this._source;
   }
@@ -107,11 +110,6 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
   editVirtualObjects(edits: VirtualObjectEdit[]) {
     this._editVirtualObject.call({ [this.uri]: edits });
   }
-
-  /**
-   */
-
-  updateNodeAnnotations(nodePath: string, annotations: Object) {}
 
   /**
    */

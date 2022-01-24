@@ -65,7 +65,9 @@ export class PCDocument extends BaseDocument<LoadedPCData> {
    */
 
   private _onSourceChange = (changes: Automerge.BinaryChange[]) => {
-    this._engine.updateVirtualFileContent(this.uri, this._source.getText());
+    const now = Date.now();
+    const text = this._source.getText();
+    this._engine.updateVirtualFileContent(this.uri, text);
     this.load();
     if (changes.length) {
       this._events.emit("outgoingCRDTChanges", { uri: this.uri, changes });
