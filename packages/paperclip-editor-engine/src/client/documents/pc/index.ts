@@ -130,7 +130,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
    */
 
   private _onSourceDocumentChanged = ({ uri, changes }) => {
-    if (uri !== this.uri) {
+    if (uri !== this.uri || !this._source) {
       return;
     }
     this._source.applyChanges(changes);

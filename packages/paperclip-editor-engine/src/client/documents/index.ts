@@ -47,8 +47,11 @@ export class DocumentManager {
 
     const pubChanges = async (uri: string, changes: BinaryChange[]) => {
       this._updating = true;
+      const now = Date.now();
+      console.log("SENDING");
       await this._sourceDocumentCRDTChanges.call({ uri, changes });
       this._updating = false;
+      console.log("DONE", Date.now() - now);
       const nextUri = Object.keys(this._changeBuffer)[0];
       if (!nextUri) {
         return;

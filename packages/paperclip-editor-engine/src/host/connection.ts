@@ -150,7 +150,9 @@ export class ClientConnection {
       "ClientConnection::_onInternalSourceDocumentCRDTChanges"
     );
 
-    this._sourceDocumentCRDTChangesChannel.call(result);
+    this._sourceDocumentCRDTChangesChannel.call(result).catch((e) => {
+      console.error("ERR", e);
+    });
   };
 
   private _onEngineEvent = (event: EngineDelegateEvent) => {

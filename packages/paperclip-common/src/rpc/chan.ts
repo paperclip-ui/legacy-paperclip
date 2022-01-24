@@ -46,7 +46,7 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
               name: responseName,
               id: message.id,
               channelId,
-              error,
+              error: error.stack,
             });
           }
         }
