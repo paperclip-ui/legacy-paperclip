@@ -7,6 +7,7 @@ import {
   ViewColumn,
   window,
   workspace,
+  TextDocument,
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
 import {
@@ -18,8 +19,7 @@ import { PaperclipLanguageClient } from "./language";
 import { DesignServerStartedInfo } from "./channels";
 import * as pce from "@paperclip-ui/editor-engine/lib/core/crdt-document";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
-import { sockjsClientAdapter, wsAdapter } from "@paperclip-ui/common";
-import * as diff from "diff";
+import { wsAdapter } from "@paperclip-ui/common";
 import * as ws from "ws";
 
 enum OpenLivePreviewOptions {
@@ -40,6 +40,8 @@ export class DocumentManager {
     this._client.onRevealSourceRequest(this._onRevealSourceRequested);
     this._client.onDesignServerStarted(this._onDesignServerStarted);
     workspace.onDidChangeTextDocument(this._onTextDocumentChange);
+    workspace.onDidOpenTextDocument(this._onDidOpenTextDocument);
+    workspace.textDocuments.forEach(this._onDidOpenTextDocument);
   }
 
   activate() {
@@ -84,6 +86,21 @@ export class DocumentManager {
     }
   };
 
+  private _onDidOpenTextDocument = async (e: TextDocument) => {
+    const uri = e.uri.toString();
+
+    if (!isPaperclipResourceFile(e.uri.toString())) {
+      return;
+    }
+
+    const source = await this._editorClient
+      .getDocuments()
+      .open(uri)
+      .then((doc) => doc.getSource());
+
+    console.log(e.uri.toString());
+  };
+
   private _onTextDocumentChange = async (event: TextDocumentChangeEvent) => {
     const uri = event.document.uri.toString();
     if (isPaperclipResourceFile(uri)) {
@@ -113,13 +130,13 @@ export class DocumentManager {
       .onDocumentSourceChanged(this._onDesignServerDocumentChange);
   };
 
-  private _onDesignServerDocumentChange = async ({ uri }) => {
-    const doc = await this._editorClient.getDocuments().open(uri);
-    const source = await doc.getSource();
-    const vscodeDoc = await this._openDoc(uri);
-    const changes = diff.parsePatch(
-      diff.createPatch("a.pc", vscodeDoc.getText(), source.getText())
-    );
+  private _onDesignServerDocumentChange = async ({ uri, changes }) => {
+    // const doc = await this._editorClient.getDocuments().open(uri);
+    // const source = await doc.getSource();
+    // const vscodeDoc = await this._openDoc(uri);
+    // const changes = diff.parsePatch(
+    //   diff.createPatch("a.pc", vscodeDoc.getText(), source.getText())
+    // );
   };
 
   private _onRevealSourceRequested = async ({ textSource }: ExprSource) => {

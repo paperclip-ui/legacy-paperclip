@@ -192,12 +192,10 @@
   <div />
 </div>
 
-
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 136, y: -101 }
 -->
 <hr export component as="Divider" />
-
 
 <!--
   @frame { width: 810, height: 768, x: 233, y: -40 }

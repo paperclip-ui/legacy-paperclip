@@ -30,7 +30,7 @@ describe(__filename + "#", () => {
     const doc2 = await client2.getDocuments().open("/hello.pc");
     const doc2Source = await doc2.getSource();
 
-    docSource.insertText("blahh".split(""));
+    docSource.setText("blahh".split(""));
 
     expect(await doc2Source.getText()).to.eql("blahhdiv");
   });
@@ -47,7 +47,7 @@ describe(__filename + "#", () => {
     );
 
     const source = await doc.getSource();
-    source.insertText("abc".split(""));
+    source.setText("abc".split(""));
 
     expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
       "abcHello World"
@@ -62,12 +62,12 @@ describe(__filename + "#", () => {
     const client = server.createHostClient(true);
     const doc1 = (await client.getDocuments().open("/hello.pc")) as PCDocument;
     const src1 = await doc1.getSource();
-    src1.insertText("111".split(""));
+    src1.setText("111".split(""));
 
     const client2 = server.createHostClient(true);
     const doc2 = (await client2.getDocuments().open("/hello.pc")) as PCDocument;
     const src2 = await doc2.getSource();
-    src2.insertText("222".split(""));
+    src2.setText("222".split(""));
 
     await timeout(10);
 

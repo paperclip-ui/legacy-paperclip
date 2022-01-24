@@ -44,8 +44,7 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
   private _openDocumentSource: ReturnType<typeof openDocumentSourceChannel>;
   private _editVirtualObject: ReturnType<typeof editVirtualObjectsChannel>;
   private _engineEvents: ReturnType<typeof engineEventChannel>;
-  private _source?: PCSourceDocument;
-  private _textDocument: CRDTTextDocument;
+  private _source?: CRDTTextDocument;
 
   /**
    */
@@ -94,16 +93,13 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
       return this._source;
     }
 
-    this._textDocument = CRDTTextDocument.load(
+    this._source = CRDTTextDocument.load(
       await this._openDocumentSource.call(this.uri)
     );
-    this._textDocument.onEdit(this._em.emit.bind(this._em, "sourceEdited"));
 
-    return (this._source = new PCSourceDocument(
-      this.uri,
-      this._em,
-      this._textDocument
-    ));
+    this._source.onEdit(this._em.emit.bind(this._em, "sourceEdited"));
+
+    return this._source;
   }
 
   /**
@@ -138,10 +134,10 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
    */
 
   private _onSourceDocumentChanged = ({ uri, changes }) => {
-    if (uri !== this.uri || !this._source) {
+    if (uri !== this.uri) {
       return;
     }
-    this._textDocument.applyChanges(changes);
+    this._source.applyChanges(changes);
   };
 }
 

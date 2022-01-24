@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import CodeBlock from "@theme-init/CodeBlock";
 
-export default props => {
+export default (props) => {
   // const prismTheme = usePrismTheme();
   // turned off for now until playground hooked up to this repo
   if (props.live) {
@@ -36,24 +36,24 @@ const LiveEditor = ({
 
     if (fullScreen) {
       Object.assign(extStyle, {
-        height: "100vh"
+        height: "100vh",
       });
     } else {
       Object.assign(extStyle, {
         height,
-        margin: noMargin !== true ? "16px 0px" : undefined
+        margin: noMargin !== true ? "16px 0px" : undefined,
       });
     }
 
     Object.assign(mountRef.current.style, extStyle);
 
-    import("@paperclip-ui/repl/src/app").then(module => {
+    import("@paperclip-ui/repl/src/app").then((module) => {
       const app = new module.App(
         {
           files: graph,
           entry: Object.keys(graph)[0],
           activeFrame: showAllFrames ? null : 0,
-          ...rest
+          ...rest,
         },
         mountRef.current
       );
@@ -65,7 +65,7 @@ const LiveEditor = ({
   return <div ref={mountRef}></div>;
 };
 
-const extractContent = text => {
+const extractContent = (text) => {
   const content = String(text);
   const files = content.split(/\/\/\s*file:\s*/g).filter(Boolean);
   const graph = {};

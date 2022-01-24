@@ -32,7 +32,7 @@ describe(__filename + "#", () => {
     const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
 
     const source = await doc.getSource();
-    source.insertText("blah".split(""));
+    source.setText("blah".split(""));
     expect(
       combineFrameHTML2(
         renderFrames(doc.getContent(), { domFactory: mockDOMFactory })
@@ -51,7 +51,7 @@ describe(__filename + "#", () => {
     const doc2 = (await client.getDocuments().open("/imp.pc")) as PCDocument;
 
     const source = await doc2.getSource();
-    source.insertText(
+    source.setText(
       `<style>div { color: blue; }</style>`.split(""),
       0,
       source.getText().length
@@ -83,7 +83,7 @@ describe(__filename + "#", () => {
     );
 
     const source = await doc.getSource();
-    source.insertText(
+    source.setText(
       `<import src="/imp.pc" /><import src="/imp2.pc" /><div />`.split(""),
       0,
       source.getText().length
@@ -116,7 +116,7 @@ describe(__filename + "#", () => {
     );
 
     const source = await doc.getSource();
-    source.insertText(
+    source.setText(
       `<import src="/imp.pc" /><div />`.split(""),
       0,
       source.getText().length
@@ -149,7 +149,7 @@ describe(__filename + "#", () => {
     );
 
     const source = await doc.getSource();
-    source.insertText(
+    source.setText(
       `<import src="/imp.pc" /><import src="/imp2.pc" /><div />`.split(""),
       0,
       source.getText().length
@@ -173,7 +173,7 @@ describe(__filename + "#", () => {
     const doc = (await client.getDocuments().open("/entry.pc")) as PCDocument;
 
     const source = await doc.getSource();
-    source.insertText(
+    source.setText(
       `<style>div { color: orange; }</style><div />`.split(""),
       0,
       source.getText().length
@@ -202,7 +202,7 @@ describe(__filename + "#", () => {
     engine.updateVirtualFileContent("/imp.css", `div { color: orange }`);
 
     // const source = await doc2.getSource();
-    // source.insertText(
+    // source.setText(
     //   `div { color: orange }`.split(""),
     //   0,
     //   source.getText().length
