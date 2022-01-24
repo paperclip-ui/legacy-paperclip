@@ -27,6 +27,10 @@ export class EditorHost {
     );
   }
 
+  getDocumentManager() {
+    return this._documents;
+  }
+
   /**
    */
 

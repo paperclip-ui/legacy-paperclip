@@ -122,7 +122,7 @@
   <Container open>
     <default placeholder="Master" />
     <Menu>
-      <MenuItem>dev</MenuItem>
+      <MenuItem>dev......</MenuItem>
       <MenuItem>longer item that should ellipsis</MenuItem>
       <MenuItem hover>sub-branch</MenuItem>
       <MenuItem>duck</MenuItem>

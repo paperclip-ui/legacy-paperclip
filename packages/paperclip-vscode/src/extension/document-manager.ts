@@ -31,6 +31,7 @@ enum OpenLivePreviewOptions {
 export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
   private _editorClient: EditorClient;
+  private _remoteDocs: Record<string, pce.CRDTTextDocument> = {};
 
   constructor(
     private _windows: LiveWindowManager,
@@ -40,8 +41,6 @@ export class DocumentManager {
     this._client.onRevealSourceRequest(this._onRevealSourceRequested);
     this._client.onDesignServerStarted(this._onDesignServerStarted);
     workspace.onDidChangeTextDocument(this._onTextDocumentChange);
-    workspace.onDidOpenTextDocument(this._onDidOpenTextDocument);
-    workspace.textDocuments.forEach(this._onDidOpenTextDocument);
   }
 
   activate() {
@@ -89,24 +88,32 @@ export class DocumentManager {
   private _onDidOpenTextDocument = async (e: TextDocument) => {
     const uri = e.uri.toString();
 
-    if (!isPaperclipResourceFile(e.uri.toString())) {
+    if (!isPaperclipResourceFile(uri) || this._remoteDocs[uri]) {
       return;
     }
 
-    const source = await this._editorClient
+    console.log(`INSERT `, uri);
+
+    const source = (this._remoteDocs[uri] = await this._editorClient
       .getDocuments()
       .open(uri)
-      .then((doc) => doc.getSource());
+      .then((doc) => doc.getSource()));
 
-    console.log(e.uri.toString());
+    // pce.CRDTTextDocument.load(source.toData());
+
+    // need to replace design server text completely since VS Code
+    // may store unsaved changes
+    source.setText(e.getText().split(""), 0, source.getText().length);
+
+    source.onSync((patch) => {
+      console.log("ON CHANGE", patch);
+    });
   };
 
   private _onTextDocumentChange = async (event: TextDocumentChangeEvent) => {
     const uri = event.document.uri.toString();
     if (isPaperclipResourceFile(uri)) {
-      const doc = await this._editorClient.getDocuments().open(uri);
-      const source = await doc.getSource();
-
+      const source = this._remoteDocs[uri];
       const edits: pce.TextEdit[] = event.contentChanges.map((change) => {
         return {
           chars: change.text.split(""),
@@ -114,6 +121,7 @@ export class DocumentManager {
           deleteCount: change.rangeLength,
         };
       });
+      console.log("file", uri, Object.keys(this._remoteDocs));
 
       source.applyEdits(edits);
       console.log("DocumentManager::_onDocumentChange");
@@ -128,6 +136,9 @@ export class DocumentManager {
     this._editorClient
       .getDocuments()
       .onDocumentSourceChanged(this._onDesignServerDocumentChange);
+
+    workspace.onDidOpenTextDocument(this._onDidOpenTextDocument);
+    workspace.textDocuments.forEach(this._onDidOpenTextDocument);
   };
 
   private _onDesignServerDocumentChange = async ({ uri, changes }) => {

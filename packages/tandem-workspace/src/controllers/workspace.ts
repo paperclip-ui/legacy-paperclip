@@ -5,6 +5,7 @@ import { Options } from "../core/options";
 import { EngineDelegate } from "@paperclip-ui/core";
 import { getProjectId, Project } from "./project";
 import { Logger } from "@paperclip-ui/common";
+import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 
 export class Workspace {
   private _projects: Record<string, Project> = {};
@@ -16,7 +17,8 @@ export class Workspace {
     private _logger: Logger,
     private _engine: EngineDelegate,
     private _options: Options,
-    private _httpPort: number
+    private _httpPort: number,
+    private _documentManager: EditorHost
   ) {}
 
   async start(pathOrUrl: string, branch?: string) {
@@ -33,7 +35,8 @@ export class Workspace {
         this._logger,
         this._engine,
         this._options,
-        this._httpPort
+        this._httpPort,
+        this._documentManager
       ));
     return await project.start();
   }

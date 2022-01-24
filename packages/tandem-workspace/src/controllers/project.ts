@@ -8,6 +8,7 @@ import * as crypto from "crypto";
 import { Repository } from "./git";
 import { PaperclipManager } from "./paperclip";
 import { EngineDelegate, EngineDelegateEvent } from "@paperclip-ui/core";
+import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 
 export class Project {
   private _pc: PaperclipManager;
@@ -24,7 +25,8 @@ export class Project {
     _logger: Logger,
     private _engine: EngineDelegate,
     private _options: Options,
-    private _httpPort: number
+    private _httpPort: number,
+    documentManager: EditorHost
   ) {
     const directory = isUrlLocal(this.url)
       ? URL.fileURLToPath(this.url)
@@ -35,7 +37,8 @@ export class Project {
       this.repository.localDirectory,
       _vfs,
       _logger,
-      _engine
+      _engine,
+      documentManager
     );
   }
 

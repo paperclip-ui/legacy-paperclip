@@ -1,4 +1,4 @@
-import { LogLevel } from "@tandem-ui/common";
+import { LogLevel } from "@paperclip-ui/common";
 import { start } from "./server";
 
 start({

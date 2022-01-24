@@ -20,9 +20,7 @@ import {
 } from "../../../core";
 import { CRDTTextDocument } from "../../../core/crdt-document";
 import { DocumentKind } from "../../../core/documents";
-
 import { BaseDocument } from "../base";
-import { PCSourceDocument } from "./source";
 import { createListener } from "../../../core/utils";
 import { editVirtualObjectsChannel } from "../../../core/channels";
 import { RPCClientAdapter } from "@paperclip-ui/common";

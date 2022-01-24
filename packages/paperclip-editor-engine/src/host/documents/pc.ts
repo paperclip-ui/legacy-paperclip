@@ -58,7 +58,6 @@ export class PCDocument extends BaseDocument<LoadedPCData> {
       return;
     }
     this._logger.verbose("PCDocument::_onSourceDocumentCRDTChanges()");
-
     this._source.applyChanges(changes);
   };
 

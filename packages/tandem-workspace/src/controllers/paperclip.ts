@@ -16,6 +16,8 @@ import { Logger } from "@paperclip-ui/common";
 import globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";
+import { DocumentManager } from "@paperclip-ui/editor-engine/lib/client/documents";
+import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 
 export class PaperclipManager {
   private _watcher: PaperclipResourceWatcher;
@@ -24,7 +26,8 @@ export class PaperclipManager {
     private _cwd: string,
     private _vfs: VFS,
     private _logger: Logger,
-    private _engine: EngineDelegate
+    private _engine: EngineDelegate,
+    private _documentManager: EditorHost
   ) {
     // this._startEngine();
   }
@@ -102,9 +105,13 @@ export class PaperclipManager {
     }
     this._watcher = new PaperclipResourceWatcher(config.srcDir, this._cwd);
     this._watcher.onChange((kind: ChangeKind, fileUrl: string) => {
-      this._engine.updateVirtualFileContent(
-        fileUrl,
-        fs.readFileSync(url.fileURLToPath(fileUrl), "utf-8")
+      // Hard reload
+      const doc = this._documentManager.getDocumentManager().open(fileUrl);
+      const source = doc.openSource();
+      source.setText(
+        fs.readFileSync(url.fileURLToPath(fileUrl), "utf-8").split(""),
+        0,
+        source.getText().length
       );
       this._logger.info(`Local file changed: ${fileUrl}`);
     });

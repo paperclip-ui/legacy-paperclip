@@ -75,7 +75,8 @@ export class Server {
       this._logger,
       paperclipEngine,
       this.options,
-      httpPort
+      httpPort,
+      documentManager
     ));
 
     new Designer(expressServer);
