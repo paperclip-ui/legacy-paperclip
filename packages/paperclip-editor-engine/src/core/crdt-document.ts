@@ -31,7 +31,7 @@ export class CRDTTextDocument {
   /**
    */
 
-  onSync(listener: (changes: Automerge.Patch[]) => void) {
+  onSync(listener: (changes: Automerge.Patch) => void) {
     return createListener(this._em, "sync", listener);
   }
 

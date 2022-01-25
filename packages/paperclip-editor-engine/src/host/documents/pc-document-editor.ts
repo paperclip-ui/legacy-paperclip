@@ -164,13 +164,20 @@ const setAnnotations = (
 
   const buffer = [`<!--\n`];
   for (const name in edit.value) {
-    // PC can't handle string keys yet for objects, so we need to strip them
-    buffer.push(
-      `  @${name} ${JSON.stringify(edit.value[name]).replace(
-        /"(.+?)":/g,
-        "$1:"
-      )}\n`
-    );
+    const obj = edit.value[name];
+    buffer.push(`@${name} `);
+    if (typeof obj === "object" && !Array.isArray(obj)) {
+      buffer.push(`{`);
+      buffer.push(
+        Object.keys(obj)
+          .sort()
+          .map((key) => `${key}: ${JSON.stringify(obj[key])}`)
+          .join(", ")
+      );
+      buffer.push(`}\n`);
+    } else {
+      buffer.push(JSON.stringify(obj), "\n");
+    }
   }
   buffer.push("-->");
 

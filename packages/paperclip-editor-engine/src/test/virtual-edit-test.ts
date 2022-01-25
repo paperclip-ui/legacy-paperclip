@@ -106,6 +106,42 @@ describe(__filename + "#", () => {
       );
     });
 
+    it(`can insert annotations with quites`, async () => {
+      const { server } = await createMockHost({
+        "/hello.pc": "<div>blah</div>",
+      });
+
+      const client = server.createHostClient();
+
+      const doc = await client.getDocuments().open("/hello.pc");
+      const annotations = {
+        tags: ["a", "b"],
+        desc: "Some description",
+        frame: {
+          x: 834,
+          height: 817,
+          y: "-21",
+          width: "100",
+          title: "Something",
+        },
+      };
+
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.SetAnnotations,
+          nodePath: "0",
+          value: annotations,
+        },
+      ]);
+
+      const node = doc.getNodeFromPath("0") as VirtualElement;
+      expect(annotations).to.eql(computeVirtScriptObject(node.annotations));
+
+      expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
+        `<div class="_5cd17222 _pub-5cd17222">blah</div>`
+      );
+    });
+
     it(`Can update existing annotations`, async () => {
       const { server } = await createMockHost({
         "/hello.pc": `<!--
@@ -133,7 +169,7 @@ describe(__filename + "#", () => {
       const node = doc.getNodeFromPath("0") as VirtualElement;
       const source = await doc.getSource();
       expect(source.getText().replace(/[\s\n]+/g, " ")).to.eq(
-        `<!-- @tags ["a","b"] @desc "Some description" @frame {width:100,height:100} --> <div>blah</div>`
+        `<!-- @tags ["a","b"] @desc "Some description" @frame {height: 100, width: 100} --> <div>blah</div>`
       );
       expect(annotations).to.eql(computeVirtScriptObject(node.annotations));
 

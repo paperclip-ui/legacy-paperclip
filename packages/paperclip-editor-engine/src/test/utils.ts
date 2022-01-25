@@ -22,7 +22,11 @@ export const createMockHost = async (graph: Record<string, string>) => {
   const server = createMockServer();
   const engine = createMockEngine(graph);
 
-  const host = await EditorHost.start(engine, server, new Logger(LogLevel.All));
+  const host = await EditorHost.start(
+    engine,
+    server,
+    new Logger(LogLevel.None)
+  );
 
   return { host, server, engine };
 };

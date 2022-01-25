@@ -3,11 +3,14 @@ import {
   Selection,
   TextEdit,
   TextEditor,
+  Range,
   TextDocumentChangeEvent,
   ViewColumn,
   window,
   workspace,
   TextDocument,
+  WorkspaceEdit,
+  Uri,
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
 import {
@@ -21,6 +24,7 @@ import * as pce from "@paperclip-ui/editor-engine/lib/core/crdt-document";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { wsAdapter } from "@paperclip-ui/common";
 import * as ws from "ws";
+import * as Automerge from "automerge";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -32,6 +36,7 @@ export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
   private _editorClient: EditorClient;
   private _remoteDocs: Record<string, pce.CRDTTextDocument> = {};
+  private _editing: Record<string, boolean> = {};
 
   constructor(
     private _windows: LiveWindowManager,
@@ -92,8 +97,6 @@ export class DocumentManager {
       return;
     }
 
-    console.log(`INSERT `, uri);
-
     const source = (this._remoteDocs[uri] = await this._editorClient
       .getDocuments()
       .open(uri)
@@ -106,26 +109,44 @@ export class DocumentManager {
     source.setText(e.getText().split(""), 0, source.getText().length);
 
     source.onSync((patch) => {
-      console.log("ON CHANGE", patch);
+      // don't bother syncing if the docs are identical
+      if (source.getText() === e.getText()) {
+        return;
+      }
+
+      // If not identical, then patch text editor doc to match CRDT doc since that is
+      // the source of truth
+      const syncEdits: TextEdit[] = getTextEditsFromPatch(e, patch);
+
+      const wsEdit = new WorkspaceEdit();
+      wsEdit.set(Uri.parse(uri), syncEdits);
+      workspace.applyEdit(wsEdit);
     });
   };
 
   private _onTextDocumentChange = async (event: TextDocumentChangeEvent) => {
     const uri = event.document.uri.toString();
-    if (isPaperclipResourceFile(uri)) {
-      const source = this._remoteDocs[uri];
-      const edits: pce.TextEdit[] = event.contentChanges.map((change) => {
-        return {
-          chars: change.text.split(""),
-          index: change.rangeOffset,
-          deleteCount: change.rangeLength,
-        };
-      });
-      console.log("file", uri, Object.keys(this._remoteDocs));
-
-      source.applyEdits(edits);
-      console.log("DocumentManager::_onDocumentChange");
+    if (!isPaperclipResourceFile(uri)) {
+      return;
     }
+    const source = this._remoteDocs[uri];
+
+    // This will happen on sync, so make sure we're not executing OTs on a doc
+    // where the transforms originally came from
+    if (event.document.getText() === source.getText()) {
+      return;
+    }
+
+    const edits: pce.TextEdit[] = event.contentChanges.map((change) => {
+      return {
+        chars: change.text.split(""),
+        index: change.rangeOffset,
+        deleteCount: change.rangeLength,
+      };
+    });
+
+    source.applyEdits(edits);
+    console.log("DocumentManager::_onDocumentChange");
   };
 
   private _onDesignServerStarted = (info: DesignServerStartedInfo) => {
@@ -133,21 +154,8 @@ export class DocumentManager {
       wsAdapter(new ws.WebSocket(`ws://localhost:${info.httpPort}/ws`))
     );
 
-    this._editorClient
-      .getDocuments()
-      .onDocumentSourceChanged(this._onDesignServerDocumentChange);
-
     workspace.onDidOpenTextDocument(this._onDidOpenTextDocument);
     workspace.textDocuments.forEach(this._onDidOpenTextDocument);
-  };
-
-  private _onDesignServerDocumentChange = async ({ uri, changes }) => {
-    // const doc = await this._editorClient.getDocuments().open(uri);
-    // const source = await doc.getSource();
-    // const vscodeDoc = await this._openDoc(uri);
-    // const changes = diff.parsePatch(
-    //   diff.createPatch("a.pc", vscodeDoc.getText(), source.getText())
-    // );
   };
 
   private _onRevealSourceRequested = async ({ textSource }: ExprSource) => {
@@ -179,23 +187,35 @@ export class DocumentManager {
       (await workspace.openTextDocument(stripFileProtocol(uri)))
     );
   };
-
-  // private _onPCSourceEdited = async ({
-  //   changes: changesByUri
-  // }: PCSourceEdited) => {
-  //   for (const uri in changesByUri) {
-  //     const changes = changesByUri[uri];
-  //     const filePath = URL.fileURLToPath(uri);
-  //     const doc = await workspace.openTextDocument(filePath);
-  //     const tedits = changes.map(change => {
-  //       return new TextEdit(
-  //         new Range(doc.positionAt(change.start), doc.positionAt(change.end)),
-  //         change.value
-  //       );
-  //     });
-  //     const wsEdit = new WorkspaceEdit();
-  //     wsEdit.set(Uri.parse(uri), tedits);
-  //     await workspace.applyEdit(wsEdit);
-  //   }
-  // };
 }
+
+const getTextEditsFromPatch = (doc: TextDocument, patch: Automerge.Patch) => {
+  const syncEdits: TextEdit[] = [];
+
+  const op = patch.diffs.props.text[Object.keys(patch.diffs.props.text)[0]];
+  if (op.type === "text") {
+    for (const edit of op.edits) {
+      if (edit.action === "multi-insert") {
+        syncEdits.push(
+          new TextEdit(
+            new Range(doc.positionAt(edit.index), doc.positionAt(edit.index)),
+            edit.values.join("")
+          )
+        );
+      } else if (edit.action === "remove") {
+        syncEdits.push(
+          new TextEdit(
+            new Range(
+              doc.positionAt(edit.index),
+              doc.positionAt(edit.index + edit.count)
+            ),
+            ""
+          )
+        );
+      } else {
+        throw new Error(`Dunno how to handle`);
+      }
+    }
+  }
+  return syncEdits;
+};

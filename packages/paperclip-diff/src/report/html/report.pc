@@ -198,7 +198,7 @@
 <hr export component as="Divider" />
 
 <!--
-  @frame { width: 810, height: 768, x: 233, y: -40 }
+  @frame { height: 538, title: "Something", width: 643, x: 752, y: 207 }
 -->
 <Report title="Frame title"
   subtitle={<a href="#">path/to/file.pc</a>}
