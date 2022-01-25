@@ -60,8 +60,6 @@ export class DocumentsManager {
       return;
     }
 
-    console.log(showAll);
-
     if (!showAll || showAll === this._showAll) {
       this._showAll = showAll;
       return;
