@@ -1,4 +1,5 @@
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
+import { timeStamp } from "console";
 import {
   Action,
   workspaceActions,
@@ -9,6 +10,8 @@ import { Store } from "../../base";
 import { ProjectManager } from "./project";
 
 export class DocumentsManager {
+  private _showAll: boolean;
+
   constructor(
     private _client: WorkspaceClient,
     private _projectManager: ProjectManager,
@@ -22,6 +25,8 @@ export class DocumentsManager {
     switch (action.type) {
       case workspaceActions.projectLoaded.type:
         return this._handleProjectLoaded();
+      case mainActions.locationChanged.type:
+        return this._maybeLoadAllDocuments();
     }
   }
 
@@ -49,18 +54,31 @@ export class DocumentsManager {
   private async _maybeLoadAllDocuments() {
     const mainProject = this._projectManager.getMainProject();
     const state = this._store.getState();
+    const showAll = state.designer.ui.query.showAll;
 
     if (!mainProject) {
       return;
     }
 
-    const docs = await mainProject.openAllPaperclipDocuments();
+    console.log(showAll);
 
-    const contents = {};
-    for (const doc of docs) {
-      contents[doc.uri] = doc.getContent();
+    if (!showAll || showAll === this._showAll) {
+      this._showAll = showAll;
+      return;
     }
 
-    this._store.dispatch(workspaceActions.allFramesLoaded(contents));
+    this._showAll = showAll;
+
+    try {
+      const docs = await mainProject.openAllPaperclipDocuments();
+      const contents = {};
+      for (const doc of docs) {
+        contents[doc.uri] = doc.getContent();
+      }
+
+      this._store.dispatch(workspaceActions.allFramesLoaded(contents));
+    } catch (e) {
+      console.error(e.stack);
+    }
   }
 }

@@ -27,7 +27,9 @@ export class PCDocument extends BaseDocument<LoadedPCData> {
 
   async load2() {
     try {
-      return this._engine.open(this.uri) as LoadedPCData;
+      const ret =
+        this._engine.getLoadedData(this.uri) || this._engine.open(this.uri);
+      return ret as LoadedPCData;
     } catch (e) {
       this._logger.error(`Unable to open ${this.uri}`);
       return null;

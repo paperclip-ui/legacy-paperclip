@@ -9,16 +9,6 @@ import {
 } from "../../../actions";
 import { Store } from "../../base";
 
-/*
-
-
-  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function* () {
-    yield call(popoutWindow.call, {
-      path: window.location.pathname + window.location.search,
-    });
-  });
-  */
-
 export class ProjectManager {
   private _mainProjectId: string;
   private _mainProject: Project;

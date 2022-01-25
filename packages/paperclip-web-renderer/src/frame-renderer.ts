@@ -307,7 +307,8 @@ export class FramesRenderer {
         child,
         this._domFactory,
         this._resolveUrl,
-        null
+        null,
+        false
       );
       this._framesProxy.appendChild(childNode);
     }

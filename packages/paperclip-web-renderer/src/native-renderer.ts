@@ -128,9 +128,13 @@ export const createNativeStyleFromSheet = (
 ) => {
   const nativeElement = factory.createElement("style") as HTMLStyleElement;
 
-  // fix case where certain rules are invalid - e.g: &:within(:not(.on)) does some
-  // funny stuff.
-  const ruleTexts = sheet.rules
+  nativeElement.textContent = renderSheetText(sheet, resolveUrl);
+
+  return nativeElement as HTMLStyleElement;
+};
+
+export const renderSheetText = (sheet, resolveUrl: UrlResolver) => {
+  return sheet.rules
     .map((rule) => stringifyCSSRule(rule, { resolveUrl }))
     .map((text) => {
       // OOF! This is expensive! This should be done in the rust engine instead. Not here!
@@ -140,11 +144,8 @@ export const createNativeStyleFromSheet = (
       //   console.error(`invalid CSS rule: ${text}`);
       // }
       return isValid ? text : ".invalid-rule { }";
-    });
-
-  nativeElement.textContent = ruleTexts.join("\n");
-
-  return nativeElement as HTMLStyleElement;
+    })
+    .join("\n");
 };
 
 const createNativeTextNode = (node, factory: DOMFactory) => {

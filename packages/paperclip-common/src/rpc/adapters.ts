@@ -148,10 +148,10 @@ export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
 
   if (ws.on) {
     ws.on("open", em.emit.bind(em, "open"));
-    ws.on("message", em.emit.bind(em, "message"));
+    ws.on("message", (message) => em.emit("message", mpack.decode(message)));
   } else {
     ws.onopen = () => em.emit("open");
-    ws.onmessage = (event) => em.emit("message", event.data);
+    ws.onmessage = (event) => em.emit("message", mpack.decode(event.data));
   }
 
   const send = (message) => {
@@ -171,11 +171,8 @@ export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
   return {
     onDisconnect(listener: () => void) {},
     onMessage(listener: (message: any) => void) {
-      const listener2 = (data) => {
-        listener(mpack.decode(data));
-      };
-      em.on("message", listener2);
-      return () => em.off("message", listener2);
+      em.on("message", listener);
+      return () => em.off("message", listener);
     },
     send,
   };

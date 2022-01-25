@@ -6,6 +6,7 @@ import { DocumentsManager } from "./managers/documents";
 import { PaperclipEngineManager } from "./managers/paperclip-engine";
 import { ProjectManager } from "./managers/project";
 import { EditManager } from "./managers/edit";
+import { MainDocumentManager } from "./managers/main-document";
 
 const createDefaultRPCClient = () =>
   wsAdapter(new WebSocket("ws://" + location.host + "/ws"));
@@ -19,6 +20,7 @@ class WorkspaceEngine {
   private _paperclip: PaperclipEngineManager;
   private _project: ProjectManager;
   private _edits: EditManager;
+  private _mainDocumentManager: MainDocumentManager;
 
   constructor(_store: Store, _options: WorkspaceEngineOptions) {
     const connection = (_options.createRPCClient || createDefaultRPCClient)();
@@ -27,6 +29,7 @@ class WorkspaceEngine {
 
     this._project = new ProjectManager(client, _store);
     this._documents = new DocumentsManager(client, this._project, _store);
+    this._mainDocumentManager = new MainDocumentManager(_store, this._project);
     this._paperclip = new PaperclipEngineManager(this._project, _store);
     this._edits = new EditManager(this._project, _store);
   }
@@ -36,6 +39,7 @@ class WorkspaceEngine {
     this._documents.handleAction(action);
     this._paperclip.handleAction(action);
     this._edits.handleAction(action);
+    this._mainDocumentManager.handleAction(action);
   };
 }
 

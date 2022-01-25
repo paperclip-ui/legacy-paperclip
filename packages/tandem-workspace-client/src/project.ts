@@ -95,10 +95,11 @@ export class Project {
     const fileUris = await this._getAllPaperclipFiles.call({
       projectId: this._properties.id,
     });
-    const docs: PCDocument[] = [];
-    for (const uri of fileUris) {
-      docs.push(await this._editorClient.getDocuments().open(uri));
-    }
+    const docs: PCDocument[] = await Promise.all(
+      fileUris.map((uri) => {
+        return this._editorClient.getDocuments().open(uri);
+      })
+    );
     return docs;
   }
 }

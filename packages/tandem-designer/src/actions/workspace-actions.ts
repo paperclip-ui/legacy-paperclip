@@ -5,6 +5,7 @@ import { actionCreators, ExtractJoinedActionFromCreators } from "./util";
 
 export const workspaceActions = actionCreators(
   {
+    framesLoaded: (payload: { uri: string; content: LoadedPCData }) => payload,
     allFramesLoaded: (documents: Record<string, LoadedPCData>) => documents,
     projectLoaded: (project: ProjectProperties) => project,
     pcContentUpdated: (payload: { uri: string; content: PCDocumentContent }) =>

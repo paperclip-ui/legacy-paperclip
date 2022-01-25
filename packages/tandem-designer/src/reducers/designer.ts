@@ -378,6 +378,14 @@ export const reduceDesigner = (
       designer = maybeCenterCanvas(designer);
       return designer;
     }
+    case workspaceActions.framesLoaded.type: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.allLoadedPCFileData[action.payload.uri] =
+          action.payload.content;
+      });
+      designer = maybeCenterCanvas(designer);
+      return designer;
+    }
     case workspaceActions.projectLoaded.type: {
       return produce(designer, (newDesigner) => {
         const { directoryUri, directoryPath } = action.payload;

@@ -18,6 +18,7 @@ import { Box, DOMFactory } from "./base";
 import {
   createNativeNode,
   createNativeStyleFromSheet,
+  renderSheetText,
   UrlResolver,
 } from "./native-renderer";
 import { getFrameBounds, traverseNativeNode } from "./utils";
@@ -247,12 +248,21 @@ const patchDocumentSheet = (
   options: RenderFrameOptions
 ) => {
   const styleContainer = frame.childNodes[DOC_STYLE_INDEX] as HTMLDivElement;
-  patchCSSStyleSheet(
-    (styleContainer.childNodes[0] as HTMLStyleElement).sheet,
-    previousData.sheet,
-    newData.sheet,
-    options
-  );
+  const styleElement = styleContainer.childNodes[0] as HTMLStyleElement;
+  patchStyleElement(styleElement, previousData.sheet, newData.sheet, options);
+};
+
+const patchStyleElement = (
+  styleElement: HTMLStyleElement,
+  prevSheet: VirtSheet,
+  newSheet: VirtSheet,
+  options: RenderFrameOptions
+) => {
+  if (styleElement.sheet) {
+    patchCSSStyleSheet(styleElement.sheet, prevSheet, newSheet, options);
+  } else {
+    styleElement.textContent = renderSheetText(newSheet, options.resolveUrl);
+  }
 };
 
 const calcAryPatch = <TItem>(oldItems: TItem[], newItems: TItem[]) => {
@@ -283,8 +293,8 @@ const patchImportedSheets = (
   for (let i = 0; i < update.length; i++) {
     const [oldItem, newItem] = update[i];
     if (oldItem !== newItem) {
-      patchCSSStyleSheet(
-        (styleContainer.childNodes[i] as HTMLStyleElement).sheet,
+      patchStyleElement(
+        styleContainer.childNodes[i] as HTMLStyleElement,
         oldItem.sheet,
         newItem.sheet,
         options
