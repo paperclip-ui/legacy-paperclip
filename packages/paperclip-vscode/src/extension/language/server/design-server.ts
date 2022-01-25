@@ -17,7 +17,6 @@ import { DesignServerStartedInfo } from "../../channels";
 export class PaperclipDesignServer {
   private _workspace: Workspace;
   private _project: Project;
-  private _latestDocuments: Record<string, string>;
   private _server: Server;
   private _port: number;
   private _em: EventEmitter;
@@ -66,36 +65,4 @@ export class PaperclipDesignServer {
   private _revealSource = (source: ExprSource) => {
     this._em.emit("revealSourceRequest", source);
   };
-
-  // private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {
-  //   // this will happen if text document is open on vscode open
-  //   if (!this._project) {
-  //     return;
-  //   }
-  //   this._project.updatePCContent(uri, content);
-  // };
-  // private _onTextDocumentChanged = ({ uri, content }: TextDocumentChanged) => {
-  //   if (!this._project) {
-  //     return;
-  //   }
-
-  //   this._latestDocuments = {
-  //     [uri]: content,
-  //   };
-
-  //   // throttle for updating doc to ensure that the engine doesn't
-  //   // get flooded
-  //   setTimeout(() => {
-  //     const changes = this._latestDocuments;
-  //     this._latestDocuments = {};
-  //     for (const uri in changes) {
-  //       this._project.updatePCContent(uri, changes[uri]);
-  //     }
-  //   }, UPDATE_THROTTLE);
-  // };
-
-  // handleEvent = eventHandlers({
-  //   [TextDocumentOpened.TYPE]: this._onTextDocumentOpened,
-  //   [TextDocumentChanged.TYPE]: this._onTextDocumentChanged,
-  // });
 }

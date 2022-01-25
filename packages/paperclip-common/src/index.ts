@@ -7,3 +7,4 @@ export * from "./kernel";
 export * from "./rpc";
 export * from "./em";
 export * from "./log";
+export * from "./promise";

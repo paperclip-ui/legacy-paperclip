@@ -69,6 +69,9 @@ export class PaperclipLanguageService {
   }
 
   private _collectASTInfo(uri: string) {
+    if (!this._engine.getLoadedData(uri)) {
+      this._engine.open(uri);
+    }
     return collectASTInfo(
       uri,
       this._engine.getLoadedGraph(),

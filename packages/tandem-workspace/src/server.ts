@@ -1,5 +1,4 @@
 import { startHTTPServer } from "@tandem-ui/common";
-import * as url from "url";
 import { SSHKeys } from "./controllers/ssh";
 import * as http from "http";
 import { Workspace } from "./controllers/workspace";
@@ -14,7 +13,7 @@ import {
   EngineMode,
 } from "@paperclip-ui/core";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
-import { Logger, wsAdapter, wsServerAdapter } from "@paperclip-ui/common";
+import { Logger, wsServerAdapter } from "@paperclip-ui/common";
 import { RPC } from "./controllers/rpc";
 import { Designer } from "./controllers/designer";
 

@@ -19,6 +19,7 @@ import {
   CompletionParams,
 } from "vscode-languageserver";
 import * as fs from "fs";
+import { deferPromise } from "@paperclip-ui/common";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "@paperclip-ui/language-service";
 import { fixFileUrlCasing } from "../../utils";
@@ -30,7 +31,8 @@ import { DesignServerStartedInfo } from "../../channels";
 import { LintInfo } from "@paperclip-ui/language-service/src/error-service";
 
 export class LanguageRequestResolver {
-  private _service: PaperclipLanguageService;
+  private _resolveService: (service: PaperclipLanguageService) => void;
+  private _service: Promise<PaperclipLanguageService>;
   private _listening: boolean;
 
   constructor(
@@ -38,15 +40,17 @@ export class LanguageRequestResolver {
     private _connection: Connection,
     private _documents: DocumentManager
   ) {
+    [this._service, this._resolveService] = deferPromise();
     this._designServer.onStarted(this._onDesignServerStarted);
     this._listen();
   }
 
   private _onDesignServerStarted = (options: DesignServerStartedInfo) => {
-    this._service = new PaperclipLanguageService(
+    const service = new PaperclipLanguageService(
       this._designServer.getEngine()
     );
-    this._service.onLinted(this._onLinted);
+    this._resolveService(service);
+    service.onLinted(this._onLinted);
   };
 
   private _listen() {
@@ -116,15 +120,17 @@ export class LanguageRequestResolver {
   private _onDocumentColorRequest = async (params: DocumentColorParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
-    return this._service.getDocumentColors(uri).map(({ value, start, end }) => {
-      return {
-        range: {
-          start: document.positionAt(start),
-          end: document.positionAt(end),
-        },
-        color: value,
-      };
-    });
+    return (await this._service)
+      .getDocumentColors(uri)
+      .map(({ value, start, end }) => {
+        return {
+          range: {
+            start: document.positionAt(start),
+            end: document.positionAt(end),
+          },
+          color: value,
+        };
+      });
   };
 
   private _onCompletionResolveRequest = async (item) => {
@@ -134,7 +140,7 @@ export class LanguageRequestResolver {
   private _onCompletionRequest = async (params: CompletionParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
-    const items = this._service.getAutoCompletionSuggestions(
+    const items = (await this._service).getAutoCompletionSuggestions(
       uri,
       document.offsetAt(params.position)
     );
@@ -146,7 +152,7 @@ export class LanguageRequestResolver {
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
 
-    const info = this._service
+    const info = (await this._service)
       .getDefinitions(uri)
       .filter((info) => {
         const offset = document.offsetAt(params.position);
@@ -202,7 +208,7 @@ export class LanguageRequestResolver {
   private _onDocumentLinkRequest = async (params: DocumentLinkParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
-    return this._service
+    return (await this._service)
       .getLinks(uri)
       .map(({ uri, range: { start, end } }) => ({
         target: uri,

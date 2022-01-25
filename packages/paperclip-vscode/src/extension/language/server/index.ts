@@ -10,13 +10,13 @@ import { languageClientRPCAdapter } from "../../rpc";
 export class PaperclipLanguageServer {
   constructor() {
     const connection = createConnection(ProposedFeatures.all);
-    const documents = new DocumentManager();
     const designServer = new PaperclipDesignServer();
+    const documents = new DocumentManager(designServer);
 
     const connectionManager = new PaperclipLanguageServerConnectionManager(
       designServer,
-      documents,
       connection,
+      documents,
       {}
     );
 

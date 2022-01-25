@@ -41,7 +41,6 @@ export class PaperclipLanguageClient implements Disposable {
     const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
     const serverOptions: ServerOptions = {
       run: { module: serverPath, transport: TransportKind.ipc },
-
       debug: {
         module: serverPath,
         transport: TransportKind.ipc,
