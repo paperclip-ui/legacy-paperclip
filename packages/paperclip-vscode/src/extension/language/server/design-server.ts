@@ -8,13 +8,11 @@ import {
   Project,
   Server,
 } from "@tandem-ui/workspace/lib/server";
+import { LogLevel } from "@paperclip-ui/common";
 import { ExprSource } from "@paperclip-ui/utils";
-import { LogLevel } from "@tandem-ui/common";
 import { EventEmitter } from "events";
-import { DesignServerStartedInfo, revealSourceChannel } from "../../channels";
 import { createListener } from "../../utils";
-
-const UPDATE_THROTTLE = 10;
+import { DesignServerStartedInfo } from "../../channels";
 
 export class PaperclipDesignServer {
   private _workspace: Workspace;
