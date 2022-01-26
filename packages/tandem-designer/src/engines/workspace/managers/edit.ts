@@ -16,9 +16,20 @@ export class EditManager {
       case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING:
       case ActionType.FRAME_TITLE_CHANGED:
       case ActionType.GLOBAL_H_KEY_DOWN: {
-        return this._updateNodeAnnotations();
+        this._updateNodeAnnotations();
+        break;
       }
     }
+
+    // switch (action.type) {
+    //   case ActionType.RESIZER_STOPPED_MOVING:
+    //   case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING:
+    //   case ActionType.FRAME_TITLE_CHANGED:
+    //   case ActionType.GLOBAL_H_KEY_DOWN: {
+    //     this._hideSelectedNode();
+    //     break;
+    //   }
+    // }
   }
 
   private async _updateNodeAnnotations() {

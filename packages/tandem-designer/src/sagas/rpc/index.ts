@@ -266,37 +266,37 @@ function* handleClientComunication(client) {
     }
   }
 
-  yield takeEvery(
-    [
-      ActionType.RESIZER_STOPPED_MOVING,
-      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
-      ActionType.FRAME_TITLE_CHANGED,
-      ActionType.GLOBAL_H_KEY_DOWN,
-    ],
-    function* () {
-      const state: AppState = yield select();
+  // yield takeEvery(
+  //   [
+  //     ActionType.RESIZER_STOPPED_MOVING,
+  //     ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
+  //     ActionType.FRAME_TITLE_CHANGED,
+  //     ActionType.GLOBAL_H_KEY_DOWN,
+  //   ],
+  //   function* () {
+  //     const state: AppState = yield select();
 
-      yield call(
-        editPCSource2,
-        state.designer.selectedNodePaths
-          .map((info, i) => {
-            const frame = getFrameFromIndex(Number(info), state.designer);
-            if (!frame) {
-              return null;
-            }
-            return {
-              // may not exist if source is not returned in time for this edit
-              targetId: state.designer.selectedNodeSources[i]?.source.sourceId,
-              action: {
-                kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-                annotations: computeVirtScriptObject(frame.annotations),
-              },
-            };
-          })
-          .filter((v) => v?.targetId) as PCMutation[]
-      );
-    }
-  );
+  //     yield call(
+  //       editPCSource2,
+  //       state.designer.selectedNodePaths
+  //         .map((info, i) => {
+  //           const frame = getFrameFromIndex(Number(info), state.designer);
+  //           if (!frame) {
+  //             return null;
+  //           }
+  //           return {
+  //             // may not exist if source is not returned in time for this edit
+  //             targetId: state.designer.selectedNodeSources[i]?.source.sourceId,
+  //             action: {
+  //               kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+  //               annotations: computeVirtScriptObject(frame.annotations),
+  //             },
+  //           };
+  //         })
+  //         .filter((v) => v?.targetId) as PCMutation[]
+  //     );
+  //   }
+  // );
 
   function* editPCSource2(mutations: PCMutation[]) {
     const changes = yield call(editPCSource.call, mutations);

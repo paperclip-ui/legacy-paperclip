@@ -404,18 +404,25 @@ export const reduceDesigner = (
         newDesigner.allLoadedPCFileData[action.payload.uri] =
           action.payload.content;
 
-        newDesigner.selectedNodePaths = newDesigner.selectedNodePaths.filter(
-          (nodePath) => {
-            return getNodeByPath(
-              nodePath,
-              (
-                newDesigner.allLoadedPCFileData[
-                  newDesigner.ui.query.canvasFile
-                ] as LoadedPCData
-              ).preview
-            );
+        for (
+          let i = 0, { length } = newDesigner.selectedNodePaths;
+          i < length;
+          i++
+        ) {
+          const node = getNodeByPath(
+            newDesigner.selectedNodePaths[i],
+            (
+              newDesigner.allLoadedPCFileData[
+                newDesigner.ui.query.canvasFile
+              ] as LoadedPCData
+            ).preview
+          );
+
+          if (!node) {
+            newDesigner.selectedNodePaths.splice(i, 1);
+            newDesigner.selectedNodeStyleInspections.splice(i, 1);
           }
-        );
+        }
       });
       return designer;
     }
@@ -741,6 +748,10 @@ export const reduceDesigner = (
               },
             })
           );
+
+          // remove boxes so that they don't appear on screen
+          delete newDesigner.frameBoxes[i];
+          newDesigner.selectedNodeStyleInspections = [];
         }
       });
     }

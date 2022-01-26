@@ -2,11 +2,13 @@ import {
   canvasMouseDown,
   canvasMouseMoved,
   canvasResized,
+  globalHKeyDown,
   rectsCaptured,
   workspaceActions,
 } from "..";
 import { createMock, DesignerMock } from "./utils";
 import { AppState } from "../state";
+import { createMockRPCServer } from "@paperclip-ui/common";
 
 describe(`With a basic project`, () => {
   let mock: DesignerMock;
@@ -60,16 +62,60 @@ describe(`With a basic project`, () => {
       expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0"]);
     });
 
+    test(`node is inspected`, () => {
+      expect(
+        mock.store.getState().designer.selectedNodeStyleInspections
+      ).toEqual([
+        {
+          styleRules: [],
+        },
+      ]);
+    });
+
     test(`Is deselected when the file is cleared`, async () => {
       expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0"]);
       const client = await mock.project
         .getDocuments()
         .open(mock.testServer.fixtureUris["test.pc"]);
       const source = await client.getSource();
+
+      // clear the doc
       source.applyEdits([
         { chars: [], index: 0, deleteCount: source.getText().length },
       ]);
+
+      // ensure that the element is no longer selected
       expect(mock.store.getState().designer.selectedNodePaths).toEqual([]);
+      expect(
+        mock.store.getState().designer.selectedNodeStyleInspections
+      ).toEqual([]);
+    });
+
+    test(`Can be hidden`, async () => {
+      expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0"]);
+      expect(
+        Object.keys(mock.store.getState().designer.frameBoxes).length
+      ).toEqual(1);
+      mock.store.dispatch(globalHKeyDown(null) as any);
+      const client = await mock.project
+        .getDocuments()
+        .open(mock.testServer.fixtureUris["test.pc"]);
+      const source = await client.getSource();
+      expect(source.getText().replace(/\n/g, " ")).toEqual(
+        `<!-- @frame {visible: false} -->Hello world`
+      );
+
+      // assert is deselected
+      expect(mock.store.getState().designer.selectedNodePaths).toEqual([]);
+
+      // ensure that box is removed so that it doesn't appear in canvas
+      expect(
+        Object.keys(mock.store.getState().designer.frameBoxes).length
+      ).toEqual(0);
+
+      expect(
+        mock.store.getState().designer.selectedNodeStyleInspections
+      ).toEqual([]);
     });
   });
 
