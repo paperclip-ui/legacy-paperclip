@@ -24,6 +24,7 @@ import {
   FSItemKind,
   flattenFrameBoxes,
   getCurrentPreview,
+  getScaledPoint,
 } from "../state";
 import { produce } from "immer";
 import { compare, applyPatch } from "fast-json-patch";
@@ -405,16 +406,6 @@ export const reduceDesigner = (
 
         newDesigner.selectedNodePaths = newDesigner.selectedNodePaths.filter(
           (nodePath) => {
-            console.log(
-              getNodeByPath(
-                nodePath,
-                (
-                  newDesigner.allLoadedPCFileData[
-                    newDesigner.ui.query.canvasFile
-                  ] as LoadedPCData
-                ).preview
-              )
-            );
             return getNodeByPath(
               nodePath,
               (
@@ -587,6 +578,7 @@ export const reduceDesigner = (
       if (designer.resizerMoving) {
         return designer;
       }
+
       if (!designer.canvas.transform.x || !designer.canvas.mousePosition?.x) {
         return designer;
       }
@@ -610,6 +602,7 @@ export const reduceDesigner = (
         ),
         isExpanded(designer) ? getActiveFrameIndex(designer) : null
       )?.nodePath;
+
       return selectNode(
         nodePath,
         action.payload.shiftKey,

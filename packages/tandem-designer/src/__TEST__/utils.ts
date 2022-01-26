@@ -1,9 +1,12 @@
 import * as URL from "url";
-import { createTestServer } from "@tandem-ui/workspace/src/test/utils";
+import {
+  createTestServer,
+  TestServer,
+} from "@tandem-ui/workspace/src/test/utils";
 import { createMemoryHistory } from "history";
 import { createAppStore } from "../components/Main/create-app-store";
-import { Store } from "redux";
 import { Action } from "..";
+import { Project } from "@tandem-ui/workspace-client/lib/project";
 
 export const middlewareSpy = () => {
   let waitType;
@@ -38,6 +41,8 @@ export type DesignerMock = {
   store: ReturnType<typeof createAppStore>;
   waitForAction: (type: string) => Promise<Action>;
   dispose: () => void;
+  testServer: TestServer;
+  project: Project;
 };
 
 export const createMock = async ({
@@ -50,6 +55,7 @@ export const createMock = async ({
   const project = await client.openProject({
     uri: URL.pathToFileURL(testServer.testDir).href,
   });
+
   const history = createMemoryHistory();
   history.push(
     `?projectId=${project.getProperties().id}&canvasFile=${encodeURIComponent(
@@ -71,5 +77,5 @@ export const createMock = async ({
     testServer.stop();
   };
 
-  return { store, waitForAction, dispose };
+  return { store, waitForAction, dispose, testServer, project };
 };

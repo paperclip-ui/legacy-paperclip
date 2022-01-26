@@ -35,7 +35,6 @@ export const createTestServer = async (
 
   const createConnection = () => {
     return mockServer.createConnection();
-    // return wsAdapter(new ws.WebSocket(`ws://127.0.0.1:${server.getPort()}/ws`));
   };
   return {
     testDir: fixtures.testDir,
