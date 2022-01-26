@@ -48,14 +48,25 @@ export class Server {
   }
   async start() {
     this._logger.info(`Workspace started 🚀`);
-    const httpPort = (this._port =
-      this.options.http?.port || (await getPort()));
-    const [expressServer, httpServer] = startHTTPServer(httpPort, this._logger);
+    let httpServer;
+    let expressServer;
+    let httpPort;
+
+    if (this.options.useHttpServer !== false) {
+      httpPort = this._port = this.options.http?.port || (await getPort());
+      [expressServer, httpServer] = startHTTPServer(httpPort, this._logger);
+      this._httpServer = httpServer;
+    }
+
     this._httpServer = httpServer;
+
     const vfs = new VFS(this.options.autoSave, this._logger);
 
-    const ws = new WebSocketServer({ path: "/ws", server: httpServer });
-    const sockServer = wsServerAdapter(ws);
+    let rpcServer = this.options.rpcServer;
+    if (!rpcServer) {
+      const ws = new WebSocketServer({ path: "/ws", server: httpServer });
+      rpcServer = wsServerAdapter(ws);
+    }
 
     const paperclipEngine = (this._engine = createEngineDelegate({
       mode: EngineMode.MultiFrame,
@@ -63,7 +74,7 @@ export class Server {
 
     const documentManager = await EditorHost.start(
       paperclipEngine,
-      sockServer,
+      rpcServer,
       this._logger
     );
 
@@ -78,11 +89,12 @@ export class Server {
       documentManager
     ));
 
-    new Designer(expressServer);
-
-    addRoutes(expressServer, this._logger, workspace);
+    if (expressServer) {
+      new Designer(expressServer);
+      addRoutes(expressServer, this._logger, workspace);
+    }
     new RPC(
-      sockServer,
+      rpcServer,
       workspace,
       paperclipEngine,
       vfs,
@@ -101,7 +113,9 @@ export class Server {
   }
 
   stop() {
-    this._httpServer.close();
+    if (this._httpServer) {
+      this._httpServer.close();
+    }
     this._workspace.dispose();
   }
 }

@@ -1,7 +1,7 @@
 import { spy } from "./spy";
 import { EventEmitter } from "events";
 import * as sockjs from "sockjs";
-import { WebSocket, WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
 import * as mpack from "@msgpack/msgpack";
 
 type Message = any;
@@ -148,7 +148,9 @@ export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
 
   if (ws.on) {
     ws.on("open", em.emit.bind(em, "open"));
-    ws.on("message", (message) => em.emit("message", mpack.decode(message)));
+    ws.on("message", (message) => {
+      em.emit("message", mpack.decode(message));
+    });
   } else {
     ws.onopen = () => em.emit("open");
     ws.onmessage = (event) => em.emit("message", mpack.decode(event.data));

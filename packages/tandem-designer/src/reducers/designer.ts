@@ -402,6 +402,29 @@ export const reduceDesigner = (
       designer = produce(designer, (newDesigner) => {
         newDesigner.allLoadedPCFileData[action.payload.uri] =
           action.payload.content;
+
+        newDesigner.selectedNodePaths = newDesigner.selectedNodePaths.filter(
+          (nodePath) => {
+            console.log(
+              getNodeByPath(
+                nodePath,
+                (
+                  newDesigner.allLoadedPCFileData[
+                    newDesigner.ui.query.canvasFile
+                  ] as LoadedPCData
+                ).preview
+              )
+            );
+            return getNodeByPath(
+              nodePath,
+              (
+                newDesigner.allLoadedPCFileData[
+                  newDesigner.ui.query.canvasFile
+                ] as LoadedPCData
+              ).preview
+            );
+          }
+        );
       });
       return designer;
     }

@@ -4,6 +4,7 @@
     "target": "es5",
     "moduleResolution": "node",
     "declaration": true,
+    "skipLibCheck": true,
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

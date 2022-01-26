@@ -1,4 +1,8 @@
-import { RPCClientAdapter, wsAdapter } from "@paperclip-ui/common";
+import {
+  RPCClientAdapter,
+  wsAdapter,
+  createMockRPCServer,
+} from "@paperclip-ui/common";
 import { saveTmpFixtureFiles } from "@paperclip-ui/common/lib/test-utils";
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
 import { mockDOMFactory } from "@paperclip-ui/web-renderer/lib/test/utils";
@@ -18,13 +22,20 @@ export const createTestServer = async (
   files: Record<string, string>
 ): Promise<TestServer> => {
   const fixtures = saveTmpFixtureFiles("fixtures", files, "/tmp/__TEST__");
+
+  const mockServer = createMockRPCServer();
+
   const server = await start({
-    logLevel: LogLevel.All,
+    logLevel: LogLevel.None,
     pause: false,
+    rpcServer: mockServer,
+    useHttpServer: false,
     project: { installDependencies: false },
   });
+
   const createConnection = () => {
-    return wsAdapter(new ws.WebSocket(`ws://127.0.0.1:${server.getPort()}/ws`));
+    return mockServer.createConnection();
+    // return wsAdapter(new ws.WebSocket(`ws://127.0.0.1:${server.getPort()}/ws`));
   };
   return {
     testDir: fixtures.testDir,
