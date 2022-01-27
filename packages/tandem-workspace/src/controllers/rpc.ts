@@ -1,11 +1,9 @@
 import { RPCClientAdapter, RPCServer } from "@paperclip-ui/common";
 import * as channels from "@tandem-ui/workspace-core/lib/channels";
-// import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
 import { Channel } from "@paperclip-ui/common";
 import { Workspace } from "./workspace";
 import { isPlainTextFile } from "@tandem-ui/common";
 import * as URL from "url";
-import * as path from "path";
 import * as fs from "fs";
 import {
   engineDelegateChanged,
@@ -15,7 +13,6 @@ import {
   VirtNodeSource,
 } from "@paperclip-ui/utils";
 import { VFS } from "./vfs";
-import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
 import { exec } from "child_process";
 import { Options } from "../core/options";
 import { Logger } from "@paperclip-ui/common";
