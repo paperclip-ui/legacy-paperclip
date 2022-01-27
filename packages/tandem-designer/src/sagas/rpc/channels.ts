@@ -1,3 +1,5 @@
+import { RPCClientAdapter } from "@paperclip-ui/common";
+import { inspectNodeStyleChannel } from "@tandem-ui/workspace-core/lib/channels";
 import {
   commitChangesChannel,
   editCodeChannel,
@@ -16,7 +18,7 @@ import { IConnection } from "./connection";
 
 export class Channels {
   readonly hello: ReturnType<typeof helloChannel>;
-  // readonly inspectNodeStyle: ReturnType<typeof inspectNodeStyleChannel>;
+  readonly inspectNodeStyle: ReturnType<typeof inspectNodeStyleChannel>;
   readonly revealNodeSource: ReturnType<typeof revealNodeSourceChannel>;
   readonly popoutWindow: ReturnType<typeof popoutWindowChannel>;
   readonly getAllScreens: ReturnType<typeof getAllScreensChannel>;
@@ -31,9 +33,9 @@ export class Channels {
   readonly events: ReturnType<typeof eventsChannel>;
   readonly editCode: ReturnType<typeof editCodeChannel>;
 
-  constructor(connection: IConnection) {
+  constructor(connection: RPCClientAdapter) {
     this.hello = helloChannel(connection);
-    // this.inspectNodeStyle = inspectNodeStyleChannel(connection);
+    this.inspectNodeStyle = inspectNodeStyleChannel(connection);
     this.revealNodeSource = revealNodeSourceChannel(connection);
     this.popoutWindow = popoutWindowChannel(connection);
     this.getAllScreens = getAllScreensChannel(connection);

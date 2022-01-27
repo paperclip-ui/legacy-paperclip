@@ -13,6 +13,9 @@ export class DesignerController {
     initDesigner({
       mount: this._mount,
       history: createMemoryHistory(),
+      createRPCClient: () => {
+        return this._workerParent.getWorkerConnection();
+      },
       showLaunchExternalButton: false,
       useLiteEditor: this._options.useLiteEditor !== false,
       showCodeToolbar: true,
@@ -23,7 +26,7 @@ export class DesignerController {
       activeFrame: this._options.activeFrame,
       rounded: true,
       codeEditorWidth: "200%",
-      createConnection: () => this._workerParent.getWorkerConnection()
+      createConnection: () => this._workerParent.getWorkerConnection(),
     });
   }
 }

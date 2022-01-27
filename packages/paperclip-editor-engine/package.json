@@ -18,7 +18,6 @@
     "fs-extra": "^10.0.0",
     "globby": "^8.0.1",
     "immer": "^9.0.12",
-    "paperclip-preview": "^1.0.0",
     "prettier-plugin-paperclip": "^18.4.7",
     "sockjs": "^0.3.24"
   },

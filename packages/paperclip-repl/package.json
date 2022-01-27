@@ -25,6 +25,8 @@
     "@paperclip-ui/compiler-react": "^18.4.7",
     "@paperclip-ui/core": "^18.4.7",
     "@tandem-ui/designer": "^18.4.7",
+    "constants-browserify": "^1.0.0",
+    "crypto-browserify": "^3.12.0",
     "history": "4.9.0",
     "paperclip-loader": "^18.4.7",
     "react": "^17.0.2",

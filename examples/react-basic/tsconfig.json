@@ -6,7 +6,6 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "declaration": true,
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
   },

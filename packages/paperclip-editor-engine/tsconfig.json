@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "declaration": true,
     "module": "commonjs",
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "strict": false /* Enable all strict type-checking options. */
   },

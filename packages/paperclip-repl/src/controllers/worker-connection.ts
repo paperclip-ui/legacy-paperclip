@@ -4,7 +4,7 @@ import { EventEmitter } from "events";
 export class WindowConnection implements IConnection {
   private _em: EventEmitter = new EventEmitter();
   constructor(private _worker: Worker | Window) {
-    _worker.onmessage = message => {
+    _worker.onmessage = (message) => {
       this._em.emit("message", message.data);
     };
   }
@@ -14,6 +14,9 @@ export class WindowConnection implements IConnection {
   onMessage(listener: (message: any) => void): () => void {
     this._em.on("message", listener);
     return () => this._em.off("message", listener);
+  }
+  onDisconnect() {
+    return () => {};
   }
   onOpen(listener: () => void): () => void {
     listener();

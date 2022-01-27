@@ -9,7 +9,9 @@ const DESIGNER_DIST_PATH = path.join(
 );
 
 // simple assertion - this must exist
-fs.lstatSync(path.join(DESIGNER_DIST_PATH, "index.html"));
+if (fs.lstatSync) {
+  fs.lstatSync(path.join(DESIGNER_DIST_PATH, "index.html"));
+}
 
 export class Designer {
   constructor(private _express: express.Express) {

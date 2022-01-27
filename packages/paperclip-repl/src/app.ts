@@ -1,3 +1,4 @@
+import { Server as WorkspaceServer } from "@tandem-ui/workspace/lib/server";
 import { ChannelHandler } from "./controllers/channel-handler";
 import { REPLChannels } from "./controllers/channels";
 import { DesignerController } from "./controllers/designer";
@@ -14,7 +15,6 @@ export type Options = {
 export class App {
   constructor(private _options: Options, private _mount: HTMLElement) {}
   init() {
-    console.log(this._options);
     const workerParent = new ParentController(this._options);
     const channels = new REPLChannels(workerParent.getWorkerConnection());
     new ChannelHandler(channels, this._options);

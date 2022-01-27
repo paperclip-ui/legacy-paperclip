@@ -6,7 +6,7 @@ import { EngineDelegate, EngineMode } from "../core";
 
 import { resolveImportUri, resolvePCConfig } from "@paperclip-ui/utils";
 
-const existsSyncCaseSensitive = uri => {
+const existsSyncCaseSensitive = (uri) => {
   const pathname = fileURLToPath(String(uri));
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
@@ -16,16 +16,16 @@ const existsSyncCaseSensitive = uri => {
   return fs.readdirSync(dir).includes(basename);
 };
 
-const getIOOptions = options => {
+const getIOOptions = (options) => {
   const resolveFile = resolveImportUri(fs);
   return Object.assign(
     {
-      readFile: uri => {
+      readFile: (uri) => {
         // eslint-disable-next-line
         // ts-ignore
         return fs.readFileSync(new URL(uri), "utf8");
       },
-      fileExists: uri => {
+      fileExists: (uri) => {
         try {
           // eslint-disable-next-line
           const url = new URL(uri);
@@ -43,7 +43,7 @@ const getIOOptions = options => {
         // TRUE boolean flag necessary here to resolve symlinks.
         return resolveFile(from, to);
       },
-      getLintConfig: uri => {
+      getLintConfig: (uri) => {
         const info = resolvePCConfig(fs)(uri);
         if (!info) {
           return null;
@@ -51,12 +51,12 @@ const getIOOptions = options => {
 
         return info[0].lintOptions;
       },
-      mode: EngineMode.SingleFrame
+      mode: EngineMode.SingleFrame,
     },
     options.io,
     {
       mode: options.mode,
-      includedUsedExpressions: options.includeUsedExpressions
+      includedUsedExpressions: options.includeUsedExpressions,
     }
   );
 };
@@ -69,14 +69,16 @@ export const createEngineDelegate = (options = {}, onCrash: any = () => {}) => {
     fileExists,
     resolveFile,
     getLintConfig,
-    mode = EngineMode.SingleFrame
+    mode = EngineMode.SingleFrame,
   } = io;
   return new EngineDelegate(
     NativeEngine.new(readFile, fileExists, resolveFile, getLintConfig, mode),
     io,
     onCrash ||
-      function(e) {
+      function (e) {
         console.error(e);
       }
   );
 };
+
+export const loadEngineDelegate = createEngineDelegate;

@@ -4,6 +4,7 @@
   "private": false,
   "description": "A hybrid approach to design & code",
   "main": "./index.js",
+  "browser": "./browser.js",
   "typings": "index.d.ts",
   "keywords": [
     "react",

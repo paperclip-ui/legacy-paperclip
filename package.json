@@ -18,7 +18,13 @@
     ],
     "nohoist": [
       "**/@docusaurus",
-      "**/@docusaurus/**"
+      "**/@docusaurus/**",
+      "**/jest",
+      "**/jest/**",
+      "**/mocha",
+      "**/mocha/**",
+      "**/@testing-library/jest-dom/**",
+      "**/@testing-library/jest-dom"
     ]
   },
   "devDependencies": {

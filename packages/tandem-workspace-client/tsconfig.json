@@ -6,7 +6,6 @@
     "declaration": true,
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": false /* Enable all strict type-checking options. */
   },

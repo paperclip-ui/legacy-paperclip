@@ -8,7 +8,7 @@ import { addRoutes } from "./routes";
 import { WebSocketServer } from "ws";
 import { VFS } from "./controllers/vfs";
 import {
-  createEngineDelegate,
+  loadEngineDelegate,
   EngineDelegate,
   EngineMode,
 } from "@paperclip-ui/core";
@@ -68,7 +68,7 @@ export class Server {
       rpcServer = wsServerAdapter(ws);
     }
 
-    const paperclipEngine = (this._engine = createEngineDelegate({
+    const paperclipEngine = (this._engine = await loadEngineDelegate({
       mode: EngineMode.MultiFrame,
     }));
 
