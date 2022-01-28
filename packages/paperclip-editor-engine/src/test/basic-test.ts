@@ -69,7 +69,7 @@ describe(__filename + "#", () => {
     const src2 = await doc2.getSource();
     src2.setText("222".split(""));
 
-    await timeout(10);
+    await timeout(200);
 
     expect(stringifyVirtualNode(doc1.getContent().preview)).to.eql(
       "222111Hello World"
