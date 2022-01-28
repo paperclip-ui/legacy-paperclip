@@ -3,9 +3,11 @@ import {
   combineFrameHTML,
   createMockEngine,
   createMockFramesRenderer,
+  mockDOMFactory,
 } from "./utils";
 import { expect } from "chai";
 import { FramesRenderer } from "../frame-renderer";
+import { patchFrames, renderFrames } from "..";
 
 describe(__filename, () => {
   [
@@ -97,7 +99,7 @@ describe(__filename, () => {
       ],
     ],
     [
-      "Can add new frams & still maintain styles",
+      "Can add new frames & still maintain styles",
 
       {
         "entry.pc": `
@@ -230,8 +232,7 @@ describe(__filename, () => {
 
       {
         "entry.pc": `
-          <import src="./test.css" inject-styles />
-          <div data />
+        <style> a { color: blue; } </style><span></span>
         `,
         "test.css": `
           div {
@@ -254,29 +255,206 @@ describe(__filename, () => {
         `<div><style>div._pub-2fedfe1a {color: blue;} </style></div><div><style></style></div><div><div class="_17bc3462 _pub-17bc3462 _pub-2fedfe1a"></div></div>`,
       ],
     ],
+    [
+      "Adds styles if import is added of module that is already loaded",
+
+      {
+        "entry.pc": `
+        <style> a { color: blue; } </style><span></span>
+        `,
+        "module.pc": `
+          <style> a { color: black; } </style>
+        `,
+      },
+      [
+        {
+          "entry.pc": `
+          <import src="./module.pc" /><style> a { color: blue; } </style><span></span>
+        `,
+        },
+        `<div><style>a._4b63e839 {color: black;} </style></div><div><style>a._17bc3462 {color: blue;} </style></div><div><span class="_17bc3462 _pub-17bc3462"></span></div>`,
+      ],
+    ],
+    [
+      "Adds styles from dependency dependency",
+
+      {
+        "entry.pc": `<style> a { color: blue; } </style>a`,
+        "module.pc": `<style> a { color: black; } </style>`,
+        "module2.pc": `<style> a { color: orange; } </style>`,
+      },
+      [
+        {
+          "entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
+          "module.pc": `<import src="./module2.pc" /><style> a { color: black; } </style>`,
+        },
+        `<div><style>a._44f59e80 {color: orange;} </style><style>a._4b63e839 {color: black;} </style></div><div><style>a._17bc3462 {color: blue;} </style></div><div><span class="_17bc3462 _pub-17bc3462"></span></div>`,
+      ],
+    ],
+    [
+      "removes styles",
+
+      {
+        "entry.pc": `<import src="./module-a.pc" />
+        <import src="./module-b.pc" />
+        <import src="./module-c.pc" />
+        <import src="./module-d.pc" />
+        a`,
+        "module-a.pc": `<style> a { color: a; } </style>`,
+        "module-b.pc": `<style> a { color: b; } </style>`,
+        "module-c.pc": `<style> a { color: c; } </style>`,
+        "module-d.pc": `<style> a { color: d; } </style>`,
+      },
+      [
+        {
+          "entry.pc": `
+          <import src="./module-b.pc" />
+          <import src="./module-d.pc" />a`,
+        },
+        `<div><style>a._dffa0c2f {color: b;} </style><style>a._fa9153f3 {color: d;} </style></div><div><style></style></div><div>a</div>`,
+      ],
+    ],
+    [
+      "Properly replaces elements",
+
+      {
+        "entry.pc": `<div export component as="StyledHeader" 
+        class="StyledHeader"
+        {onClick?}
+        > 
+      </div>
+      
+      <div export component as="Preview">
+        <StyledHeader {depth?} {open?}>
+        </StyledHeader>
+      </div>
+      
+      <preview noPadding>
+        <Preview>
+        </Preview>
+      
+        <StyledHeader open>
+          Content
+        </StyledHeader>
+      </preview>`,
+      },
+      [
+        {
+          "entry.pc": `<div export component as="StyledHeader" 
+          class="StyledHeader"
+          {onClick?}
+          > 
+        </div>
+      
+        <div export component as="Preview">
+          <StyledHeader {depth?} {open?}>
+          </StyledHeader>
+        </div>
+      
+        <preview noPadding>
+          <Preview header="Header">
+          </Preview>
+      
+          <Preview header="Header">
+            Content
+          </Preview>
+        </preview>`,
+        },
+        `<div></div><div><style></style></div><div><preview class="_17bc3462 _pub-17bc3462" noPadding="true"><div class="_17bc3462 _pub-17bc3462"><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div><div class="_17bc3462 _pub-17bc3462"><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div></preview></div>`,
+      ],
+    ],
+    [
+      "Doesn't remove previous class if set",
+
+      {
+        "entry.pc": `<span class="a">
+        </span>`,
+      },
+      [
+        {
+          "entry.pc": `<span class="a" class>
+          </span>`,
+        },
+        `<div></div><div><style></style></div><div><span class="true _17bc3462 _pub-17bc3462"></span></div>`,
+      ],
+      [
+        {
+          "entry.pc": `<span class:a="a" class="b">
+          </span>`,
+        },
+        `<div></div><div><style></style></div><div><span class="_17bc3462_b _pub-17bc3462_b b _17bc3462 _pub-17bc3462"></span></div>`,
+      ],
+    ],
+    [
+      "Properly replaces rule",
+
+      {
+        "entry.pc": `<style>
+        .a {
+          color: red;
+        }
+        .b {
+          color: orange;
+          @media screen and (max-width: 100px) {
+            color: blue;
+          }
+        }
+        @keyframes {
+          0% {
+            color: blue;
+          }
+          100% {
+            color: black;
+          }
+        }
+      </style>
+      <div></div>`,
+      },
+      [
+        {
+          "entry.pc": `<style>
+          .d {
+            color: orange;
+          }
+      </style>
+      <div></div>`,
+        },
+        `<div></div><div><style>[class]._17bc3462_d {color: orange;} </style></div><div><div class="_17bc3462 _pub-17bc3462"></div></div>`,
+      ],
+    ],
   ].forEach(([title, initial, ...changes]: any) => {
     it(title, async () => {
       const engine = createMockEngine(initial);
 
-      const renderer = createMockFramesRenderer("entry.pc");
-      engine.onEvent(renderer.handleEngineDelegateEvent);
-      renderer.initialize((await engine.open("entry.pc")) as LoadedPCData);
+      let frames = renderFrames(
+        (await engine.open("entry.pc")) as LoadedPCData,
+        { domFactory: mockDOMFactory }
+      );
 
       for (const [change, expectationSanityCheck] of changes) {
+        const prevData = engine.open("entry.pc") as LoadedPCData;
         for (const name in change) {
           await engine.updateVirtualFileContent(name, change[name]);
         }
 
-        const baseline = createMockFramesRenderer("entry.pc");
-        await baseline.initialize(
-          (await engine.open("entry.pc")) as LoadedPCData
+        const baselineFrames = renderFrames(
+          (await engine.open("entry.pc")) as LoadedPCData,
+          { domFactory: mockDOMFactory }
+        );
+        frames = patchFrames(
+          frames,
+          prevData,
+          engine.open("entry.pc") as LoadedPCData,
+          { domFactory: mockDOMFactory }
         );
 
-        expect(combineFrameHTML(baseline.getState())).to.eql(
-          expectationSanityCheck
+        const framesHTML = frames.map((frame) => frame.innerHTML).join("");
+
+        expect(framesHTML).to.eql(expectationSanityCheck);
+
+        expect(framesHTML).to.eql(
+          baselineFrames.map((frame) => frame.innerHTML).join("")
         );
-        const html = combineFrameHTML(renderer.getState());
-        expect(html).to.eql(combineFrameHTML(baseline.getState()));
       }
     });
   });

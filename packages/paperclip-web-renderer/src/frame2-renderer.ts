@@ -22,6 +22,8 @@ import {
   UrlResolver,
 } from "./native-renderer";
 import { getFrameBounds, traverseNativeNode } from "./utils";
+import { Html5Entities } from "html-entities";
+const entities = new Html5Entities();
 
 const IMP_STYLE_INDEX = 0;
 const DOC_STYLE_INDEX = 1;
@@ -387,7 +389,9 @@ const patchNode = (
         options
       );
     } else if (currVirtNode.kind === VirtualNodeKind.Text) {
-      (node as Text).nodeValue = currVirtNode.value;
+      (node as Text).nodeValue = entities.decode(
+        currVirtNode.value.replace(/[\s\r]+/g, " ")
+      );
     }
   }
 
@@ -411,7 +415,11 @@ const patchAttributes = (
   options: RenderFrameOptions
 ) => {
   for (const key in curr.attributes) {
-    node.setAttribute(key, curr.attributes[key]);
+    let value = curr.attributes[key];
+    if (key === "src" && options.resolveUrl) {
+      value = options.resolveUrl(value);
+    }
+    node.setAttribute(key, value);
   }
   for (const key in prev.attributes) {
     if (curr.attributes[key] == null) {
