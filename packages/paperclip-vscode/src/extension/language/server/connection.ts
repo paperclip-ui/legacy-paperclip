@@ -36,8 +36,6 @@ export class PaperclipLanguageServerConnectionManager {
     this._em = new EventEmitter();
   }
   activate() {
-    this._designServer.onRevealSourceRequest(() => {});
-
     this._connection.onInitialize(this._onConnectionInitialize);
     this._connection.onInitialized(this._onConnectionInitialized);
     this._connection.onDidOpenTextDocument(this._onDidOpenTextDocument);

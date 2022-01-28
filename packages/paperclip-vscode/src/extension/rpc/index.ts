@@ -20,6 +20,7 @@ export const languageClientRPCAdapter = (
       return createListener(em, "message", listener);
     },
     onDisconnect() {
+      // eslint-disable-next-line
       return () => {};
     },
   };

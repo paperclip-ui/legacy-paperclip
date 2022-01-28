@@ -1,8 +1,6 @@
-import { LoadedPCData } from "@paperclip-ui/utils";
 import { renderFrames } from "..";
 import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
 import { mockDOMFactory } from "./utils";
-import { expect } from "chai";
 
 describe(__filename, () => {
   [
@@ -255,11 +253,11 @@ describe(__filename, () => {
     it(title, async () => {
       const engine = createMockEngine(initial);
 
-      let baseline = renderFrames(engine.open("entry.pc"), {
-        domFactory: mockDOMFactory,
-      });
+      // let baseline = renderFrames(engine.open("entry.pc"), {
+      //   domFactory: mockDOMFactory,
+      // });
 
-      for (const [change, expectationSanityCheck] of changes) {
+      for (const [change] of changes) {
         for (const name in change) {
           await engine.updateVirtualFileContent(name, change[name]);
         }

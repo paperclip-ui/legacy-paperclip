@@ -1,6 +1,6 @@
 import { patchFrame, patchFrames, renderFrame, renderFrames } from "..";
 import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
-import { combineFrameHTML, mockDOMFactory } from "./utils";
+import { mockDOMFactory } from "./utils";
 import { expect } from "chai";
 
 describe(__filename + "#", () => {
@@ -260,7 +260,7 @@ describe(__filename + "#", () => {
   ].forEach(([title, ...graphs]: any) => {
     it(title, () => {
       const engine = createMockEngine(graphs[0]);
-      let data = engine.open("hello.pc");
+      const data = engine.open("hello.pc");
       let frames = renderFrames(data, { domFactory: mockDOMFactory });
       for (let i = 1; i < graphs.length; i++) {
         const graph = graphs[i];
