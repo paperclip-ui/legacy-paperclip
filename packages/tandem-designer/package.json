@@ -26,7 +26,6 @@
     "@paperclip-ui/web-renderer": "^18.4.7",
     "@tandem-ui/common": "^18.4.7",
     "@tandem-ui/design-system": "^18.4.7",
-    "@tandem-ui/workspace": "^18.4.7",
     "@tandem-ui/workspace-client": "18.4.7",
     "@uiw/react-codemirror": "^4.3.1",
     "automerge": "^1.0.1-preview.6",
