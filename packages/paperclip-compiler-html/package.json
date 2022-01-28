@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/compiler-html",
-  "version": "18.4.7",
+  "version": "18.5.0",
   "description": "HTML compiler for Paperclip",
   "main": "lib/index.js",
   "scripts": {
@@ -25,9 +25,9 @@
     "mocha": "^8.0.1"
   },
   "dependencies": {
-    "@paperclip-ui/compiler-base-jsx": "^18.4.7",
-    "@paperclip-ui/interim": "^18.4.7",
-    "@paperclip-ui/utils": "^18.4.7",
+    "@paperclip-ui/compiler-base-jsx": "^18.5.0",
+    "@paperclip-ui/interim": "^18.5.0",
+    "@paperclip-ui/utils": "^18.5.0",
     "lodash": "^4.17.21",
     "source-map": "^0.7.3"
   }

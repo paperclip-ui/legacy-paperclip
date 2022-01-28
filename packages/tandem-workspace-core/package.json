@@ -1,6 +1,6 @@
 {
   "name": "@tandem-ui/workspace-core",
-  "version": "18.4.7",
+  "version": "18.5.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@paperclip-ui/common": "^18.4.7",
-    "@paperclip-ui/core": "^18.4.7",
-    "@paperclip-ui/source-writer": "^18.4.7"
+    "@paperclip-ui/common": "^18.5.0",
+    "@paperclip-ui/core": "^18.5.0",
+    "@paperclip-ui/source-writer": "^18.5.0"
   }
 }
