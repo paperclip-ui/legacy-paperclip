@@ -1,4 +1,4 @@
-import { remoteChannel } from "@tandem-ui/common/lib/rpc";
+import { remoteChannel } from "@paperclip-ui/common/lib/rpc";
 import { ContentChange, PCMutation } from "@paperclip-ui/source-writer";
 import {
   NodeStyleInspection,
