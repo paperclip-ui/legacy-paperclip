@@ -92,22 +92,18 @@ export function* handleRPC({
 }
 
 function* handleProject(client: IConnection) {
-  const loadDirectory = loadDirectoryChannel(client);
-  const events = eventsChannel(client);
-  const commitChanges = commitChangesChannel(client);
-  const setBranch = setBranchChannel(client);
-  yield fork(handleProjectDirectory, loadDirectory);
-  yield fork(handleEngineEvents, events);
-  yield fork(handleClientComunication, client);
-  yield takeEvery(
-    ActionType.COMMIT_MESSAGE_ENTERED,
-    function* (event: CommitMessageEntered) {
-      yield call(handleCommitMessageEntered, event, commitChanges);
-    }
-  );
-  yield takeEvery(ActionType.BRANCH_CHANGED, function* (event: BranchChanged) {
-    yield call(handleBranchChanged, event, setBranch);
-  });
+  // yield fork(handleProjectDirectory, loadDirectory);
+  // yield fork(handleEngineEvents, events);
+  // yield fork(handleClientComunication, client);
+  // yield takeEvery(
+  //   ActionType.COMMIT_MESSAGE_ENTERED,
+  //   function* (event: CommitMessageEntered) {
+  //     yield call(handleCommitMessageEntered, event, commitChanges);
+  //   }
+  // );
+  // yield takeEvery(ActionType.BRANCH_CHANGED, function* (event: BranchChanged) {
+  //   yield call(handleBranchChanged, event, setBranch);
+  // });
 }
 
 function* handleEngineEvents(events: ReturnType<typeof eventsChannel>) {

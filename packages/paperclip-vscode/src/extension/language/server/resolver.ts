@@ -34,6 +34,8 @@ export class LanguageRequestResolver {
   private _resolveService: (service: PaperclipLanguageService) => void;
   private _service: Promise<PaperclipLanguageService>;
   private _listening: boolean;
+  private _settingColor: boolean;
+  private _latestColor: [string, ColorPresentation];
 
   constructor(
     private _designServer: PaperclipDesignServer,
@@ -110,11 +112,28 @@ export class LanguageRequestResolver {
   ) => {
     const presentation = getColorPresentation(params.color, params.range);
     const uri = fixFileUrlCasing(params.textDocument.uri);
-
-    const { textEdit } = presentation;
-    this._documents.appleDocumentEdits(uri, [textEdit]);
-
+    this._applyColorPreview(uri, presentation);
     return [presentation];
+  };
+
+  private _applyColorPreview = (
+    uri: string,
+    presentation: ColorPresentation
+  ) => {
+    if (this._settingColor) {
+      this._latestColor = [uri, presentation];
+      return false;
+    }
+    this._settingColor = true;
+    this._documents.appleDocumentEdits(uri, [presentation.textEdit]);
+    setTimeout(() => {
+      this._settingColor = false;
+      if (this._latestColor) {
+        const [uri, presentation] = this._latestColor;
+        this._latestColor = null;
+        this._applyColorPreview(uri, presentation);
+      }
+    }, 50);
   };
 
   private _onDocumentColorRequest = async (params: DocumentColorParams) => {
