@@ -13,6 +13,7 @@ export enum VirtualobjectEditKind {
   // inserts a child into a parent element. This will happen
   // if there are no siblings to insert before
   AppendChild = "AppendChild",
+  DeleteNode = "DeleteNode",
 
   // TODO: needs to scan all documents where reference is used. Probably needs to use inferencing engine for this.
   RenameReferenceName = "RenameReferenceName",
@@ -81,6 +82,10 @@ export type AppendChild = {
   child: ChildInsertion;
 } & VirtualObjectBaseEdit<VirtualobjectEditKind.AppendChild>;
 
+export type DeleteNode = {
+  nodePath: string;
+} & VirtualObjectBaseEdit<VirtualobjectEditKind.DeleteNode>;
+
 /**
  */
 
@@ -89,5 +94,6 @@ export type VirtualObjectEdit =
   | AddAttribute
   | UpdateAttribute
   | SetTextNodeValue
+  | DeleteNode
   | SetAnnotations
   | AppendChild;

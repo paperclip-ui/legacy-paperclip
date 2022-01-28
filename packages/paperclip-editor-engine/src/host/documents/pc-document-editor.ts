@@ -8,13 +8,16 @@ import {
   InsertNodeBefore,
   ChildInsertionKind,
   ChildInsertion,
+  DeleteNode,
 } from "../../core";
 import { DocumentManager } from "./manager";
 import {
   Element,
   EngineDelegate,
   getNodeByPath,
+  getVirtTarget,
   isNode,
+  Comment,
   isScriptExpression,
   LoadedPCData,
   NodeKind,
@@ -22,8 +25,10 @@ import {
   ScriptExpressionKind,
   ScriptObject,
   VirtualElement,
+  VirtualText,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
+import { flatten } from "lodash";
 import { VirtualobjectEditKind } from "../../core";
 import { PCDocument } from "./pc";
 
@@ -40,9 +45,10 @@ export class PCDocumentEditor {
    */
 
   applyVirtualObjectEdits(originUri: string, edits: VirtualObjectEdit[]) {
-    const sourceEdits = edits.map(
-      mapVirtualSourceEdit(originUri, this._manager, this._engine)
+    const sourceEdits = flatten(
+      edits.map(mapVirtualSourceEdit(originUri, this._manager, this._engine))
     );
+
     const sourceEditsByDocument = {};
     for (const edit of sourceEdits) {
       if (!sourceEditsByDocument[edit.uri]) {
@@ -59,7 +65,7 @@ export class PCDocumentEditor {
 
 const mapVirtualSourceEdit =
   (uri: string, documents: DocumentManager, engine: EngineDelegate) =>
-  (edit: VirtualObjectEdit): DocumentTextEdit => {
+  (edit: VirtualObjectEdit): DocumentTextEdit | DocumentTextEdit[] => {
     switch (edit.kind) {
       case VirtualobjectEditKind.InsertNodeBefore:
         return insertNodeBefore(uri, engine, edit);
@@ -73,6 +79,8 @@ const mapVirtualSourceEdit =
         return updateAttribute(uri, engine, edit);
       case VirtualobjectEditKind.SetAnnotations:
         return setAnnotations(uri, engine, edit);
+      case VirtualobjectEditKind.DeleteNode:
+        return deleteNode(uri, engine, edit);
       default: {
         throw new Error(`Unhandled edit`);
       }
@@ -84,6 +92,47 @@ const getSourceNodeFromPath = (
   engine: EngineDelegate,
   path: string
 ) => engine.getVirtualNodeSourceInfo(path.split(".").map(Number), uri);
+
+const deleteNode = (
+  uri: string,
+  engine: EngineDelegate,
+  edit: DeleteNode
+): DocumentTextEdit[] => {
+  const nodePath = edit.nodePath.split(".").map(Number);
+
+  const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+
+  const edits: DocumentTextEdit[] = [
+    {
+      uri: info.textSource.uri,
+      chars: [],
+      index: info.textSource.range.start.pos,
+      deleteCount:
+        info.textSource.range.end.pos - info.textSource.range.start.pos,
+    },
+  ];
+
+  const virtTarget = getVirtTarget(
+    (engine.getLoadedData(uri) as LoadedPCData).preview,
+    nodePath
+  ) as VirtualElement | VirtualText;
+
+  // Delete annotations if present
+  if (virtTarget.annotations) {
+    const [annotationsUri, annotationsSource] = engine.getExpressionById(
+      virtTarget.annotations.sourceId
+    ) as [string, Comment];
+    edits.push({
+      uri: annotationsUri,
+      chars: [],
+      index: annotationsSource.range.start.pos,
+      deleteCount:
+        annotationsSource.range.end.pos - annotationsSource.range.start.pos,
+    });
+  }
+
+  return edits;
+};
 
 const insertNodeBefore = (
   uri: string,

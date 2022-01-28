@@ -10,37 +10,34 @@ module.exports = {
   themeConfig: {
     algolia: {
       apiKey: "692b36b7f6c2f8b247884702fc82e7c3",
-      indexName: "paperclip"
-    },
-    googleAnalytics: {
-      trackingID: "UA-173953110-1"
+      indexName: "paperclip",
     },
     prism: {
       theme: require("prism-react-renderer/themes/oceanicNext"),
-      additionalLanguages: ["php"]
+      additionalLanguages: ["php"],
     },
     navbar: {
       title: "Paperclip",
       logo: {
         alt: "Paperclip",
         src: "img/logo-color.svg",
-        srcDark: "img/logo-dark-2.svg"
+        srcDark: "img/logo-dark-2.svg",
       },
       items: [
         {
           to: "/docs/installation",
           label: "Get Started",
-          position: "left"
+          position: "left",
         },
         {
           label: "API",
           to: "/docs/usage-syntax",
-          position: "left"
+          position: "left",
         },
         {
           label: "Blog",
           to: "/blog",
-          position: "left"
+          position: "left",
         },
         // {
         //   label: "Playground",
@@ -61,9 +58,9 @@ module.exports = {
         {
           href: "https://github.com/paperclipui/paperclip",
           label: "GitHub",
-          position: "right"
-        }
-      ]
+          position: "right",
+        },
+      ],
     },
     footer: {
       style: "dark",
@@ -73,107 +70,78 @@ module.exports = {
           items: [
             {
               label: "Installation",
-              to: "docs/installation"
+              to: "docs/installation",
             },
             {
               label: "VS Code",
-              to: "docs/guide-vscode"
-            }
-          ]
+              to: "docs/guide-vscode",
+            },
+          ],
         },
         {
           title: "API",
           items: [
             {
               label: "Syntax",
-              to: "docs/usage-syntax"
+              to: "docs/usage-syntax",
             },
             {
               label: "React",
-              to: "docs/usage-react"
+              to: "docs/usage-react",
             },
             {
               label: "CLI",
-              to: "docs/usage-cli"
-            }
-          ]
+              to: "docs/usage-cli",
+            },
+          ],
         },
         {
           title: "Integrations",
           items: [
             {
               label: "Percy",
-              to: "docs/configure-percy"
+              to: "docs/configure-percy",
             },
             {
               label: "Webpack",
-              to: "docs/getting-started-webpack"
+              to: "docs/getting-started-webpack",
             },
             {
               label: "Jest",
-              to: "docs/configure-jest"
-            }
-          ]
+              to: "docs/configure-jest",
+            },
+          ],
         },
         {
           title: "More",
           items: [
             {
               label: "Help",
-              href: "https://chat.paperclip.dev"
+              href: "https://chat.paperclip.dev",
             },
             {
               href: "https://github.com/paperclipui/paperclip",
-              label: "GitHub"
+              label: "GitHub",
             },
             {
               href: "https://twitter.com/paperclipui",
-              label: "Twitter"
-            }
-          ]
-        }
-        // {
-        //   title: 'Community',
-        //   items: [
-        //     {
-        //       label: 'Stack Overflow',
-        //       href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-        //     },
-        //     {
-        //       label: 'Discord',
-        //       href: 'https://discordapp.com/invite/docusaurus',
-        //     },
-        //     {
-        //       label: 'Twitter',
-        //       href: 'https://twitter.com/docusaurus',
-        //     },
-        //   ],
-        // },
-        // {
-        //   title: 'More',
-        //   items: [
-        //     {
-        //       label: 'Blog',
-        //       to: 'blog',
-        //     },
-        //     {
-        //       label: 'GitHub',
-        //       href: 'https://github.com/paperclipui/paperclip',
-        //     },
-        //   ],
-        // },
+              label: "Twitter",
+            },
+          ],
+        },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Craig Condon`
+      copyright: `Copyright © ${new Date().getFullYear()} Craig Condon`,
     },
     colorMode: {
       defaultMode: "dark",
       disableSwitch: true,
-      respectPrefersColorScheme: true
-    }
+      respectPrefersColorScheme: true,
+    },
   },
   themes: [
-    require.resolve("./plugins/live-editor"),
-    require.resolve("./plugins/paperclip")
+    // TODO: turn back on when working again
+    // require.resolve("./plugins/live-editor"),
+    require.resolve("./plugins/paperclip"),
   ],
   presets: [
     [
@@ -184,7 +152,7 @@ module.exports = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:
-            "https://github.com/paperclipui/paperclip/edit/master/packages/paperclip-website/"
+            "https://github.com/paperclipui/paperclip/edit/master/packages/paperclip-website/",
         },
         // blog: {
         //   showReadingTime: true,
@@ -193,9 +161,12 @@ module.exports = {
         //     'https://github.com/facebook/docusaurus/edit/master/website/blog/',
         // },
         theme: {
-          customCss: require.resolve("./src/css/custom.css")
-        }
-      }
-    ]
-  ]
+          customCss: require.resolve("./src/css/custom.css"),
+        },
+        googleAnalytics: {
+          trackingID: "UA-173953110-1",
+        },
+      },
+    ],
+  ],
 };

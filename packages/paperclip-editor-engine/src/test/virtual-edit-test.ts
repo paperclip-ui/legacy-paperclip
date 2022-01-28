@@ -360,6 +360,47 @@ describe(__filename + "#", () => {
         `<div class="_5cd17222 _pub-5cd17222"><a class="_5cd17222 _pub-5cd17222"></a><b class="_5cd17222 _pub-5cd17222"></b></div>`
       );
     });
+    it(`Can remove a node`, async () => {
+      const { server } = await createMockHost({
+        "/hello.pc": `a<span />b`,
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.getDocuments().open("/hello.pc");
+      const source = await doc.getSource();
+      expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
+        `a<span class="_5cd17222 _pub-5cd17222"></span>b`
+      );
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.DeleteNode,
+          nodePath: "1",
+        },
+      ]);
+
+      expect(source.getText()).to.eql(`ab`);
+    });
+
+    it(`When removing a node, the annotations are also removed if present`, async () => {
+      const { server } = await createMockHost({
+        "/hello.pc": `<!-- @frame { visible: false } -->node<span />`,
+      });
+      const client = server.createHostClient();
+
+      const doc = await client.getDocuments().open("/hello.pc");
+      const source = await doc.getSource();
+      expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
+        `node<span class="_5cd17222 _pub-5cd17222"></span>`
+      );
+      doc.editVirtualObjects([
+        {
+          kind: VirtualobjectEditKind.DeleteNode,
+          nodePath: "0",
+        },
+      ]);
+
+      expect(source.getText()).to.eql(`<span />`);
+    });
     xit(`Annotations don't add extra whitespace when edited`);
 
     // Need to ensure that we're not out of range

@@ -2,6 +2,7 @@ import {
   canvasMouseDown,
   canvasMouseMoved,
   canvasResized,
+  globalBackspaceKeyPressed,
   globalHKeyDown,
   rectsCaptured,
   workspaceActions,
@@ -116,6 +117,27 @@ describe(`With a basic project`, () => {
       expect(
         mock.store.getState().designer.selectedNodeStyleInspections
       ).toEqual([]);
+    });
+
+    test(`Can be deleted`, async () => {
+      expect(mock.store.getState().designer.selectedNodePaths.length).toEqual(
+        1
+      );
+      expect(
+        mock.store.getState().designer.selectedNodeStyleInspections.length
+      ).toEqual(1);
+      mock.store.dispatch(globalBackspaceKeyPressed(null) as any);
+      const client = await mock.project
+        .getDocuments()
+        .open(mock.testServer.fixtureUris["test.pc"]);
+      const source = await client.getSource();
+      expect(source.getText().replace(/\n/g, " ")).toEqual(``);
+      expect(mock.store.getState().designer.selectedNodePaths.length).toEqual(
+        0
+      );
+      expect(
+        mock.store.getState().designer.selectedNodeStyleInspections.length
+      ).toEqual(0);
     });
   });
 

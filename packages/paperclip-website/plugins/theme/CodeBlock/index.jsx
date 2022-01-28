@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useMemo } from "react";
-import CodeBlock from "@theme-init/CodeBlock";
+// import CodeBlock from "@theme-init/CodeBlock";
 
 export default (props) => {
-  // const prismTheme = usePrismTheme();
-  // turned off for now until playground hooked up to this repo
   if (props.live) {
     return (
       <LiveEditor expanded={props.expanded !== "false"} {...props}>
@@ -12,7 +10,8 @@ export default (props) => {
     );
   }
 
-  return <CodeBlock {...props} />;
+  return <div></div>;
+  // return <CodeBlock {...props} />;
 };
 
 const LiveEditor = ({
@@ -47,19 +46,19 @@ const LiveEditor = ({
 
     Object.assign(mountRef.current.style, extStyle);
 
-    import("@paperclip-ui/repl/src/app").then((module) => {
-      const app = new module.App(
-        {
-          files: graph,
-          entry: Object.keys(graph)[0],
-          activeFrame: showAllFrames ? null : 0,
-          ...rest,
-        },
-        mountRef.current
-      );
+    // import("@paperclip-ui/repl/src/app").then((module) => {
+    //   const app = new module.App(
+    //     {
+    //       files: graph,
+    //       entry: Object.keys(graph)[0],
+    //       activeFrame: showAllFrames ? null : 0,
+    //       ...rest,
+    //     },
+    //     mountRef.current
+    //   );
 
-      app.init();
-    });
+    //   app.init();
+    // });
   }, [mountRef.current]);
 
   return <div ref={mountRef}></div>;
