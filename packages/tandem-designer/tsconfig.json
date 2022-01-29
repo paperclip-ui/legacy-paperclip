@@ -6,10 +6,16 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "declaration": true,
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
   },
-  "exclude": ["node_modules", "*-test", "lib", "index.d.ts", "test"],
+  "exclude": [
+    "node_modules",
+    "*-test",
+    "lib",
+    "index.d.ts",
+    "test",
+    "*.config.ts"
+  ],
   "filesGlob": ["./src/**/*.ts"]
 }

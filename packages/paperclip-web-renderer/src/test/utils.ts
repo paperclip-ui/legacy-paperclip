@@ -5,18 +5,27 @@ import { FramesRenderer } from "../frame-renderer";
 import { EngineMode } from "@paperclip-ui/core";
 import { identity } from "lodash";
 import * as CSSOM from "cssom";
+import { FramesRendererState } from "..";
 
 export const mockDOMFactory: DOMFactory = {
-  createElement: tagName => {
+  createElement: (tagName) => {
     if (tagName === "style") {
-      return (new StyleElement() as any) as HTMLElement;
+      return new StyleElement() as any as HTMLElement;
     }
 
-    return (new MockElement(tagName) as any) as HTMLElement;
+    return new MockElement(tagName) as any as HTMLElement;
   },
-  createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
-  createDocumentFragment: () => (new MockFragment() as any) as DocumentFragment,
-  createTextNode: nodeValue => (new MockTextNode(nodeValue) as any) as Text
+  createElementNS: (tagName) => new MockElement(tagName) as any as HTMLElement,
+  createDocumentFragment: () => new MockFragment() as any as DocumentFragment,
+  createTextNode: (nodeValue) => new MockTextNode(nodeValue) as any as Text,
+};
+
+export const combineFrameHTML = (state: FramesRendererState) => {
+  return state.frames.map((frame) => frame.stage.innerHTML).join("");
+};
+
+export const combineFrameHTML2 = (frames: HTMLElement[]) => {
+  return frames.map((frame) => frame.innerHTML).join("");
 };
 
 abstract class BaseNode {
@@ -40,13 +49,16 @@ abstract class ParentNode extends BaseNode {
   appendChild(child: BaseNode) {
     child.$$parent = this;
     if (child instanceof MockFragment) {
-      child.childNodes.forEach(child => {
+      child.childNodes.forEach((child) => {
         child.$$parent = this;
       });
       this.childNodes.push(...child.childNodes);
     } else {
       this.childNodes.push(child);
     }
+  }
+  get lastChild() {
+    return this.childNodes[this.childNodes.length - 1];
   }
   removeChild(child: BaseNode) {
     child.$$parent = null;
@@ -76,6 +88,7 @@ abstract class ParentNode extends BaseNode {
 class StyleElement extends ParentNode {
   private _textContent: string;
   private _sheet: CSSOM.StyleSheet;
+  private _attrs: Record<string, string> = {};
 
   get textContent() {
     return this._textContent;
@@ -86,6 +99,12 @@ class StyleElement extends ParentNode {
   }
   get sheet() {
     return this._sheet;
+  }
+  setAttribute(name, value) {
+    this._attrs[name] = value;
+  }
+  getAttribute(name, value) {
+    return this._attrs[name];
   }
   cloneNode() {
     const el = new StyleElement();
@@ -129,7 +148,7 @@ class MockElement extends ParentNode {
     let buffer = `<${this.tagName}`;
     const sortedAttributes = Object.keys(this.attributes)
       .sort()
-      .map(name => ({ name, value: this.attributes[name] }));
+      .map((name) => ({ name, value: this.attributes[name] }));
     for (const { name, value } of sortedAttributes) {
       if (!value) {
         continue;
@@ -179,9 +198,9 @@ export type Graph = {
 export const createMockEngine = (graph: Graph) =>
   createEngineDelegate({
     io: {
-      readFile: uri =>
+      readFile: (uri) =>
         graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
-      fileExists: uri =>
+      fileExists: (uri) =>
         Boolean(
           graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
         ),
@@ -194,8 +213,8 @@ export const createMockEngine = (graph: Graph) =>
             .join(path.dirname(from.replace("file://", "")), to)
             .replace(/\\+/g, "/")
         );
-      }
-    }
+      },
+    },
   });
 
 export const createMockEngineDelegate = (
@@ -204,9 +223,9 @@ export const createMockEngineDelegate = (
 ) =>
   createEngineDelegate({
     io: {
-      readFile: uri =>
+      readFile: (uri) =>
         graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
-      fileExists: uri => {
+      fileExists: (uri) => {
         return Boolean(
           graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
         );
@@ -220,9 +239,9 @@ export const createMockEngineDelegate = (
             .join(path.dirname(from.replace("file://", "")), to)
             .replace(/\\+/g, "/")
         );
-      }
+      },
     },
-    mode
+    mode,
   });
 
 export const createMockFramesRenderer = (

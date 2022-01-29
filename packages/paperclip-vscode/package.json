@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "18.4.7",
+  "version": "18.5.0",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "preview": true,
@@ -162,14 +162,14 @@
   },
   "dependencies": {
     "@paperclip-ui/autocomplete": "^18.4.7",
-    "@paperclip-ui/common": "^18.4.7",
-    "@paperclip-ui/core": "^18.4.7",
-    "@paperclip-ui/language-service": "^18.4.7",
-    "@paperclip-ui/source-writer": "^18.4.7",
-    "@paperclip-ui/utils": "^18.4.7",
-    "@paperclip-ui/web-renderer": "^18.4.7",
-    "@tandem-ui/designer": "^18.4.7",
-    "@tandem-ui/workspace": "^18.4.7",
+    "@paperclip-ui/common": "^18.5.0",
+    "@paperclip-ui/core": "^18.5.0",
+    "@paperclip-ui/language-service": "^18.5.0",
+    "@paperclip-ui/source-writer": "^18.5.0",
+    "@paperclip-ui/utils": "^18.5.0",
+    "@paperclip-ui/web-renderer": "^18.5.0",
+    "@tandem-ui/designer": "^18.5.0",
+    "@tandem-ui/workspace": "^18.5.0",
     "axios": "^0.21.1",
     "browserstack": "^1.6.1",
     "browserstack-local": "^1.4.8",
@@ -185,7 +185,8 @@
     "vscode-languageclient": "6.0.1",
     "vscode-languageserver": "6.0.1",
     "vscode-languageserver-protocol": "3.15.3",
-    "vscode-languageserver-textdocument": "^1.0.0"
+    "vscode-languageserver-textdocument": "^1.0.0",
+    "ws": "^8.4.2"
   },
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a"
 }

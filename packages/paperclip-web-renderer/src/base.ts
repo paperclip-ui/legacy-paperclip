@@ -4,3 +4,10 @@ export type DOMFactory = {
   createDocumentFragment(): DocumentFragment;
   createTextNode(value: string): Text;
 };
+
+export type Box = {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};

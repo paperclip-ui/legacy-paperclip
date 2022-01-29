@@ -1,4 +1,3 @@
-import SockJSClient from "sockjs-client";
 import { EventEmitter } from "events";
 
 export interface IConnection {
@@ -14,20 +13,9 @@ export class SockConnection implements IConnection {
   private _open: Promise<any>;
 
   constructor() {
-    this._open = new Promise(resolve => {
+    this._open = new Promise((resolve) => {
       this._events.on("open", resolve);
     });
-    const client = (this._client = new SockJSClient(
-      location.protocol + "//" + location.host + "/rt"
-    ));
-
-    client.onopen = () => {
-      this._events.emit("open");
-    };
-
-    client.onmessage = message => {
-      this._events.emit("message", JSON.parse(message.data));
-    };
   }
   async send(message: any) {
     await this._open;

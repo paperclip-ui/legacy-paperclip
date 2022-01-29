@@ -1,7 +1,8 @@
 import React from "react";
-import { withAppStore } from "../../hocs";
+import { Provider } from "react-redux";
 import { useAppStore } from "../../hooks/useAppStore";
 import { CodeMode } from "./CodeMode";
+import { createAppStore, CreateAppStoreOptions } from "./create-app-store";
 import { DesignMode } from "./DesignMode";
 import * as styles from "./index.pc";
 import { LeftSidebar } from "./LeftSidebar";
@@ -21,7 +22,7 @@ export const MainBase = () => {
       showLeftSidebar={showLeftSidebar}
       floatingPreview={floatingPreview}
       style={{
-        "--code-editor-width": state.designer.codeEditorWidth
+        "--code-editor-width": state.designer.codeEditorWidth,
       }}
     >
       {showFullEditor && showLeftSidebar !== false && <LeftSidebar />}
@@ -33,4 +34,13 @@ export const MainBase = () => {
   return content;
 };
 
-export const createMain = withAppStore(MainBase);
+export const createMain = (options: CreateAppStoreOptions) => {
+  const store = createAppStore(options);
+  return () => {
+    return (
+      <Provider store={store}>
+        <MainBase />
+      </Provider>
+    );
+  };
+};

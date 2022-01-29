@@ -26,7 +26,8 @@ export const patchNativeNode = (
           action.child,
           factory,
           resolveUrl,
-          target.namespaceURI
+          target.namespaceURI,
+          false
         );
         if (action.index >= target.childNodes.length) {
           target.appendChild(newChild);
@@ -42,7 +43,8 @@ export const patchNativeNode = (
             action.replacement,
             factory,
             resolveUrl,
-            parent.namespaceURI
+            parent.namespaceURI,
+            false
           ),
           target
         );

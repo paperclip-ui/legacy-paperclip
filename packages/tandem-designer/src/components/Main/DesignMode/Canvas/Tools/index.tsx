@@ -1,5 +1,9 @@
 import React, { useRef, useCallback } from "react";
-import { mergeBoxes, isExpanded } from "../../../../../state";
+import {
+  mergeBoxes,
+  isExpanded,
+  flattenFrameBoxes,
+} from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";
@@ -10,12 +14,12 @@ import { Frames } from "./Frames";
 import {
   LoadedPCData,
   VirtualFrame,
-  VirtualNodeKind
+  VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import {
   canvasMouseDown,
   canvasMouseLeave,
-  canvasMouseMoved
+  canvasMouseMoved,
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 
@@ -37,7 +41,7 @@ export const Tools = () => {
     virtualNode,
     toolsLayerEnabled,
     selectedNodePaths,
-    optionKeyDown
+    optionKeyDown,
   } = useTools();
 
   if (!virtualNode || !toolsLayerEnabled) {
@@ -71,7 +75,7 @@ export const Tools = () => {
           canvasTransform={canvas.transform}
           box={selectedBox}
           showKnobs={
-            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
+            selectedNodePaths.every((nodePath) => !nodePath.includes(".")) &&
             !readonly
           }
         />
@@ -99,26 +103,28 @@ const useTools = () => {
   const { state, dispatch } = useAppStore();
   const {
     designer: {
-      boxes,
+      frameBoxes,
       canvas,
       selectedNodePaths,
       resizerMoving,
       ui: {
-        query: { canvasFile }
+        query: { canvasFile },
       },
       optionKeyDown,
       allLoadedPCFileData,
-      readonly
-    }
+      readonly,
+    },
   } = state;
   const toolsRef = useRef<HTMLDivElement>();
   const toolsLayerEnabled = !isExpanded(state.designer);
 
-  const getMousePoint = event => {
-    const rect: ClientRect = (event.currentTarget as any).getBoundingClientRect();
+  const getMousePoint = (event) => {
+    const rect: ClientRect = (
+      event.currentTarget as any
+    ).getBoundingClientRect();
     return {
       x: event.pageX - rect.left,
-      y: event.pageY - rect.top
+      y: event.pageY - rect.top,
     };
   };
 
@@ -136,7 +142,7 @@ const useTools = () => {
           metaKey: event.metaKey,
           ctrlKey: event.ctrlKey,
           shiftKey: event.shiftKey,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         })
       );
     },
@@ -147,14 +153,15 @@ const useTools = () => {
     dispatch(canvasMouseLeave(null));
   };
 
+  const boxes = flattenFrameBoxes(frameBoxes);
+
   document.body.ondblclick;
   const selectedBox =
     selectedNodePaths.length &&
-    mergeBoxes(selectedNodePaths.map(path => boxes[path]));
+    mergeBoxes(selectedNodePaths.map((path) => boxes[path]));
 
   const hoveringBox =
-    state.designer.highlightNodePath &&
-    state.designer.boxes[state.designer.highlightNodePath];
+    state.designer.highlightNodePath && boxes[state.designer.highlightNodePath];
 
   const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
 
@@ -183,6 +190,6 @@ const useTools = () => {
     readonly,
     hoveringBox,
     selectedNodePaths,
-    optionKeyDown
+    optionKeyDown,
   };
 };

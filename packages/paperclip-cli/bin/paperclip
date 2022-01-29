@@ -1,98 +1,136 @@
 #!/usr/bin/env node
 const path = require("path");
-const {init} = require("../lib/cli");
-const {coverage} = require("../lib/coverage");
-const {build} = require("@paperclip-ui/cli-minimal");
-const {installOptionalModule} = require("../lib/install-module");
+const { init } = require("../lib/cli");
+const { coverage } = require("../lib/coverage");
+const { build } = require("@paperclip-ui/cli-minimal");
+const { installOptionalModule } = require("../lib/install-module");
 const fs = require("fs");
-const  URL = require("url");
-const {start: startWorkspace} = require("@tandem-ui/workspace/lib/server");
+const URL = require("url");
+const { start: startWorkspace } = require("@tandem-ui/workspace/lib/server");
 
-const installDiff = () => installOptionalModule("@paperclip-ui/diff", process.cwd())
+const installDiff = () =>
+  installOptionalModule("@paperclip-ui/diff", process.cwd());
 
 const argv = require("yargs")
-.command("build", "Compiles paperclip files to target language", yargs => {
-  yargs
-  .option("watch", desc("watch for changes"))
-  .option("print", desc("Only print compiled output"))
-  .option("silent", desc("silence output information"))
-  .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
-}, argv => {
-  build({
-    cwd: process.cwd(),
-    config: argv.config,
-    print: argv.print,
-    css: argv.css,
-    watch: argv.watch,
-    definition: argv.definition,
-    verbose: !argv.silent,
-    dropPcExtension: argv.dropPcExtension,
-    compilerName: argv.compiler,
-    filePatterns: argv.filePattern
-  })
-})
-.command("init", "Initialize new paperclip project", yargs => {
-}, argv => {
-  init();
-})
-.command("coverage", "Generate coverage report for PC files", yargs => {
-  yargs
-  .option("output", desc("output directory of files"))
-  .option("html", desc("generate HTML output"))
-  .option("open", desc("Open after generation"))
-}, argv => {
-  coverage({
-    ...argv,
-    cwd: process.cwd()
-  });
-})
-.command("snapshot", "Take snapshots of the current PR", yargs => {
-  yargs
-  .option("force", { description: "Force snapshot creation even if there are changes" });
-}, async argv => {
-  installDiff().then((module) => {
-    module && module.snapshot({...argv, cwd: process.cwd() });
-  });
-})
-.command("diff [branch]", "Show changes against a different branch", yargs => {
-  yargs
-  .option("watch", { description: "re-run when a PC file changes" })
-  .option("html", { description: "Generate HTML report", default: true })
-  .option("output", { description: "output directory for html" })
-  .option("open", { description: "open report after done generating" });
-}, async argv => {
-  installDiff().then((module) => {
-    module && module.detectChanges({...argv, cwd: process.cwd() });
-  });
-})
-.command("designer", "Starts the designer server", yargs => {
-  yargs
-  .option("port", desc("HTTP port to listen on"))
-  .option("canvasFile", desc("File to open initiall"))
-  .default("open", true)
-}, argv => {
-  startWorkspace({
-    http: {
-      port: argv.port
+  .command(
+    "build",
+    "Compiles paperclip files to target language",
+    (yargs) => {
+      yargs
+        .option("watch", desc("watch for changes"))
+        .option("print", desc("Only print compiled output"))
+        .option("silent", desc("silence output information"))
+        .option(
+          "compiler",
+          desc(
+            "Language compiler target (default is from paperclip.config.json if found)"
+          )
+        );
     },
-    canvasFile: argv.canvasFile && URL.pathToFileURL(path.join(process.cwd(), argv.canvasFile)),
-    project: {
-      installDependencies: false
+    (argv) => {
+      build({
+        cwd: process.cwd(),
+        config: argv.config,
+        print: argv.print,
+        css: argv.css,
+        watch: argv.watch,
+        definition: argv.definition,
+        verbose: !argv.silent,
+        dropPcExtension: argv.dropPcExtension,
+        compilerName: argv.compiler,
+        filePatterns: argv.filePattern,
+      });
+    }
+  )
+  .command(
+    "init",
+    "Initialize new paperclip project",
+    (yargs) => {},
+    (argv) => {
+      init();
+    }
+  )
+  .command(
+    "coverage",
+    "Generate coverage report for PC files",
+    (yargs) => {
+      yargs
+        .option("output", desc("output directory of files"))
+        .option("html", desc("generate HTML output"))
+        .option("open", desc("Open after generation"));
     },
-    standalone: true,
-    showFullEditor: false
-  }).then((workspace) => {
-    workspace.start(process.cwd()).then(project => {
-      project.openBrowser();
-    });
-  });
-})
-.argv;
-
-
+    (argv) => {
+      coverage({
+        ...argv,
+        cwd: process.cwd(),
+      });
+    }
+  )
+  .command(
+    "snapshot",
+    "Take snapshots of the current PR",
+    (yargs) => {
+      yargs.option("force", {
+        description: "Force snapshot creation even if there are changes",
+      });
+    },
+    async (argv) => {
+      installDiff().then((module) => {
+        module && module.snapshot({ ...argv, cwd: process.cwd() });
+      });
+    }
+  )
+  .command(
+    "diff [branch]",
+    "Show changes against a different branch",
+    (yargs) => {
+      yargs
+        .option("watch", { description: "re-run when a PC file changes" })
+        .option("html", { description: "Generate HTML report", default: true })
+        .option("output", { description: "output directory for html" })
+        .option("open", { description: "open report after done generating" });
+    },
+    async (argv) => {
+      installDiff().then((module) => {
+        module && module.detectChanges({ ...argv, cwd: process.cwd() });
+      });
+    }
+  )
+  .command(
+    "designer",
+    "Starts the designer server",
+    (yargs) => {
+      yargs
+        .option("port", desc("HTTP port to listen on"))
+        .option("canvasFile", desc("File to open initiall"))
+        .default("open", true);
+    },
+    (argv) => {
+      startWorkspace({
+        http: {
+          port: argv.port,
+        },
+        canvasFile:
+          argv.canvasFile &&
+          URL.pathToFileURL(path.join(process.cwd(), argv.canvasFile)),
+        project: {
+          installDependencies: false,
+        },
+        standalone: true,
+        showFullEditor: false,
+      }).then((server) => {
+        server
+          .getWorkspace()
+          .start(process.cwd())
+          .then((project) => {
+            project.openBrowser();
+          });
+      });
+    }
+  ).argv;
 
 function desc(description) {
   return {
-    description
-  }
+    description,
+  };
 }

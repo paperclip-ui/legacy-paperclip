@@ -18,3 +18,16 @@ export class Deferred<TType> {
     return this._reject;
   }
 }
+
+export const deferPromise = <TValue>(): [
+  Promise<TValue>,
+  (value: TValue) => void
+] => {
+  let _resolve;
+
+  const promise = new Promise<TValue>((resolve) => {
+    _resolve = resolve;
+  });
+
+  return [promise, _resolve];
+};

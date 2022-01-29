@@ -1,202 +1,320 @@
-import {
-  createMockEngineDelegate,
-  createMockFramesRenderer,
-  trimWS
-} from "./utils";
+import { patchFrame, patchFrames, renderFrame, renderFrames } from "..";
+import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
+import { mockDOMFactory } from "./utils";
 import { expect } from "chai";
-import { EngineMode } from "@paperclip-ui/core";
+import { LoadedPCData } from "@paperclip-ui/utils";
 
 describe(__filename + "#", () => {
-  it("can render a simple frame", async () => {
-    const engine = await createMockEngineDelegate({
-      "/entry.pc": `<div>
-          <style>
-            color: red;
-          </style>
-          Hello world
-        </div>`
+  it(`Can render simple frames`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `<style>div {color: red;}</style><div>Hello world</div>`,
+    });
+    const frames = renderFrames(engine.open("hello.pc"), {
+      domFactory: mockDOMFactory,
     });
 
-    const renderer = createMockFramesRenderer("/entry.pc");
-    engine.onEvent(ev => {
-      try {
-        renderer.handleEngineDelegateEvent(ev);
-      } catch (e) {
-        console.error(e);
-      }
-    });
-
-    engine.open("/entry.pc");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style>._406d2856._406d2856 {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f _406d2856"> Hello world </div></div>`
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+      `<div></div><div><style>div._cb99d41f {color: red;} </style></div><div><div class="_cb99d41f _pub-cb99d41f">Hello world</div></div>`
     );
   });
 
-  it(`re-rendered updated content`, async () => {
-    const engine = await createMockEngineDelegate({
-      "/entry.pc": `<div>
-          Hello world
-        </div>`
+  it(`Can render frames with imported CSS`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `
+      <import src="/imp.css" />
+      <style>div {color: red;}</style><div>Hello world</div>`,
+      "/imp.css": `div {color: blue;}`,
+    });
+    const frames = renderFrames(engine.open("hello.pc"), {
+      domFactory: mockDOMFactory,
     });
 
-    const renderer = createMockFramesRenderer("/entry.pc");
-    engine.onEvent(ev => {
-      try {
-        renderer.handleEngineDelegateEvent(ev);
-      } catch (e) {
-        console.error(e);
-      }
-    });
-
-    engine.open("/entry.pc");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"> Hello world </div></div>`
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+      `<div><style>div._pub-2c5dbed5 {color: blue;} </style></div><div><style>div._cb99d41f {color: red;} </style></div><div><div class="_cb99d41f _pub-cb99d41f">Hello world</div></div>`
     );
-    engine.updateVirtualFileContent("/entry.pc", "span man");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div>span man</div>`
+  });
+  it(`Can a render a slot`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `<div component as="Test">{child}</div><Test />`,
+    });
+    const frames = renderFrames(engine.open("hello.pc"), {
+      domFactory: mockDOMFactory,
+      showSlotPlaceholders: true,
+    });
+
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+      `<div></div><div><style></style></div><div><div class="_cb99d41f _pub-cb99d41f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
     );
   });
 
-  it(`renderes root children as multiple getState().frames`, async () => {
-    const engine = await createMockEngineDelegate({
-      "/entry.pc": `a<span>b</span>`
+  it(`Hides slots by default`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `<div component as="Test">{child}</div><Test />`,
+    });
+    const frames = renderFrames(engine.open("hello.pc"), {
+      domFactory: mockDOMFactory,
+      showSlotPlaceholders: false,
     });
 
-    const renderer = createMockFramesRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    engine.open("/entry.pc");
-    expect(renderer.getState().frames.length).to.eql(2);
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+      `<div></div><div><style></style></div><div><div class="_cb99d41f _pub-cb99d41f"></div></div>`
+    );
+  });
+
+  it(`Can render a single frame`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `a<span />`,
+    });
+    const frame = renderFrame(engine.open("hello.pc"), 0, {
+      domFactory: mockDOMFactory,
+    });
+
+    expect(frame.innerHTML).to.eql(
       `<div></div><div><style></style></div><div>a</div>`
     );
-    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f">b</span></div>`
-    );
-
-    // test update
-    engine.updateVirtualFileContent("/entry.pc", "a<span>c</span>");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div>a</div>`
-    );
-    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f">c</span></div>`
-    );
   });
 
-  it(`main style is shared across all getState().frames`, async () => {
-    const graph = {
-      "/entry.pc": `<style>div {
-        color: red;
-      }</style><div>a</div><div>b</div>`
-    };
-    const engine = await createMockEngineDelegate(graph);
-    const renderer = createMockFramesRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    engine.open("/entry.pc");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style>div._80f4925f {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f">a</div></div>`
-    );
-    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
-      `<div></div><div><style>div._80f4925f {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f">b</div></div>`
-    );
-  });
+  it(`Can patch a single frame`, () => {
+    const engine = createMockEngine({
+      "hello.pc": `a<span />`,
+    });
+    const content = engine.open("hello.pc");
+    const frame = renderFrame(content, 0, {
+      domFactory: mockDOMFactory,
+    });
 
-  // it(`main sheet is updated when it changes`, () => {
+    engine.updateVirtualFileContent("hello.pc", "bbb");
+    const newContent = engine.open("hello.pc");
+    patchFrame(frame, 0, content, newContent, { domFactory: mockDOMFactory });
 
-  // });
-  xit(`fragments are rendered as their own frame`);
-  xit(`fragment children can change`);
-  xit(`imported sheet is removed when import is deleted`);
-  xit(`imported sheets across multiple getState().frames when import changes`);
-  it(`properly renders with protocol`, async () => {
-    const graph = {
-      "file:///entry.pc": `<img src="/file.jpeg" />`,
-      "file:///file.jpeg": "a"
-    };
-
-    const renderer = createMockFramesRenderer("file:///entry.pc", url =>
-      url.replace("file", "blah")
-    );
-    const engine = await createMockEngineDelegate(graph);
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.open("file:///entry.pc");
-    expect(renderer.getState().frames.length).to.eql(1);
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///file.jpeg"></img></div>`
+    expect(frame.innerHTML).to.eql(
+      `<div></div><div><style></style></div><div>bbb</div>`
     );
   });
-
-  it(`renders fragments as a single frame`, async () => {
+  it(`Properly renders with a protocol`, async () => {
     const graph = {
-      "/entry.pc": `<fragment>a<span>b</span></fragment>`
+      "/entry.pc": `
+        <img src="/file.jpg" />
+      `,
+      "/file.jpg": `a`,
+      "/something-else.jpg": `a`,
     };
-    const renderer = createMockFramesRenderer("/entry.pc");
-    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.open("/entry.pc");
 
-    expect(renderer.getState().frames.length).to.eql(1);
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><fragment class="_80f4925f _pub-80f4925f">a<span class="_80f4925f _pub-80f4925f">b</span></fragment></div>`
-    );
-  });
+    const engine = createMockEngine(graph);
+    const resolveUrl = (url) => "blah://" + url;
+    const frames = renderFrames(engine.open("/entry.pc") as any, {
+      domFactory: mockDOMFactory,
+      resolveUrl,
+    });
 
-  it(`flattens nested fragments`, async () => {
-    const graph = {
-      "/entry.pc": `<fragment><fragment>a<span>b</span></fragment></fragment>`
-    };
-    const renderer = createMockFramesRenderer("/entry.pc");
-    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.open("/entry.pc");
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+      `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///file.jpg"></img></div>`
+    );
 
-    expect(renderer.getState().frames.length).to.eql(1);
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><fragment class="_80f4925f _pub-80f4925f">a<span class="_80f4925f _pub-80f4925f">b</span></fragment></div>`
-    );
-  });
+    const prevData = engine.open("/entry.pc") as any;
 
-  it(`can remove & add an element`, async () => {
-    const graph = {
-      "/entry.pc": `<span />b`
-    };
-    const renderer = createMockFramesRenderer("/entry.pc");
-    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.open("/entry.pc");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
-    );
-    engine.updateVirtualFileContent("/entry.pc", "b");
-
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div>b</div>`
-    );
-    engine.updateVirtualFileContent("/entry.pc", "<span />b");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
-    );
-  });
-
-  it(`Adds styles from imported module to new frame`, async () => {
-    const graph = {
-      "/entry.pc": `<import src="/mod.pc" />a`,
-      "/mod.pc": `<style>a { color: blue }</style>`
-    };
-    const renderer = createMockFramesRenderer("/entry.pc");
-    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.open("/entry.pc");
-    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
-      `<div><style>a._c938aea3 {color: blue;} </style></div><div><style></style></div><div>a</div>`
-    );
     engine.updateVirtualFileContent(
       "/entry.pc",
-      `<import src="/mod.pc" /><span /><!-- @frame { } --><div />`
+      `
+      <img src="./something-else.jpg" />
+    `
     );
-    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
-      `<div><style>a._c938aea3 {color: blue;} </style></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
+
+    patchFrames(frames, prevData, engine.open("/entry.pc") as any, {
+      domFactory: mockDOMFactory,
+      resolveUrl,
+    });
+
+    expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+      `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///something-else.jpg"></img></div>`
     );
+  });
+
+  [
+    [
+      `Can replace a frame`,
+      {
+        "hello.pc": "<div></div>",
+      },
+      {
+        "hello.pc": "blah",
+      },
+    ],
+    [
+      `Replaces a node if the tag name doesn't match`,
+      {
+        "hello.pc": "<div></div>",
+      },
+      {
+        "hello.pc": "<span />",
+      },
+    ],
+    [
+      `Adds a frame`,
+      {
+        "hello.pc": "a",
+      },
+      {
+        "hello.pc": "a<span />",
+      },
+    ],
+    [
+      `Removes a frame`,
+      {
+        "hello.pc": "a<span />",
+      },
+      {
+        "hello.pc": "<span />",
+      },
+    ],
+    [
+      `Adds a child`,
+      {
+        "hello.pc": "<span></span>",
+      },
+      {
+        "hello.pc": "<span>a</span>",
+      },
+    ],
+    [
+      `Removes a child`,
+      {
+        "hello.pc": "<span>a</span>",
+      },
+      {
+        "hello.pc": "<span></span>",
+      },
+    ],
+    [
+      `Can change text value`,
+      {
+        "hello.pc": "a",
+      },
+      {
+        "hello.pc": "b",
+      },
+    ],
+    [
+      `Can change style`,
+      {
+        "hello.pc": "<style>span { color: blue;}</style>a",
+      },
+      {
+        "hello.pc": "<style>div { color: red;}</style>a",
+      },
+    ],
+    [
+      `Can insert a style`,
+      {
+        "hello.pc": "<style>span { color: blue;}</style>a",
+      },
+      {
+        "hello.pc": "<style>div { color: red;} div { color: black; }</style>a",
+      },
+    ],
+    [
+      `Can remove a style`,
+      {
+        "hello.pc":
+          "<style>span { color: blue;} div { color: black; }</style>a",
+      },
+      {
+        "hello.pc": "<style>div { color: red;}</style>a",
+      },
+    ],
+    [
+      `Can add style in import`,
+      {
+        "hello.pc": "<import src='imp.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>",
+      },
+      {
+        "hello.pc": "<import src='imp.pc' />a",
+        "imp.pc": "<style>div { color: blue } span { color: black } </style>",
+      },
+    ],
+    [
+      `Can add an import`,
+      {
+        "hello.pc": "<import src='imp.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>",
+        "imp2.pc": "<style>div { color: orange } </style>",
+      },
+      {
+        "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
+        "imp2.pc": "<style>div { color: orange } </style>",
+      },
+    ],
+    [
+      `Can remove an import`,
+      {
+        "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>",
+        "imp2.pc": "<style>div { color: orange } </style>",
+      },
+      {
+        "hello.pc": "<import src='imp.pc' />a",
+      },
+    ],
+    [
+      `Can remove an in an import`,
+      {
+        "hello.pc": "<import src='imp.pc' /><import src='imp2.pc' />a",
+        "imp.pc": "<style>div { color: blue }</style>",
+        "imp2.pc": "<style>div { color: orange } </style>",
+        "imp3.pc": "<style>div { color: magenta } </style>",
+      },
+      {
+        "imp2.pc":
+          "<import src='imp3.pc' /><style>div { color: orange } </style>",
+      },
+    ],
+    [
+      `Can add an attribute`,
+      {
+        "hello.pc": `<div></div>`,
+      },
+      {
+        "hello.pc": `<div a="b"></div>`,
+      },
+    ],
+    [
+      `Can remove an attribute`,
+      {
+        "hello.pc": `<div a="b"></div>`,
+      },
+      {
+        "hello.pc": `<div></div>`,
+      },
+    ],
+    [
+      `can patch a slot`,
+      {
+        "hello.pc": `<div component as="Test">{child}</div><Test />`,
+      },
+      {
+        "hello.pc": `<div component as="Test">{child}</div><Test child='b' />`,
+      },
+    ],
+  ].forEach(([title, ...graphs]: any) => {
+    it(title, () => {
+      const engine = createMockEngine(graphs[0]);
+      const data = engine.open("hello.pc");
+      let frames = renderFrames(data, { domFactory: mockDOMFactory });
+      for (let i = 1; i < graphs.length; i++) {
+        const graph = graphs[i];
+        for (const name in graph) {
+          engine.updateVirtualFileContent(name, graph[name]);
+        }
+        const newData = engine.open("hello.pc");
+        frames = patchFrames(frames, data, newData, {
+          domFactory: mockDOMFactory,
+        });
+        const newFrames = renderFrames(newData, { domFactory: mockDOMFactory });
+        expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
+          newFrames.map((frame) => frame.innerHTML).join("")
+        );
+      }
+    });
   });
 });

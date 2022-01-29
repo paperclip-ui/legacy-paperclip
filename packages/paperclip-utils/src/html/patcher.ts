@@ -12,13 +12,13 @@ import {
   DiffedDataKind,
   LoadedPCData,
   LoadedCSSData,
-  EvaluatedPCData
+  EvaluatedPCData,
 } from "./virt";
 import {
   DiffedEvent,
   EngineDelegateEvent,
   EngineDelegateEventKind,
-  EvaluatedEvent
+  EvaluatedEvent,
 } from "../core/events";
 import { patchCSSSheet } from "../css/patcher";
 
@@ -51,7 +51,7 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
         delete attributes[action.name];
         target = {
           ...target,
-          attributes
+          attributes,
         } as VirtualElement;
         break;
       }
@@ -65,14 +65,14 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
         }
         target = {
           ...target,
-          attributes
+          attributes,
         } as VirtualElement;
         break;
       }
       case ActionKind.SetElementSourceInfo: {
         target = {
           ...target,
-          sourceInfo: action.value
+          sourceInfo: action.value,
         } as VirtualElement;
         break;
       }
@@ -113,7 +113,8 @@ const updateNode = (
   }
   if (
     ancestor.kind === VirtualNodeKind.Text ||
-    ancestor.kind === VirtualNodeKind.StyleElement
+    ancestor.kind === VirtualNodeKind.StyleElement ||
+    ancestor.kind === VirtualNodeKind.Slot
   ) {
     return newNode;
   }
@@ -127,8 +128,8 @@ const updateNode = (
         newNode,
         depth + 1
       ),
-      ...ancestor.children.slice(nodePath[depth] + 1)
-    ]
+      ...ancestor.children.slice(nodePath[depth] + 1),
+    ],
   };
 };
 
@@ -150,8 +151,8 @@ export const updateAllLoadedData = (
             importedSheets: getImportedSheets(
               allData,
               info.allImportedSheetUris
-            )
-          }
+            ),
+          },
         };
       }
     }
@@ -173,15 +174,15 @@ const updatePrimary = (
           importedSheets: getImportedSheets(
             allData,
             event.data.allImportedSheetUris
-          )
-        }
+          ),
+        },
       };
     } else {
       return {
         ...allData,
         [event.uri]: {
-          ...event.data
-        }
+          ...event.data,
+        },
       };
     }
   } else if (event.kind === EngineDelegateEventKind.Diffed) {
@@ -207,8 +208,8 @@ const updatePrimary = (
           allImportedSheetUris: event.data.allImportedSheetUris,
           dependencies: event.data.dependencies,
           sheet: patchCSSSheet(existingPCData.sheet, event.data.sheetMutations),
-          preview: patchVirtNode(existingPCData.preview, event.data.mutations)
-        }
+          preview: patchVirtNode(existingPCData.preview, event.data.mutations),
+        },
       };
     } else {
       const existingCSSData = existingData as LoadedCSSData;
@@ -217,8 +218,8 @@ const updatePrimary = (
         [event.uri]: {
           ...existingCSSData,
           exports: event.data.exports,
-          sheet: patchCSSSheet(existingCSSData.sheet, event.data.mutations)
-        }
+          sheet: patchCSSSheet(existingCSSData.sheet, event.data.mutations),
+        },
       };
     }
   }

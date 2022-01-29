@@ -1,6 +1,5 @@
 use super::mutation::*;
 use super::virt::{Element, Fragment, Node, StyleElement, Text};
-use crate::css::runtime::diff::diff as diff_css;
 use std::cmp::{max, min};
 
 /*

@@ -7,7 +7,7 @@ export class ReplEngineIO implements EngineIO {
   private _files: Record<string, string>;
   constructor(private _channels: REPLChannels) {}
   async init() {
-    this._files = await this._channels.getFiles.call(null);
+    // this._files = await this._channels.getFiles.call(null);
   }
   readFile = (filePath: string) => {
     return this._files[filePath];

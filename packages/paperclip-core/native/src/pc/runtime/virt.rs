@@ -1,12 +1,8 @@
 extern crate wasm_bindgen;
-use wasm_bindgen::prelude::*;
-
-use crate::base::ast::ExprTextSource;
 use crate::css::runtime::virt as css_virt;
 use crate::script::runtime::virt as script_virt;
 use serde::Serialize;
 use std::collections::BTreeMap;
-use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NodeSource {
@@ -18,17 +14,9 @@ pub struct NodeSource {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
+  pub id: String,
   pub source_id: String,
   pub children: Vec<Node>,
-}
-
-impl fmt::Display for Fragment {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    for child in &self.children {
-      write!(f, " {}", &child.to_string())?;
-    }
-    Ok(())
-  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -44,8 +32,17 @@ pub struct ElementSourceInfo {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Slot {
+  pub id: String,
+  pub source_id: String
+}
+
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
+  pub id: String,
   pub source_id: String,
+
 
   // Deprecated, use source_id instead
   pub annotations: Option<script_virt::Object>,
@@ -88,40 +85,11 @@ impl Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
+  pub id: String,
   pub source_id: String,
   pub sheet: css_virt::CSSSheet,
 }
 
-impl fmt::Display for StyleElement {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "<style>")?;
-    write!(f, "{}", self.sheet.to_string())?;
-    write!(f, "</style>")?;
-    Ok(())
-  }
-}
-
-impl fmt::Display for Element {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "<{}", self.tag_name)?;
-    for (name, value) in &self.attributes {
-      if value == &None {
-        write!(f, " {}", name)?;
-      } else {
-        write!(f, " {}=\"{}\"", name, value.as_ref().unwrap())?;
-      }
-    }
-    write!(f, ">")?;
-
-    for child in &self.children {
-      write!(f, " {}", &child.to_string())?;
-    }
-
-    write!(f, "</{}>", &self.tag_name)?;
-
-    Ok(())
-  }
-}
 
 impl Element {
   pub fn get_attribute<'a>(&self, name: &'a str) -> Option<Option<String>> {
@@ -136,29 +104,21 @@ impl Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
+  pub id: String,
   pub source_id: String,
   pub annotations: Option<script_virt::Object>,
   pub value: String,
 }
+
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum Node {
   Element(Element),
   Text(Text),
+  Slot(Slot),
   Fragment(Fragment),
   StyleElement(StyleElement),
-}
-
-impl fmt::Display for Node {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    match self {
-      Node::Element(el) => write!(f, "{}", el.to_string()),
-      Node::Fragment(fragment) => write!(f, "{}", fragment.to_string()),
-      Node::StyleElement(el) => write!(f, "{}", el.to_string()),
-      Node::Text(text) => write!(f, "{}", text.value.to_string()),
-    }
-  }
 }
 
 impl Node {
@@ -173,18 +133,11 @@ impl Node {
       _ => {}
     }
   }
-  // pub fn get_range(&self) -> &ExprTextSource {
-  //   match self {
-  //     Node::Element(value) => &value.source,
-  //     Node::Text(value) => &value.source,
-  //     Node::Fragment(value) => &value.source,
-  //     Node::StyleElement(value) => &value.source,
-  //   }
-  // }
-  pub fn get_range_id(&self) -> &String {
+  pub fn get_source_id(&self) -> &String {
     match self {
       Node::Element(value) => &value.source_id,
       Node::Text(value) => &value.source_id,
+      Node::Slot(value) => &value.source_id,
       Node::Fragment(value) => &value.source_id,
       Node::StyleElement(value) => &value.source_id,
     }

@@ -1,6 +1,6 @@
 import express from "express";
-import { Logger } from "./logger";
 import * as http from "http";
+import { Logger } from "@paperclip-ui/common";
 
 export const startHTTPServer = (
   port: number,

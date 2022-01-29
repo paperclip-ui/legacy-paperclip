@@ -1,9 +1,10 @@
 import { IPaperclipEngineInfoProvider } from "./base";
 import * as channels from "./channel";
-import { workerAdapter } from "@paperclip-ui/common";
+import { workerRPCClientAdapter } from "@paperclip-ui/common";
 
 export class PaperclipEngineAsyncInfoProvider
-  implements IPaperclipEngineInfoProvider {
+  implements IPaperclipEngineInfoProvider
+{
   private _worker: Worker;
   private _colorsChannel: ReturnType<typeof channels.documentColors>;
   private _updateDocument: ReturnType<typeof channels.updateDocument>;
@@ -11,9 +12,15 @@ export class PaperclipEngineAsyncInfoProvider
 
   constructor() {
     this._worker = new Worker(new URL("./worker.js", import.meta.url));
-    this._colorsChannel = channels.documentColors(workerAdapter(this._worker));
-    this._updateDocument = channels.updateDocument(workerAdapter(this._worker));
-    this._getSuggestions = channels.getSuggestions(workerAdapter(this._worker));
+    this._colorsChannel = channels.documentColors(
+      workerRPCClientAdapter(this._worker)
+    );
+    this._updateDocument = channels.updateDocument(
+      workerRPCClientAdapter(this._worker)
+    );
+    this._getSuggestions = channels.getSuggestions(
+      workerRPCClientAdapter(this._worker)
+    );
   }
 
   getDocumentColors(uri: string) {

@@ -1,0 +1,17 @@
+{
+  "name": "@tandem-ui/workspace-client",
+  "version": "18.5.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@paperclip-ui/common": "^18.5.0",
+    "@paperclip-ui/editor-engine": "^18.5.0",
+    "@tandem-ui/workspace-core": "^18.5.0"
+  }
+}

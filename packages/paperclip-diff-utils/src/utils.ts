@@ -16,7 +16,7 @@ import {
   VirtualFrame,
   computeVirtScriptObject,
   NodeAnnotations,
-  EvaluatedDataKind
+  EvaluatedDataKind,
 } from "@paperclip-ui/core";
 import { embedAssets, getPCDocumentHTML } from "./pc-document";
 import { getPrettyMessageFromError } from "@paperclip-ui/cli-utils";
@@ -49,7 +49,7 @@ export const eachFrame = async (
     cwd = process.cwd(),
     keepEmpty,
     snapshotNameTemplate = "{frameFilePath}: {frameTitle}",
-    resolveAsset
+    resolveAsset,
   }: Partial<RunOptions> = {},
   each: (info: EachFrameInfo) => Promise<void>
 ) => {
@@ -60,12 +60,12 @@ export const eachFrame = async (
       absolute: true,
       gitignore: true,
       ignore: ["**/node_modules/**"],
-      followSymbolicLinks: true
+      followSymbolicLinks: true,
     }
   );
 
   const engine = await createEngineDelegate({
-    mode: EngineMode.MultiFrame
+    mode: EngineMode.MultiFrame,
   });
 
   const promises: any = [];
@@ -94,9 +94,9 @@ export const eachFrame = async (
 
     const { sheet, importedSheets, preview } = result;
 
-    const frames = (preview.kind === VirtualNodeKind.Fragment
-      ? preview.children
-      : [preview]) as VirtualFrame[];
+    const frames = (
+      preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview]
+    ) as VirtualFrame[];
 
     const used: Record<string, number> = {};
 
@@ -107,12 +107,13 @@ export const eachFrame = async (
         (frame.annotations && computeVirtScriptObject(frame.annotations)) || {};
 
       const root: VirtualFragment = {
+        id: null,
         children: [
           ...importedSheets.map(({ sheet }) => createStyle(sheet)),
           createStyle(sheet),
-          frame
+          frame,
         ],
-        kind: VirtualNodeKind.Fragment
+        kind: VirtualNodeKind.Fragment,
       };
 
       let frameLabel = annotations.frame?.title || `Untitled`;
@@ -132,7 +133,7 @@ export const eachFrame = async (
 
       const data = {
         frameFilePath: relativePath,
-        frameTitle: uniqueFramelabel
+        frameTitle: uniqueFramelabel,
       };
 
       const snapshotName = snapshotNameTemplate.replace(
@@ -152,7 +153,7 @@ export const eachFrame = async (
       const fixedHTML = embedAssets(
         html,
         resolveAsset ||
-          (filePath => {
+          ((filePath) => {
             return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
           })
       );
@@ -165,7 +166,7 @@ export const eachFrame = async (
           uniqueTitle: snapshotName,
           assets: assetPaths,
           filePath,
-          id: md5(snapshotName)
+          id: md5(snapshotName),
         })
       );
     }
@@ -183,14 +184,12 @@ const isEmpty = (source: string) => {
 
 const createStyle = (sheet: any): VirtualStyleElement => {
   return {
+    id: null,
     sheet,
-    kind: VirtualNodeKind.StyleElement
+    kind: VirtualNodeKind.StyleElement,
   };
 };
 
 const md5 = (value: string) => {
-  return crypto
-    .createHash("md5")
-    .update(value)
-    .digest("hex");
+  return crypto.createHash("md5").update(value).digest("hex");
 };

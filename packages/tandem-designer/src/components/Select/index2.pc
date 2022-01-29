@@ -137,8 +137,10 @@
     }
   </style>
   <Container>
-    <button>I'm a button</button>
+    <button>I'm </button>
     {showMenu && <Menu {dark?} {light?} {right?}>
+      <MenuItem>Search</MenuItem>
+      <MenuItem>Search</MenuItem>
       <MenuItem>Search</MenuItem>
       <MenuItem>Search</MenuItem>
       <MenuItem active>Search</MenuItem>

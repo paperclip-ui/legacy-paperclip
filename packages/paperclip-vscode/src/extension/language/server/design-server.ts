@@ -1,119 +1,68 @@
-import { eventHandlers, Observable, Observer } from "@paperclip-ui/common";
+import { RPCClientAdapter } from "@paperclip-ui/common";
 
 // eslint-disable-next-line
 const getPort = require("get-port");
 import {
-  DesignServerStarted,
-  DesignServerUpdated,
-  DesignServerUpdating,
-  Initialized,
-  PCSourceEdited,
-  RevealSourceRequested,
-  TextDocumentChanged,
-  TextDocumentOpened
-} from "./events";
-import {
   start as startWorkspace,
   Workspace,
-  Project
+  Project,
+  Server,
 } from "@tandem-ui/workspace/lib/server";
+import { LogLevel } from "@paperclip-ui/common";
 import { ExprSource } from "@paperclip-ui/utils";
-import { ContentChange } from "@paperclip-ui/source-writer";
+import { EventEmitter } from "events";
+import { createListener } from "../../utils";
+import { DesignServerStartedInfo } from "../../channels";
 
-const UPDATE_THROTTLE = 10;
-
-class WorkspaceAadapter {
-  constructor(private _events: Observable) {}
-  revealSource(source: ExprSource) {
-    this._events.dispatch(new RevealSourceRequested(source));
-  }
-  applyCodeChanges(changes: Record<string, ContentChange[]>) {
-    this._events.dispatch(new PCSourceEdited(changes));
-  }
-}
-
-export class PaperclipDesignServer implements Observer {
-  readonly events: Observable;
-  // private _engine: EngineDelegate;
+export class PaperclipDesignServer {
   private _workspace: Workspace;
   private _project: Project;
-  private _windowFocused: boolean;
-  private _latestDocuments: Record<string, string>;
-  private _updatingDocuments: boolean;
+  private _server: Server;
   private _port: number;
+  private _em: EventEmitter;
 
   constructor() {
-    this.events = new Observable();
+    this._em = new EventEmitter();
   }
 
-  private _start = async ({ workspaceFolders }: Initialized) => {
-    this._workspace = await startWorkspace({
+  onStarted(listener: (info: DesignServerStartedInfo) => void) {
+    return createListener(this._em, "started", listener);
+  }
+
+  public start = async ({ workspaceFolders }) => {
+    const server = (this._server = await startWorkspace({
+      logLevel: LogLevel.All,
       http: {
-        port: this._port = await getPort()
+        port: (this._port = await getPort()),
       },
       project: {
-        installDependencies: false
+        installDependencies: false,
       },
-      adapter: new WorkspaceAadapter(this.events)
-    });
+      adapter: {
+        revealSource: this._revealSource,
+      },
+    }));
+
+    this._workspace = server.getWorkspace();
 
     const cwd = workspaceFolders[0].uri;
     this._project = await this._workspace.start(cwd);
-    this.events.dispatch(
-      new DesignServerStarted(this._port, this._project.id, this._project)
-    );
+    this._project.commitAndPushChanges;
+    this._em.emit("started", {
+      projectId: this._project.getId(),
+      httpPort: this._port,
+    } as DesignServerStartedInfo);
   };
 
-  private _onTextDocumentOpened = ({ uri, content }: TextDocumentOpened) => {
-    // this will happen if text document is open on vscode open
-    if (!this._project) {
-      return;
-    }
-    this._project.updatePCContent(uri, content);
-  };
-  private _onTextDocumentChanged = ({ uri, content }: TextDocumentChanged) => {
-    if (this._windowFocused || !this._project) {
-      return;
-    }
+  getEngine() {
+    return this._server.getEngine();
+  }
 
-    if (this._updatingDocuments) {
-      this._latestDocuments[uri] = content;
-      return;
-    }
-
-    this.events.dispatch(new DesignServerUpdating());
-
-    this._updatingDocuments = true;
-    this._latestDocuments = {
-      [uri]: content
-    };
-
-    // throttle for updating doc to ensure that the engine doesn't
-    // get flooded
-    setTimeout(() => {
-      const changes = this._latestDocuments;
-      this._latestDocuments = {};
-      for (const uri in changes) {
-        this._project.updatePCContent(uri, changes[uri]);
-      }
-      this.events.dispatch(new DesignServerUpdated());
-      this._updatingDocuments = false;
-    }, UPDATE_THROTTLE);
+  onRevealSourceRequest = (listener: (source: ExprSource) => void) => {
+    return createListener(this._em, "revealSourceRequest", listener);
   };
 
-  // private _onWindowFocused = () => {
-  //   this._windowFocused = true;
-  // };
-
-  // private _onWindowBlurred = () => {
-  //   this._windowFocused = false;
-  // };
-
-  handleEvent = eventHandlers({
-    [Initialized.TYPE]: this._start,
-    [TextDocumentOpened.TYPE]: this._onTextDocumentOpened,
-    [TextDocumentChanged.TYPE]: this._onTextDocumentChanged
-    // [ActionType.WINDOW_FOCUSED]: this._onWindowFocused,
-    // [ActionType.WINDOW_BLURRED]: this._onWindowBlurred
-  });
+  private _revealSource = (source: ExprSource) => {
+    this._em.emit("revealSourceRequest", source);
+  };
 }

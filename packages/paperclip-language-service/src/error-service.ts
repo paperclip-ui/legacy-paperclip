@@ -10,11 +10,11 @@ import {
   GraphErrorEvent,
   LoadedEvent,
   RuntimeErrorEvent,
-  StringRange
+  StringRange,
 } from "@paperclip-ui/utils";
-import { Observable } from "@paperclip-ui/common";
 import { EngineDelegate } from "@paperclip-ui/core";
-import { SourceLinted } from "./events";
+import { EventEmitter } from "events";
+import { createListener } from "@paperclip-ui/common";
 
 /**
  * The diagnostic's severity.
@@ -23,7 +23,7 @@ export enum DiagnosticSeverity {
   Error = 1,
   Warning = 2,
   Information = 3,
-  Hint = 4
+  Hint = 4,
 }
 
 /**
@@ -56,10 +56,20 @@ export interface Diagnostic {
   message: string;
 }
 
+export type LintInfo = {
+  uri: string;
+  content: string;
+  diagnostics: Diagnostic[];
+};
+
 export class DiagnosticService {
-  readonly events = new Observable();
+  private _em: EventEmitter;
   constructor(private _engine: EngineDelegate) {
+    this._em = new EventEmitter();
     _engine.onEvent(this._onEngineDelegateEvent);
+  }
+  onLinted(listener: (info: LintInfo) => void) {
+    return createListener(this._em, "linted", listener);
   }
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
     switch (event.kind) {
@@ -112,14 +122,14 @@ export class DiagnosticService {
 
       // need to provide content here too since listener may not have direct access
       // to state related to the linted diagnostics.
-      this.events.dispatch(new SourceLinted(uri, content, this._lint(uri)));
+      this._em.emit("linted", { uri, content, diagnostics: this._lint(uri) });
     });
   }
 
   private _lint(uri: string): Diagnostic[] {
     return this._engine
       .lint(uri)
-      .map(diag => {
+      .map((diag) => {
         switch (diag.diagnosticKind) {
           case DiagnosticKind.EngineError: {
             if (diag.errorKind === EngineErrorKind.Graph) {
@@ -159,6 +169,6 @@ const createDiagnostic = (
     severity,
     range,
     message: `${message}`,
-    source: "ex"
+    source: "ex",
   };
 };

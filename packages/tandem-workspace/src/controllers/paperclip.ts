@@ -1,32 +1,32 @@
 import {
   EngineDelegate,
-  createEngineDelegate,
-  EngineMode,
   PaperclipConfig,
   PC_CONFIG_FILE_NAME,
   PaperclipResourceWatcher,
   ChangeKind,
   EngineDelegateEvent,
   paperclipSourceGlobPattern,
-  isPaperclipFile
+  isPaperclipFile,
 } from "@paperclip-ui/core";
 import * as fs from "fs";
 import * as path from "path";
-import { Logger } from "@tandem-ui/common";
+import { Logger } from "@paperclip-ui/common";
 import globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";
+import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 
-export class PaperclipProject {
+export class PaperclipManager {
   private _watcher: PaperclipResourceWatcher;
-  private _engine: EngineDelegate;
 
   constructor(
     private _cwd: string,
     private _vfs: VFS,
-    private _logger: Logger
+    private _logger: Logger,
+    private _engine: EngineDelegate,
+    private _documentManager: EditorHost
   ) {
-    this._startEngine();
+    // this._startEngine();
   }
 
   /**
@@ -34,16 +34,8 @@ export class PaperclipProject {
 
   async start() {
     const config = readConfig(this._cwd, this._logger);
-    this._startEngine();
     this._startWatcher(config);
     await this._addAllProjects(config);
-  }
-
-  /**
-   */
-
-  get engine() {
-    return this._engine;
   }
 
   /**
@@ -58,6 +50,10 @@ export class PaperclipProject {
     return this._engine.onEvent(listener);
   };
 
+  dispose() {
+    this._watcher.dispose();
+  }
+
   /**
    */
   2;
@@ -70,13 +66,15 @@ export class PaperclipProject {
       {
         gitignore: true,
         ignore: ["**/node_modules/**"],
-        followSymbolicLinks: true
+        followSymbolicLinks: true,
+        cwd: this._cwd,
       }
     );
 
     this._logger.verbose(
-      `Done scanning all PC files (${pcFiles.length}) in ${(Date.now() - ms) /
-        1000}s`
+      `Done scanning all PC files (${pcFiles.length}) in ${
+        (Date.now() - ms) / 1000
+      }s`
     );
 
     for (const pcFile of pcFiles) {
@@ -103,9 +101,13 @@ export class PaperclipProject {
     }
     this._watcher = new PaperclipResourceWatcher(config.srcDir, this._cwd);
     this._watcher.onChange((kind: ChangeKind, fileUrl: string) => {
-      this._engine.updateVirtualFileContent(
-        fileUrl,
-        fs.readFileSync(url.fileURLToPath(fileUrl), "utf-8")
+      // Hard reload
+      const doc = this._documentManager.getDocumentManager().open(fileUrl);
+      const source = doc.openSource();
+      source.setText(
+        fs.readFileSync(url.fileURLToPath(fileUrl), "utf-8").split(""),
+        0,
+        source.getText().length
       );
       this._logger.info(`Local file changed: ${fileUrl}`);
     });
@@ -114,34 +116,34 @@ export class PaperclipProject {
   /**
    */
 
-  private _startEngine() {
-    if (this._engine) {
-      return;
-    }
+  // private _startEngine() {
+  //   if (this._engine) {
+  //     return;
+  //   }
 
-    this._logger.info(`Starting PC engine`);
+  //   this._logger.info(`Starting PC engine`);
 
-    this._engine = createEngineDelegate(
-      {
-        mode: EngineMode.MultiFrame
-      },
-      () => {
-        this._engine = undefined;
-        disposeVFSChangeListener();
-        this._logger.error(`PC engine crashed`);
-        this._startEngine();
-      }
-    );
+  //   this._engine = createEngineDelegate(
+  //     {
+  //       mode: EngineMode.MultiFrame
+  //     },
+  //     () => {
+  //       this._engine = undefined;
+  //       disposeVFSChangeListener();
+  //       this._logger.error(`PC engine crashed`);
+  //       this._startEngine();
+  //     }
+  //   );
 
-    const disposeVFSChangeListener = this._vfs.onChange((uri, content) => {
-      if (isPaperclipFile(uri)) {
-        this._logger.info(`Updating PC content for ${uri}`);
-        this._engine.updateVirtualFileContent(uri, content);
-      }
-    });
+  //   const disposeVFSChangeListener = this._vfs.onChange((uri, content) => {
+  //     if (isPaperclipFile(uri)) {
+  //       this._logger.info(`Updating PC content for ${uri}`);
+  //       this._engine.updateVirtualFileContent(uri, content);
+  //     }
+  //   });
 
-    this._engine.onEvent(this._onEngineEvent);
-  }
+  //   this._engine.onEvent(this._onEngineEvent);
+  // }
 
   /**
    */
@@ -156,7 +158,7 @@ const readConfig = (cwd: string, logger: Logger) => {
   if (!fs.existsSync(configPath)) {
     logger.warn(`PC config not found, using default values`);
     config = {
-      srcDir: "."
+      srcDir: ".",
     };
   } else {
     config = JSON.parse(fs.readFileSync(configPath, "utf-8"));

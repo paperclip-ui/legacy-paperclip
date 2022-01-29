@@ -14,7 +14,7 @@
   "dependencies": {
     "@monaco-editor/loader": "^1.2.0",
     "@monaco-editor/react": "^4.0.0",
-    "automerge": "^0.14.2",
+    "automerge": "^1.0.1-preview.6",
     "bowser": "^2.11.0",
     "buffer-crc32": "^0.2.13",
     "fast-json-patch": "^3.0.0-1",

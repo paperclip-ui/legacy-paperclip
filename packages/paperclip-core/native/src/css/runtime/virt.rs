@@ -3,6 +3,7 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CSSSheet {
+  pub id: String,
   pub rules: Vec<Rule>,
 }
 
@@ -72,6 +73,7 @@ impl fmt::Display for Rule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CharsetRule {
+  pub id: String,
   pub value: String,
 }
 
@@ -84,6 +86,7 @@ impl fmt::Display for CharsetRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FontFaceRule {
+  pub id: String,
   pub style: Vec<CSSStyleProperty>,
 }
 
@@ -99,6 +102,7 @@ impl fmt::Display for FontFaceRule {
 }
 #[derive(Debug, Serialize, Clone)]
 pub struct ConditionRule {
+  pub id: String,
   pub name: String,
   #[serde(rename = "conditionText")]
   pub condition_text: String,
@@ -143,6 +147,7 @@ impl fmt::Display for ConditionRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframesRule {
+  pub id: String,
   pub name: String,
   pub rules: Vec<KeyframeRule>,
 }
@@ -161,6 +166,7 @@ impl fmt::Display for KeyframesRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframeRule {
+  pub id: String,
   pub key: String,
   pub style: Vec<CSSStyleProperty>,
 }
@@ -179,6 +185,7 @@ impl fmt::Display for KeyframeRule {
 
 #[derive(Debug, Serialize, Hash, Clone)]
 pub struct StyleRule {
+  pub id: String,
   pub exported: bool,
 
   #[serde(rename = "sourceId")]
@@ -212,6 +219,7 @@ impl fmt::Display for StyleRule {
 
 #[derive(Debug, Serialize, Hash, Clone)]
 pub struct CSSStyleProperty {
+  pub id: String,
   pub name: String,
   pub value: String,
 

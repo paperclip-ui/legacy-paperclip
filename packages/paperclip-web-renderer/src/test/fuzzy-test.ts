@@ -1,7 +1,9 @@
 import { generateRandomPaperclipDocument } from "./random";
 import { expect } from "chai";
-import { createMockEngine, createMockFramesRenderer } from "./utils";
+import { createMockEngine, mockDOMFactory } from "./utils";
 import { repeat } from "lodash";
+import { patchFrame, patchFrames, renderFrame, renderFrames } from "..";
+import { LoadedPCData } from "@paperclip-ui/utils";
 
 describe(__filename + "#", () => {
   xit("passes the fuzzy test", async () => {
@@ -9,20 +11,20 @@ describe(__filename + "#", () => {
       minWidth: 1,
       maxWidth: 4,
       minDepth: 1,
-      maxDepth: 4
+      maxDepth: 4,
     };
 
     let currentDocumentSource = generateRandomPaperclipDocument(randOptions);
 
     const graph = {
-      "/entry.pc": currentDocumentSource
+      "/entry.pc": currentDocumentSource,
     };
 
     const engine = await createMockEngine(graph);
 
-    const renderer = createMockFramesRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.open("/entry.pc");
+    let frames = renderFrames(engine.open("/entry.pc") as LoadedPCData, {
+      domFactory: mockDOMFactory,
+    });
 
     for (let i = 50; i--; ) {
       const randomDocument = generateRandomPaperclipDocument(randOptions);
@@ -33,27 +35,30 @@ describe(__filename + "#", () => {
       }
 
       const baselineEngine = await createMockEngine({
-        "/entry.pc": randomDocument
+        "/entry.pc": randomDocument,
       });
 
       try {
-        const baselineRenderer = createMockFramesRenderer("/entry.pc");
-        baselineEngine.onEvent(baselineRenderer.handleEngineDelegateEvent);
-        await baselineEngine.open("/entry.pc");
+        const baselineFrames = renderFrames(
+          baselineEngine.open("/entry.pc") as LoadedPCData,
+          { domFactory: mockDOMFactory }
+        );
+        const oldData = engine.getLoadedData("/entry.pc") as LoadedPCData;
 
         await engine.updateVirtualFileContent("/entry.pc", randomDocument);
-        expect(renderer.getState().frames.length).to.eql(
-          baselineRenderer.getState().frames.length
+        frames = patchFrames(
+          frames,
+          oldData,
+          engine.getLoadedData("/entry.pc") as LoadedPCData,
+          { domFactory: mockDOMFactory }
         );
 
-        for (
-          let i = 0, { length } = renderer.getState().frames;
-          i < length;
-          i++
-        ) {
-          const frameA = renderer.getState().frames[i];
-          const frameB = baselineRenderer.getState().frames[i];
-          expect(frameA._mount.innerHTML).to.eql(frameB._mount.innerHTML);
+        for (let i = 0, { length } = frames; i < length; i++) {
+          const frameA = frames[i];
+          const frameB = baselineFrames[i];
+          expect(frameA.innerHTML.replace(/[\n\s]/g, " ")).to.eql(
+            frameB.innerHTML.replace(/[\n\s]/g, " ")
+          );
         }
 
         currentDocumentSource = randomDocument;

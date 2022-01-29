@@ -1,6 +1,6 @@
 {
   "name": "tailwind-and-bootstrap-example",
-  "version": "18.4.7",
+  "version": "18.5.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@paperclip-ui/cli": "^18.4.7",
-    "@paperclip-ui/core": "^18.4.7"
+    "@paperclip-ui/cli": "^18.5.0",
+    "@paperclip-ui/core": "^18.5.0"
   }
 }

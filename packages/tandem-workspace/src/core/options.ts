@@ -1,5 +1,6 @@
 import { ContentChange } from "@paperclip-ui/source-writer";
 import { ExprSource } from "@paperclip-ui/utils";
+import { LogLevel, RPCServer } from "@paperclip-ui/common";
 
 export type ProjectOptions = {
   installDependencies?: boolean;
@@ -7,11 +8,14 @@ export type ProjectOptions = {
 
 export type WorkspaceAdapter = {
   revealSource: (source: ExprSource) => void;
-  applyCodeChanges: (changes: Record<string, ContentChange[]>) => void;
 };
 
 export type Options = {
+  pause?: boolean;
+  logLevel: LogLevel;
   autoSave?: boolean;
+  rpcServer?: RPCServer;
+  useHttpServer?: boolean;
   http?: {
     port: number;
   };

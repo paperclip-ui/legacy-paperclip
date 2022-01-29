@@ -1,40 +1,43 @@
-import { SocketIo } from "./socket";
-import sockjs from "sockjs";
-import { channels } from "@tandem-ui/designer";
-import { Directory, FSItemKind } from "@tandem-ui/designer/lib/state";
-import { sockAdapter, Channel } from "@paperclip-ui/common";
+import { RPCClientAdapter, RPCServer } from "@paperclip-ui/common";
+import * as channels from "@tandem-ui/workspace-core/lib/channels";
+import { Channel } from "@paperclip-ui/common";
 import { Workspace } from "./workspace";
-import { isPlainTextFile, Logger } from "@tandem-ui/common";
+import { isPlainTextFile } from "@tandem-ui/common";
 import * as URL from "url";
-import * as path from "path";
 import * as fs from "fs";
 import {
   engineDelegateChanged,
   Expression,
   isPaperclipFile,
-  VirtNodeSource
+  NodeStyleInspection,
+  VirtNodeSource,
 } from "@paperclip-ui/utils";
 import { VFS } from "./vfs";
-import { PCMutation, PCSourceWriter } from "@paperclip-ui/source-writer";
 import { exec } from "child_process";
 import { Options } from "../core/options";
+import { Logger } from "@paperclip-ui/common";
+import { EngineDelegate, paperclipSourceGlobPattern } from "@paperclip-ui/core";
+import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
+import globby from "globby";
 
 export class RPC {
   constructor(
-    sockio: SocketIo,
+    server: RPCServer,
     private _workspace: Workspace,
+    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
     private _options: Options
   ) {
-    sockio.on("connection", this._onConnection);
+    server.onConnection(this._onConnection);
   }
-  private _onConnection = (connection: sockjs.Connection) => {
+  private _onConnection = (connection: RPCClientAdapter) => {
     this._logger.info(`Connection established`);
     new Connection(
       connection,
       this._workspace,
+      this._engine,
       this._vfs,
       this._logger,
       this._httpPort,
@@ -54,55 +57,76 @@ class Connection {
   private _disposeEngineListener: any;
 
   constructor(
-    connection: sockjs.Connection,
+    connection: RPCClientAdapter,
     private _workspace: Workspace,
+    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
     private _options: Options
   ) {
-    const adapter = sockAdapter(connection);
-    this._events = channels.eventsChannel(adapter);
-    channels.getAllScreensChannel(adapter).listen(this._getAllScreens);
+    this._events = channels.eventsChannel(connection);
+    channels.getAllScreensChannel(connection).listen(this._getAllScreens);
     channels
-      .loadVirtualNodeSourcesChannel(adapter)
+      .loadVirtualNodeSourcesChannel(connection)
       .listen(this._loadNodeSources);
-    channels.helloChannel(adapter).listen(this._initialize);
-    channels.loadDirectoryChannel(adapter).listen(this._loadDirectory);
-    channels.inspectNodeStyleChannel(adapter).listen(this._inspectNode);
-    channels.revealNodeSourceChannel(adapter).listen(this._revealSource);
+    channels.helloChannel(connection).listen(this._initialize);
+    // channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
+    channels.openProjectChannel(connection).listen(this._openProject);
     channels
-      .revealNodeSourceByIdChannel(adapter)
+      .getAllPaperclipFilesChannel(connection)
+      .listen(this._getAllPaperclipFiles);
+
+    // TODO
+    channels.inspectNodeStyleChannel(connection).listen(this._inspectNode);
+    channels.revealNodeSourceChannel(connection).listen(this._revealSource);
+    channels
+      .revealNodeSourceByIdChannel(connection)
       .listen(this._revealSourceById);
-    channels.popoutWindowChannel(adapter).listen(this._popoutWindow);
-    channels.openFileChannel(adapter).listen(this._openFile);
-    channels.editCodeChannel(adapter).listen(this._editCode);
-    channels.commitChangesChannel(adapter).listen(this._commitChanges);
-    channels.setBranchChannel(adapter).listen(this._setBranch);
-    channels.editPCSourceChannel(adapter).listen(this._editPCSource);
+    channels.popoutWindowChannel(connection).listen(this._popoutWindow);
+    channels.openFileChannel(connection).listen(this._openFile);
+    channels.commitChangesChannel(connection).listen(this._commitChanges);
+    // channels.setBranchChannel(connection).listen(this._setBranch);
+    // channels.editPCSourceChannel(connection).listen(this._editPCSource);
   }
 
   private getProject() {
     return this._workspace.getProjectById(this._projectId);
   }
 
+  private _getAllPaperclipFiles = async ({ projectId }) => {
+    const project = this._workspace.getProjectById(projectId);
+    const filePaths = await globby(
+      paperclipSourceGlobPattern(project.repository.localDirectory),
+      {
+        cwd: project.repository.localDirectory,
+        ignore: ["**/node_modules/**"],
+        gitignore: true,
+      }
+    );
+    return filePaths.map((filePath) => URL.pathToFileURL(filePath).href);
+  };
+
+  private _openProject = async ({ id, uri, branch }) => {
+    const project = id
+      ? this._workspace.getProjectById(id)
+      : await this._workspace.start(uri, branch);
+
+    return {
+      id: project.getId(),
+      directoryPath: project.repository.localDirectory,
+      directoryUri: URL.pathToFileURL(
+        project.repository.localDirectory
+      ).toString(),
+    };
+  };
+
   private _editCode = async ({ uri, value }) => {
     this._vfs.updateFileContent(uri, value);
   };
 
-  // TODO - need to remove this eventually in favor of CRDT document sync
-
-  private _editPCSource = async (mutations: PCMutation[]) => {
-    const writer = new PCSourceWriter(this.getProject().engine);
-    const changes = writer.apply(mutations);
-    this._options.adapter?.applyCodeChanges(changes);
-  };
-
-  private _revealSource = (source: VirtNodeSource) => {
-    const info = this.getProject().engine.getVirtualNodeSourceInfo(
-      source.path,
-      source.uri
-    );
+  private _revealSource = async (source: VirtNodeSource) => {
+    const info = this._engine.getVirtualNodeSourceInfo(source.path, source.uri);
 
     if (info) {
       this._options.adapter?.revealSource(info);
@@ -114,42 +138,48 @@ class Connection {
     }
   };
 
-  private _revealSourceById = (sourceId: string) => {
-    const [uri, expr] = this.getProject().engine.getExpressionById(
-      sourceId
-    ) as [string, Expression];
+  private _revealSourceById = async (sourceId: string) => {
+    const [uri, expr] = this._engine.getExpressionById(sourceId) as [
+      string,
+      Expression
+    ];
 
     this._options.adapter?.revealSource({
       sourceId,
       textSource: {
         range: expr.range,
-        uri
-      }
+        uri,
+      },
     });
   };
 
-  private _loadNodeSources = (sources: VirtNodeSource[]) => {
+  private _loadNodeSources = async (
+    sources: VirtNodeSource[]
+  ): Promise<VirtualNodeSourceInfo[]> => {
     const project = this.getProject();
 
-    return sources.map(info => {
-      return {
-        virtualNodePath: info.path,
-        source: project.engine.getVirtualNodeSourceInfo(info.path, info.uri)
-      };
+    return sources.map((info) => {
+      return this._engine.getVirtualNodeSourceInfo(info.path, info.uri);
+      // return {
+      //   virtualNodePath: info.path,
+      //   sourceId: this._engine.getVirtualNodeSourceInfo(info.path, info.uri).sourceId
+      // };
     });
   };
 
-  private _popoutWindow = ({ path }) => {
+  private _popoutWindow = async ({ path }) => {
     let host = `http://localhost:${this._httpPort}`;
     let url = host + path;
     exec(`open "${url}"`);
   };
 
-  private _inspectNode = (sources: VirtNodeSource[]) => {
+  private _inspectNode = async (
+    sources: VirtNodeSource[]
+  ): Promise<Array<[VirtNodeSource, NodeStyleInspection]>> => {
     const project = this.getProject();
-    return sources.map(source => [
+    return sources.map((source) => [
       source,
-      project.engine.inspectNodeStyles(source, 0)
+      this._engine.inspectNodeStyles(source, 0),
     ]);
   };
 
@@ -165,14 +195,14 @@ class Connection {
       return {
         uri,
         data: project.openPCFile(uri),
-        document: project.getPCContent(uri)
+        document: project.getPCContent(uri),
       };
     }
 
     return {
       uri,
       data: null,
-      document: isPlainTextFile(uri) ? fs.readFileSync(uri, "utf-8") : null
+      document: isPlainTextFile(uri) ? fs.readFileSync(uri, "utf-8") : null,
     };
   };
   private _commitChanges = async ({ description }) => {
@@ -192,9 +222,9 @@ class Connection {
         branchInfo: {
           branchable: false,
           branches: [],
-          currentBranch: null
+          currentBranch: null,
         },
-        localResourceRoots: []
+        localResourceRoots: [],
       };
     }
 
@@ -206,9 +236,9 @@ class Connection {
       branchInfo: {
         branches: await project.repository.getBranches(),
         branchable: project.isBranchable(),
-        currentBranch: await project.repository.getCurrentBranch()
+        currentBranch: await project.repository.getCurrentBranch(),
       },
-      localResourceRoots: [project.repository.localDirectory]
+      localResourceRoots: [project.repository.localDirectory],
     };
   };
 
@@ -219,7 +249,7 @@ class Connection {
 
     const project = this.getProject();
 
-    this._disposeEngineListener = project.onPCEngineEvent(event => {
+    this._disposeEngineListener = project.onPCEngineEvent((event) => {
       this._events.call(engineDelegateChanged(event));
     });
   }
@@ -227,34 +257,34 @@ class Connection {
   private _setBranch = ({ branchName }) => {
     this.getProject().checkout(branchName);
   };
-  private _loadDirectory = async ({
-    path: dirPath,
-    ...rest
-  }): Promise<Directory> => {
-    return new Promise((resolve, reject) => {
-      fs.readdir(dirPath, (err, basenames) => {
-        if (err) {
-          return reject(err);
-        }
+  // private _loadDirectory = async ({
+  //   path: dirPath,
+  //   ...rest
+  // }): Promise<Directory> => {
+  //   return new Promise((resolve, reject) => {
+  //     fs.readdir(dirPath, (err, basenames) => {
+  //       if (err) {
+  //         return reject(err);
+  //       }
 
-        resolve({
-          absolutePath: dirPath,
-          url: URL.pathToFileURL(dirPath).toString(),
-          kind: FSItemKind.DIRECTORY,
-          name: path.basename(dirPath),
-          children: basenames.map(basename => {
-            const absolutePath = path.join(dirPath, basename);
-            const isDir = fs.lstatSync(absolutePath).isDirectory();
-            return {
-              absolutePath,
-              url: URL.pathToFileURL(absolutePath).toString(),
-              name: basename,
-              kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
-              children: isDir ? [] : undefined
-            };
-          })
-        });
-      });
-    });
-  };
+  //       resolve({
+  //         absolutePath: dirPath,
+  //         url: URL.pathToFileURL(dirPath).toString(),
+  //         kind: FSItemKind.DIRECTORY,
+  //         name: path.basename(dirPath),
+  //         children: basenames.map((basename) => {
+  //           const absolutePath = path.join(dirPath, basename);
+  //           const isDir = fs.lstatSync(absolutePath).isDirectory();
+  //           return {
+  //             absolutePath,
+  //             url: URL.pathToFileURL(absolutePath).toString(),
+  //             name: basename,
+  //             kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
+  //             children: isDir ? [] : undefined,
+  //           };
+  //         }),
+  //       });
+  //     });
+  //   });
+  // };
 }

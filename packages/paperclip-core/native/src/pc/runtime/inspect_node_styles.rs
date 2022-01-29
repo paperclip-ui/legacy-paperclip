@@ -17,7 +17,6 @@ use super::selector_match::{
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::DependencyGraph;
 use crate::css::ast as css_ast;
-use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
 use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
@@ -27,10 +26,7 @@ use crate::script::runtime::virt as script_virt;
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use serde::Serialize;
-use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
-use std::thread::sleep;
-use std::time::Duration;
 /*
 
 inherited props:

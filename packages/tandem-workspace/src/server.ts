@@ -1,74 +1,121 @@
-import { Logger, startHTTPServer } from "@tandem-ui/common";
-import { Designer } from "./controllers/designer";
+import { startHTTPServer } from "@tandem-ui/common";
 import { SSHKeys } from "./controllers/ssh";
+import * as http from "http";
 import { Workspace } from "./controllers/workspace";
 import { Project } from "./controllers/project";
-import { Kernel } from "./core/kernel";
 import { Options } from "./core/options";
 import { addRoutes } from "./routes";
-import { RPC } from "./controllers/rpc";
-import { SocketIo } from "./controllers/socket";
+import { WebSocketServer } from "ws";
 import { VFS } from "./controllers/vfs";
+import {
+  loadEngineDelegate,
+  EngineDelegate,
+  EngineMode,
+} from "@paperclip-ui/core";
+import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
+import { Logger, wsServerAdapter } from "@paperclip-ui/common";
+import { RPC } from "./controllers/rpc";
+import { Designer } from "./controllers/designer";
+
 const getPort = require("get-port");
 
 export { Workspace, Project };
 
 export const start = async (options: Options) => {
-  return (await prepare(options)).workspace;
+  const server = new Server(options);
+  await server.start();
+  return server;
 };
 
-const prepare = async (options: Options) => {
-  const logger = new Logger();
-  logger.info(`Workspace started 🚀`);
+export class Server {
+  private _logger: Logger;
+  private _httpServer: http.Server;
+  private _port: number;
+  private _workspace: Workspace;
+  private _engine: EngineDelegate;
 
-  const httpPort = options.http?.port || (await getPort());
+  constructor(readonly options: Options) {
+    this._logger = new Logger(options.logLevel);
+  }
+  getPort() {
+    return this._port;
+  }
+  getWorkspace() {
+    return this._workspace;
+  }
+  getEngine() {
+    return this._engine;
+  }
+  async start() {
+    this._logger.info(`Workspace started 🚀`);
+    let httpServer;
+    let expressServer;
+    let httpPort;
 
-  const [expressServer, httpServer] = startHTTPServer(httpPort, logger);
+    if (this.options.useHttpServer !== false) {
+      httpPort = this._port = this.options.http?.port || (await getPort());
+      [expressServer, httpServer] = startHTTPServer(httpPort, this._logger);
+      this._httpServer = httpServer;
+    }
 
-  const vfs = new VFS(options.autoSave, logger);
-  const sock = new SocketIo(httpServer);
-  const workspace = new Workspace(
-    null,
-    new SSHKeys(logger),
-    vfs,
-    logger,
-    options,
-    httpPort
-  );
+    this._httpServer = httpServer;
 
-  const kernel: Kernel = {
-    options,
-    expressServer,
-    httpServer,
-    sockio: sock,
-    rpc: new RPC(sock, workspace, vfs, logger, httpPort, options),
-    designer: new Designer(expressServer),
-    workspace,
-    logger
-  };
+    const vfs = new VFS(this.options.autoSave, this._logger);
 
-  addRoutes(kernel);
+    let rpcServer = this.options.rpcServer;
+    if (!rpcServer) {
+      const ws = new WebSocketServer({ path: "/ws", server: httpServer });
+      rpcServer = wsServerAdapter(ws);
+    }
 
-  // need to wait for http server to spin up. This is a really dumb approach.
-  await new Promise(resolve => {
-    setTimeout(resolve, 500);
-  });
+    const paperclipEngine = (this._engine = await loadEngineDelegate({
+      mode: EngineMode.MultiFrame,
+    }));
 
-  return kernel;
-};
+    const documentManager = await EditorHost.start(
+      paperclipEngine,
+      rpcServer,
+      this._logger
+    );
 
-// const init = async ({ options, workspace }: Kernel) => {
-//   if (options.project) {
-//     const project = await workspace.start(
-//       getProjectUrl(options.project, options.cwd),
-//       options.branch
-//     );
+    const workspace = (this._workspace = new Workspace(
+      null,
+      new SSHKeys(this._logger),
+      vfs,
+      this._logger,
+      paperclipEngine,
+      this.options,
+      httpPort,
+      documentManager
+    ));
 
-//     // only useful for CLI usage
-//     if (options.openInitial) {
-//       execa("open", [
-//         `http://localhost:${options.http.port}?projectId=${project.id}&showAll=true`
-//       ]);
-//     }
-//   }
-// };
+    if (expressServer) {
+      new Designer(expressServer);
+      addRoutes(expressServer, this._logger, workspace);
+    }
+    new RPC(
+      rpcServer,
+      workspace,
+      paperclipEngine,
+      vfs,
+      this._logger,
+      this._port,
+      this.options
+    );
+
+    // need to wait for http server to spin up. This is a really dumb approach.
+    // pause option specifically for testing.
+    if (this.options.pause !== false) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 500);
+      });
+    }
+  }
+
+  stop() {
+    if (this._httpServer) {
+      this._httpServer.close();
+    }
+    this._workspace.dispose();
+  }
+}

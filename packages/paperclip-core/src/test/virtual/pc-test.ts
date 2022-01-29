@@ -4,20 +4,20 @@ import {
   cleanHTML,
   waitForError,
   stringifyLoadResult,
-  noop
+  noop,
 } from "../utils";
 import {
   EngineDelegateEventKind,
   LoadedPCData,
   PCExports,
-  stringifyVirtualNode
+  stringifyVirtualNode,
 } from "@paperclip-ui/utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
     const graph = {
       "/entry.pc": `<import src="/module.pc"  />`,
-      "/module.pc": `<import src="/entry.pc"  />`
+      "/module.pc": `<import src="/entry.pc"  />`,
     };
     const engine = await createMockEngine(graph);
     let err;
@@ -39,7 +39,7 @@ describe(__filename + "#", () => {
         <Component />
         <Component alt />
         <Component alt2 />
-      `
+      `,
     };
     const engine = await createMockEngine(graph);
     const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
@@ -67,7 +67,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
@@ -87,7 +87,7 @@ describe(__filename + "#", () => {
         <div>
         </div>
       `,
-      "/module.pc": `<bad`
+      "/module.pc": `<bad`,
     };
     const engine = await createMockEngine(graph);
     let err;
@@ -104,9 +104,9 @@ describe(__filename + "#", () => {
         message: "End of file",
         range: {
           start: { pos: 0, line: 0, column: 0 },
-          end: { pos: 0, line: 0, column: 0 }
-        }
-      }
+          end: { pos: 0, line: 0, column: 0 },
+        },
+      },
     });
   });
 
@@ -118,7 +118,7 @@ describe(__filename + "#", () => {
         <div>
         </div>
       `,
-      "/module.pc": `<bad!`
+      "/module.pc": `<bad!`,
     };
     const engine = await createMockEngine(graph);
     let err;
@@ -135,9 +135,9 @@ describe(__filename + "#", () => {
         message: "Unexpected token",
         range: {
           start: { pos: 4, line: 1, column: 5 },
-          end: { pos: 4, line: 1, column: 5 }
-        }
-      }
+          end: { pos: 4, line: 1, column: 5 },
+        },
+      },
     });
   });
 
@@ -149,7 +149,7 @@ describe(__filename + "#", () => {
         <module>
         </module>
       `,
-      "/module.pc": `nothing to export!`
+      "/module.pc": `nothing to export!`,
     };
     const engine = await createMockEngine(graph);
     let err;
@@ -163,9 +163,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 58, line: 4, column: 9 },
-        end: { pos: 66, line: 4, column: 17 }
+        end: { pos: 66, line: 4, column: 17 },
       },
-      message: "Unable to find component, or it's not exported."
+      message: "Unable to find component, or it's not exported.",
     });
   });
 
@@ -173,12 +173,12 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <img src="/not/found.png" />
-      `
+      `,
     };
     const engine = await createMockEngine(graph, noop, {
       resolveFile() {
         return null;
-      }
+      },
     });
 
     let err;
@@ -192,9 +192,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 19, line: 2, column: 19 },
-        end: { pos: 33, line: 2, column: 33 }
+        end: { pos: 33, line: 2, column: 33 },
       },
-      message: "Unable to resolve file: /not/found.png"
+      message: "Unable to resolve file: /not/found.png",
     });
   });
 
@@ -203,7 +203,7 @@ describe(__filename + "#", () => {
       const graph = {
         "/entry.pc": `
           <div a={<div />}></div>
-        `
+        `,
       };
       const engine = await createMockEngine(graph);
       const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
@@ -215,7 +215,7 @@ describe(__filename + "#", () => {
     });
     it(`Can render a slot with a negative number`, async () => {
       const graph = {
-        "/entry.pc": `<span>{-1}</span>`
+        "/entry.pc": `<span>{-1}</span>`,
       };
       const engine = await createMockEngine(graph);
       const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
@@ -229,7 +229,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         abc
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -248,9 +248,9 @@ describe(__filename + "#", () => {
         message: "End of file",
         range: {
           start: { pos: 0, line: 0, column: 0 },
-          end: { pos: 0, line: 0, column: 0 }
-        }
-      }
+          end: { pos: 0, line: 0, column: 0 },
+        },
+      },
     });
 
     let err2;
@@ -268,9 +268,9 @@ describe(__filename + "#", () => {
         message: "End of file",
         range: {
           start: { pos: 0, line: 0, column: 0 },
-          end: { pos: 0, line: 0, column: 0 }
-        }
-      }
+          end: { pos: 0, line: 0, column: 0 },
+        },
+      },
     });
 
     engine.updateVirtualFileContent(`/entry.pc`, `<a></a>`);
@@ -291,7 +291,7 @@ describe(__filename + "#", () => {
         <div export component as="default">
           {children} cde
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -330,9 +330,9 @@ describe(__filename + "#", () => {
         message: "Unterminated slot.",
         range: {
           start: { pos: 41, line: 2, column: 6 },
-          end: { pos: 44, line: 2, column: 9 }
-        }
-      }
+          end: { pos: 44, line: 2, column: 9 },
+        },
+      },
     });
 
     // introduce fix
@@ -353,7 +353,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         {10.10.10}
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -368,9 +368,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 10, line: 2, column: 10 },
-        end: { pos: 18, line: 2, column: 18 }
+        end: { pos: 18, line: 2, column: 18 },
       },
-      message: "Invalid number."
+      message: "Invalid number.",
     });
   });
 
@@ -378,7 +378,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         &times;
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -398,7 +398,7 @@ describe(__filename + "#", () => {
         </div>
         <div export component as="Test2">
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -410,36 +410,36 @@ describe(__filename + "#", () => {
         properties: {
           c: {
             name: "c",
-            optional: false
+            optional: false,
           },
           e: {
             name: "e",
-            optional: true
+            optional: true,
           },
           a: {
             name: "a",
-            optional: true
+            optional: true,
           },
           b: {
             name: "b",
-            optional: false
+            optional: false,
           },
           f: {
             name: "f",
-            optional: false
+            optional: false,
           },
           d: {
             name: "d",
-            optional: false
-          }
+            optional: false,
+          },
         },
-        public: false
+        public: false,
       },
       Test2: {
         name: "Test2",
         properties: {},
-        public: true
-      }
+        public: true,
+      },
     });
   });
 
@@ -448,7 +448,7 @@ describe(__filename + "#", () => {
       "/entry.pc": `
         <div component as="Test">
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -458,8 +458,8 @@ describe(__filename + "#", () => {
       Test: {
         name: "Test",
         properties: {},
-        public: false
-      }
+        public: false,
+      },
     });
 
     await engine.updateVirtualFileContent(
@@ -473,8 +473,8 @@ describe(__filename + "#", () => {
       Test2: {
         name: "Test2",
         properties: {},
-        public: false
-      }
+        public: false,
+      },
     });
   });
 
@@ -484,7 +484,7 @@ describe(__filename + "#", () => {
         <div component as="Test">
           {a && b? && (c) && <b>{d}</b>}
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -496,23 +496,23 @@ describe(__filename + "#", () => {
         properties: {
           a: {
             name: "a",
-            optional: false
+            optional: false,
           },
           b: {
             name: "b",
-            optional: true
+            optional: true,
           },
           c: {
             name: "c",
-            optional: false
+            optional: false,
           },
           d: {
             name: "d",
-            optional: false
-          }
+            optional: false,
+          },
         },
-        public: false
-      }
+        public: false,
+      },
     });
   });
 
@@ -523,7 +523,7 @@ describe(__filename + "#", () => {
         </div>
         <div export component as="Test">
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -540,9 +540,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 58, line: 4, column: 9 },
-        end: { pos: 105, line: 5, column: 15 }
+        end: { pos: 105, line: 5, column: 15 },
       },
-      message: "Component name is already declared."
+      message: "Component name is already declared.",
     });
   });
 
@@ -559,7 +559,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -580,9 +580,9 @@ describe(__filename + "#", () => {
         message: "Unterminated element.",
         range: {
           start: { pos: 9, line: 2, column: 9 },
-          end: { pos: 34, line: 2, column: 34 }
-        }
-      }
+          end: { pos: 34, line: 2, column: 34 },
+        },
+      },
     });
   });
 
@@ -590,7 +590,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <div <div />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -611,9 +611,9 @@ describe(__filename + "#", () => {
         message: "Unexpected token",
         range: {
           start: { pos: 14, line: 2, column: 14 },
-          end: { pos: 14, line: 2, column: 14 }
-        }
-      }
+          end: { pos: 14, line: 2, column: 14 },
+        },
+      },
     });
   });
 
@@ -624,7 +624,7 @@ describe(__filename + "#", () => {
         <div component as="Test" {class}>
         </div>
         <Test class="ok" />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -641,7 +641,7 @@ describe(__filename + "#", () => {
         <div component as="Test" className={className?}>
         </div>
         <Test className="ok" />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -658,7 +658,7 @@ describe(__filename + "#", () => {
         <div component as="Test" className="a {className?}">
         </div>
         <Test className="ok" />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -678,7 +678,7 @@ describe(__filename + "#", () => {
       "/module.pc": `
         <div export component as="Test" class="a {className?}">
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -700,7 +700,7 @@ describe(__filename + "#", () => {
         <Test background="b" />
         <Test color="a" background="b" />
         <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -721,7 +721,7 @@ describe(__filename + "#", () => {
           }
         </style>
         <div class="its_a_match"></div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -739,7 +739,7 @@ describe(__filename + "#", () => {
           <div component as="Test">
           </div>
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -758,9 +758,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 25, line: 3, column: 11 },
-        end: { pos: 67, line: 4, column: 17 }
+        end: { pos: 67, line: 4, column: 17 },
       },
-      message: "Components need to be defined at the root."
+      message: "Components need to be defined at the root.",
     });
   });
 
@@ -770,7 +770,7 @@ describe(__filename + "#", () => {
         <div test={<div component as="blarg" />}>
           
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -789,9 +789,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 20, line: 2, column: 20 },
-        end: { pos: 48, line: 2, column: 48 }
+        end: { pos: 48, line: 2, column: 48 },
       },
-      message: "Components need to be defined at the root."
+      message: "Components need to be defined at the root.",
     });
   });
 
@@ -802,7 +802,7 @@ describe(__filename + "#", () => {
         <div class="$tw.test">
           
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -820,9 +820,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 20, line: 2, column: 20 },
-        end: { pos: 29, line: 2, column: 29 }
+        end: { pos: 29, line: 2, column: 29 },
       },
-      message: "Reference not found."
+      message: "Reference not found.",
     });
   });
 
@@ -839,7 +839,7 @@ describe(__filename + "#", () => {
         <style>
 
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -857,9 +857,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 69, line: 3, column: 24 },
-        end: { pos: 78, line: 3, column: 33 }
+        end: { pos: 78, line: 3, column: 33 },
       },
-      message: "Class name not found."
+      message: "Class name not found.",
     });
   });
 
@@ -877,7 +877,7 @@ describe(__filename + "#", () => {
 
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -895,9 +895,9 @@ describe(__filename + "#", () => {
       uri: "/entry.pc",
       range: {
         start: { pos: 69, line: 3, column: 24 },
-        end: { pos: 78, line: 3, column: 33 }
+        end: { pos: 78, line: 3, column: 33 },
       },
-      message: "This class reference is private."
+      message: "This class reference is private.",
     });
   });
 
@@ -917,7 +917,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -943,7 +943,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -969,7 +969,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -997,7 +997,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1024,7 +1024,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1042,7 +1042,7 @@ describe(__filename + "#", () => {
         </div>
         <Test />
         <Test tagName="span" />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1059,7 +1059,7 @@ describe(__filename + "#", () => {
         </div>
         <Test />
         <Test tagName="span" />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1076,7 +1076,7 @@ describe(__filename + "#", () => {
           {slot}
         </div>
         <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1097,12 +1097,12 @@ describe(__filename + "#", () => {
       "/a.pc": `a`,
       "/b.pc": `
         <div export component as="default">b</div>
-      `
+      `,
     };
 
     let crashErr;
 
-    const engine = await createMockEngine(graph, e => {
+    const engine = await createMockEngine(graph, (e) => {
       crashErr = e;
     });
 
@@ -1149,7 +1149,7 @@ describe(__filename + "#", () => {
             }
           </style>
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1173,7 +1173,7 @@ describe(__filename + "#", () => {
           </style>
           abba
         </span>} />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1196,7 +1196,7 @@ describe(__filename + "#", () => {
           </style>
         </div>
       `,
-      "/path.png": ""
+      "/path.png": "",
     };
 
     const engine = await createMockEngine(graph);
@@ -1219,7 +1219,7 @@ describe(__filename + "#", () => {
             @include a;
           </style>
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1243,7 +1243,7 @@ describe(__filename + "#", () => {
             @include a;
           </style>
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1261,7 +1261,7 @@ describe(__filename + "#", () => {
             background: blue;
           </style>
         </input>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1299,7 +1299,7 @@ describe(__filename + "#", () => {
             }
           </style>
         </input>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1320,7 +1320,7 @@ describe(__filename + "#", () => {
             background: blue;
           </style>
         </Test>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1341,7 +1341,7 @@ describe(__filename + "#", () => {
             background: blue;
           </style>
         </Test>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1368,7 +1368,7 @@ describe(__filename + "#", () => {
           </style>
         </Test2>
 
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1382,7 +1382,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         a
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1391,11 +1391,11 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
     await engine.updateVirtualFileContent("/entry.pc", "b");
     await engine.updateVirtualFileContent("/entry.pc", "c");
-    expect(events.map(event => event.kind)).to.eql([
+    expect(events.map((event) => event.kind)).to.eql([
       EngineDelegateEventKind.Loaded,
       EngineDelegateEventKind.Evaluated,
       EngineDelegateEventKind.Diffed,
-      EngineDelegateEventKind.Diffed
+      EngineDelegateEventKind.Diffed,
     ]);
   });
 
@@ -1422,7 +1422,7 @@ describe(__filename + "#", () => {
       </div>
       
       <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1444,7 +1444,7 @@ describe(__filename + "#", () => {
       </div>
       
       <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1466,7 +1466,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1486,7 +1486,7 @@ describe(__filename + "#", () => {
           }
         }
       </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1500,7 +1500,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
       <span></span>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1518,7 +1518,7 @@ describe(__filename + "#", () => {
       <!--
         @frame {}
       -->
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1552,7 +1552,7 @@ describe(__filename + "#", () => {
         </style>
       </Test2>
 
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1575,7 +1575,7 @@ describe(__filename + "#", () => {
       {false && <div>D</div> || false || 99 \n\n}
       {false && <div>D</div> || false || 0 && "blah" }
       {false || <div>F</div> }
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1595,7 +1595,7 @@ describe(__filename + "#", () => {
       {!!!false}
       {!!!0}
       {!0 && <div>A</div>}
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1611,7 +1611,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
       {(true || true) && <div>Something</div>}
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1629,7 +1629,7 @@ describe(__filename + "#", () => {
       <a_2 />
       <_a_2 />
       <$a />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1658,7 +1658,7 @@ describe(__filename + "#", () => {
           color: red;
         </style>
       </div>}/>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1682,7 +1682,7 @@ describe(__filename + "#", () => {
         <Test />
         <Test a />
 
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1704,7 +1704,7 @@ describe(__filename + "#", () => {
         <div export component as="Test">
           {children} b
         </div>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1735,7 +1735,7 @@ describe(__filename + "#", () => {
   // https://github.com/paperclipui/paperclip/issues/708
   it(`Re-evaluates module after error & no change`, async () => {
     const graph = {
-      "/entry.pc": `<div />`
+      "/entry.pc": `<div />`,
     };
 
     const engine = await createMockEngine(graph);
@@ -1743,7 +1743,7 @@ describe(__filename + "#", () => {
 
     let lastEvent;
 
-    engine.onEvent(e => {
+    engine.onEvent((e) => {
       lastEvent = e;
     });
 
@@ -1762,9 +1762,9 @@ describe(__filename + "#", () => {
         message: "Unexpected token",
         range: {
           start: { pos: 5, line: 1, column: 6 },
-          end: { pos: 5, line: 1, column: 6 }
-        }
-      }
+          end: { pos: 5, line: 1, column: 6 },
+        },
+      },
     });
 
     await engine.updateVirtualFileContent("/entry.pc", "<div />");
@@ -1783,12 +1783,12 @@ describe(__filename + "#", () => {
             classNames: {},
             mixins: {},
             variables: {},
-            keyframes: {}
+            keyframes: {},
           },
-          components: {}
+          components: {},
         },
-        mutations: []
-      }
+        mutations: [],
+      },
     });
   });
 
@@ -1809,7 +1809,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1836,7 +1836,7 @@ describe(__filename + "#", () => {
       "/b.pc": `
         <style>
         </style>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1853,7 +1853,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <img src="/blah.png" />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
@@ -1865,5 +1865,22 @@ describe(__filename + "#", () => {
     }
     expect(err).not.eql(undefined);
     expect(err.message).to.eql(`Unable to resolve file: /blah.png`);
+  });
+
+  it(`Keeps imports sorted as they came in`, async () => {
+    const graph = {
+      // imp.pc has different sorting in BTreeMap
+      "/entry.pc": `<import src="/imp2.pc" /><import src="/imp.pc" /><div />`,
+      "/imp.pc": `<style>div { color: red; }</style>`,
+      "/imp2.pc": `<style>div { color: orange; }</style>`,
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.open("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style>div._784a0bc6 { color:orange; } div._f7127f1d { color:red; }</style><div class="_80f4925f _pub-80f4925f"></div>`
+    );
   });
 });

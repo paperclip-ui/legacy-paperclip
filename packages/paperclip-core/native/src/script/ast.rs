@@ -20,7 +20,7 @@ pub enum Expression {
 }
 
 impl Expr for Expression {
-  fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
+  fn walk<'a>(&'a self, visitor: &mut dyn ExprVisitor<'a>) {
     visitor.visit_script_expression(self);
     if !visitor.should_continue() {
       return;
@@ -121,6 +121,7 @@ impl Expression {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Group {
+
   pub id: String,
   pub range: Range,
   pub expression: Box<Expression>,

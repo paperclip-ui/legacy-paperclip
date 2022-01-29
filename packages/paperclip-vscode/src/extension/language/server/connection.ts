@@ -1,96 +1,67 @@
 import {
   Connection,
-  createConnection,
-  ProposedFeatures,
   TextDocumentSyncKind,
   InitializeParams,
   WorkspaceFolder,
   DidChangeTextDocumentParams,
   DidOpenTextDocumentParams,
   DidCloseTextDocumentParams,
-  TextEdit
 } from "vscode-languageserver";
-import { BaseEvent, Observable, Observer } from "@paperclip-ui/common";
-import { $$EVENT } from "./constants";
-import { fixFileUrlCasing } from "../../utils";
-import { Initialized, TextDocumentChanged, TextDocumentOpened } from "./events";
+import { createListener, fixFileUrlCasing } from "../../utils";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { LanguageRequestResolver } from "./resolver";
+import { DocumentManager } from "./documents";
+import { EventEmitter } from "stream";
+import { languageClientRPCAdapter } from "../../rpc";
+import { WorkspaceClient } from "@tandem-ui/workspace-client";
+import {
+  designServerStartedChannel,
+  DesignServerStartedInfo,
+  revealSourceChannel,
+} from "../../channels";
+import { PaperclipDesignServer } from "./design-server";
 
-export class DocumentManager {
-  private _documents: Record<string, TextDocument>;
-  readonly events: Observable;
-  constructor() {
-    this._documents = {};
-    this.events = new Observable();
-  }
-  getDocument(uri: string) {
-    return this._documents[uri];
-  }
-  updateDocument(uri: string, document: TextDocument) {
-    const exists = this._documents[uri] != null;
-
-    this._documents[uri] = document;
-
-    if (exists) {
-      this.events.dispatch(new TextDocumentChanged(uri, document.getText()));
-    } else {
-      this.events.dispatch(new TextDocumentOpened(uri, document.getText()));
-    }
-  }
-  appleDocumentEdits(uri: string, edits: TextEdit[]) {
-    const text = TextDocument.applyEdits(this._documents[uri], edits);
-    this.events.dispatch(new TextDocumentChanged(uri, text));
-  }
-  removeDocument(uri: string) {
-    delete this._documents[uri];
-  }
-}
-
-export class PaperclipLanguageServerConnection implements Observer {
-  private _connection: Connection;
-  private _documents: DocumentManager;
+// TODO - need better SRP here, this class is doing too much
+export class PaperclipLanguageServerConnectionManager {
+  private _designServerStarted: ReturnType<typeof designServerStartedChannel>;
+  private _revealSource: ReturnType<typeof revealSourceChannel>;
   private _workspaceFolders: WorkspaceFolder[];
-  private _requestResolver: LanguageRequestResolver;
-  readonly events: Observable;
+  private _em: EventEmitter;
 
-  constructor(readonly config: any) {
-    this.events = new Observable();
-    this._documents = new DocumentManager();
-    this.events.source(this._documents.events);
+  constructor(
+    private _designServer: PaperclipDesignServer,
+    private _connection: Connection,
+    private _documents: DocumentManager,
+    readonly config: any
+  ) {
+    this._em = new EventEmitter();
   }
   activate() {
-    this._connection = createConnection(ProposedFeatures.all);
-    this._requestResolver = new LanguageRequestResolver(
-      this._connection,
-      this._documents
-    );
     this._connection.onInitialize(this._onConnectionInitialize);
     this._connection.onInitialized(this._onConnectionInitialized);
     this._connection.onDidOpenTextDocument(this._onDidOpenTextDocument);
     this._connection.onDidCloseTextDocument(this._onDidCloseTextDocument);
     this._connection.onDidChangeTextDocument(this._onDidChangeTextDocument);
-    this._connection.onNotification($$EVENT, this._onNotification);
+
+    const adapter = languageClientRPCAdapter(this._connection);
+    this._designServerStarted = designServerStartedChannel(adapter);
+    this._revealSource = revealSourceChannel(adapter);
+
+    this._designServer.onStarted(this._onDesignServerStarted);
+
+    this._designServer.onRevealSourceRequest((info) => {
+      console.log(`On reveal source request`);
+      this._revealSource.call(info);
+    });
+
     this._connection.listen();
   }
 
-  handleEvent(event: BaseEvent) {
-    if (event["toJSON"] || event["public"]) {
-      this._connection.sendNotification(
-        $$EVENT,
-        event["toJSON"] ? event["toJSON"]() : event
-      );
-    }
-
-    this._requestResolver.handleEvent(event);
+  onInitialize(listener: (details: { workspaceFolders: string[] }) => void) {
+    return createListener(this._em, "init", listener);
   }
 
-  _onNotification = event => {
-    this.events.dispatch(event);
-  };
-
   private _onDidOpenTextDocument = ({
-    textDocument
+    textDocument,
   }: DidOpenTextDocumentParams) => {
     const uri = fixFileUrlCasing(textDocument.uri);
     this._documents.updateDocument(
@@ -105,7 +76,7 @@ export class PaperclipLanguageServerConnection implements Observer {
   };
 
   private _onDidCloseTextDocument = ({
-    textDocument
+    textDocument,
   }: DidCloseTextDocumentParams) => {
     const uri = fixFileUrlCasing(textDocument.uri);
     this._documents.removeDocument(uri);
@@ -113,7 +84,7 @@ export class PaperclipLanguageServerConnection implements Observer {
 
   private _onDidChangeTextDocument = ({
     contentChanges,
-    textDocument
+    textDocument,
   }: DidChangeTextDocumentParams) => {
     const uri = fixFileUrlCasing(textDocument.uri);
 
@@ -128,27 +99,30 @@ export class PaperclipLanguageServerConnection implements Observer {
     this._documents.updateDocument(uri, newDocument);
   };
 
+  private _onDesignServerStarted = async (info: DesignServerStartedInfo) => {
+    this._designServerStarted.call(info);
+  };
+
   private _onConnectionInitialize = (params: InitializeParams) => {
     this._workspaceFolders = params.workspaceFolders || [];
 
     return {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental as any,
-        // Tell the client that the server supports code completion
         completionProvider: {
           resolveProvider: true,
-          triggerCharacters: [".", "<", '"', "'", "{", ":", " ", "(", ">", "$"]
+          triggerCharacters: [".", "<", '"', "'", "{", ":", " ", "(", ">", "$"],
         },
         documentLinkProvider: {
-          resolveProvider: true
+          resolveProvider: true,
         },
         colorProvider: true,
-        definitionProvider: true
-      }
+        definitionProvider: true,
+      },
     };
   };
 
-  private _onConnectionInitialized = async cd => {
-    this.events.dispatch(new Initialized(this._workspaceFolders));
+  private _onConnectionInitialized = async () => {
+    this._em.emit("init", { workspaceFolders: this._workspaceFolders });
   };
 }

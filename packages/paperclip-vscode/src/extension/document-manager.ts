@@ -1,34 +1,52 @@
 import { LiveWindowManager } from "./preview/live-window-manager";
 import {
   Selection,
+  TextEdit,
   TextEditor,
+  Range,
+  TextDocumentChangeEvent,
   ViewColumn,
-  Uri,
   window,
   workspace,
+  TextDocument,
   WorkspaceEdit,
-  TextEdit,
-  Range
+  Uri,
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
-import { eventHandlers, Observer } from "@paperclip-ui/common";
 import {
-  PCSourceEdited,
-  RevealSourceRequested
-} from "./language/server/events";
-import { stripFileProtocol } from "@paperclip-ui/utils";
-import * as URL from "url";
+  ExprSource,
+  isPaperclipResourceFile,
+  stripFileProtocol,
+} from "@paperclip-ui/utils";
+import { PaperclipLanguageClient } from "./language";
+import { DesignServerStartedInfo } from "./channels";
+import * as pce from "@paperclip-ui/editor-engine/lib/core/crdt-document";
+import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
+import { wsAdapter } from "@paperclip-ui/common";
+import * as ws from "ws";
+import * as Automerge from "automerge";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
   Always = "Always",
-  No = "No"
+  No = "No",
 }
 
-export class DocumentManager implements Observer {
+export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
+  private _editorClient: EditorClient;
+  private _remoteDocs: Record<string, pce.CRDTTextDocument> = {};
+  private _editing: Record<string, boolean> = {};
 
-  constructor(private _windows: LiveWindowManager) {}
+  constructor(
+    private _windows: LiveWindowManager,
+    private _client: PaperclipLanguageClient
+  ) {
+    console.log("DocumentManager::constructor");
+    this._client.onRevealSourceRequest(this._onRevealSourceRequested);
+    this._client.onDesignServerStarted(this._onDesignServerStarted);
+    workspace.onDidChangeTextDocument(this._onTextDocumentChange);
+  }
 
   activate() {
     window.onDidChangeActiveTextEditor(this._onActiveTextEditorChange);
@@ -72,20 +90,86 @@ export class DocumentManager implements Observer {
     }
   };
 
-  private _onRevealSourceRequested = async ({
-    source: { textSource }
-  }: RevealSourceRequested) => {
+  private _onDidOpenTextDocument = async (e: TextDocument) => {
+    const uri = e.uri.toString();
+
+    if (!isPaperclipResourceFile(uri) || this._remoteDocs[uri]) {
+      return;
+    }
+
+    const source = (this._remoteDocs[uri] = await this._editorClient
+      .getDocuments()
+      .open(uri)
+      .then((doc) => doc.getSource()));
+
+    // pce.CRDTTextDocument.load(source.toData());
+
+    // need to replace design server text completely since VS Code
+    // may store unsaved changes
+    source.setText(e.getText().split(""), 0, source.getText().length);
+
+    source.onSync((patch) => {
+      // don't bother syncing if the docs are identical
+      if (source.getText() === e.getText()) {
+        return;
+      }
+
+      // If not identical, then patch text editor doc to match CRDT doc since that is
+      // the source of truth
+      const syncEdits: TextEdit[] = getTextEditsFromPatch(e, patch);
+
+      const wsEdit = new WorkspaceEdit();
+      wsEdit.set(Uri.parse(uri), syncEdits);
+      workspace.applyEdit(wsEdit);
+    });
+  };
+
+  private _onTextDocumentChange = async (event: TextDocumentChangeEvent) => {
+    const uri = event.document.uri.toString();
+    if (!isPaperclipResourceFile(uri)) {
+      return;
+    }
+    const source = this._remoteDocs[uri];
+
+    // This will happen on sync, so make sure we're not executing OTs on a doc
+    // where the transforms originally came from
+    if (event.document.getText() === source.getText()) {
+      return;
+    }
+
+    const edits: pce.TextEdit[] = event.contentChanges.map((change) => {
+      return {
+        chars: change.text.split(""),
+        index: change.rangeOffset,
+        deleteCount: change.rangeLength,
+      };
+    });
+
+    source.applyEdits(edits);
+    console.log("DocumentManager::_onDocumentChange");
+  };
+
+  private _onDesignServerStarted = (info: DesignServerStartedInfo) => {
+    this._editorClient = new EditorClient(
+      wsAdapter(new ws.WebSocket(`ws://localhost:${info.httpPort}/ws`))
+    );
+
+    workspace.onDidOpenTextDocument(this._onDidOpenTextDocument);
+    workspace.textDocuments.forEach(this._onDidOpenTextDocument);
+  };
+
+  private _onRevealSourceRequested = async ({ textSource }: ExprSource) => {
+    console.log("On Reveal Source request");
     // shouldn't happen, but might if text isn't loaded
     if (!textSource) {
       return;
     }
 
-    // TODO - no globals here
     const textDocument = await this._openDoc(textSource.uri);
 
     const editor: TextEditor =
       window.visibleTextEditors.find(
-        editor =>
+        (editor) =>
           editor.document &&
           fixFileUrlCasing(String(editor.document.uri)) ===
             fixFileUrlCasing(textSource.uri)
@@ -99,32 +183,39 @@ export class DocumentManager implements Observer {
 
   private _openDoc = async (uri: string) => {
     return (
-      workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
+      workspace.textDocuments.find((doc) => String(doc.uri) === uri) ||
       (await workspace.openTextDocument(stripFileProtocol(uri)))
     );
   };
-
-  private _onPCSourceEdited = async ({
-    changes: changesByUri
-  }: PCSourceEdited) => {
-    for (const uri in changesByUri) {
-      const changes = changesByUri[uri];
-      const filePath = URL.fileURLToPath(uri);
-      const doc = await workspace.openTextDocument(filePath);
-      const tedits = changes.map(change => {
-        return new TextEdit(
-          new Range(doc.positionAt(change.start), doc.positionAt(change.end)),
-          change.value
-        );
-      });
-      const wsEdit = new WorkspaceEdit();
-      wsEdit.set(Uri.parse(uri), tedits);
-      await workspace.applyEdit(wsEdit);
-    }
-  };
-
-  handleEvent = eventHandlers({
-    [RevealSourceRequested.TYPE]: this._onRevealSourceRequested,
-    [PCSourceEdited.TYPE]: this._onPCSourceEdited
-  });
 }
+
+const getTextEditsFromPatch = (doc: TextDocument, patch: Automerge.Patch) => {
+  const syncEdits: TextEdit[] = [];
+
+  const op = patch.diffs.props.text[Object.keys(patch.diffs.props.text)[0]];
+  if (op.type === "text") {
+    for (const edit of op.edits) {
+      if (edit.action === "multi-insert") {
+        syncEdits.push(
+          new TextEdit(
+            new Range(doc.positionAt(edit.index), doc.positionAt(edit.index)),
+            edit.values.join("")
+          )
+        );
+      } else if (edit.action === "remove") {
+        syncEdits.push(
+          new TextEdit(
+            new Range(
+              doc.positionAt(edit.index),
+              doc.positionAt(edit.index + edit.count)
+            ),
+            ""
+          )
+        );
+      } else {
+        throw new Error(`Dunno how to handle`);
+      }
+    }
+  }
+  return syncEdits;
+};

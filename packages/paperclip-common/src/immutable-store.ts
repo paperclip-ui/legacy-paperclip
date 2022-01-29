@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import { produce } from "immer";
+import { isEqual } from "lodash";
 
 export class ImmutableStore<TState> {
   private _state: TState;
@@ -14,13 +15,27 @@ export class ImmutableStore<TState> {
   getState() {
     return this._state;
   }
-  bind(listener: (state: TState) => void) {
-    listener(this.getState());
-    return this.onChange(listener);
+  bind<TSelectedValue extends any = TState>(
+    listener: (state: TSelectedValue) => void,
+    select: (state: TState) => TSelectedValue = identity
+  ) {
+    listener(select(this.getState()));
+    return this.onChange(listener, select);
   }
-  onChange(listener: (newState: TState, oldState: TState) => void) {
-    this._em.on("change", listener);
-    return () => this._em.off("change", listener);
+  onChange<TSelectedValue extends any = TState>(
+    listener: (newState: TSelectedValue, oldState: TSelectedValue) => void,
+    select: (state: TState) => TSelectedValue = identity
+  ) {
+    const onChange = (newState: TState, oldState: TState) => {
+      const newValue = select(newState);
+      const oldValue = select(oldState);
+      if (!isEqual(newValue, oldValue)) {
+        listener(newValue, oldValue);
+      }
+    };
+
+    this._em.on("change", onChange);
+    return () => this._em.off("change", onChange);
   }
   update(updater: (state: TState) => void) {
     const newState = produce(this._state, updater);
@@ -32,3 +47,5 @@ export class ImmutableStore<TState> {
     }
   }
 }
+
+const identity = (v) => v;

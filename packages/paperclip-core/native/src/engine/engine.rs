@@ -5,7 +5,7 @@ use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::core::id_generator::generate_seed;
+use crate::core::id_generator::{IDGenerator};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::coverage::reporter::{generate_coverage_report, CoverageReport};
 use crate::css::ast as css_ast;
@@ -16,6 +16,7 @@ use crate::css::runtime::export as css_export;
 use crate::css::runtime::mutation as css_mutation;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
+use crate::core::graph::GraphError;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
@@ -76,6 +77,13 @@ pub struct DiffedEvent<'a> {
 }
 
 #[derive(Debug, PartialEq, Serialize)]
+pub struct StringSplice {
+  value: String,
+  start: u32,
+  delete_count: u32,
+}
+
+#[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "kind")]
 pub enum EngineEvent<'a> {
   Evaluated(EvaluatedEvent<'a>),
@@ -94,11 +102,11 @@ pub enum Module {
 type EngineEventListener = dyn Fn(&EngineEvent);
 type GetLintConfigResolverFn = dyn Fn(&String) -> Option<LintOptions>;
 
-fn parse_content(content: &String, uri: &String) -> Result<Module, ParseError> {
+fn parse_content(content: &String, uri: &String, id_seed: String) -> Result<Module, ParseError> {
   Result::Ok(if uri.ends_with(".css") {
-    Module::CSS(parse_css(content, generate_seed())?)
+    Module::CSS(parse_css(content, id_seed)?)
   } else {
-    Module::PC(parse_pc(content, uri.as_str(), generate_seed().as_str())?)
+    Module::PC(parse_pc(content, uri.as_str(), id_seed.as_str())?)
   })
 }
 
@@ -114,6 +122,7 @@ pub struct Engine {
   pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
   pub get_lint_config: Option<Box<GetLintConfigResolverFn>>,
   pub include_used_exprs: bool,
+  pub id_generator: IDGenerator,
 }
 
 impl Engine {
@@ -134,6 +143,7 @@ impl Engine {
       dependency_graph: DependencyGraph::new(),
       diagnostics: BTreeMap::new(),
       include_used_exprs,
+      id_generator: IDGenerator::new("-".to_string()),
       mode,
     };
 
@@ -146,7 +156,7 @@ impl Engine {
     self.reset();
 
     for uri in keys {
-      self.run(&uri).await?;
+      self.load(&uri).await?;
     }
     let report =
       generate_coverage_report(&self.dependency_graph, &self.evaluated_data, &mut self.vfs).await;
@@ -200,8 +210,12 @@ impl Engine {
       .load_dependency(uri, &mut self.vfs)
       .await;
 
+    self.handle_load_result(uri, load_result)
+  }
+
+  fn handle_load_result(&mut self, uri: &String, load_result: Result<Vec<String>, GraphError>) -> Result<(), EngineError> {
     match load_result {
-      Ok(_loaded_uris) => {
+      Ok(_) => {
         let mut stack = HashSet::new();
 
         self
@@ -241,16 +255,17 @@ impl Engine {
       .and_then(|descendent| {
         self
           .dependency_graph
-          .get_expression_by_id(descendent.get_range_id())
+          .get_expression_by_id(descendent.get_source_id())
       })
       .and_then(|(uri, expr)| match expr {
-        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node)),
+        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node.get_id(), pc_node.get_range())),
+        pc_ast::Expression::Script(pc_script) => Some((uri, pc_script.get_id(), pc_script.get_range())),
         _ => None,
       })
-      .and_then(|(uri, ast)| {
+      .and_then(|(uri, id, range)| {
         Some(ast::ExprSource::new(
-          ast.get_id(),
-          Some(&ast::ExprTextSource::new(uri, ast.get_range().clone())),
+          id,
+          Some(&ast::ExprTextSource::new(uri, range.clone())),
         ))
       })
   }
@@ -318,7 +333,7 @@ impl Engine {
   pub async fn parse_file(&mut self, uri: &String) -> Result<Module, ParseError> {
     let content = self.vfs.reload(uri).await.unwrap();
     // parse_pc(content, uri, generate_seed().as_str())
-    parse_content(content, uri)
+    parse_content(content, uri, self.id_generator.new_id())
   }
 
   pub async fn parse_content(
@@ -326,7 +341,7 @@ impl Engine {
     content: &String,
     uri: &String,
   ) -> Result<Module, ParseError> {
-    parse_content(content, uri)
+    parse_content(content, uri, self.id_generator.new_id())
   }
 
   // Called when files are deleted
@@ -358,7 +373,7 @@ impl Engine {
     content: &String,
   ) -> Result<(), EngineError> {
     self.vfs.update(uri, content).await;
-    self.run(uri).await?;
+    self.load(uri).await?;
 
     let mut dep_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 
@@ -369,6 +384,7 @@ impl Engine {
 
     Ok(())
   }
+
 
   fn set_diagnostic_error<'a>(&mut self, uri: &String, error: EngineError) {
     self.diagnostics.insert(
@@ -421,20 +437,16 @@ impl Engine {
       .collect::<Vec<(String, String)>>();
 
     for (id, dep_uri) in relative_deps {
-      let data = if let Some(dep_result) = self.evaluated_data.get(dep_uri) {
-        dep_result
-      } else {
+      if  self.evaluated_data.get(dep_uri) == None {
         self.evaluate(dep_uri, stack)?;
-
-        self.evaluated_data.get(dep_uri).unwrap()
-      };
+      }
     }
 
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
     let eval_result: Result<DependencyEvalInfo, RuntimeError> = match &dependency.content {
-      DependencyContent::StyleSheet(sheet) => {
-        evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data)
+      DependencyContent::StyleSheet(_) => {
+        evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data, self.id_generator.new_id())
           .and_then(|info| Ok(DependencyEvalInfo::CSS(info)))
       }
 
@@ -445,6 +457,7 @@ impl Engine {
         &self.evaluated_data,
         self.include_used_exprs,
         &self.mode,
+        self.id_generator.new_id()
       )
       .and_then(|info| Ok(DependencyEvalInfo::PC(info))),
     };

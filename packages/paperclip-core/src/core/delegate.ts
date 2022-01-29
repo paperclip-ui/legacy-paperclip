@@ -22,7 +22,7 @@ import {
   Module,
   DiffedEvent,
   LoadedPCData,
-  ExprTextSource
+  ExprTextSource,
 } from "@paperclip-ui/utils";
 import { noop } from "./utils";
 
@@ -54,7 +54,7 @@ export interface IEngineDelegate {
 
 export enum EngineMode {
   SingleFrame,
-  MultiFrame
+  MultiFrame,
 }
 
 export type EngineOptions = {
@@ -77,7 +77,7 @@ export type EngineDelegateEventListener = (event: EngineDelegateEvent) => void;
 
 export enum EngineDelegateEventType {
   Loaded = "Loaded",
-  ChangedSheets = "ChangedSheets"
+  ChangedSheets = "ChangedSheets",
 }
 
 /*
@@ -133,7 +133,7 @@ export class EngineDelegate {
       this._dispatch({
         kind: EngineDelegateEventKind.Loaded,
         uri: event.uri,
-        data: this._rendered[event.uri]
+        data: this._rendered[event.uri],
       });
     } else if (event.kind === EngineDelegateEventKind.Diffed) {
       const existingData = this._rendered[event.uri];
@@ -181,7 +181,7 @@ export class EngineDelegate {
         addedSheets.push({
           uri: depUri,
           index: i,
-          sheet: this._rendered[depUri].sheet
+          sheet: this._rendered[depUri].sheet,
         });
       }
     }
@@ -195,8 +195,8 @@ export class EngineDelegate {
           // allow renderer to fetch these sheets
           newSheets: addedSheets,
           removedSheetUris: removedSheetUris,
-          allImportedSheetUris: diffData.allImportedSheetUris
-        }
+          allImportedSheetUris: diffData.allImportedSheetUris,
+        },
       });
     }
   };
@@ -244,9 +244,6 @@ export class EngineDelegate {
     return this._documents[uri];
   }
   updateVirtualFileContent(uri: string, content: string) {
-    if (this._documents[uri] === content) {
-      return;
-    }
     this._graph[uri] = undefined;
 
     // only define if successfuly loaded
@@ -351,7 +348,7 @@ export const getEngineImports = (
       record[id] = {
         uri: imp && getAttributeStringValue("src", imp),
         injectStyles: imp && hasAttribute(INJECT_STYLES_TAG_NAME, imp),
-        ...delegate.getLoadedData(depUri)!
+        ...delegate.getLoadedData(depUri)!,
       };
       return record;
     }, {});

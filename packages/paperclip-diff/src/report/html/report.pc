@@ -192,17 +192,15 @@
   <div />
 </div>
 
-
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 136, y: -101 }
 -->
 <hr export component as="Divider" />
 
-
 <!--
-  @frame { width: 810, height: 768, x: 233, y: -40 }
+  @frame { height: 538, title: "Something", visible: false, width: 643, x: 752, y: 207 }
 -->
-<Report title="Frame title"
+<Report title="Framing title"
   subtitle={<a href="#">path/to/file.pc</a>}
   sidebar={<fragment>
     <Thumbnail href="a"
@@ -232,9 +230,8 @@
   </fragment>}
   content={<fragment>
     <Comparison>
-      <Screenshot a
-        title="A: devffsklfdsfdsfsdfjsdfskdfsdjkflsdfjkjklfsjnfdskl">
-        A
+      <Screenshot a title="A: devffsklfdsfdsfsdfjsdfskdfsdjkflsdfjkjklfsjk">
+        something
       </Screenshot>
       <Screenshot b title="B: latest">B</Screenshot>
     </Comparison>

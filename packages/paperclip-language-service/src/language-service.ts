@@ -13,7 +13,7 @@ import { EngineDelegate, getEngineImports } from "@paperclip-ui/core";
 import { Observable } from "@paperclip-ui/common";
 import { AutocompleteService } from "./autocomplete";
 import { collectASTInfo, ColorInfo } from "./collect-ast-info";
-import { DiagnosticService } from "./error-service";
+import { DiagnosticService, LintInfo } from "./error-service";
 
 export class PaperclipLanguageService {
   private _autocomplete: AutocompleteService;
@@ -21,10 +21,15 @@ export class PaperclipLanguageService {
   readonly events: Observable;
 
   constructor(private _engine: EngineDelegate, fs?: any) {
-    this.events = new Observable();
     this._autocomplete = new AutocompleteService(fs);
     this._diagnostics = new DiagnosticService(_engine);
-    this.events.source(this._diagnostics.events);
+  }
+
+  /**
+   */
+
+  onLinted(listener: (info: LintInfo) => void) {
+    return this._diagnostics.onLinted(listener);
   }
 
   /**
@@ -64,6 +69,9 @@ export class PaperclipLanguageService {
   }
 
   private _collectASTInfo(uri: string) {
+    if (!this._engine.getLoadedData(uri)) {
+      this._engine.open(uri);
+    }
     return collectASTInfo(
       uri,
       this._engine.getLoadedGraph(),

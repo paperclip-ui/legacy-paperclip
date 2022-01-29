@@ -1,5 +1,17 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSRule, stringifyCSSSheet } from "@paperclip-ui/utils";
+import {
+  Element,
+  Fragment,
+  NodeKind,
+  Slot,
+  stringifyCSSRule,
+  stringifyCSSSheet,
+  VirtualElement,
+  VirtualFragment,
+  VirtualNode,
+  VirtualNodeKind,
+  VirtualSlot,
+} from "@paperclip-ui/utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 
@@ -26,26 +38,44 @@ export const getNativeNodePath = (root: Node, node: Node) => {
 export type UrlResolver = (url: string) => string;
 
 export const createNativeNode = (
-  node,
+  node: VirtualNode,
   factory: DOMFactory,
   resolveUrl: UrlResolver,
-  namespaceURI: string
+  namespaceURI: string,
+  showSlotPlaceholders: boolean,
+  inInstance?: boolean
 ) => {
   if (!node) {
     return factory.createTextNode("");
   }
   try {
     switch (node.kind) {
-      case "Text": {
+      case VirtualNodeKind.Text: {
         const text = createNativeTextNode(node, factory);
         return text;
       }
-      case "Element":
-        return createNativeElement(node, factory, resolveUrl, namespaceURI);
-      case "StyleElement":
+      case VirtualNodeKind.Element:
+        return createNativeElement(
+          node,
+          factory,
+          resolveUrl,
+          namespaceURI,
+          showSlotPlaceholders,
+          inInstance
+        );
+      case VirtualNodeKind.StyleElement:
         return createNativeStyleFromSheet(node.sheet, factory, resolveUrl);
-      case "Fragment":
-        return createNativeFragment(node, factory, resolveUrl);
+      case VirtualNodeKind.Fragment:
+        return createNativeFragment(
+          node,
+          factory,
+          resolveUrl,
+          showSlotPlaceholders,
+          inInstance
+        );
+      case VirtualNodeKind.Slot: {
+        return createSlot(node, factory, showSlotPlaceholders, inInstance);
+      }
     }
   } catch (e) {
     return factory.createTextNode(String(e.stack));
@@ -53,6 +83,23 @@ export const createNativeNode = (
 };
 
 let _dummyStyle: HTMLStyleElement;
+
+const createSlot = (
+  node: VirtualSlot,
+  domFactory: DOMFactory,
+  showSlotPlaceholders?: boolean,
+  inInstance?: boolean
+) => {
+  if (!inInstance || !showSlotPlaceholders) {
+    return domFactory.createTextNode("");
+  }
+  const placeholder = domFactory.createElement("div");
+  placeholder.setAttribute(
+    "style",
+    "border: 1px dashed #333; padding: 30px; box-sizing: border-box;"
+  );
+  return placeholder;
+};
 
 const ruleIsValid = (ruleText: string) => {
   if (typeof window === "undefined") {
@@ -81,11 +128,15 @@ export const createNativeStyleFromSheet = (
 ) => {
   const nativeElement = factory.createElement("style") as HTMLStyleElement;
 
-  // fix case where certain rules are invalid - e.g: &:within(:not(.on)) does some
-  // funny stuff.
-  const ruleTexts = sheet.rules
-    .map(rule => stringifyCSSRule(rule, { resolveUrl }))
-    .map(text => {
+  nativeElement.textContent = renderSheetText(sheet, resolveUrl);
+
+  return nativeElement as HTMLStyleElement;
+};
+
+export const renderSheetText = (sheet, resolveUrl: UrlResolver) => {
+  return sheet.rules
+    .map((rule) => stringifyCSSRule(rule, { resolveUrl }))
+    .map((text) => {
       // OOF! This is expensive! This should be done in the rust engine instead. Not here!
       const isValid = ruleIsValid(text);
 
@@ -93,11 +144,8 @@ export const createNativeStyleFromSheet = (
       //   console.error(`invalid CSS rule: ${text}`);
       // }
       return isValid ? text : ".invalid-rule { }";
-    });
-
-  nativeElement.textContent = ruleTexts.join("\n");
-
-  return nativeElement as HTMLStyleElement;
+    })
+    .join("\n");
 };
 
 const createNativeTextNode = (node, factory: DOMFactory) => {
@@ -108,10 +156,12 @@ const createNativeTextNode = (node, factory: DOMFactory) => {
 };
 
 const createNativeElement = (
-  element,
+  element: VirtualElement,
   factory: DOMFactory,
   resolveUrl: UrlResolver,
-  namespaceUri?: string
+  namespaceUri?: string,
+  showSlotPlaceholders?: boolean,
+  inInstance?: boolean
 ) => {
   const nativeElement =
     element.tagName === "svg"
@@ -133,9 +183,18 @@ const createNativeElement = (
 
     nativeElement.setAttribute(aliasName, value);
   }
+
   for (const child of element.children) {
     nativeElement.appendChild(
-      createNativeNode(child, factory, resolveUrl, childNamespaceUri)
+      createNativeNode(
+        child,
+        factory,
+        resolveUrl,
+        childNamespaceUri,
+        showSlotPlaceholders,
+        inInstance ||
+          Boolean(element.sourceInfo && element.sourceInfo.instanceOf)
+      )
     );
   }
 
@@ -150,14 +209,23 @@ const createNativeElement = (
 };
 
 const createNativeFragment = (
-  fragment,
+  fragment: VirtualFragment,
   factory: DOMFactory,
-  resolveUrl: UrlResolver
+  resolveUrl: UrlResolver,
+  showSlotPlaceholders?: boolean,
+  inInstance?: boolean
 ) => {
   const nativeFragment = factory.createDocumentFragment() as any;
   for (const child of fragment.children) {
     nativeFragment.appendChild(
-      createNativeNode(child, factory, resolveUrl, nativeFragment.namespaceURI)
+      createNativeNode(
+        child,
+        factory,
+        resolveUrl,
+        nativeFragment.namespaceURI,
+        showSlotPlaceholders,
+        inInstance
+      )
     );
   }
   return nativeFragment;

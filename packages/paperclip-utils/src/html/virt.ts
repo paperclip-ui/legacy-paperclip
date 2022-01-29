@@ -10,8 +10,9 @@ import { CSSMutation } from "../css/virt-mutation";
 export enum VirtualNodeKind {
   Element = "Element",
   Text = "Text",
+  Slot = "Slot",
   Fragment = "Fragment",
-  StyleElement = "StyleElement"
+  StyleElement = "StyleElement",
 }
 
 export type VirtNodeSource = {
@@ -36,7 +37,7 @@ export type NodeAnnotations = {
 
 export enum EvaluatedDataKind {
   PC = "PC",
-  CSS = "CSS"
+  CSS = "CSS",
 }
 
 type BaseEvaluatedData<TKind = EvaluatedDataKind> = {
@@ -65,7 +66,7 @@ export type EvaluatedData = EvaluatedPCData | EvaluatedCSSData;
 
 export enum DiffedDataKind {
   CSS = "CSS",
-  PC = "PC"
+  PC = "PC",
 }
 
 export type BaseDiffedData<TKind = DiffedDataKind> = {
@@ -102,6 +103,7 @@ export type LoadedCSSData = EvaluatedCSSData;
 export type LoadedData = LoadedPCData | LoadedCSSData;
 
 type VirtualBaseNode<KKind extends VirtualNodeKind> = {
+  id: string;
   kind: KKind;
 };
 
@@ -132,6 +134,8 @@ export type VirtualText = {
   value: string;
 } & VirtualBaseNode<VirtualNodeKind.Text>;
 
+export type VirtualSlot = VirtualBaseNode<VirtualNodeKind.Slot>;
+
 export type VirtualFragment = {
   children: VirtualNode[];
 } & VirtualBaseNode<VirtualNodeKind.Fragment>;
@@ -139,6 +143,7 @@ export type VirtualFragment = {
 export type VirtualNode =
   | VirtualElement
   | VirtualText
+  | VirtualSlot
   | VirtualFragment
   | VirtualStyleElement;
 
