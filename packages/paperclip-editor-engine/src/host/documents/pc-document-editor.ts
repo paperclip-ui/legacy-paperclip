@@ -214,16 +214,16 @@ const setAnnotations = (
   const buffer = [`<!--\n`];
   for (const name in edit.value) {
     const obj = edit.value[name];
-    buffer.push(`@${name} `);
+    buffer.push(`  @${name} `);
     if (typeof obj === "object" && !Array.isArray(obj)) {
-      buffer.push(`{`);
+      buffer.push(`{ `);
       buffer.push(
         Object.keys(obj)
           .sort()
           .map((key) => `${key}: ${JSON.stringify(obj[key])}`)
           .join(", ")
       );
-      buffer.push(`}\n`);
+      buffer.push(` }\n`);
     } else {
       buffer.push(JSON.stringify(obj), "\n");
     }
