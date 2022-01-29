@@ -210,6 +210,6 @@
 
 
 <!--
-  @frame { height: 1138, title: "Center / Canvas", width: 926, x: 5630, y: 661 }
+  @frame { height: 484, title: "Center / Canvas", width: 926, x: 5582, y: 719 }
 -->
 <Preview showMedia v2 />
