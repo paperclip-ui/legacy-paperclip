@@ -1,6 +1,6 @@
 {
   "name": "@tandem-ui/workspace-core",
-  "version": "18.5.0",
+  "version": "18.5.1",
   "description": "",
   "main": "lib/index.js",
   "publishConfig": {

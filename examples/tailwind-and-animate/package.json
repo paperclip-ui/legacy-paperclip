@@ -1,7 +1,7 @@
 {
   "name": "@paperclip-ui/tailwind-and-bootstrap",
   "private": true,
-  "version": "18.5.0",
+  "version": "18.5.1",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@paperclip-ui/cli": "^18.5.0",
+    "@paperclip-ui/cli": "^18.5.1",
     "@paperclip-ui/core": "^18.5.0",
     "concurrently": "^7.0.0",
     "postcss": "^8.4.5",
