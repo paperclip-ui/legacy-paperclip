@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/web-renderer",
-  "version": "18.5.0",
+  "version": "18.5.1",
   "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
   "publishConfig": {

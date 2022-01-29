@@ -1,6 +1,6 @@
 {
   "name": "@tandem-ui/designer",
-  "version": "18.5.0",
+  "version": "18.5.1",
   "description": "Visual designer for Paperclip files",
   "main": "lib/index.js",
   "publishConfig": {
@@ -23,10 +23,10 @@
     "@paperclip-ui/monaco": "^18.5.0",
     "@paperclip-ui/source-writer": "^18.5.0",
     "@paperclip-ui/utils": "^18.5.0",
-    "@paperclip-ui/web-renderer": "^18.5.0",
+    "@paperclip-ui/web-renderer": "^18.5.1",
     "@tandem-ui/common": "^18.5.0",
     "@tandem-ui/design-system": "^18.5.0",
-    "@tandem-ui/workspace-client": "^18.5.0",
+    "@tandem-ui/workspace-client": "^18.5.1",
     "@uiw/react-codemirror": "^4.3.1",
     "automerge": "^1.0.1-preview.6",
     "browserstack": "^1.6.1",

@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/cli",
-  "version": "18.5.0",
+  "version": "18.5.1",
   "description": "Command line tools for Paperclip",
   "main": "lib/cli.js",
   "publishConfig": {
@@ -24,7 +24,7 @@
     "@paperclip-ui/core": "^18.5.0",
     "@paperclip-ui/coverage": "^18.5.0",
     "@paperclip-ui/utils": "^18.5.0",
-    "@tandem-ui/workspace": "^18.5.0",
+    "@tandem-ui/workspace": "^18.5.1",
     "@types/inquirer": "^6.5.0",
     "@types/shelljs": "^0.8.8",
     "chalk": "^4.1.0",

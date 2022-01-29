@@ -1,6 +1,6 @@
 {
   "name": "@tandem-ui/workspace",
-  "version": "18.5.0",
+  "version": "18.5.1",
   "description": "standalone Docker server",
   "main": "lib/index.js",
   "bin": "./bin/tandem-workspace",
@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@tandem-ui/workspace-client": "^18.5.0",
+    "@tandem-ui/workspace-client": "^18.5.1",
     "@types/chai": "^4.3.0",
     "@types/fs-extra": "^9.0.12",
     "@types/mocha": "^9.0.0",
@@ -37,10 +37,10 @@
   "dependencies": {
     "@paperclip-ui/common": "^18.5.0",
     "@paperclip-ui/core": "^18.5.0",
-    "@paperclip-ui/editor-engine": "^18.5.0",
+    "@paperclip-ui/editor-engine": "^18.5.1",
     "@tandem-ui/common": "^18.5.0",
-    "@tandem-ui/designer": "^18.5.0",
-    "@tandem-ui/workspace-core": "^18.5.0",
+    "@tandem-ui/designer": "^18.5.1",
+    "@tandem-ui/workspace-core": "^18.5.1",
     "buffer": "^6.0.3",
     "execa": "^5.1.1",
     "fs-extra": "^10.0.0",
