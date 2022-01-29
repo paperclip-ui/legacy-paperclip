@@ -208,13 +208,8 @@
 -->
 <Preview showCanvas v2 />
 
-<!--
-  @frame { title: "Center / Canvas", width: 845, height: 958, x: 6844, y: 669 }
--->
-<Preview showNoPreview v2 />
-
 
 <!--
-  @frame { title: "Center / Canvas", width: 845, height: 958, x: 5880, y: 711 }
+  @frame { height: 1138, title: "Center / Canvas", width: 926, x: 5630, y: 661 }
 -->
 <Preview showMedia v2 />
