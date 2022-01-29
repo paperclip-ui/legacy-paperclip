@@ -169,7 +169,7 @@ describe(__filename + "#", () => {
       const node = doc.getNodeFromPath("0") as VirtualElement;
       const source = await doc.getSource();
       expect(source.getText().replace(/[\s\n]+/g, " ")).to.eq(
-        `<!-- @tags ["a","b"] @desc "Some description" @frame {height: 100, width: 100} --> <div>blah</div>`
+        `<!-- @tags ["a","b"] @desc "Some description" @frame { height: 100, width: 100 } --> <div>blah</div>`
       );
       expect(annotations).to.eql(computeVirtScriptObject(node.annotations));
 
