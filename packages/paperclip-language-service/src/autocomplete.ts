@@ -13,17 +13,17 @@ import {
   CSSDeclarationAtRuleParamsSuggestionContext,
   CSSAtRuleSuggestionContext,
   CSSFunctionSuggestionContext,
-  HTMLCloseTagNameSuggestionContext
+  HTMLCloseTagNameSuggestionContext,
 } from "@paperclip-ui/autocomplete";
 
 import {
   resolveAllPaperclipFiles,
-  resolveAllAssetFiles
+  resolveAllAssetFiles,
 } from "@paperclip-ui/core";
 import {
   ComponentExport,
   EvaluatedDataKind,
-  LoadedPCData
+  LoadedPCData,
 } from "@paperclip-ui/utils";
 import {
   stringArrayToAutoCompleteItems,
@@ -33,14 +33,14 @@ import {
   getStyleExport,
   RETRIGGER_COMMAND,
   tagCompletionItem,
-  InsertTextFormat
+  InsertTextFormat,
 } from "./utils";
 import {
   CSS_DECLARATION_VALUE_COMPLETION_ITEMS,
   CSS_DECLARATION_NAME_COMPLETION_ITEMS,
   ATTRIBUTE_NAME_COMPLETION_ITEMS,
   TAG_NAME_COMPLETION_ITEMS,
-  AT_RULE_COMPLETION_ITEMS
+  AT_RULE_COMPLETION_ITEMS,
 } from "./completion-items";
 import { DEFAULT_PART_ID } from "@paperclip-ui/core";
 import { LoadedData } from "@paperclip-ui/core";
@@ -61,7 +61,7 @@ export class AutocompleteService {
     data: LoadedData,
     imports: Record<string, LoadedDataDetails>
   ): PCCompletionItem[] {
-    return this.getSuggestions2(uri, text, data, imports).map(item =>
+    return this.getSuggestions2(uri, text, data, imports).map((item) =>
       addCompletionItemData(item, uri)
     );
   }
@@ -144,61 +144,15 @@ export class AutocompleteService {
         preselect: true,
         insertText: `\n\t$0\n</${context.openTagPath.join(".")}>`,
         insertTextFormat: InsertTextFormat.Snippet,
-        commitCharacters: [">"]
-      }
+        commitCharacters: [">"],
+      },
     ];
   }
   private _getHTMLTagNameSuggestions(
     data: LoadedPCData,
     imports: Record<string, LoadedData>
   ) {
-    const options = [];
-
-    if (data) {
-      for (const tagName in data.exports.components) {
-        const componentInfo = data.exports.components[tagName];
-        options.push(
-          tagCompletionItem(
-            tagName,
-            Object.keys(componentInfo.properties).length > 0
-          )
-        );
-      }
-
-      for (const id in imports) {
-        if (/\//.test(id)) {
-          continue;
-        }
-        const imp = imports[id];
-
-        if (imp.kind === EvaluatedDataKind.PC) {
-          for (const componentId in imp.exports.components) {
-            const componentInfo = imp.exports.components[componentId];
-            if (!componentInfo || !componentInfo.public) {
-              continue;
-            }
-            let tagName;
-
-            if (componentId === DEFAULT_PART_ID) {
-              tagName = id;
-            } else {
-              tagName = `${id}.${componentId}`;
-            }
-
-            options.push(
-              tagCompletionItem(
-                tagName,
-                Object.keys(componentInfo.properties).length > 0
-              )
-            );
-          }
-        }
-      }
-    }
-
-    options.push(...TAG_NAME_COMPLETION_ITEMS);
-
-    return options;
+    return getHTMLTagNameSuggestions(data, imports);
   }
 
   private _getCSSDeclarationAtRuleSuggestion(
@@ -213,12 +167,12 @@ export class AutocompleteService {
         insertTextFormat: InsertTextFormat.Snippet,
         command: loadedMixinsAsCompletionList(data, imports).length
           ? RETRIGGER_COMMAND
-          : null
+          : null,
       },
       {
         label: "content",
-        insertText: "content;"
-      }
+        insertText: "content;",
+      },
     ];
   }
 
@@ -240,7 +194,7 @@ export class AutocompleteService {
 
   private _getComponentPropCompletionItems(componentInfo: ComponentExport) {
     return Object.keys(componentInfo.properties).map(
-      propertyName =>
+      (propertyName) =>
         ({
           label: propertyName,
 
@@ -248,7 +202,7 @@ export class AutocompleteService {
           insertText: /^on[A-Z]/.test(propertyName)
             ? `${propertyName}={\${1:}}`
             : propertyName,
-          insertTextFormat: InsertTextFormat.Snippet
+          insertTextFormat: InsertTextFormat.Snippet,
         } as CompletionItem)
     );
   }
@@ -282,11 +236,11 @@ export class AutocompleteService {
     if (!isComponent && context.tagPath.length === 1) {
       items.push(
         ...(ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || []).map(
-          item => {
+          (item) => {
             if (item.label === "class" && containsClasses(data, imports)) {
               return {
                 ...item,
-                command: RETRIGGER_COMMAND
+                command: RETRIGGER_COMMAND,
               };
             }
 
@@ -295,13 +249,6 @@ export class AutocompleteService {
         )
       );
     }
-    // items.push({
-    //   label: `></${context.tagPath.join(".")}>`,
-    //   insertText: `>$0</${context.tagPath.join(".")}>`,
-    //   insertTextFormat: InsertTextFormat.Snippet,
-    //   commitCharacters: [">"]
-    // });
-
     return items;
   }
   private _getHTMLAttributeStringValueSuggestions(
@@ -353,7 +300,7 @@ export class AutocompleteService {
 
     const list = [
       ...(CSS_DECLARATION_VALUE_COMPLETION_ITEMS[info.declarationName] ||
-        EMPTY_ARRAY)
+        EMPTY_ARRAY),
     ];
 
     if (
@@ -363,7 +310,7 @@ export class AutocompleteService {
       for (const name in styleExports.keyframes) {
         const info = styleExports.keyframes[name];
         list.push({
-          label: info.name
+          label: info.name,
         });
       }
       for (const id in imports) {
@@ -378,7 +325,7 @@ export class AutocompleteService {
             continue;
           }
           list.push({
-            label: `${id}.${name}`
+            label: `${id}.${name}`,
           });
         }
       }
@@ -419,7 +366,7 @@ export class AutocompleteService {
 
     for (const className in styleExports.classNames) {
       list.push({
-        label: className
+        label: className,
       });
     }
     if (includeImports) {
@@ -439,11 +386,11 @@ export class AutocompleteService {
 
           if (details.injectStyles) {
             list.push({
-              label: className
+              label: className,
             });
           } else {
             list.push({
-              label: `${id}.${className}`
+              label: `${id}.${className}`,
             });
           }
         }
@@ -464,12 +411,66 @@ export class AutocompleteService {
     let list = CSS_DECLARATION_NAME_COMPLETION_ITEMS;
 
     if (containsVars(data, imports)) {
-      list = list.map(item => ({ ...item, command: RETRIGGER_COMMAND }));
+      list = list.map((item) => ({ ...item, command: RETRIGGER_COMMAND }));
     }
 
     return list;
   }
 }
+
+export const getHTMLTagNameSuggestions = (
+  data: LoadedPCData,
+  imports: Record<string, LoadedData>
+) => {
+  const options = [];
+
+  if (data) {
+    for (const tagName in data.exports.components) {
+      const componentInfo = data.exports.components[tagName];
+      options.push(
+        tagCompletionItem(
+          tagName,
+          Object.keys(componentInfo.properties).length > 0
+        )
+      );
+    }
+
+    for (const id in imports) {
+      if (/\//.test(id)) {
+        continue;
+      }
+      const imp = imports[id];
+
+      if (imp.kind === EvaluatedDataKind.PC) {
+        for (const componentId in imp.exports.components) {
+          const componentInfo = imp.exports.components[componentId];
+          if (!componentInfo || !componentInfo.public) {
+            continue;
+          }
+          let tagName;
+
+          if (componentId === DEFAULT_PART_ID) {
+            tagName = id;
+          } else {
+            tagName = `${id}.${componentId}`;
+          }
+
+          options.push(
+            tagCompletionItem(
+              tagName,
+              Object.keys(componentInfo.properties).length > 0
+            )
+          );
+        }
+      }
+    }
+  }
+
+  options.push(...TAG_NAME_COMPLETION_ITEMS);
+
+  return options;
+};
+
 const declaredVarsToCompletionItems = memoize(
   (
     data: LoadedData,
@@ -486,7 +487,7 @@ const declaredVarsToCompletionItems = memoize(
         label: name,
         insertText: includeVar ? `var(${name})` : name,
         sortText: "zz" + name,
-        detail: styleExports.variables[name].value
+        detail: styleExports.variables[name].value,
       });
     }
     for (const imp in imports) {
@@ -500,7 +501,7 @@ const declaredVarsToCompletionItems = memoize(
           label: name,
           insertText: includeVar ? `var(${name})` : name,
           sortText: "zz" + name,
-          detail: styleExports.variables[name].value
+          detail: styleExports.variables[name].value,
         });
       }
     }
@@ -549,7 +550,7 @@ const loadedMixinsAsCompletionList = memoize(
     for (const mixinName in styleExports.mixins) {
       // const mixin = data.exports.style.mixins[mixinName];
       list.push({
-        label: mixinName
+        label: mixinName,
 
         // detail: stringifyDeclarations(mixin.declarations)
       });
@@ -567,7 +568,7 @@ const loadedMixinsAsCompletionList = memoize(
           continue;
         }
         list.push({
-          label: `${importId}.${mixinName}`
+          label: `${importId}.${mixinName}`,
           // detail: stringifyDeclarations(mixin.declarations)
         });
       }
