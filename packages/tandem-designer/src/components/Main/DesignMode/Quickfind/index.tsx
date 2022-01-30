@@ -11,8 +11,10 @@ export const Quickfind = () => {
 
   return (
     <styles.Container
-      filterInput={<TextInput onValueChange={onFilterChange} />}
-      items={<></>}
+      filterInput={
+        <TextInput big secondary wide onValueChange={onFilterChange} />
+      }
+      items={null}
     />
   );
 };

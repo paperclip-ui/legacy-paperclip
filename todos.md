@@ -1,12 +1,5 @@
-## Todos
+## Immediate
 
-Theme is code quality tools. How to incentivize people to write Previews?
-
-- [ ] coverage tool
-- [ ] tree shaking (needs coverage tool)
-- [ ] A11Y tooling using Axe
-- [ ] diff 
-
-
-- coverage tools
-- tree shaking
+- Quickfind
+- list all components (should be part of language service)
+- ability to insert an element into the canvas

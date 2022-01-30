@@ -14,6 +14,7 @@ import { useDragger } from "../../../hooks/useDragger";
 import { Point } from "../../../state";
 import { WindowResizer } from "./WindowResizer";
 import { clamp } from "lodash";
+import { Quickfind } from "./Quickfind";
 
 export type DesignModeProps = {
   floating: boolean;
@@ -42,7 +43,7 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
   const dragger = useDragger((props, pos) => {
     setStyle({
       left: pos.left + props.delta.x,
-      top: pos.top + props.delta.y
+      top: pos.top + props.delta.y,
       // left: clamp(pos.left + props.delta.x, 0, window.innerWidth - pos.width),
       // top: clamp(pos.top + props.delta.y, 0, window.innerHeight - pos.height)
     });
@@ -57,7 +58,7 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
       left: rect.x - offRect.x,
       top: rect.y - offRect.y,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
     });
   };
 
@@ -69,6 +70,7 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
     } else if (isPaperclipFile(canvasFile)) {
       content = (
         <styles.Center>
+          <Quickfind />
           <Canvas />
           <Footer />
         </styles.Center>

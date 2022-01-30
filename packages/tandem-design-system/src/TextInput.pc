@@ -11,6 +11,7 @@
   class:dark="dark"
   class:light="light"
   class:secondary="secondary"
+  class:wide="wide"
   {type}
   {onBlur?}
   {onFocus?}
@@ -34,6 +35,10 @@
     color: var(--text-color);
     box-sizing: border-box;
     border: 2px solid var(--background-200);
+    &.wide {
+      width: 100%;
+    }
+
     &.big {
       padding: 16px;
     }

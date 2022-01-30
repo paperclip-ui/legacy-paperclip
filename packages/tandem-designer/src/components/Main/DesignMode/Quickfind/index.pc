@@ -3,7 +3,8 @@
 <!--
   @frame { visible: false }
 -->
-<div component
+<div export
+  component
   as="Item"
   class:active="active"
   class:isText="text"
@@ -69,7 +70,7 @@
 <!--
   @frame { height: 600, title: "Quickfind", visible: true, width: 805, x: 241, y: -190 }
 -->
-<div component as="Container">
+<div export component as="Container">
   <style>
     padding: 16px;
     position: absolute;
@@ -109,11 +110,7 @@
 <Container export
   component
   as="Preview"
-  filterInput={<TextInput secondary big placeholder="Filter...">
-    <style>
-      width: 100%;
-    </style>
-  </TextInput>}
+  filterInput={<TextInput secondary big wide placeholder="Filter..." />}
   items={<fragment>
     <Item active isText title="Text" description="A native HTML text node" />
     <Item hover

@@ -5,10 +5,14 @@ import {
   addBuffer,
   startBlock,
   endBlock,
-  writeJoin
+  writeJoin,
 } from "./utils";
 import { InterimComponent, InterimModule } from "@paperclip-ui/interim";
-import { CompilerOptions, PaperclipConfig } from "@paperclip-ui/utils";
+import {
+  CompilerOptions,
+  hasAttribute,
+  PaperclipConfig,
+} from "@paperclip-ui/utils";
 
 export type DefinitionCompilerOptions = {
   imports: string;
@@ -17,7 +21,7 @@ export type DefinitionCompilerOptions = {
 
 export const definitionCompiler = ({
   imports,
-  elementType
+  elementType,
 }: DefinitionCompilerOptions) => {
   const translateRoot = (context: Context) => {
     context = addBuffer([
@@ -26,7 +30,7 @@ export const definitionCompiler = ({
       translateDefaultProps,
       `type Factory<TProps> = (props: TProps & DefaultProps) => ${elementType};\n\n`,
       translateClassNames,
-      translateComponents
+      translateComponents,
     ])(context);
     return context;
   };
@@ -36,14 +40,14 @@ export const definitionCompiler = ({
     startBlock,
     `ref?: any,\n`,
     endBlock,
-    `};\n\n`
+    `};\n\n`,
   ]);
 
   const translateClassNames = (context: Context) => {
     context = addBuffer([
       `export declare const classNames: {\n`,
       startBlock,
-      context => {
+      (context) => {
         const classNames = context.module.css.exports.classNames;
         for (const exportName in classNames) {
           context = addBuffer([`${JSON.stringify(exportName)}: string,\n`])(
@@ -53,7 +57,7 @@ export const definitionCompiler = ({
         return context;
       },
       endBlock,
-      "};\n\n"
+      "};\n\n",
     ])(context);
 
     return context;
@@ -64,14 +68,14 @@ export const definitionCompiler = ({
   const translateInference = (property: string, inference: Inference) => {
     if (inference.kind === InferenceKind.Any) {
       return addBuffer([
-        /^on\w+/.test(property) ? `Function` : DEFAULT_PARAM_TYPE
+        /^on\w+/.test(property) ? `Function` : DEFAULT_PARAM_TYPE,
       ]);
     }
     if (inference.kind === InferenceKind.Array) {
       return addBuffer([
         `Array<`,
         translateInference(property, inference.value),
-        `>`
+        `>`,
       ]);
     }
 
@@ -79,21 +83,25 @@ export const definitionCompiler = ({
       return addBuffer([
         `{\n`,
         startBlock,
-        context => {
+        (context) => {
           for (const key in inference.properties) {
             context = translateProp(key, inference.properties[key])(context);
           }
           return context;
         },
         endBlock,
-        "}"
+        "}",
       ]);
     }
     return context;
   };
 
   const translateComponents = (context: Context) =>
-    writeJoin(context.module.components, "\n\n", translateComponent)(context);
+    writeJoin(
+      context.module.components.filter((component) => component.exported),
+      "\n\n",
+      translateComponent
+    )(context);
   const translateComponent = (component: InterimComponent) => {
     const name = component.as === "default" ? "$$Default" : component.as;
     return addBuffer([
@@ -105,28 +113,27 @@ export const definitionCompiler = ({
       `declare const ${name}: Factory<${name}Props>;\n\n`,
       component.as === "default"
         ? `export default ${name};`
-        : `export { ${name} };\n\n`
+        : `export { ${name} };\n\n`,
     ]);
   };
 
-  const translateComponentProps = (component: InterimComponent) => (
-    context: Context
-  ) => {
-    const props = {};
+  const translateComponentProps =
+    (component: InterimComponent) => (context: Context) => {
+      const props = {};
 
-    for (const key in component.schema.properties) {
-      context = translateProp(key, component.schema.properties[key])(context);
-      props[key] = [null];
-    }
+      for (const key in component.schema.properties) {
+        context = translateProp(key, component.schema.properties[key])(context);
+        props[key] = [null];
+      }
 
-    return context;
-  };
+      return context;
+    };
 
   const translateProp = (key: string, { value, optional }: ShapeProperty) =>
     addBuffer([
       `${key}${optional ? "?" : ""}: `,
       translateInference(key, value),
-      ",\n"
+      ",\n",
     ]);
 
   return (
