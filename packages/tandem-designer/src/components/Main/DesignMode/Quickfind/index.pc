@@ -3,32 +3,65 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="Item">
+<div component
+  as="Item"
+  class:active="active"
+  class:isText="text"
+  class:isComponent="component"
+  class:isElement="element">
   <style>
-    padding: 16px;
+    padding: 12px;
+    font-size: 14px;
     background: rgb(245, 245, 245);
     display: flex;
-    gap: 16px;
+    gap: 14px;
+    align-items: center;
+    color: #444;
+    border-radius: 4px;
+    &.active {
+      background: rgb(225, 240, 255);
+      color: rgb(54, 134, 214);
+    }
   </style>
   <div>
     <style>
+      --size: 20px;
+      display: flex;
       :global(img) {
         width: var(--size);
         height: var(--size);
       }
     </style>
-    {icon || <div>
+    <div>
       <style>
-        background: rgb(92, 92, 92);
+        background: currentColor;
         height: var(--size);
         width: var(--size);
         border-radius: 4px;
+        &:within(.text) {
+          mask-size: 100%;
+          mask-image: url(./text-2.svg);
+        }
+        &:within(.element) {
+          mask-size: 100%;
+          mask-image: url(./element-2.svg);
+        }
+        &:within(.component) {
+          mask-size: 100%;
+          mask-image: url(./lego-2.svg);
+        }
       </style>
-    </div>}
+    </div>
   </div>
   <div>
     <div>{title}</div>
-    <div />
+    <div>
+      <style>
+        font-size: 0.8em;
+        opacity: 0.5;
+      </style>
+      {description}
+    </div>
   </div>
 </div>
 
@@ -39,7 +72,7 @@
   <style>
     padding: 16px;
     position: absolute;
-    width: 600px;
+    width: 450px;
     left: 50%;
     transform: translateX(-50%);
     top: 0px;
@@ -49,7 +82,7 @@
     border-bottom-left-radius: 4px;
   </style>
 
-  <TextInput big placeholder="Filter...">
+  <TextInput secondary big placeholder="Filter...">
     <style>
       width: 100%;
     </style>
@@ -57,17 +90,33 @@
 
   <div>
     <style>
-      padding: 16px 0px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-height: 400px;
+      max-height: 450px;
       overflow-y: scroll;
     </style>
-    <Item title="Button" />
-    <Item title="Select" />
-    <Item title="Field" />
-    <Item title="Element" />
+
+
+    <div>
+      <style>
+        padding: 16px 0px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      </style>
+      <Item active isText title="Text" description="A native HTML text node" />
+      <Item isElement
+        title="div"
+        description="defines a division or a section in an HTML document" />
+      <Item isElement
+        title="span"
+        description="an inline container used to mark up a part of a text, or a part of a document" />
+      <Item isElement
+        title="form"
+        description="a document section containing interactive controls for submitting information." />
+      <Item isComponent
+        title="Select"
+        description="Some custom description of my component" />
+      <Item isComponent title="Button" />
+    </div>
   </div>
 </div>
 
@@ -81,16 +130,4 @@
 -->
 <div>
   <Container />
-</div>
-
-<!--
-  @frame { height: 148, width: 240, x: -924, y: -289 }
--->
-<div>
-  <style>
-    span {
-      font-size: 32px;
-    }
-  </style>
-  <span>Something</span>
 </div>

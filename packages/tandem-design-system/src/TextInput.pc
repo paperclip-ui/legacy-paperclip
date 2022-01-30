@@ -10,6 +10,7 @@
   class="input v2 {class?}"
   class:dark="dark"
   class:light="light"
+  class:secondary="secondary"
   {type}
   {onBlur?}
   {onFocus?}
@@ -50,6 +51,9 @@
     }
     &::placeholder {
       color: var(--grey-300);
+    }
+    &.secondary {
+      background: white;
     }
   </style>
 </input>
