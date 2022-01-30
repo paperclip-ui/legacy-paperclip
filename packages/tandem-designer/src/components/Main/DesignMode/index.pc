@@ -4,6 +4,7 @@
 <import src="./Canvas/index.pc" as="Canvas" />
 <import src="./RightSidebar/index.pc" as="RightSidebar" />
 <import src="./Footer/index.pc" as="Footer" />
+<import src="./Quickfind/index.pc" as="Quickfind" />
 <import src="./MediaPreview/index.pc" as="MediaPreview" />
 <import src="@tandem-ui/design-system/src/atoms.pc" inject-styles />
 <import src="./WindowResizer/index.pc" as="WindowResizer" />
@@ -40,6 +41,7 @@
     position: relative;
     overflow: hidden;
     flex: 1;
+    height: 100%;
     &.disabled {
       pointer-events: none;
     }
@@ -92,6 +94,7 @@
   {showEmpty && <Birdseye.PreviewEmpty />}
   {showCanvas && <fragment>
     <Center>
+      {showQuickfind? && <Quickfind.Preview />}
       <Canvas.Preview />
       <Footer.Preview />
     </Center>
@@ -109,7 +112,11 @@
 <!--
   @frame { visible: false }
 -->
-<WindowResizer.Container export component as="DesignModeResizer" {style?}>
+<WindowResizer.Container export
+  component
+  as="DesignModeResizer"
+  {style?}
+  {class?}>
   <style>
     display: flex;
     &:within(:global(.floating-preview)) {
@@ -134,6 +141,9 @@
   @frame { visible: false, width: 1024, height: 768, x: -719, y: 50 }
 -->
 <DesignModeResizer export component as="Preview">
+  <style>
+    height: 100vh;
+  </style>
   <Container {float?}>
     {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
     {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
@@ -143,6 +153,7 @@
       {showNoPreview?}
       {showEmpty?}
       {showGrid?}
+      {showQuickfind?}
       {showComputed?} />
   </Container>
 </DesignModeResizer>
@@ -193,7 +204,7 @@
 <Preview showEnvPopup showGrid v2 />
 
 <!--
-  @frame { title: "Center / Empty", width: 1024, height: 768, x: 1069, y: 745 }
+  @frame { height: 1037, title: "Center / Canvas", visible: false, width: 1532, x: 2468, y: 513 }
 -->
 <Preview showEmpty />
 
@@ -204,9 +215,9 @@
 <Preview showCanvas v2 showComputed />
 
 <!--
-  @frame { title: "Center / Canvas", width: 1266, height: 821, x: 2734, y: 729 }
+  @frame { height: 1146, title: "Center / Canvas", width: 1825, x: 2050, y: 444 }
 -->
-<Preview showCanvas v2 />
+<Preview showCanvas v2 showQuickfind />
 
 
 <!--

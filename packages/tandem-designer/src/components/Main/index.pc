@@ -10,6 +10,7 @@ TODOS:
 <import src="./DesignMode/index.pc" as="DesignMode" />
 <import src="./LeftSidebar/index.pc" as="LeftSidebar" />
 <import src="./CodeMode/index.pc" as="CodeMode" />
+<import src="./DesignMode/Quickfind/index.pc" as="Quickfind" />
 
 
 <!--
@@ -63,6 +64,7 @@ TODOS:
   {designer? && <DesignMode.Preview {float?}
     v2
     {showLeftSidebar}
+    {showQuickfind?}
     {dark?}
     {showEnvPopup?}
     {showGrid?}
@@ -100,6 +102,18 @@ TODOS:
   @frame { title: "Code Mode / Big", width: 3364, height: 1685, x: 2339, y: 2677 }
 -->
 <Preview showSlimNav showFileMenu dark codeMode designer showGrid fullSize />
+
+<!--
+  @frame { height: 1246, title: "Canvas with  quicksearch", width: 1905, x: -2538, y: 957 }
+-->
+<Preview showLeftSidebar
+  showQuickfind
+  codeMode={false}
+  designer
+  v2
+  showCanvas
+  fullSize />
+
 
 <!--
   @frame { title: "Canvas with file nav", width: 1905, height: 1246, x: -66, y: 917 }

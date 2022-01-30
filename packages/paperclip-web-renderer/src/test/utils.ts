@@ -215,6 +215,7 @@ export const createMockEngine = (graph: Graph) =>
         );
       },
     },
+    mode: EngineMode.MultiFrame,
   });
 
 export const createMockEngineDelegate = (

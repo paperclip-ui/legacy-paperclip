@@ -8,6 +8,7 @@ import {
   NodeKind,
   Sheet,
   stringifyCSSRule,
+  StyleRule,
   VirtSheet,
   VirtualElement,
   VirtualFrame,
@@ -330,11 +331,12 @@ const patchCSSStyleSheet = (
     newSheet.rules
   );
 
-  const low = Math.min(prevSheet.rules.length, newSheet.rules.length);
-
   for (let i = 0; i < update.length; i++) {
     const [oldItem, newItem] = update[i];
-    if (oldItem !== newItem) {
+    if (
+      oldItem !== newItem ||
+      (sheet.cssRules[i] as CSSStyleRule).selectorText === ".nil"
+    ) {
       sheet.deleteRule(i);
       insertRule(sheet, stringifyCSSRule(newItem, options), i);
     }
@@ -349,10 +351,11 @@ const patchCSSStyleSheet = (
 };
 
 const insertRule = (sheet: CSSStyleSheet, rule: string, index?: number) => {
+  const actualIndex = index == null ? sheet.cssRules.length : index;
   try {
-    sheet.insertRule(rule, index == null ? sheet.cssRules.length : index);
+    sheet.insertRule(rule, actualIndex);
   } catch (e) {
-    sheet.insertRule(".nil {}");
+    sheet.insertRule(".nil{}", actualIndex);
   }
 };
 

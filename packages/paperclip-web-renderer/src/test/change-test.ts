@@ -181,7 +181,7 @@ describe(__filename, () => {
           <c />
         `,
         },
-        `<div></div><div><style></style></div><div><a class="_17bc3462 _pub-17bc3462"></a></div><div></div><div><style></style></div><div><b class="_17bc3462 _pub-17bc3462"></b></div><div></div><div><style></style></div><div><c class="_17bc3462 _pub-17bc3462"></c></div>`,
+        `<div></div><div><style></style></div><div><b class="_17bc3462 _pub-17bc3462"></b></div><div></div><div><style></style></div><div><c class="_17bc3462 _pub-17bc3462"></c></div>`,
       ],
     ],
     [
@@ -360,7 +360,7 @@ describe(__filename, () => {
           </Preview>
         </preview>`,
         },
-        `<div></div><div><style></style></div><div><preview class="_17bc3462 _pub-17bc3462" noPadding="true"><div class="_17bc3462 _pub-17bc3462"><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div><div class="_17bc3462 _pub-17bc3462"><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div></preview></div>`,
+        `<div></div><div><style></style></div><div><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div><div></div><div><style></style></div><div><div class="_17bc3462 _pub-17bc3462"><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div></div><div></div><div><style></style></div><div><preview class="_17bc3462 _pub-17bc3462" noPadding="true"><div class="_17bc3462 _pub-17bc3462"><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div><div class="_17bc3462 _pub-17bc3462"><div class="_17bc3462_StyledHeader _pub-17bc3462_StyledHeader StyledHeader _17bc3462 _pub-17bc3462"></div></div></preview></div>`,
       ],
     ],
     [

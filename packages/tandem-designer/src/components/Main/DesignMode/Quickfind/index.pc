@@ -1,0 +1,96 @@
+<import src="@tandem-ui/design-system/src/TextInput.pc" as="TextInput" />
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="Item">
+  <style>
+    padding: 16px;
+    background: rgb(245, 245, 245);
+    display: flex;
+    gap: 16px;
+  </style>
+  <div>
+    <style>
+      :global(img) {
+        width: var(--size);
+        height: var(--size);
+      }
+    </style>
+    {icon || <div>
+      <style>
+        background: rgb(92, 92, 92);
+        height: var(--size);
+        width: var(--size);
+        border-radius: 4px;
+      </style>
+    </div>}
+  </div>
+  <div>
+    <div>{title}</div>
+    <div />
+  </div>
+</div>
+
+<!--
+  @frame { height: 600, title: "Quickfind", visible: true, width: 805, x: 241, y: -190 }
+-->
+<div component as="Container">
+  <style>
+    padding: 16px;
+    position: absolute;
+    width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0px;
+    z-index: 1024;
+    box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.253);
+    background: rgb(218, 218, 218);
+    border-bottom-left-radius: 4px;
+  </style>
+
+  <TextInput big placeholder="Filter...">
+    <style>
+      width: 100%;
+    </style>
+  </TextInput>
+
+  <div>
+    <style>
+      padding: 16px 0px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 400px;
+      overflow-y: scroll;
+    </style>
+    <Item title="Button" />
+    <Item title="Select" />
+    <Item title="Field" />
+    <Item title="Element" />
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<Container export component as="Preview" />
+
+<!--
+  @frame { height: 768, width: 1024, x: 1260, y: -367 }
+-->
+<div>
+  <Container />
+</div>
+
+<!--
+  @frame { height: 148, width: 240, x: -924, y: -289 }
+-->
+<div>
+  <style>
+    span {
+      font-size: 32px;
+    }
+  </style>
+  <span>Something</span>
+</div>

@@ -20,9 +20,9 @@
   {defaultValue?}
   {autoComplete?}
   {autoFocus?}
-  allow-1password="yes">
+  allow-1password="yes"
+  class:big="big">
   <style>
-
 
     background: var(--background-50);
     border: 0;
@@ -33,6 +33,10 @@
     color: var(--text-color);
     box-sizing: border-box;
     border: 2px solid var(--background-200);
+    &.big {
+      padding: 16px;
+    }
+
     &:within(:global(.dark)), &.dark {
       background: var(--grey-night-100);
       border: 2px solid var(--grey-night-300);
