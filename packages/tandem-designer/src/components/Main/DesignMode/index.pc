@@ -215,7 +215,7 @@
 <Preview showCanvas v2 showComputed />
 
 <!--
-  @frame { height: 1146, title: "Center / Canvas", width: 1825, x: 2050, y: 444 }
+  @frame { height: 1146, title: "Center / Canvas", width: 1825, x: 2074, y: -271 }
 -->
 <Preview showCanvas v2 showQuickfind />
 

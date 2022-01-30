@@ -8,7 +8,8 @@
   class:active="active"
   class:isText="text"
   class:isComponent="component"
-  class:isElement="element">
+  class:isElement="element"
+  class:hover="hover">
   <style>
     padding: 12px;
     font-size: 14px;
@@ -82,18 +83,13 @@
     border-bottom-left-radius: 4px;
   </style>
 
-  <TextInput secondary big placeholder="Filter...">
-    <style>
-      width: 100%;
-    </style>
-  </TextInput>
+  {filterInput}
 
   <div>
     <style>
       max-height: 450px;
       overflow-y: scroll;
     </style>
-
 
     <div>
       <style>
@@ -102,20 +98,7 @@
         flex-direction: column;
         gap: 16px;
       </style>
-      <Item active isText title="Text" description="A native HTML text node" />
-      <Item isElement
-        title="div"
-        description="defines a division or a section in an HTML document" />
-      <Item isElement
-        title="span"
-        description="an inline container used to mark up a part of a text, or a part of a document" />
-      <Item isElement
-        title="form"
-        description="a document section containing interactive controls for submitting information." />
-      <Item isComponent
-        title="Select"
-        description="Some custom description of my component" />
-      <Item isComponent title="Button" />
+      {items}
     </div>
   </div>
 </div>
@@ -123,7 +106,31 @@
 <!--
   @frame { visible: false }
 -->
-<Container export component as="Preview" />
+<Container export
+  component
+  as="Preview"
+  filterInput={<TextInput secondary big placeholder="Filter...">
+    <style>
+      width: 100%;
+    </style>
+  </TextInput>}
+  items={<fragment>
+    <Item active isText title="Text" description="A native HTML text node" />
+    <Item hover
+      isElement
+      title="div"
+      description="defines a division or a section in an HTML document" />
+    <Item isElement
+      title="span"
+      description="an inline container used to mark up a part of a text, or a part of a document" />
+    <Item isElement
+      title="form"
+      description="a document section containing interactive controls for submitting information." />
+    <Item isComponent
+      title="Select"
+      description="Some custom description of my component" />
+    <Item isComponent title="Button" />
+  </fragment>} />
 
 <!--
   @frame { height: 768, width: 1024, x: 1260, y: -367 }
