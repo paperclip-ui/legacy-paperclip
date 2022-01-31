@@ -26,6 +26,4 @@ describe(__filename + "#", () => {
       },
     ]);
   });
-
-  it(`when getAllAvailableNodes is included with active document URI, the namespace is included with components`, () => {});
 });
