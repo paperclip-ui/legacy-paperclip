@@ -70,7 +70,7 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
     } else if (isPaperclipFile(canvasFile)) {
       content = (
         <styles.Center>
-          <Quickfind />
+          {/* <Quickfind /> */}
           <Canvas />
           <Footer />
         </styles.Center>

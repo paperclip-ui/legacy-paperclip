@@ -83,7 +83,7 @@ export class AutocompleteService {
       throw e;
     }
 
-    if (!context || !data) {
+    if (!context) {
       return [];
     }
 
@@ -284,8 +284,11 @@ export class AutocompleteService {
     data: LoadedData,
     imports: Record<string, LoadedData>
   ) {
-    const styleExports =
-      data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+    const styleExports = data
+      ? data.kind === EvaluatedDataKind.PC
+        ? data.exports.style
+        : data.exports
+      : null;
 
     // This is the easiest approach. Ignore if there's text right before cursor -- this is to prevent bad autocompletions. E.g
     // -- expanded to --var(--color)
@@ -305,7 +308,7 @@ export class AutocompleteService {
 
     if (
       info.declarationName === "animation" ||
-      info.declarationName === "animation-name"
+      (info.declarationName === "animation-name" && styleExports)
     ) {
       for (const name in styleExports.keyframes) {
         const info = styleExports.keyframes[name];
@@ -361,10 +364,13 @@ export class AutocompleteService {
     includeImports = true
   ) {
     const list: CompletionItem[] = [];
-    const styleExports =
-      data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+    const styleExports = data
+      ? data.kind === EvaluatedDataKind.PC
+        ? data.exports.style
+        : data.exports
+      : null;
 
-    for (const className in styleExports.classNames) {
+    for (const className in styleExports?.classNames) {
       list.push({
         label: className,
       });
@@ -477,11 +483,10 @@ const declaredVarsToCompletionItems = memoize(
     imports: Record<string, LoadedData>,
     includeVar?: boolean
   ) => {
-    const styleExports =
-      data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+    const styleExports = getStyleExport(data);
     const list: CompletionItem[] = [];
     const used = {};
-    for (const name in styleExports.variables) {
+    for (const name in styleExports?.variables) {
       used[name] = true;
       list.push({
         label: name,
@@ -492,7 +497,7 @@ const declaredVarsToCompletionItems = memoize(
     }
     for (const imp in imports) {
       const styleExports = getStyleExport(imports[imp]);
-      for (const name in styleExports.variables) {
+      for (const name in styleExports?.variables) {
         if (used[name]) {
           continue;
         }
@@ -531,13 +536,16 @@ const containsExports = (
 ) => {
   const styleExports = getStyleExport(data);
 
-  for (const name in styleExports[kind]) {
-    return true;
-  }
-  for (const imp in imports) {
-    for (const name in getStyleExport(imports[imp])[kind]) {
+  if (styleExports)
+    for (const name in styleExports[kind]) {
       return true;
     }
+  for (const imp in imports) {
+    const exp = getStyleExport(imports[imp]);
+    if (exp)
+      for (const name in exp[kind]) {
+        return true;
+      }
   }
   return false;
 };

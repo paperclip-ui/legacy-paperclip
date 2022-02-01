@@ -9,19 +9,23 @@ Considerations:
 
 */
 
-import { EngineDelegate, getEngineImports } from "@paperclip-ui/core";
 import { Observable } from "@paperclip-ui/common";
 import { AutocompleteService } from "./autocomplete";
+import { getAllAvailableNodes } from "./state";
 import { collectASTInfo, ColorInfo } from "./collect-ast-info";
 import { DiagnosticService, LintInfo } from "./error-service";
-import { getAllAvailableNodes } from "./state";
+import {
+  EngineDelegate,
+  FileSystem,
+  getEngineImports,
+} from "@paperclip-ui/core";
 
 export class PaperclipLanguageService {
   private _autocomplete: AutocompleteService;
   private _diagnostics: DiagnosticService;
   readonly events: Observable;
 
-  constructor(private _engine: EngineDelegate, fs?: any) {
+  constructor(private _engine: EngineDelegate, fs?: FileSystem) {
     this._autocomplete = new AutocompleteService(fs);
     this._diagnostics = new DiagnosticService(_engine);
   }
