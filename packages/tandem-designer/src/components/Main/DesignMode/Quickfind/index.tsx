@@ -42,13 +42,17 @@ const useQuickfind = () => {
   const [filter, setFilter] = useState<string>();
   const insertableNodes = useSelector(getInsertableNodes);
   const onFilterChange = (value: string) => {
-    setFilter(value);
+    setFilter(value && value.toLowerCase());
   };
 
   return {
     visible,
     insertableNodes: insertableNodes.filter((node) => {
-      return !filter || node.name.toLowerCase().includes(filter.toLowerCase());
+      return (
+        !filter ||
+        node.name.toLowerCase().includes(filter) ||
+        node.kind.toLowerCase().includes(filter)
+      );
     }),
     onFilterChange,
   };
