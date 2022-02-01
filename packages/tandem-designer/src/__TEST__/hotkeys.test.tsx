@@ -1,4 +1,8 @@
-import { canvasResized, globalMetaIKeyPressed } from "..";
+import {
+  canvasResized,
+  globalEscapeKeyPressed,
+  globalMetaIKeyPressed,
+} from "..";
 import { createMock, DesignerMock, timeout } from "./utils";
 import { AppState } from "../state";
 import { AvailableNodeKind } from "@paperclip-ui/language-service";
@@ -38,6 +42,7 @@ test(`When meta + i is pressed, all available insertable elements are stored in 
   const insertableInstances = insertableNodes.filter(
     (node) => node.kind === AvailableNodeKind.Instance
   );
+  expect(mock.store.getState().designer.showInsertModal).toEqual(true);
   expect(insertableInstances).toEqual([
     {
       kind: "Instance",
@@ -54,4 +59,11 @@ test(`When meta + i is pressed, all available insertable elements are stored in 
       sourceUri: mock.testServer.fixtureUris["test2.pc"],
     },
   ]);
+});
+
+test(`When meta + i is pressed, then esc, insert modal is hidden`, async () => {
+  mock.store.dispatch(globalMetaIKeyPressed(null));
+  expect(mock.store.getState().designer.showInsertModal).toEqual(true);
+  mock.store.dispatch(globalEscapeKeyPressed(null));
+  expect(mock.store.getState().designer.showInsertModal).toEqual(false);
 });

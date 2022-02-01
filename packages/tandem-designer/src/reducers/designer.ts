@@ -382,6 +382,7 @@ export const reduceDesigner = (
     case ActionType.GLOBAL_META_I_KEY_PRESS: {
       designer = produce(designer, (newDesigner) => {
         newDesigner.loadingInsertableNodes = false;
+        newDesigner.showInsertModal = true;
       });
       return designer;
     }
@@ -568,6 +569,7 @@ export const reduceDesigner = (
         newDesigner.selectedNodePaths = [];
         newDesigner.scopedElementPath = null;
         newDesigner.showBirdseye = false;
+        newDesigner.showInsertModal = false;
       });
     }
     case ActionType.GLOBAL_META_KEY_DOWN: {

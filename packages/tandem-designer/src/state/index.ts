@@ -191,6 +191,7 @@ export type DesignerState = {
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
   loadingInsertableNodes: boolean;
+  showInsertModal: boolean;
   insertableNodes: AvailableNode[];
   pcFileDataVersion: number;
   // rendererElement?: any;
