@@ -382,7 +382,7 @@ export const reduceDesigner = (
     case ActionType.GLOBAL_META_I_KEY_PRESS: {
       designer = produce(designer, (newDesigner) => {
         newDesigner.loadingInsertableNodes = false;
-        newDesigner.showInsertModal = true;
+        newDesigner.showInsertModal = !newDesigner.showInsertModal;
       });
       return designer;
     }

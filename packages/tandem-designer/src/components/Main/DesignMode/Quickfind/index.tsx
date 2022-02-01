@@ -1,9 +1,15 @@
+import {
+  AvailableNode,
+  AvailableNodeKind,
+} from "@paperclip-ui/language-service";
 import { TextInput } from "@tandem-ui/design-system";
-import React from "react";
+import React, { memo, useState } from "react";
+import { useSelector } from "react-redux";
+import { getInsertableNodes, shouldShowQuickfind } from "../../../../state";
 import * as styles from "./index.pc";
 
 export const Quickfind = () => {
-  const { visible, onFilterChange } = useQuickfind();
+  const { visible, insertableNodes, onFilterChange } = useQuickfind();
 
   if (!visible) {
     return null;
@@ -12,16 +18,54 @@ export const Quickfind = () => {
   return (
     <styles.Container
       filterInput={
-        <TextInput big secondary wide onValueChange={onFilterChange} />
+        <TextInput
+          autoFocus
+          big
+          secondary
+          wide
+          onValueChange={onFilterChange}
+        />
       }
-      items={null}
+      items={
+        <>
+          {insertableNodes.map((node, i) => (
+            <InsertableNode node={node} key={i} />
+          ))}
+        </>
+      }
     />
   );
 };
 
 const useQuickfind = () => {
-  const visible = true;
-  const onFilterChange = (value: string) => {};
+  const visible = useSelector(shouldShowQuickfind);
+  const [filter, setFilter] = useState<string>();
+  const insertableNodes = useSelector(getInsertableNodes);
+  const onFilterChange = (value: string) => {
+    setFilter(value);
+  };
 
-  return { visible, onFilterChange };
+  return {
+    visible,
+    insertableNodes: insertableNodes.filter((node) => {
+      return !filter || node.name.toLowerCase().includes(filter.toLowerCase());
+    }),
+    onFilterChange,
+  };
 };
+
+type InsertableNodeProps = {
+  node: AvailableNode;
+};
+
+const InsertableNode = memo(({ node }: InsertableNodeProps) => {
+  return (
+    <styles.Item
+      isText={node.kind === AvailableNodeKind.Text}
+      isElement={node.kind === AvailableNodeKind.Element}
+      isComponent={node.kind === AvailableNodeKind.Instance}
+      title={node.name}
+      description={node.description}
+    />
+  );
+});

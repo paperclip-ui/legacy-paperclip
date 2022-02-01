@@ -8,6 +8,7 @@ import {
   globalMetaKeyDown,
   globalZKeyDown,
   globalYKeyDown,
+  globalMetaIKeyPressed,
   globalMetaKeyUp,
   globalSaveKeyPress,
   globalHKeyDown,
@@ -77,6 +78,10 @@ export function* handleKeyCommands(mount: HTMLElement) {
     });
     handler.bind("meta+-", () => {
       emit(zoomOutKeyPressed(null));
+      return false;
+    });
+    handler.bind("meta+i", () => {
+      emit(globalMetaIKeyPressed(null));
       return false;
     });
     handler.bind("meta+s", (e) => {

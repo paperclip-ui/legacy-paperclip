@@ -11,9 +11,7 @@ import { RightSidebar } from "./RightSidebar";
 import { MediaPreview } from "./MediaPreview";
 import { isPaperclipFile } from "@paperclip-ui/utils";
 import { useDragger } from "../../../hooks/useDragger";
-import { Point } from "../../../state";
 import { WindowResizer } from "./WindowResizer";
-import { clamp } from "lodash";
 import { Quickfind } from "./Quickfind";
 
 export type DesignModeProps = {
@@ -70,7 +68,7 @@ export const DesignMode = ({ floating }: DesignModeProps) => {
     } else if (isPaperclipFile(canvasFile)) {
       content = (
         <styles.Center>
-          {/* <Quickfind /> */}
+          <Quickfind />
           <Canvas />
           <Footer />
         </styles.Center>

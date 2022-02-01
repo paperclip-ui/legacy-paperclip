@@ -268,6 +268,7 @@ export const INITIAL_STATE: AppState = {
     insertableNodes: [],
     loadingInsertableNodes: false,
     useLiteEditor: false,
+    showInsertModal: false,
     readonly: false,
     pcFileDataVersion: 0,
     selectedNodeSources: [],
@@ -494,6 +495,11 @@ const getHoverableNodePaths = memoize(
     return hoverable.map((node) => getNodePath(node, root));
   }
 );
+
+export const shouldShowQuickfind = (state: AppState) =>
+  state.designer.showInsertModal;
+export const getInsertableNodes = (state: AppState) =>
+  state.designer.insertableNodes;
 
 const addHoverableChildren = (
   node: VirtualNode,
