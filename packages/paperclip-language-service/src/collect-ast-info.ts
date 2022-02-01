@@ -24,7 +24,7 @@ import {
   DependencyNodeContent,
   getAttributeValue,
   getAttributeStringValue,
-  AttributeValueKind
+  AttributeValueKind,
 } from "@paperclip-ui/utils";
 import { CSS_COLOR_NAME_REGEXP } from "./css-color-names";
 import * as parseColor from "color";
@@ -63,7 +63,7 @@ type CollectASTInfoResult = {
 const EMPTY: CollectASTInfoResult = {
   colors: [],
   links: [],
-  definitions: []
+  definitions: [],
 };
 
 export const collectASTInfo = (
@@ -79,7 +79,7 @@ export const collectASTInfo = (
     const map = {
       colors: getDocumentColors(entryUri, graph),
       links: getDocumentLinks(entryUri, graph),
-      definitions: getDocumentDefinitions(entryUri, graph)
+      definitions: getDocumentDefinitions(entryUri, graph),
     };
     return map;
   } catch (e) {
@@ -122,7 +122,7 @@ const getDocumentLinks = (
     }
     links.push({
       uri: asts[uri].dependencyUriMaps[src.value],
-      range: src.range
+      range: src.range,
     });
   }
 
@@ -152,7 +152,7 @@ const getDocumentDefinitions = (uri: string, graph: DependencyGraph) => {
         sourceUri: instanceUri,
         sourceRange: component.range,
         sourceDefinitionRange: component.range,
-        instanceRange: instance.tagNameRange
+        instanceRange: instance.tagNameRange,
       });
     }
   }
@@ -187,11 +187,13 @@ const getInstanceComponentInfo = (
 const getAllDocumentVariables = (uri: string, graph: DependencyGraph) => {
   const entry = graph[uri];
   const allVariables: Record<string, KeyValueDeclaration> = {
-    ...getDocumentVariables(entry.content)
+    ...getDocumentVariables(entry.content),
   };
-
   for (const relPath in entry.dependencyUriMaps) {
     const dep = graph[entry.dependencyUriMaps[relPath]];
+    if (!dep) {
+      continue;
+    }
     Object.assign(
       allVariables,
       getDocumentVariables(dep.content),
@@ -225,7 +227,7 @@ const getSheetASTInfo = memoize((ast: Sheet) => {
   const keyframes: KeyframesRule[] = [];
   const mixins: MixinRule[] = [];
 
-  traverseSheet(ast, expr => {
+  traverseSheet(ast, (expr) => {
     if (
       isStyleDeclaration(expr) &&
       expr.declarationKind === StyleDeclarationKind.KeyValue
@@ -312,7 +314,7 @@ const getNodeASTInfo = memoize((root: Node) => {
     components: allComponents,
     keyframes: allKeyframes,
     mixins: allMixins,
-    instances
+    instances,
   };
 });
 
@@ -357,13 +359,13 @@ const addDeclarationColors = (
     try {
       const {
         color: [red, green, blue],
-        valpha: alpha
+        valpha: alpha,
       } = parseColor(colorValue);
 
       allColors.push({
         value: { red: red / 255, green: green / 255, blue: blue / 255, alpha },
         start: colorStart,
-        end: colorStart + color.length
+        end: colorStart + color.length,
       });
     } catch (e) {}
   }

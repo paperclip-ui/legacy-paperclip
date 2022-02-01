@@ -81,7 +81,7 @@ export class PaperclipLanguageService {
   getAutoCompletionSuggestions(uri: string, position: number = Infinity) {
     return this._autocomplete.getSuggestions(
       uri,
-      this._engine.getVirtualContent(uri).substr(0, position),
+      this._engine.getVirtualContent(uri).substring(0, position),
       this._engine.getLoadedData(uri),
       getEngineImports(uri, this._engine)
     );

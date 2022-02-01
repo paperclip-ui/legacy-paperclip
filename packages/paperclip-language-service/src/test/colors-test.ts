@@ -14,7 +14,7 @@ describe(__filename + "#", () => {
               color: red;
             }
           </style>
-        `
+        `,
       },
       [
         {
@@ -22,12 +22,12 @@ describe(__filename + "#", () => {
             red: 1,
             green: 0,
             blue: 0,
-            alpha: 1
+            alpha: 1,
           },
           start: 58,
-          end: 61
-        }
-      ]
+          end: 61,
+        },
+      ],
     ],
     [
       `it can pull color information out fo rgba`,
@@ -38,7 +38,7 @@ describe(__filename + "#", () => {
               color: rgba(0, 0, 0, 1);
             }
           </style>
-        `
+        `,
       },
       [
         {
@@ -46,12 +46,12 @@ describe(__filename + "#", () => {
             red: 0,
             green: 0,
             blue: 0,
-            alpha: 1
+            alpha: 1,
           },
           start: 58,
-          end: 74
-        }
-      ]
+          end: 74,
+        },
+      ],
     ],
     [
       `it can pull color information out of nested element`,
@@ -64,7 +64,7 @@ describe(__filename + "#", () => {
               }
             }
           </style>
-        `
+        `,
       },
       [
         {
@@ -72,12 +72,12 @@ describe(__filename + "#", () => {
             red: 0,
             green: 0,
             blue: 1,
-            alpha: 1
+            alpha: 1,
           },
           start: 80,
-          end: 84
-        }
-      ]
+          end: 84,
+        },
+      ],
     ],
     [
       `can pull color information out of media queries`,
@@ -90,7 +90,7 @@ describe(__filename + "#", () => {
               }
             }
           </style>
-        `
+        `,
       },
       [
         {
@@ -98,12 +98,12 @@ describe(__filename + "#", () => {
             red: 0,
             green: 0,
             blue: 1,
-            alpha: 1
+            alpha: 1,
           },
           start: 91,
-          end: 95
-        }
-      ]
+          end: 95,
+        },
+      ],
     ],
     [
       `can pull color information out of key frames`,
@@ -116,7 +116,7 @@ describe(__filename + "#", () => {
               }
             }
           </style>
-        `
+        `,
       },
       [
         {
@@ -124,12 +124,12 @@ describe(__filename + "#", () => {
             red: 1,
             green: 0,
             blue: 0,
-            alpha: 1
+            alpha: 1,
           },
           start: 90,
-          end: 93
-        }
-      ]
+          end: 93,
+        },
+      ],
     ],
     [
       `can pull color information out of scoped styles`,
@@ -140,7 +140,7 @@ describe(__filename + "#", () => {
               color: hsl(0, 100%, 50%);
             </style>
           </div>
-        `
+        `,
       },
       [
         {
@@ -148,12 +148,12 @@ describe(__filename + "#", () => {
             red: 0,
             green: 0.39215686274509803,
             blue: 0.19607843137254902,
-            alpha: 1
+            alpha: 1,
           },
           start: 58,
-          end: 75
-        }
-      ]
+          end: 75,
+        },
+      ],
     ],
     [
       `can pull color information out of variables`,
@@ -165,7 +165,7 @@ describe(__filename + "#", () => {
               color: var(--a);
             </style>
           </div>
-        `
+        `,
       },
       [
         {
@@ -173,22 +173,22 @@ describe(__filename + "#", () => {
             red: 1,
             green: 0,
             blue: 0,
-            alpha: 1
+            alpha: 1,
           },
           start: 56,
-          end: 59
+          end: 59,
         },
         {
           value: {
             red: 1,
             green: 0,
             blue: 0,
-            alpha: 1
+            alpha: 1,
           },
           start: 82,
-          end: 90
-        }
-      ]
+          end: 90,
+        },
+      ],
     ],
     [
       `can pull color information out variables from other documents`,
@@ -205,7 +205,7 @@ describe(__filename + "#", () => {
           :root {
             --color: red;
           }
-        `
+        `,
       },
       [
         {
@@ -213,13 +213,43 @@ describe(__filename + "#", () => {
             red: 1,
             green: 0,
             blue: 0,
-            alpha: 1
+            alpha: 1,
           },
           start: 96,
-          end: 108
-        }
-      ]
-    ]
+          end: 108,
+        },
+      ],
+    ],
+    [
+      `Can return document colors if an import src is invalid`,
+      {
+        "/entry.pc": `
+          <import src="/atoms.css" />
+          <div>
+            <style>
+              color: var(--color);
+            </style>
+          </div>
+        `,
+        "/atoms.css": `
+          :root {
+            --color: red;
+          }
+        `,
+      },
+      [
+        {
+          value: {
+            red: 1,
+            green: 0,
+            blue: 0,
+            alpha: 1,
+          },
+          start: 96,
+          end: 108,
+        },
+      ],
+    ],
   ].forEach(([name, graph, expectedColors]: any) => {
     it(name, () => {
       const engine = createMockEngineDelegate(createEngineDelegate)(graph);
@@ -232,5 +262,34 @@ describe(__filename + "#", () => {
 
       expect(info.colors).to.eql(expectedColors);
     });
+  });
+
+  it(`Can collect colors even if src is incorrect`, () => {
+    const engine = createMockEngineDelegate(createEngineDelegate)({
+      "/entry.pc": `<div />`,
+    });
+    engine.open("/entry.pc");
+    engine.updateVirtualFileContent(
+      "/entry.pc",
+      `<import src="" /><style>color: red;</style>`
+    );
+    const info = collectASTInfo(
+      "/entry.pc",
+      engine.getLoadedGraph(),
+      engine.getAllLoadedData()
+    );
+
+    expect(info.colors).to.eql([
+      {
+        value: {
+          red: 1,
+          green: 0,
+          blue: 0,
+          alpha: 1,
+        },
+        start: 31,
+        end: 34,
+      },
+    ]);
   });
 });

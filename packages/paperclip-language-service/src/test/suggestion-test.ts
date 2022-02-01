@@ -83,7 +83,7 @@ describe(__filename + "#", () => {
       },
       ["./test.pc"].map(getCompletionItem2("file:///entry.pc")),
     ],
-  ].forEach(([name, graph, expectedLinks]: any) => {
+  ].forEach(([name, graph, expectedLinks, pos = Infinity]: any) => {
     it(name, () => {
       const engine = createMockEngineDelegate(createEngineDelegate)(graph);
       try {
@@ -95,9 +95,38 @@ describe(__filename + "#", () => {
       );
 
       expect(
-        languagService.getAutoCompletionSuggestions("file:///entry.pc")
+        languagService.getAutoCompletionSuggestions("file:///entry.pc", pos)
       ).to.eql(expectedLinks);
     });
+  });
+
+  it(`Can autosuggest import src even if it's empty`, () => {
+    const graph = {
+      "file:///entry.pc": `<div />`,
+      "file:///test.pc": "<div />",
+      "file:///package.json": JSON.stringify({}),
+      "file:///paperclip.config.json": JSON.stringify({
+        srcDir: "src",
+      }),
+    };
+
+    const engine = createMockEngineDelegate(createEngineDelegate)(graph);
+
+    engine.open("file:///entry.pc");
+
+    const languagService = new PaperclipLanguageService(engine, mockFs(graph));
+
+    engine.updateVirtualFileContent(
+      "file:///entry.pc",
+      `<import src="" /><div />`
+    );
+
+    expect(() => {
+      languagService.getAutoCompletionSuggestions(
+        "file:///entry.pc",
+        `<import src="`.length
+      );
+    }).to.not.throw();
   });
 });
 

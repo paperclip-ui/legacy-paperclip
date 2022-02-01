@@ -186,23 +186,34 @@ const mockReadDir = (graph: Graph) => (uri: string | URL) => {
     .map((p) => p.split("/").pop());
 };
 
-const mockLStatSync = (graph: Graph) => (uri: string | URL) => ({
-  isDirectory() {
-    const path = uri instanceof URL ? url.fileURLToPath(uri.href) : uri;
-    return (
-      !graph[path] &&
-      !graph["file://" + path] &&
-      Object.keys(graph).some((fp) => stripFileProtocol(fp).indexOf(path) === 0)
-    );
-  },
-  isSymbolicLink() {
-    return false;
-  },
-});
+const graphContains = (graph, path) =>
+  Object.keys(graph).some((fp) => stripFileProtocol(fp).indexOf(path) === 0);
+
+const mockLStatSync = (graph: Graph) => (uri: string | URL) => {
+  const path = uri instanceof URL ? url.fileURLToPath(uri.href) : uri;
+
+  // simulate lstat sync
+  if (!graphContains(graph, path)) {
+    throw new Error(`no such file or directory`);
+  }
+
+  return {
+    isDirectory() {
+      return (
+        !graph[path] && !graph["file://" + path] && graphContains(graph, path)
+      );
+    },
+    isSymbolicLink() {
+      return false;
+    },
+  };
+};
 
 const mockExistsSync = (graph: Graph) => {
-  const mock = mockReadFile(graph);
-  return (uri) => mock(uri) != null;
+  return (uri) => {
+    const path = uri instanceof URL ? url.fileURLToPath(uri.href) : uri;
+    return graphContains(graph, path);
+  };
 };
 
 export const mockFs = (graph: Graph) => ({

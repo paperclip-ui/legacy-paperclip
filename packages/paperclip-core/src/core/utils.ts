@@ -11,6 +11,8 @@ export type FileSystem = {
   realpathSync(uri: string | URL): string;
   existsSync(uri: string | URL): boolean;
   readFileSync(uri: string | URL, encoding: string): string;
+  lstatSync(uri: string | URL): any;
+  readdirSync(uri: string | URL): string[];
 };
 
 // TODO - move to @paperclip-ui/utils as soon as we have a glob library that can handle virtual file systems
@@ -89,30 +91,34 @@ const resolveModuleRoots =
     return roots;
   };
 
-const filterAllFiles = (fs) => (filter: (filePath: string) => boolean) => {
-  const scan = (currentPath: string, results: string[] = []) => {
-    const stat = fs.lstatSync(currentPath);
-    const realpath = stat.isSymbolicLink()
-      ? fs.realpathSync(currentPath)
-      : currentPath;
-
-    const newStat = realpath === currentPath ? stat : fs.lstatSync(realpath);
-    if (newStat.isDirectory()) {
-      for (const dirname of fs.readdirSync(realpath)) {
-        const dirpath = path.join(currentPath, dirname);
-        scan(dirpath, results);
+const filterAllFiles =
+  (fs: FileSystem) => (filter: (filePath: string) => boolean) => {
+    const scan = (currentPath: string, results: string[] = []) => {
+      if (!fs.existsSync(currentPath)) {
+        return;
       }
-    } else {
-      if (filter(currentPath)) {
-        results.push(currentPath);
-      }
-    }
+      const stat = fs.lstatSync(currentPath);
+      const realpath = stat.isSymbolicLink()
+        ? fs.realpathSync(currentPath)
+        : currentPath;
 
-    return results;
+      const newStat = realpath === currentPath ? stat : fs.lstatSync(realpath);
+      if (newStat.isDirectory()) {
+        for (const dirname of fs.readdirSync(realpath)) {
+          const dirpath = path.join(currentPath, dirname);
+          scan(dirpath, results);
+        }
+      } else {
+        if (filter(currentPath)) {
+          results.push(currentPath);
+        }
+      }
+
+      return results;
+    };
+
+    return scan;
   };
-
-  return scan;
-};
 
 const resolveResources =
   (fs: FileSystem) =>

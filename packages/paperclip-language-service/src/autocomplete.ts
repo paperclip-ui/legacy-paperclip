@@ -129,6 +129,7 @@ export class AutocompleteService {
       }
     } catch (e) {
       console.error(e.stack);
+      throw e;
     }
 
     return [];
