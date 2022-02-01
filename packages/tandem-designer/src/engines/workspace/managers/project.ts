@@ -40,7 +40,6 @@ export class ProjectManager {
     action: ReturnType<typeof mainActions.locationChanged>
   ) {
     const currentProjectId = action.payload.query.projectId;
-    console.log("PROJEEC", this._mainProjectId);
 
     if (currentProjectId !== this._mainProjectId) {
       this._setProjectId(currentProjectId);

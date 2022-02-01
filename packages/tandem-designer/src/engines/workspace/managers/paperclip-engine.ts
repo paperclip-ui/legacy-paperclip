@@ -87,8 +87,14 @@ export class PaperclipEngineManager {
     }
   }
 
-  private _loadInsertableElements() {
-    console.log("LOAD");
+  private async _loadInsertableElements() {
+    const insertableNodes = await this._pm
+      .getMainProject()
+      .getPaperclip()
+      .loadInsertableNodes();
+    this._store.dispatch(
+      workspaceActions.insertableNodesLoaded(insertableNodes)
+    );
   }
 
   private async _revealNodeSourceInCanvas() {

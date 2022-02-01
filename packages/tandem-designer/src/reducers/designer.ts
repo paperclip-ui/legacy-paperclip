@@ -379,6 +379,19 @@ export const reduceDesigner = (
       designer = maybeCenterCanvas(designer);
       return designer;
     }
+    case ActionType.GLOBAL_META_I_KEY_PRESS: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.loadingInsertableNodes = false;
+      });
+      return designer;
+    }
+    case workspaceActions.insertableNodesLoaded.type: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.insertableNodes = action.payload;
+        newDesigner.loadingInsertableNodes = false;
+      });
+      return designer;
+    }
     case workspaceActions.framesLoaded.type: {
       designer = produce(designer, (newDesigner) => {
         newDesigner.allLoadedPCFileData[action.payload.uri] =

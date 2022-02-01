@@ -15,11 +15,9 @@ import globby from "globby";
 import * as url from "url";
 import { VFS } from "./vfs";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
-import { PaperclipLanguageService } from "@paperclip-ui/language-service";
 
 export class PaperclipManager {
   private _watcher: PaperclipResourceWatcher;
-  private _languageService: PaperclipLanguageService;
 
   constructor(
     private _cwd: string,
@@ -27,9 +25,7 @@ export class PaperclipManager {
     private _logger: Logger,
     private _engine: EngineDelegate,
     private _documentManager: EditorHost
-  ) {
-    this._languageService = new PaperclipLanguageService(_engine, fs as any);
-  }
+  ) {}
 
   /**
    */

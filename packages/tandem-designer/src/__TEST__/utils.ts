@@ -83,3 +83,6 @@ export const createMock = async ({
 
   return { store, waitForAction, dispose, testServer, project };
 };
+
+export const timeout = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

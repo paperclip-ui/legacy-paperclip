@@ -7,6 +7,7 @@ import {
 } from "@paperclip-ui/utils";
 import { Directory, WorkspaceState } from "./state";
 import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
+import { AvailableNode } from "@paperclip-ui/language-service";
 
 export const inspectNodeStyleChannel = remoteChannel<
   VirtNodeSource[],
@@ -25,7 +26,7 @@ export const revealNodeSourceByIdChannel = remoteChannel<string, void>(
   "revealNodeSourceByIdChannel"
 );
 
-export const loadInsertableNodesChannel = remoteChannel<void, void>(
+export const loadInsertableNodesChannel = remoteChannel<void, AvailableNode[]>(
   "loadInsertableNodesChannel"
 );
 

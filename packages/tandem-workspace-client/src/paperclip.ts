@@ -18,6 +18,7 @@ export class PaperclipManager {
 
   constructor(client: RPCClientAdapter) {
     this._inspectNodeStyle = inspectNodeStyleChannel(client);
+    this._loadInsertableNodes = loadInsertableNodesChannel(client);
     this._revealSource = revealNodeSourceChannel(client);
     this._revealBySourceId = revealNodeSourceByIdChannel(client);
   }

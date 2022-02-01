@@ -20,6 +20,7 @@ import { EngineDelegate, paperclipSourceGlobPattern } from "@paperclip-ui/core";
 import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
 import globby from "globby";
 
+// TODO - this needs to be moved to project RPC
 export class RPC {
   constructor(
     server: RPCServer,
@@ -68,6 +69,9 @@ class Connection {
       .loadVirtualNodeSourcesChannel(connection)
       .listen(this._loadNodeSources);
     channels.helloChannel(connection).listen(this._initialize);
+    channels
+      .loadInsertableNodesChannel(connection)
+      .listen(this._loadInsertableNodes);
     // channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
     channels.openProjectChannel(connection).listen(this._openProject);
     channels
@@ -208,6 +212,10 @@ class Connection {
   };
   private _commitChanges = async ({ description }) => {
     return await this.getProject().commitAndPushChanges(description);
+  };
+  private _loadInsertableNodes = async () => {
+    const project = this.getProject();
+    return project.getLanguageService().getAllAvailableNodes();
   };
   private _initialize = async ({ projectId }) => {
     this._logger.info(`Setting connection project ID to ${projectId}`);

@@ -35,6 +35,7 @@ import {
 } from "./geom";
 import * as os from "os";
 import { Result } from "./result";
+import { AvailableNode } from "@paperclip-ui/language-service";
 
 // 2 MB
 export const MAX_FILE_SIZE = 2 * 1000 * 1000;
@@ -189,6 +190,8 @@ export type DesignerState = {
 
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
+  loadingInsertableNodes: boolean;
+  insertableNodes: AvailableNode[];
   pcFileDataVersion: number;
   // rendererElement?: any;
   availableBrowsers: AvailableBrowser[];
@@ -261,6 +264,8 @@ export const INITIAL_STATE: AppState = {
     documents: {},
   },
   designer: {
+    insertableNodes: [],
+    loadingInsertableNodes: false,
     useLiteEditor: false,
     readonly: false,
     pcFileDataVersion: 0,

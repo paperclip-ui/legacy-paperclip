@@ -76,14 +76,11 @@ describe(`With a basic project`, () => {
     test(`Is deselected when the file is cleared`, async () => {
       expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0"]);
 
-      console.log("OPEN PROJECTTT");
       const client = await mock.project
         .getDocuments()
         .open(mock.testServer.fixtureUris["test.pc"]);
 
-      console.log("GETTING SOURCE!!!");
       const source = await client.getSource();
-      console.log("GGDSNKGSD");
 
       // clear the doc
       source.applyEdits([

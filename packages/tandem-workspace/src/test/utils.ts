@@ -27,7 +27,7 @@ export const createTestServer = async (
   const mockServer = createMockRPCServer();
 
   const server = await start({
-    logLevel: LogLevel.All,
+    logLevel: LogLevel.None,
     pause: false,
     rpcServer: mockServer,
     useHttpServer: false,

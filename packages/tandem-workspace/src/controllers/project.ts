@@ -1,6 +1,7 @@
 import execa from "execa";
 import { VFS } from "./vfs";
 import * as URL from "url";
+import * as fs from "fs";
 import { Logger } from "@paperclip-ui/common";
 import { Options } from "../core/options";
 import { Package } from "./package";
@@ -9,11 +10,13 @@ import { Repository } from "./git";
 import { PaperclipManager } from "./paperclip";
 import { EngineDelegate, EngineDelegateEvent } from "@paperclip-ui/core";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
+import { PaperclipLanguageService } from "@paperclip-ui/language-service";
 
 export class Project {
   private _pc: PaperclipManager;
   readonly repository: Repository;
   readonly package: Package;
+  private _languageService: PaperclipLanguageService;
 
   /**
    */
@@ -33,6 +36,7 @@ export class Project {
       : getTemporaryDirectory(this.url, this._branch);
     this.repository = new Repository(directory, _logger);
     this.package = new Package(directory, _logger);
+    this._languageService = new PaperclipLanguageService(_engine, fs as any);
     this._pc = new PaperclipManager(
       this.repository.localDirectory,
       _vfs,
@@ -40,6 +44,13 @@ export class Project {
       _engine,
       documentManager
     );
+  }
+
+  /**
+   */
+
+  getLanguageService() {
+    return this._languageService;
   }
 
   /**
