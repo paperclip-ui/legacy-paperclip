@@ -27,12 +27,14 @@ export const createTestServer = async (
   const mockServer = createMockRPCServer();
 
   const server = await start({
-    logLevel: LogLevel.None,
+    logLevel: LogLevel.All,
     pause: false,
     rpcServer: mockServer,
     useHttpServer: false,
     project: { installDependencies: false },
   });
+
+  server.getWorkspace().start(fixtureDir);
 
   const createConnection = () => {
     return mockServer.createConnection();

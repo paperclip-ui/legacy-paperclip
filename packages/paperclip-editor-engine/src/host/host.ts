@@ -1,5 +1,5 @@
 import { EngineDelegate } from "@paperclip-ui/core";
-import { Logger, RPCServer } from "@paperclip-ui/common";
+import { Logger, RPCClientAdapter, RPCServer } from "@paperclip-ui/common";
 import { EventEmitter } from "events";
 import { ClientConnection } from "./connection";
 import { DocumentManager } from "./documents/manager";
@@ -16,7 +16,6 @@ export class EditorHost {
 
   private constructor(
     private _engine: EngineDelegate,
-    private _server: RPCServer,
     private _logger: Logger
   ) {
     this._events = new EventEmitter();
@@ -39,23 +38,30 @@ export class EditorHost {
     server: RPCServer,
     logger: Logger
   ) {
-    const host = new EditorHost(engine, server, logger);
-    await host._start();
+    const host = new EditorHost(engine, logger);
+    await host._listen(server);
     return host;
   }
 
   /**
    */
 
-  private _start() {
-    this._server.onConnection((connection) => {
-      new ClientConnection(
-        this._documents,
-        connection,
-        this._events,
-        this._engine,
-        this._logger
-      );
+  private _listen(server: RPCServer) {
+    server.onConnection((connection) => {
+      this._addConnection(connection);
     });
+  }
+
+  /**
+   */
+
+  private _addConnection(connection: RPCClientAdapter) {
+    new ClientConnection(
+      this._documents,
+      connection,
+      this._events,
+      this._engine,
+      this._logger
+    );
   }
 }
