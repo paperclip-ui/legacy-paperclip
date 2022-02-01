@@ -19,7 +19,6 @@ import {
 import {
   Box,
   Directory,
-  EnvOption,
   FSItemKind,
   Point,
   Size,
@@ -79,6 +78,7 @@ export enum ActionType {
   GLOBAL_ESCAPE_KEY_PRESSED = "GLOBAL_ESCAPE_KEY_PRESSED",
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
   GLOBAL_OPTION_KEY_DOWN = "GLOBAL_OPTION_KEY_DOWN",
+  GLOBAL_META_I_KEY_PRESS = "GLOBAL_META_I_KEY_PRESS",
   GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
   GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
   GLOBAL_H_KEY_DOWN = "GLOBAL_H_KEY_DOWN",
@@ -668,6 +668,10 @@ export const globalBackspaceKeySent = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_SENT>
 >(ActionType.GLOBAL_BACKSPACE_KEY_SENT);
 
+export const globalMetaIKeyPressed = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_META_I_KEY_PRESS>
+>(ActionType.GLOBAL_META_I_KEY_PRESS);
+
 export const globalMetaKeyDown = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
 >(ActionType.GLOBAL_META_KEY_DOWN);
@@ -813,6 +817,8 @@ export type InstanceAction =
   | KeyComboPressed<ActionType.GLOBAL_SAVE_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
   | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
+  | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
+  | KeyComboPressed<ActionType.GLOBAL_META_I_KEY_PRESS>
   | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_SENT>
   | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>

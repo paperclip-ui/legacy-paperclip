@@ -45,6 +45,13 @@ export class Project {
   /**
    */
 
+  getEngine() {
+    return this._engine;
+  }
+
+  /**
+   */
+
   dispose() {
     this._pc.dispose();
   }

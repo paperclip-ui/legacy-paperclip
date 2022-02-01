@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@paperclip-ui/common": "^18.5.0",
+    "@paperclip-ui/language-service": "^18.5.0",
     "@paperclip-ui/core": "^18.5.0",
     "@paperclip-ui/editor-engine": "^18.5.1",
     "@tandem-ui/common": "^18.5.0",

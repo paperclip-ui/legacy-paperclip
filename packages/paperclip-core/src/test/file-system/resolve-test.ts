@@ -8,14 +8,14 @@ import { resolveImportUri } from "@paperclip-ui/utils";
 
 describe(__filename + "#", () => {
   it("returns nested module when resolving", async () => {
-    const results = resolveAllPaperclipFiles(fs)(
+    const results = resolveAllPaperclipFiles(fs as any)(
       url.pathToFileURL(
         path.join(TEST_FIXTURE_SRC_DIRECTORY, "nested-mod-import.pc")
       ).href,
       true
     );
     expect(
-      results.map(path => {
+      results.map((path) => {
         return path.replace(/^\.\//, "");
       })
     ).to.eql([
@@ -32,7 +32,7 @@ describe(__filename + "#", () => {
       "@nested/in/a/folder/src/test.pc",
       "module-a/src/component.pc",
       "module-a/src/module.pc",
-      "module-a/src/test.pc"
+      "module-a/src/test.pc",
     ]);
   });
 

@@ -30,7 +30,7 @@ describe(`With a basic project`, () => {
   test(`Automatically loads the project frame on init`, async () => {
     expect(
       Object.keys(mock.store.getState().designer.allLoadedPCFileData)
-    ).toEqual([`file:///tmp/__TEST__/fixtures/test.pc`]);
+    ).toEqual([mock.testServer.fixtureUris["test.pc"]]);
   });
 
   test(`Automatically centers the canvas when a canvas is loaded`, async () => {

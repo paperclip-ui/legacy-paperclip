@@ -19,9 +19,10 @@ export type TestServer = {
 };
 
 export const createTestServer = async (
-  files: Record<string, string>
+  files: Record<string, string>,
+  fixtureDir = "/tmp/__TEST__"
 ): Promise<TestServer> => {
-  const fixtures = saveTmpFixtureFiles("fixtures", files, "/tmp/__TEST__");
+  const fixtures = saveTmpFixtureFiles("fixtures", files, fixtureDir);
 
   const mockServer = createMockRPCServer();
 

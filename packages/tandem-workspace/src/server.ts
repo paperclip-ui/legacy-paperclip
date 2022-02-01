@@ -16,6 +16,7 @@ import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 import { Logger, wsServerAdapter } from "@paperclip-ui/common";
 import { RPC } from "./controllers/rpc";
 import { Designer } from "./controllers/designer";
+import { PaperclipLanguageService } from "@paperclip-ui/language-service";
 
 const getPort = require("get-port");
 
@@ -43,9 +44,6 @@ export class Server {
   getWorkspace() {
     return this._workspace;
   }
-  getEngine() {
-    return this._engine;
-  }
   async start() {
     this._logger.info(`Workspace started 🚀`);
     let httpServer;
@@ -68,40 +66,21 @@ export class Server {
       rpcServer = wsServerAdapter(ws);
     }
 
-    const paperclipEngine = (this._engine = await loadEngineDelegate({
-      mode: EngineMode.MultiFrame,
-    }));
-
-    const documentManager = await EditorHost.start(
-      paperclipEngine,
-      rpcServer,
-      this._logger
-    );
-
     const workspace = (this._workspace = new Workspace(
       null,
       new SSHKeys(this._logger),
       vfs,
       this._logger,
-      paperclipEngine,
+      rpcServer,
       this.options,
-      httpPort,
-      documentManager
+      httpPort
     ));
 
     if (expressServer) {
       new Designer(expressServer);
       addRoutes(expressServer, this._logger, workspace);
     }
-    new RPC(
-      rpcServer,
-      workspace,
-      paperclipEngine,
-      vfs,
-      this._logger,
-      this._port,
-      this.options
-    );
+    new RPC(rpcServer, workspace, vfs, this._logger, this._port, this.options);
 
     // need to wait for http server to spin up. This is a really dumb approach.
     // pause option specifically for testing.

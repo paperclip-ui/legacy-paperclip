@@ -24,7 +24,6 @@ export class RPC {
   constructor(
     server: RPCServer,
     private _workspace: Workspace,
-    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
@@ -37,7 +36,6 @@ export class RPC {
     new Connection(
       connection,
       this._workspace,
-      this._engine,
       this._vfs,
       this._logger,
       this._httpPort,
@@ -59,7 +57,6 @@ class Connection {
   constructor(
     connection: RPCClientAdapter,
     private _workspace: Workspace,
-    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
@@ -126,7 +123,10 @@ class Connection {
   };
 
   private _revealSource = async (source: VirtNodeSource) => {
-    const info = this._engine.getVirtualNodeSourceInfo(source.path, source.uri);
+    const project = this.getProject();
+    const info = project
+      .getEngine()
+      .getVirtualNodeSourceInfo(source.path, source.uri);
 
     if (info) {
       this._options.adapter?.revealSource(info);
@@ -139,7 +139,8 @@ class Connection {
   };
 
   private _revealSourceById = async (sourceId: string) => {
-    const [uri, expr] = this._engine.getExpressionById(sourceId) as [
+    const project = this.getProject();
+    const [uri, expr] = project.getEngine().getExpressionById(sourceId) as [
       string,
       Expression
     ];
@@ -159,7 +160,7 @@ class Connection {
     const project = this.getProject();
 
     return sources.map((info) => {
-      return this._engine.getVirtualNodeSourceInfo(info.path, info.uri);
+      return project.getEngine().getVirtualNodeSourceInfo(info.path, info.uri);
       // return {
       //   virtualNodePath: info.path,
       //   sourceId: this._engine.getVirtualNodeSourceInfo(info.path, info.uri).sourceId
@@ -179,7 +180,7 @@ class Connection {
     const project = this.getProject();
     return sources.map((source) => [
       source,
-      this._engine.inspectNodeStyles(source, 0),
+      project.getEngine().inspectNodeStyles(source, 0),
     ]);
   };
 

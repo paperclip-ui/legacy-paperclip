@@ -2,12 +2,14 @@ import { RPCClientAdapter } from "@paperclip-ui/common";
 import { VirtNodeSource } from "@paperclip-ui/utils";
 import {
   inspectNodeStyleChannel,
+  loadInsertableNodesChannel,
   revealNodeSourceByIdChannel,
   revealNodeSourceChannel,
 } from "@tandem-ui/workspace-core";
 
 export class PaperclipManager {
   private _inspectNodeStyle: ReturnType<typeof inspectNodeStyleChannel>;
+  private _loadInsertableNodes: ReturnType<typeof loadInsertableNodesChannel>;
   private _revealSource: ReturnType<typeof revealNodeSourceChannel>;
   private _revealBySourceId: ReturnType<typeof revealNodeSourceByIdChannel>;
 
@@ -26,6 +28,10 @@ export class PaperclipManager {
 
   async revealNodeBySourceId(sourceId: string) {
     await this._revealBySourceId.call(sourceId);
+  }
+
+  async loadInsertableNodes() {
+    return await this._loadInsertableNodes.call();
   }
 
   /**

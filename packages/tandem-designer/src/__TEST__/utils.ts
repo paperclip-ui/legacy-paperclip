@@ -35,6 +35,7 @@ export const middlewareSpy = () => {
 type CreateMockOptions = {
   files: Record<string, string>;
   canvasFile: string;
+  testDir?: string;
 };
 
 export type DesignerMock = {
@@ -49,7 +50,10 @@ export const createMock = async ({
   files,
   canvasFile,
 }: CreateMockOptions): Promise<DesignerMock> => {
-  const testServer = await createTestServer(files);
+  const testServer = await createTestServer(
+    files,
+    `/tmp/__TEST__/${Math.round(Math.random() * 99999)}`
+  );
 
   const client = testServer.createClient();
   const project = await client.openProject({

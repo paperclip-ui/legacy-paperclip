@@ -24,7 +24,8 @@ export class PaperclipEngineManager {
     this._maybeInspectSelectedNodeStyles(action);
     this._maybeRevealNodeSource(action);
     this._maybeRevealSourceFromCanvas(action);
-    this._matbeRevealStyleRuleSource(action);
+    this._maybeRevealStyleRuleSource(action);
+    this._maybeLoadAvailableInsertableElements(action);
   }
 
   /**
@@ -70,12 +71,24 @@ export class PaperclipEngineManager {
     }
   }
 
-  private _matbeRevealStyleRuleSource(action: Action) {
+  private _maybeLoadAvailableInsertableElements(action: Action) {
+    switch (action.type) {
+      case ActionType.GLOBAL_META_I_KEY_PRESS: {
+        this._loadInsertableElements();
+      }
+    }
+  }
+
+  private _maybeRevealStyleRuleSource(action: Action) {
     switch (action.type) {
       case ActionType.STYLE_RULE_FILE_NAME_CLICKED: {
         return this._revealNodeBySourceId(action.payload.styleRuleSourceId);
       }
     }
+  }
+
+  private _loadInsertableElements() {
+    console.log("LOAD");
   }
 
   private async _revealNodeSourceInCanvas() {
