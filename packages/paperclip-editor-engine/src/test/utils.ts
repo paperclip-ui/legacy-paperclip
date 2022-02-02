@@ -3,6 +3,7 @@ import { EventEmitter } from "events";
 import { EditorHost } from "../host/host";
 import { createMockEngine } from "@paperclip-ui/core/lib/test/utils";
 import { EditorClient } from "../client/client";
+import { EngineMode } from "@paperclip-ui/core";
 
 export const createMockServer = () => {
   const hostEm = new EventEmitter();
@@ -20,7 +21,7 @@ export const createMockServer = () => {
 
 export const createMockHost = async (graph: Record<string, string>) => {
   const server = createMockServer();
-  const engine = createMockEngine(graph);
+  const engine = createMockEngine(graph, null, null, EngineMode.SingleFrame);
 
   const host = await EditorHost.start(
     engine,

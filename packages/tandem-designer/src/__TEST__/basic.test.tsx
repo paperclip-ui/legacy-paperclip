@@ -104,7 +104,7 @@ describe(`With a basic project`, () => {
         .open(mock.testServer.fixtureUris["test.pc"]);
       const source = await client.getSource();
       expect(source.getText().replace(/\n/g, " ")).toEqual(
-        `<!--   @frame { visible: false } -->Hello world`
+        `<!--   @frame { visible: false } --> Hello world`
       );
 
       // assert is deselected

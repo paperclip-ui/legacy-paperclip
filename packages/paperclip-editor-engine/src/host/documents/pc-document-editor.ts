@@ -26,10 +26,11 @@ import {
   ScriptObject,
   VirtualElement,
   VirtualText,
+  Fragment,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { flatten } from "lodash";
-import { VirtualobjectEditKind } from "../../core";
+import { VirtualObjectEditKind } from "../../core";
 import { PCDocument } from "./pc";
 
 type DocumentTextEdit = {
@@ -67,19 +68,19 @@ const mapVirtualSourceEdit =
   (uri: string, documents: DocumentManager, engine: EngineDelegate) =>
   (edit: VirtualObjectEdit): DocumentTextEdit | DocumentTextEdit[] => {
     switch (edit.kind) {
-      case VirtualobjectEditKind.InsertNodeBefore:
+      case VirtualObjectEditKind.InsertNodeBefore:
         return insertNodeBefore(uri, engine, edit);
-      case VirtualobjectEditKind.AppendChild:
+      case VirtualObjectEditKind.AppendChild:
         return appendChild(uri, documents, engine, edit);
-      case VirtualobjectEditKind.SetTextNodeValue:
+      case VirtualObjectEditKind.SetTextNodeValue:
         return setTextNodeValue(uri, engine, edit);
-      case VirtualobjectEditKind.AddAttribute:
+      case VirtualObjectEditKind.AddAttribute:
         return addAttribute(uri, engine, edit);
-      case VirtualobjectEditKind.UpdateAttribute:
+      case VirtualObjectEditKind.UpdateAttribute:
         return updateAttribute(uri, engine, edit);
-      case VirtualobjectEditKind.SetAnnotations:
+      case VirtualObjectEditKind.SetAnnotations:
         return setAnnotations(uri, engine, edit);
-      case VirtualobjectEditKind.DeleteNode:
+      case VirtualObjectEditKind.DeleteNode:
         return deleteNode(uri, engine, edit);
       default: {
         throw new Error(`Unhandled edit`);
@@ -91,7 +92,8 @@ const getSourceNodeFromPath = (
   uri: string,
   engine: EngineDelegate,
   path: string
-) => engine.getVirtualNodeSourceInfo(path.split(".").map(Number), uri);
+) =>
+  engine.getVirtualNodeSourceInfo(path ? path.split(".").map(Number) : [], uri);
 
 const deleteNode = (
   uri: string,
@@ -99,7 +101,6 @@ const deleteNode = (
   edit: DeleteNode
 ): DocumentTextEdit[] => {
   const nodePath = edit.nodePath.split(".").map(Number);
-
   const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
 
   const edits: DocumentTextEdit[] = [
@@ -249,7 +250,7 @@ const setAnnotations = (
     const [sourceUri] = engine.getExpressionById(info.sourceId);
     return {
       uri: sourceUri,
-      chars: buffer.join("").split(""),
+      chars: [...buffer, "\n"].join("").split(""),
       index: info.textSource.range.start.pos,
     };
   }
@@ -264,19 +265,29 @@ const appendChild = (
   const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
   const [exprUri, expr] = engine.getExpressionById(info.sourceId) as [
     string,
-    Element | Reference
+    Fragment | Element | Reference
   ];
-
-  if (isNode(expr) && expr.nodeKind === NodeKind.Element) {
-    return appendElement(documents, expr, exprUri, edit);
-  } else if (
-    isScriptExpression(expr) &&
-    expr.scriptKind === ScriptExpressionKind.Reference
-  ) {
-    return appendSlot(documents, uri, engine, expr, edit);
-  } else {
-    throw new Error(`Unknown expr`);
+  if (isNode(expr)) {
+    if (expr.nodeKind === NodeKind.Element) {
+      return appendElement(documents, expr, exprUri, edit);
+    } else if (expr.nodeKind === NodeKind.Fragment) {
+      return appendRoot(expr, exprUri, edit);
+    }
+  } else if (isScriptExpression(expr)) {
+    if (expr.scriptKind === ScriptExpressionKind.Reference) {
+      return appendSlot(documents, uri, engine, expr, edit);
+    }
   }
+
+  throw new Error(`Unknown expr`);
+};
+
+const appendRoot = (expr: Fragment, exprUri: string, edit: AppendChild) => {
+  return {
+    uri: exprUri,
+    chars: getChildInsertionContent(edit.child, false).split(""),
+    index: expr.range.end.pos,
+  };
 };
 
 const appendSlot = (
@@ -314,7 +325,7 @@ const appendSlot = (
   }
 
   return updateAttribute(uri, engine, {
-    kind: VirtualobjectEditKind.UpdateAttribute,
+    kind: VirtualObjectEditKind.UpdateAttribute,
     nodePath: instancePath,
     name: exprName,
     value: getChildInsertionContent(edit.child, true),

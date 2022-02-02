@@ -11,7 +11,7 @@ export const uiActions = actionCreators(
     quickfindItemStartDrag: identity<AvailableNode>(),
     quickfindItemClick: identity<AvailableNode>(),
     toolLayerDragOver: identity<Point>(),
-    toolLayerDrop: identity<Point>(),
+    toolLayerDrop: identity<{ node: AvailableNode; point: Point }>(),
     documentMouseUp: null,
   },
   "uiActions"

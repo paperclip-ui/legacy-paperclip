@@ -62,4 +62,25 @@ describe("Quickfind items", () => {
     mock.store.dispatch(uiActions.documentMouseUp());
     expect(mock.store.getState().designer.draggingInsertableNode).toEqual(null);
   });
+
+  test(`When dropped into an empty area of the document, it's created as a frame`, async () => {
+    const source = await mock.project
+      .getDocuments()
+      .open(mock.testServer.fixtureUris["test.pc"])
+      .then((doc) => doc.getSource());
+    mock.store.dispatch(globalMetaIKeyPressed(null));
+    const node: AvailableNode = {
+      kind: AvailableNodeKind.Text,
+      name: "Text",
+      displayName: "Text",
+      description: "",
+    };
+    expect(mock.store.getState().designer.showInsertModal).toEqual(true);
+    mock.store.dispatch(
+      uiActions.toolLayerDrop({ node, point: { x: 0, y: 0 } })
+    );
+    expect(mock.store.getState().designer.showInsertModal).toEqual(false);
+    await timeout(50);
+    expect(source.getText().replace(/[\n\s]+/g, " ")).toEqual("a");
+  });
 });

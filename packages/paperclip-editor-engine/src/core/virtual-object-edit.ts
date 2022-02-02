@@ -1,7 +1,7 @@
 /**
  */
 
-export enum VirtualobjectEditKind {
+export enum VirtualObjectEditKind {
   // We use this be default to ensure that we maintain positional information
   // about an inserted element
   InsertNodeBefore = "InsertNodeBefore",
@@ -45,46 +45,46 @@ export type ChildInsertion = TextInsertion | ElementInsertion;
 /**
  */
 
-export type VirtualObjectBaseEdit<TKind extends VirtualobjectEditKind> = {
+export type VirtualObjectBaseEdit<TKind extends VirtualObjectEditKind> = {
   kind: TKind;
 };
 
 export type InsertNodeBefore = {
   beforeNodePath: string;
   node: ChildInsertion;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.InsertNodeBefore>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.InsertNodeBefore>;
 
 export type SetTextNodeValue = {
   nodePath: string;
   value: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.SetTextNodeValue>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.SetTextNodeValue>;
 
 export type AddAttribute = {
   nodePath: string;
   name: string;
   value: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.AddAttribute>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.AddAttribute>;
 
 export type UpdateAttribute = {
   nodePath: string;
   name: string;
   newName?: string;
   value: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.UpdateAttribute>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.UpdateAttribute>;
 
 export type SetAnnotations = {
   nodePath: string;
   value: Record<string, string | Object>;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.SetAnnotations>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.SetAnnotations>;
 
 export type AppendChild = {
-  nodePath: string;
+  nodePath?: string;
   child: ChildInsertion;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.AppendChild>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.AppendChild>;
 
 export type DeleteNode = {
   nodePath: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.DeleteNode>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.DeleteNode>;
 
 /**
  */

@@ -4,7 +4,11 @@ import {
   VirtualElement,
 } from "@paperclip-ui/core";
 import { expect } from "chai";
-import { ChildInsertionKind, VirtualobjectEditKind } from "../core";
+import {
+  AppendChild,
+  ChildInsertionKind,
+  VirtualObjectEditKind,
+} from "../core";
 import { createMockHost } from "./utils";
 
 // TODO - test latency
@@ -21,7 +25,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.InsertNodeBefore,
+          kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
           node: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -41,12 +45,12 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.InsertNodeBefore,
+          kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
           node: { kind: ChildInsertionKind.Element, value: "<a />" },
         },
         {
-          kind: VirtualobjectEditKind.InsertNodeBefore,
+          kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
           node: { kind: ChildInsertionKind.Element, value: "<b />" },
         },
@@ -66,7 +70,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetTextNodeValue,
+          kind: VirtualObjectEditKind.SetTextNodeValue,
           nodePath: "0.0",
           value: "Hello world",
         },
@@ -92,7 +96,7 @@ describe(__filename + "#", () => {
 
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetAnnotations,
+          kind: VirtualObjectEditKind.SetAnnotations,
           nodePath: "0",
           value: annotations,
         },
@@ -128,7 +132,7 @@ describe(__filename + "#", () => {
 
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetAnnotations,
+          kind: VirtualObjectEditKind.SetAnnotations,
           nodePath: "0",
           value: annotations,
         },
@@ -160,7 +164,7 @@ describe(__filename + "#", () => {
 
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetAnnotations,
+          kind: VirtualObjectEditKind.SetAnnotations,
           nodePath: "0",
           value: annotations,
         },
@@ -188,7 +192,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AddAttribute,
+          kind: VirtualObjectEditKind.AddAttribute,
           nodePath: "0",
           name: "a",
           value: '"b"',
@@ -209,7 +213,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.UpdateAttribute,
+          kind: VirtualObjectEditKind.UpdateAttribute,
           nodePath: "0",
           name: "a",
           value: '"b"',
@@ -229,7 +233,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -248,7 +252,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -267,7 +271,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -290,7 +294,7 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
           child: { kind: ChildInsertionKind.Text, value: "blarg" },
         },
@@ -316,7 +320,7 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -343,12 +347,12 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
           child: { kind: ChildInsertionKind.Element, value: "<a />" },
         },
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.1",
           child: { kind: ChildInsertionKind.Element, value: "<b />" },
         },
@@ -373,7 +377,7 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.DeleteNode,
+          kind: VirtualObjectEditKind.DeleteNode,
           nodePath: "1",
         },
       ]);
@@ -394,13 +398,64 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.DeleteNode,
+          kind: VirtualObjectEditKind.DeleteNode,
           nodePath: "0",
         },
       ]);
 
       expect(source.getText()).to.eql(`<span />`);
     });
+
+    [
+      [
+        `When annotations are added to an element without them, a new line is also created`,
+        {
+          "/hello.pc": "<div />",
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.SetAnnotations,
+                value: { a: "b" },
+                nodePath: "0",
+              },
+            ],
+            `<!--\n  @a "b"\n-->\n<div />`,
+          ],
+        },
+      ],
+      [
+        `Can insert a text node as a frame`,
+        {
+          "/hello.pc": "<div />",
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                child: { kind: ChildInsertionKind.Text, value: "text" },
+              },
+            ],
+            `<div />text`,
+          ],
+        },
+      ],
+    ].forEach(([name, graph, change]: any) => {
+      it(name, async () => {
+        const { server } = await createMockHost(graph);
+        const client = server.createHostClient();
+        for (const fileName in change) {
+          const [edits, expected] = change[fileName];
+          const doc = await client.getDocuments().open(fileName);
+          const source = await doc.getSource();
+          doc.editVirtualObjects(edits);
+          expect(source.getText()).to.eql(expected);
+        }
+      });
+    });
+
     xit(`Annotations don't add extra whitespace when edited`);
 
     // Need to ensure that we're not out of range

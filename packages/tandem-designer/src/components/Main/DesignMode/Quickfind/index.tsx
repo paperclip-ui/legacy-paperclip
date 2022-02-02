@@ -17,6 +17,7 @@ import * as path from "path";
 import { stripFileProtocol } from "@paperclip-ui/utils";
 import { uiActions } from "../../../../actions/ui-actions";
 import { InfiniteScroller } from "../../../InfiniteScroller";
+import { useDrag } from "react-dnd";
 
 export const Quickfind = () => {
   const {
@@ -59,7 +60,6 @@ export const Quickfind = () => {
                   key={i}
                   projectDir={projectDir}
                   onDragStart={onDragItemStart}
-                  onClick={onClickItem}
                 />
               ));
           }}
@@ -110,29 +110,32 @@ type InsertableNodeProps = {
   node: AvailableNode;
   projectDir: string;
   onDragStart: (node: AvailableNode) => void;
-  onClick: (node: AvailableNode) => void;
 };
 
 const InsertableNode = memo(
-  ({ node, projectDir, onDragStart, onClick }: InsertableNodeProps) => {
-    // const [{isDragging}, drag, dragPreview] = useDrag(() => ({
-    //   type: "insertableNode",
-    //   item: node,
-    //   collect: (monitor) => ({
-    //     isDragging: monitor.isDragging()
-    //   })
-    // }));
+  ({ node, projectDir, onDragStart }: InsertableNodeProps) => {
+    const [{ isDragging }, drag, dragPreview] = useDrag(
+      () => ({
+        type: "insertableNode",
+        item: node,
+        collect: (monitor) => ({
+          isDragging: monitor.isDragging(),
+        }),
+      }),
+      [node]
+    );
 
     return (
-      <styles.Item
-        onDragStart={() => onDragStart(node)}
-        onClick={() => onClick(node)}
-        isText={node.kind === AvailableNodeKind.Text}
-        isElement={node.kind === AvailableNodeKind.Element}
-        isComponent={node.kind === AvailableNodeKind.Instance}
-        title={node.name}
-        description={node.description || getSourceDesc(node, projectDir)}
-      />
+      <div ref={dragPreview}>
+        <styles.Item
+          ref={drag}
+          isText={node.kind === AvailableNodeKind.Text}
+          isElement={node.kind === AvailableNodeKind.Element}
+          isComponent={node.kind === AvailableNodeKind.Instance}
+          title={node.name}
+          description={node.description || getSourceDesc(node, projectDir)}
+        />
+      </div>
     );
   }
 );

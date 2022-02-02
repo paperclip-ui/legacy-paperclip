@@ -23,6 +23,8 @@ import {
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 import { uiActions } from "../../../../../actions/ui-actions";
+import { useDrop } from "react-dnd";
+import { AvailableNode } from "@paperclip-ui/language-service";
 
 export const Tools = () => {
   const {
@@ -30,9 +32,8 @@ export const Tools = () => {
     onMouswDown,
     onMouseMove,
     onMouseLeave,
-    onDragOver,
-    onDragEnter,
-    onDrop,
+    toolsRef,
+    isDraggingOver,
     showEmpty,
     resizerMoving,
     canvas,
@@ -53,9 +54,8 @@ export const Tools = () => {
 
   return (
     <styles.Tools
-      onDragEnter={onDragEnter}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
+      ref={toolsRef}
+      hover={isDraggingOver && !hoveringBox}
       onMouseDown={onMouswDown}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
@@ -140,22 +140,25 @@ const useTools = () => {
     [dispatch]
   );
 
-  const onDragOver = useCallback(
-    (event: React.DragEvent<any>) => {
-      dispatch(uiActions.toolLayerDragOver(getMousePoint(event)));
+  const [{ isDraggingOver }, toolsRef] = useDrop<AvailableNode, any, any>({
+    accept: "insertableNode",
+    hover(item, monitor) {
+      dispatch(uiActions.toolLayerDragOver(monitor.getSourceClientOffset()));
     },
-    [dispatch]
-  );
-
-  const onDrop = useCallback(() => {
-    console.log("DROP");
-    dispatch(uiActions.toolLayerDrop(getMousePoint(event)));
-  }, []);
-
-  const onDragEnter = useCallback((event: React.DragEvent<any>) => {
-    console.log("DRAG ENTER");
-    return true;
-  }, []);
+    drop(item, monitor) {
+      dispatch(
+        uiActions.toolLayerDrop({
+          node: item,
+          point: monitor.getSourceClientOffset(),
+        })
+      );
+    },
+    collect(monitor) {
+      return {
+        isDraggingOver: monitor.isOver(),
+      };
+    },
+  });
 
   const onMouswDown = useCallback(
     (event: React.MouseEvent<any>) => {
@@ -177,15 +180,12 @@ const useTools = () => {
 
   const boxes = flattenFrameBoxes(frameBoxes);
 
-  document.body.ondblclick;
   const selectedBox =
     selectedNodePaths.length &&
     mergeBoxes(selectedNodePaths.map((path) => boxes[path]));
 
   const hoveringBox =
     state.designer.highlightNodePath && boxes[state.designer.highlightNodePath];
-
-  console.log(hoveringBox);
 
   const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
 
@@ -200,12 +200,11 @@ const useTools = () => {
   return {
     frames,
     resizerMoving,
+    toolsRef,
     onMouswDown,
     onMouseMove,
+    isDraggingOver,
     onMouseLeave,
-    onDragOver,
-    onDragEnter,
-    onDrop,
     showEmpty,
     virtualNode,
     toolsLayerEnabled,

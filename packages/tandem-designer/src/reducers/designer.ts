@@ -421,6 +421,13 @@ export const reduceDesigner = (
       });
       return designer;
     }
+    case uiActions.toolLayerDrop.type: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.draggingInsertableNode = null;
+        newDesigner.showInsertModal = false;
+      });
+      return designer;
+    }
     case workspaceActions.framesLoaded.type: {
       designer = produce(designer, (newDesigner) => {
         newDesigner.allLoadedPCFileData[action.payload.uri] =
