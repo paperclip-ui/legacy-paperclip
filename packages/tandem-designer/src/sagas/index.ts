@@ -51,7 +51,7 @@ export function* mainSaga(
   yield fork(handleKeyCommands, mount);
   yield fork(handleCanvas, getState);
   // yield fork(handleClipboard, getState);
-  yield fork(handleLocationChanged, options.history);
+  yield fork(handleLocationChanged, options.history, true);
   yield fork(handleLocation, getState, options.history);
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
@@ -108,10 +108,10 @@ function* handleSyncFrameToLocation() {
   );
 }
 
-function* handleLocationChanged(history: History) {
+function* handleLocationChanged(history: History, initial?: boolean) {
   const parts = Url.parse(location.href, true);
 
-  if (typeof DESIGNER_STATE !== "undefined") {
+  if (typeof DESIGNER_STATE !== "undefined" && initial) {
     return yield put(
       mainActions.locationChanged({
         protocol: parts.protocol,

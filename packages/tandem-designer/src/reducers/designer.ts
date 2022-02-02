@@ -243,9 +243,9 @@ const handleLocationChange = (
   }: ReturnType<typeof mainActions.locationChanged> | RedirectRequested,
   mode: SyncLocationMode
 ) => {
-  return produce(designer, (newDesigner) => {
-    const oldCanvasFile = newDesigner.ui.query.canvasFile;
-
+  const oldCanvasFile = designer.ui.query.canvasFile;
+  const oldFrame = designer.ui.query.frame;
+  designer = produce(designer, (newDesigner) => {
     if (payload.query && mode & SyncLocationMode.Query) {
       newDesigner.ui.query = {
         ...newDesigner.ui.query,
@@ -255,6 +255,20 @@ const handleLocationChange = (
 
     expandFilePath(newDesigner, oldCanvasFile);
   });
+
+  if (
+    designer.ui.query.canvasFile !== oldCanvasFile ||
+    designer.ui.query.frame !== oldFrame
+  ) {
+    if (designer.canvas.size?.width) {
+      designer = maybeCenterCanvas(designer, true);
+      console.log(designer.canvas);
+    } else {
+      designer = { ...designer, centeredInitial: false };
+    }
+  }
+
+  return designer;
 };
 
 export const reduceDesigner = (
