@@ -216,10 +216,14 @@ export class LiveWindow {
         };
 
         const loadCSS = (src) => {
-          const link = document.createElement("link");
-          link.href = designServerUrl + src;
-          link.rel = "stylesheet";
-          document.head.appendChild(link);
+          const href = designServerUrl + src;
+
+          // Oooffff. Still referring to root paths, so prefix with host
+          fetch(href).then(response => response.text()).then(text => {
+            const style = document.createElement("style");
+            style.textContent = text.replace(/url\\((.*?)\\)/g, (match, path) => "url(" + designServerUrl + path + ")");
+            document.head.appendChild(style);
+          });
         };
 
         const loadJS = (src) => {

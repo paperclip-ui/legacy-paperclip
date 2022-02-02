@@ -28,9 +28,3 @@
   @frame { visible: false, title: "Title me this", width: 798, height: 586, x: 28, y: -178 }
 -->
 <Tools>This is a tool</Tools>
-
-
-<!--
-  @frame { visible: false, title: "Title me this", width: 798, height: 586, x: 28, y: -178 }
--->
-<Tools>This is a tool</Tools>

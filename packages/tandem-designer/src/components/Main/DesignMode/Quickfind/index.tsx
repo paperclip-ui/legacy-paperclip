@@ -1,5 +1,6 @@
 import {
   AvailableBaseNode,
+  AvailableInstance,
   AvailableNode,
   AvailableNodeKind,
 } from "@paperclip-ui/language-service";
@@ -86,7 +87,10 @@ const useQuickfind = () => {
       return (
         !filter ||
         node.name.toLowerCase().includes(filter) ||
-        node.kind.toLowerCase().includes(filter)
+        node.kind.toLowerCase().includes(filter) ||
+        ((node as AvailableInstance).sourceUri || "")
+          .toLowerCase()
+          .includes(filter)
       );
     }),
     onFilterChange,
