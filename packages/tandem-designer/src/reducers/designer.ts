@@ -262,7 +262,6 @@ const handleLocationChange = (
   ) {
     if (designer.canvas.size?.width) {
       designer = maybeCenterCanvas(designer, true);
-      console.log(designer.canvas);
     } else {
       designer = { ...designer, centeredInitial: false };
     }
