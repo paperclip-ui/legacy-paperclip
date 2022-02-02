@@ -22,14 +22,17 @@ import {
   canvasMouseMoved,
 } from "../../../../../actions";
 import { Empty } from "./Empty";
+import { uiActions } from "../../../../../actions/ui-actions";
 
 export const Tools = () => {
   const {
     frames,
-    toolsRef,
     onMouswDown,
     onMouseMove,
     onMouseLeave,
+    onDragOver,
+    onDragEnter,
+    onDrop,
     showEmpty,
     resizerMoving,
     canvas,
@@ -50,7 +53,9 @@ export const Tools = () => {
 
   return (
     <styles.Tools
-      ref={toolsRef}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
       onMouseDown={onMouswDown}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
@@ -115,7 +120,7 @@ const useTools = () => {
       readonly,
     },
   } = state;
-  const toolsRef = useRef<HTMLDivElement>();
+
   const toolsLayerEnabled = !isExpanded(state.designer);
 
   const getMousePoint = (event) => {
@@ -134,6 +139,22 @@ const useTools = () => {
     },
     [dispatch]
   );
+
+  const onDragOver = useCallback(
+    (event: React.DragEvent<any>) => {
+      dispatch(uiActions.toolLayerDragOver(getMousePoint(event)));
+    },
+    [dispatch]
+  );
+
+  const onDrop = useCallback(() => {
+    dispatch(uiActions.toolLayerDrop(getMousePoint(event)));
+  }, []);
+
+  const onDragEnter = useCallback((event: React.DragEvent<any>) => {
+    console.log("DRAG ENTER");
+    return true;
+  }, []);
 
   const onMouswDown = useCallback(
     (event: React.MouseEvent<any>) => {
@@ -176,10 +197,12 @@ const useTools = () => {
   return {
     frames,
     resizerMoving,
-    toolsRef,
     onMouswDown,
     onMouseMove,
     onMouseLeave,
+    onDragOver,
+    onDragEnter,
+    onDrop,
     showEmpty,
     virtualNode,
     toolsLayerEnabled,

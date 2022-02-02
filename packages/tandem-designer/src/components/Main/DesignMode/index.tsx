@@ -13,6 +13,7 @@ import { isPaperclipFile } from "@paperclip-ui/utils";
 import { useDragger } from "../../../hooks/useDragger";
 import { WindowResizer } from "./WindowResizer";
 import { Quickfind } from "./Quickfind";
+import { useDragLayer } from "react-dnd";
 
 export type DesignModeProps = {
   floating: boolean;

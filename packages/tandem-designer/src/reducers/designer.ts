@@ -59,6 +59,7 @@ import {
   VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import * as path from "path";
+import { uiActions } from "../actions/ui-actions";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -390,6 +391,20 @@ export const reduceDesigner = (
       designer = produce(designer, (newDesigner) => {
         newDesigner.insertableNodes = action.payload;
         newDesigner.loadingInsertableNodes = false;
+      });
+      return designer;
+    }
+    case uiActions.quickfindItemStartDrag.type: {
+      designer = produce(designer, (newDesigner) => {
+        // newDesigner.showInsertModal = false;
+        newDesigner.draggingInsertableNode = action.payload;
+      });
+      return designer;
+    }
+    case uiActions.documentMouseUp.type: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.draggingInsertableNode = null;
+        newDesigner.showInsertModal = false;
       });
       return designer;
     }
@@ -838,6 +853,7 @@ export const reduceDesigner = (
         );
       });
     }
+    case uiActions.toolLayerDragOver.type:
     case ActionType.CANVAS_MOUSE_MOVED: {
       return highlightNode(designer, action.payload);
     }

@@ -80,7 +80,10 @@ export function* handleKeyCommands(mount: HTMLElement) {
       emit(zoomOutKeyPressed(null));
       return false;
     });
-    handler.bind("meta+i", () => {
+    handler.bind("i", (e) => {
+      if (isInput(e.target)) {
+        return;
+      }
       emit(globalMetaIKeyPressed(null));
       return false;
     });

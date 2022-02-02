@@ -6,6 +6,8 @@ import { createAppStore, CreateAppStoreOptions } from "./create-app-store";
 import { DesignMode } from "./DesignMode";
 import * as styles from "./index.pc";
 import { LeftSidebar } from "./LeftSidebar";
+import { TouchBackend } from "react-dnd-touch-backend";
+import { DndProvider } from "react-dnd";
 
 export const MainBase = () => {
   const { state } = useAppStore();
@@ -39,7 +41,9 @@ export const createMain = (options: CreateAppStoreOptions) => {
   return () => {
     return (
       <Provider store={store}>
-        <MainBase />
+        <DndProvider backend={TouchBackend}>
+          <MainBase />
+        </DndProvider>
       </Provider>
     );
   };

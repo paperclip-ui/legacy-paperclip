@@ -6,6 +6,9 @@
 <div export
   component
   as="Item"
+  draggable
+  {onDragStart}
+  {onClick}
   class:active="active"
   class:isText="text"
   class:isComponent="component"
@@ -20,7 +23,9 @@
     align-items: center;
     color: #444;
     border-radius: 4px;
-    &.active {
+    cursor: pointer;
+    transition: 0.2s;
+    &.active, &:hover {
       background: rgb(225, 240, 255);
       color: rgb(54, 134, 214);
     }
@@ -68,7 +73,7 @@
 </div>
 
 <!--
-  @frame { height: 600, title: "Quickfind", visible: true, width: 805, x: 241, y: -190 }
+  @frame { height: 600, title: "Quickfind", visible: false, width: 805, x: 240, y: -189 }
 -->
 <div export component as="Container">
   <style>
@@ -83,9 +88,7 @@
     background: rgb(218, 218, 218);
     border-bottom-left-radius: 4px;
   </style>
-
   {filterInput}
-
   <div>
     <style>
       max-height: 450px;
@@ -130,8 +133,8 @@
   </fragment>} />
 
 <!--
-  @frame { height: 768, width: 1024, x: 1260, y: -367 }
+  @frame { height: 768, width: 1024, x: 1171, y: -358 }
 -->
 <div>
-  <Container />
+  <Preview />
 </div>

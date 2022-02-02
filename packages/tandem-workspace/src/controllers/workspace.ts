@@ -2,11 +2,7 @@ import { VFS } from "./vfs";
 import * as url from "url";
 import { SSHKeys } from "./ssh";
 import { Options } from "../core/options";
-import {
-  EngineDelegate,
-  EngineMode,
-  loadEngineDelegate,
-} from "@paperclip-ui/core";
+import { EngineMode, loadEngineDelegate } from "@paperclip-ui/core";
 import { getProjectId, Project } from "./project";
 import { Logger, RPCServer } from "@paperclip-ui/common";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";

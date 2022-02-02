@@ -41,6 +41,7 @@ import { AvailableNode } from "@paperclip-ui/language-service";
 export const MAX_FILE_SIZE = 2 * 1000 * 1000;
 
 export const EDITABLE_MIME_TYPES = ["text/plain", "image/svg+xml", "text/css"];
+declare const DESIGNER_STATE: EmbeddedState | null;
 
 const ALT_MIME_TYPES = [
   "application/vnd.ms-fontobject", // .eot
@@ -116,16 +117,22 @@ type ExpandedFrameInfo = {
   previousCanvasTransform: Transform;
 };
 
+export type UIStateQuery = {
+  showAll: boolean;
+  canvasFile: string;
+  projectId?: string;
+  id: string;
+  expanded: boolean;
+  frame: number;
+  embedded: boolean;
+};
+
+export type EmbeddedState = {
+  host: string;
+} & UIStateQuery;
+
 export type UIState = {
-  query: Partial<{
-    showAll: boolean;
-    canvasFile: string;
-    projectId?: string;
-    id: string;
-    expanded: boolean;
-    frame: number;
-    embedded: boolean;
-  }>;
+  query: Partial<UIStateQuery>;
 };
 
 // aut
@@ -192,6 +199,7 @@ export type DesignerState = {
   allLoadedPCFileData: Record<string, LoadedData>;
   loadingInsertableNodes: boolean;
   showInsertModal: boolean;
+  draggingInsertableNode: AvailableNode;
   insertableNodes: AvailableNode[];
   pcFileDataVersion: number;
   // rendererElement?: any;
@@ -255,6 +263,10 @@ export type AvailableBrowser = {
   browserVersion: string;
 };
 
+const host =
+  typeof DESIGNER_STATE === "undefined"
+    ? window.location.host
+    : DESIGNER_STATE.host;
 export const INITIAL_STATE: AppState = {
   actions: [],
   history: {
@@ -266,6 +278,7 @@ export const INITIAL_STATE: AppState = {
   },
   designer: {
     insertableNodes: [],
+    draggingInsertableNode: null,
     loadingInsertableNodes: false,
     useLiteEditor: false,
     showInsertModal: false,
@@ -284,9 +297,7 @@ export const INITIAL_STATE: AppState = {
     centeredInitial: false,
     toolsLayerEnabled: true,
     resourceHost:
-      typeof window !== "undefined"
-        ? window.location.protocol + "//" + window.location.host + "/file/"
-        : null,
+      typeof window !== "undefined" ? "http://" + host + "/file/" : null,
     availableBrowsers: [],
     currentEngineEvents: {},
     allLoadedPCFileData: {},

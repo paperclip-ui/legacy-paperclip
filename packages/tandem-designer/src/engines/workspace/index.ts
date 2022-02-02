@@ -7,9 +7,20 @@ import { PaperclipEngineManager } from "./managers/paperclip-engine";
 import { ProjectManager } from "./managers/project";
 import { EditManager } from "./managers/edit";
 import { MainDocumentManager } from "./managers/main-document";
+import { EmbeddedState } from "../../state";
+
+declare const DESIGNER_STATE: EmbeddedState | null;
 
 const createDefaultRPCClient = () =>
-  wsAdapter(new WebSocket("ws://" + location.host + "/ws"));
+  wsAdapter(
+    new WebSocket(
+      "ws://" +
+        (typeof DESIGNER_STATE === "undefined"
+          ? location.host
+          : DESIGNER_STATE.host) +
+        "/ws"
+    )
+  );
 
 export type WorkspaceEngineOptions = {
   createRPCClient?: () => RPCClientAdapter;

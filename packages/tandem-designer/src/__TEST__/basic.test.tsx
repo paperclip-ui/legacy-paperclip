@@ -9,7 +9,6 @@ import {
 } from "..";
 import { createMock, DesignerMock } from "./utils";
 import { AppState } from "../state";
-import { createMockRPCServer } from "@paperclip-ui/common";
 
 describe(`With a basic project`, () => {
   let mock: DesignerMock;

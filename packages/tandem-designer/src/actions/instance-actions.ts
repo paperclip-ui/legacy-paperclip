@@ -24,7 +24,11 @@ import {
   Size,
   WorkspaceState,
 } from "../state";
-import { actionCreators, ExtractJoinedActionFromCreators } from "./util";
+import {
+  actionCreators,
+  ExtractJoinedActionFromCreators,
+  identity,
+} from "./util";
 
 export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
