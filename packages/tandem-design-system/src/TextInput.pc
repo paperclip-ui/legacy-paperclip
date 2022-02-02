@@ -40,7 +40,7 @@
     }
 
     &.big {
-      padding: 16px;
+      padding: 12px;
     }
 
     &:within(:global(.dark)), &.dark {

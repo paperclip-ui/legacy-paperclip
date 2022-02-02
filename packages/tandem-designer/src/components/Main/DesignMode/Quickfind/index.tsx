@@ -16,7 +16,7 @@ import * as styles from "./index.pc";
 import * as path from "path";
 import { stripFileProtocol } from "@paperclip-ui/utils";
 import { uiActions } from "../../../../actions/ui-actions";
-import { useDrag } from "react-dnd";
+import { InfiniteScroller } from "../../../InfiniteScroller";
 
 export const Quickfind = () => {
   const {
@@ -44,17 +44,26 @@ export const Quickfind = () => {
         />
       }
       items={
-        <>
-          {insertableNodes.map((node, i) => (
-            <InsertableNode
-              node={node}
-              key={i}
-              projectDir={projectDir}
-              onDragStart={onDragItemStart}
-              onClick={onClickItem}
-            />
-          ))}
-        </>
+        <InfiniteScroller
+          size={insertableNodes.length}
+          itemHeight={40 + 8}
+          haveMinHeight={false}
+          minVerticalItems={8}
+        >
+          {(cursor, maxRows) => {
+            return insertableNodes
+              .slice(cursor, cursor + maxRows)
+              .map((node, i) => (
+                <InsertableNode
+                  node={node}
+                  key={i}
+                  projectDir={projectDir}
+                  onDragStart={onDragItemStart}
+                  onClick={onClickItem}
+                />
+              ));
+          }}
+        </InfiniteScroller>
       }
     />
   );

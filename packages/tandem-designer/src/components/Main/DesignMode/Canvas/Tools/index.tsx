@@ -148,6 +148,7 @@ const useTools = () => {
   );
 
   const onDrop = useCallback(() => {
+    console.log("DROP");
     dispatch(uiActions.toolLayerDrop(getMousePoint(event)));
   }, []);
 
@@ -183,6 +184,8 @@ const useTools = () => {
 
   const hoveringBox =
     state.designer.highlightNodePath && boxes[state.designer.highlightNodePath];
+
+  console.log(hoveringBox);
 
   const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
 

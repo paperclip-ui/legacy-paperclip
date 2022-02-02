@@ -1,3 +1,4 @@
+<import src="@tandem-ui/design-system/src/atoms.pc" as="atoms" inject-styles />
 <import src="@tandem-ui/design-system/src/TextInput.pc" as="TextInput" />
 
 <!--
@@ -16,10 +17,12 @@
   class:hover="hover">
   <style>
     padding: 12px;
-    font-size: 14px;
+    font-size: 12px;
+    height: 40px;
     background: rgb(245, 245, 245);
     display: flex;
-    gap: 14px;
+    gap: 8px;
+    margin-bottom: 8px;
     align-items: center;
     color: #444;
     border-radius: 4px;
@@ -77,7 +80,7 @@
 -->
 <div export component as="Container">
   <style>
-    padding: 16px;
+    padding: 8px;
     position: absolute;
     width: 450px;
     left: 50%;
@@ -97,10 +100,8 @@
 
     <div>
       <style>
-        padding: 16px 0px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
+        padding: 8px 0px;
+        height: 250px;
       </style>
       {items}
     </div>
@@ -136,5 +137,7 @@
   @frame { height: 768, width: 1024, x: 1171, y: -358 }
 -->
 <div>
-  <Preview />
+  <!--
+    @frame { height: 768, width: 1024, x: 1172, y: -357 }
+  --><Preview />
 </div>

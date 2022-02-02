@@ -244,7 +244,7 @@ const handleLocationChange = (
   mode: SyncLocationMode
 ) => {
   const oldCanvasFile = designer.ui.query.canvasFile;
-  const oldFrame = designer.ui.query.frame;
+  const oldShowAll = designer.ui.query.showAll;
   designer = produce(designer, (newDesigner) => {
     if (payload.query && mode & SyncLocationMode.Query) {
       newDesigner.ui.query = {
@@ -256,7 +256,10 @@ const handleLocationChange = (
     expandFilePath(newDesigner, oldCanvasFile);
   });
 
-  if (designer.ui.query.canvasFile !== oldCanvasFile) {
+  if (
+    designer.ui.query.canvasFile !== oldCanvasFile ||
+    designer.ui.query.showAll !== oldShowAll
+  ) {
     if (designer.canvas.size?.width) {
       designer = maybeCenterCanvas(designer, true);
     } else {
