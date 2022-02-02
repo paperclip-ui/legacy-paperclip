@@ -256,10 +256,7 @@ const handleLocationChange = (
     expandFilePath(newDesigner, oldCanvasFile);
   });
 
-  if (
-    designer.ui.query.canvasFile !== oldCanvasFile ||
-    designer.ui.query.frame !== oldFrame
-  ) {
+  if (designer.ui.query.canvasFile !== oldCanvasFile) {
     if (designer.canvas.size?.width) {
       designer = maybeCenterCanvas(designer, true);
     } else {
