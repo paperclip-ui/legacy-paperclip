@@ -11,6 +11,7 @@ export type UseFrameProps = {
   onLoad?: (mount: HTMLElement, data: LoadedPCData) => void;
   onUpdate?: (mount: HTMLElement, data: LoadedPCData) => void;
   fullscreen?: boolean;
+  showSlotPlaceholders?: boolean;
 };
 
 export const useFrame = ({
@@ -19,6 +20,7 @@ export const useFrame = ({
   fullscreen,
   frameUri,
   frameIndex,
+  showSlotPlaceholders,
 }: UseFrameProps) => {
   const [loaded, setLoaded] = useState(false);
 
@@ -35,6 +37,7 @@ export const useFrame = ({
   );
 
   const { mount, loadedPCData } = useFrameMount({
+    showSlotPlaceholders,
     frameUri,
     frameIndex,
     onUpdate: onUpdate2,

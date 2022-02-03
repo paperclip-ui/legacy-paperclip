@@ -57,8 +57,14 @@ const AVILABLE_NATIVE_NODES: AvailableNode[] = [
     } as AvailableElement;
   }),
 ];
+export type GetAllAvailableNodesOptions = {
+  activeUri?: string;
+};
 
-export const getAllAvailableNodes = (engine: EngineDelegate) => {
+export const getAllAvailableNodes = (
+  options: GetAllAvailableNodesOptions,
+  engine: EngineDelegate
+) => {
   const allData = engine.getAllLoadedData();
   const instances: AvailableInstance[] = [];
 
@@ -67,8 +73,9 @@ export const getAllAvailableNodes = (engine: EngineDelegate) => {
     if (!isPaperclipFile(uri)) {
       continue;
     }
-    const exportedComponents = getComponents(ast).filter((component) =>
-      hasAttribute("export", component)
+    const exportedComponents = getComponents(ast).filter(
+      (component) =>
+        hasAttribute("export", component) || options.activeUri === uri
     );
     instances.push(
       ...exportedComponents.map((component) => {

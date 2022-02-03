@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import {
   mergeBoxes,
   isExpanded,
@@ -140,25 +140,44 @@ const useTools = () => {
     [dispatch]
   );
 
-  const [{ isDraggingOver }, toolsRef] = useDrop<AvailableNode, any, any>({
-    accept: "insertableNode",
-    hover(item, monitor) {
-      dispatch(uiActions.toolLayerDragOver(monitor.getSourceClientOffset()));
+  const toolsRef = useRef<HTMLDivElement>();
+
+  const [{ isDraggingOver }, dragRef] = useDrop<AvailableNode, any, any>(
+    {
+      accept: "insertableNode",
+      hover(item, monitor) {
+        const offset = monitor.getClientOffset();
+        const rect = toolsRef.current.getBoundingClientRect();
+
+        dispatch(
+          uiActions.toolLayerDragOver({
+            x: offset.x - rect.x,
+            y: offset.y - rect.y,
+          })
+        );
+      },
+      drop(item, monitor) {
+        dispatch(
+          uiActions.toolLayerDrop({
+            node: item,
+            point: monitor.getSourceClientOffset(),
+          })
+        );
+      },
+      collect(monitor) {
+        return {
+          isDraggingOver: monitor.isOver(),
+        };
+      },
     },
-    drop(item, monitor) {
-      dispatch(
-        uiActions.toolLayerDrop({
-          node: item,
-          point: monitor.getSourceClientOffset(),
-        })
-      );
-    },
-    collect(monitor) {
-      return {
-        isDraggingOver: monitor.isOver(),
-      };
-    },
-  });
+    [toolsRef.current]
+  );
+
+  useEffect(() => {
+    if (toolsRef.current) {
+      dragRef(toolsRef.current);
+    }
+  }, [toolsRef.current]);
 
   const onMouswDown = useCallback(
     (event: React.MouseEvent<any>) => {

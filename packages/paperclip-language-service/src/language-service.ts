@@ -19,6 +19,7 @@ import {
   FileSystem,
   getEngineImports,
 } from "@paperclip-ui/core";
+import { GetAllAvailableNodesOptions } from ".";
 
 export class PaperclipLanguageService {
   private _autocomplete: AutocompleteService;
@@ -70,8 +71,8 @@ export class PaperclipLanguageService {
    * returns all available nodes in the project (text, native elements, custom components)
    */
 
-  getAllAvailableNodes() {
-    return getAllAvailableNodes(this._engine);
+  getAllAvailableNodes(options: GetAllAvailableNodesOptions) {
+    return getAllAvailableNodes(options, this._engine);
   }
 
   /**

@@ -129,7 +129,7 @@ const resolveResources =
   ) => {
     const sourceDir =
       config.srcDir === "." ? cwd : path.join(cwd, config.srcDir);
-    const filePaths = filterFiles(sourceDir);
+    const filePaths = filterFiles(sourceDir) || [];
 
     if (config.moduleDirs) {
       for (const modulesDirname of config.moduleDirs) {

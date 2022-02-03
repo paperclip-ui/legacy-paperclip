@@ -13,6 +13,7 @@ import {
   EditTarget,
   EditTargetKind,
   PrependChild,
+  InstanceInsertion,
 } from "../../core";
 import { DocumentManager } from "./manager";
 import {
@@ -517,53 +518,16 @@ const getChildInsertionContent = (
     }
     case ChildInsertionKind.Instance: {
       const importEdits: DocumentTextEdit[] = [];
-      const ast = engine.getLoadedAst(exprUri) as DependencyNodeContent;
-      const data = engine.getLoadedData(exprUri) as LoadedPCData;
-      const imports = getImports(ast);
-      const importExpr = imports.find(
-        (imp) =>
-          data.dependencies[getAttributeStringValue("as", imp)] ===
-            insertion.sourceUri ||
-          data.dependencies[getAttributeStringValue("src", imp)] ===
-            insertion.sourceUri
-      );
+
       let prefix: string = "";
       let ns: string;
-      if (importExpr) {
-        ns = getAttributeStringValue("as", importExpr);
 
-        // No namespace? add the attribute
-        if (!ns) {
-          ns = getUniqueImportId(insertion.sourceUri, imports);
-          importEdits.push(
-            addAttribute(exprUri, engine, {
-              kind: VirtualObjectEditKind.AddAttribute,
-              target: {
-                kind: EditTargetKind.Expression,
-                sourceId: importExpr.id,
-              },
-              name: "as",
-              value: `"${ns}"`,
-            })
-          );
+      if (exprUri !== insertion.sourceUri) {
+        const ret = autoAddImport(exprUri, engine, insertion);
+        if (ret) {
+          ns = ret.ns;
+          importEdits.push(ret.edit);
         }
-
-        // no import? add it
-      } else {
-        ns = getUniqueImportId(insertion.sourceUri, imports);
-        importEdits.push(
-          prependChild(exprUri, engine, {
-            kind: VirtualObjectEditKind.PrependChild,
-            target: { kind: EditTargetKind.Expression, sourceId: ast.id },
-            child: {
-              kind: ChildInsertionKind.Element,
-              value: `<import src="${engine.resolveFile(
-                exprUri,
-                insertion.sourceUri
-              )}" as="${ns}" />\n`,
-            },
-          })
-        );
       }
 
       if (ns) {
@@ -578,6 +542,63 @@ const getChildInsertionContent = (
 
       return [buffer, importEdits];
     }
+  }
+};
+
+const autoAddImport = (
+  exprUri: string,
+  engine: EngineDelegate,
+  insertion: InstanceInsertion
+): { ns: string; edit: DocumentTextEdit } | undefined => {
+  let ns: string;
+
+  const ast = engine.getLoadedAst(exprUri) as DependencyNodeContent;
+  const data = engine.getLoadedData(exprUri) as LoadedPCData;
+  const imports = getImports(ast);
+  const importExpr = imports.find(
+    (imp) =>
+      data.dependencies[getAttributeStringValue("as", imp)] ===
+        insertion.sourceUri ||
+      data.dependencies[getAttributeStringValue("src", imp)] ===
+        insertion.sourceUri
+  );
+  if (importExpr) {
+    ns = getAttributeStringValue("as", importExpr);
+
+    // No namespace? add the attribute
+    if (!ns) {
+      const ns = getUniqueImportId(insertion.sourceUri, imports);
+      return {
+        ns,
+        edit: addAttribute(exprUri, engine, {
+          kind: VirtualObjectEditKind.AddAttribute,
+          target: {
+            kind: EditTargetKind.Expression,
+            sourceId: importExpr.id,
+          },
+          name: "as",
+          value: `"${ns}"`,
+        }),
+      };
+    }
+
+    // no import? add it
+  } else {
+    const ns = getUniqueImportId(insertion.sourceUri, imports);
+    return {
+      ns,
+      edit: prependChild(exprUri, engine, {
+        kind: VirtualObjectEditKind.PrependChild,
+        target: { kind: EditTargetKind.Expression, sourceId: ast.id },
+        child: {
+          kind: ChildInsertionKind.Element,
+          value: `<import src="${engine.resolveFile(
+            exprUri,
+            insertion.sourceUri
+          )}" as="${ns}" />\n`,
+        },
+      }),
+    };
   }
 };
 

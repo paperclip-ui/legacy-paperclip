@@ -213,9 +213,9 @@ class Connection {
   private _commitChanges = async ({ description }) => {
     return await this.getProject().commitAndPushChanges(description);
   };
-  private _loadInsertableNodes = async () => {
+  private _loadInsertableNodes = async ({ activeUri }) => {
     const project = this.getProject();
-    return project.getLanguageService().getAllAvailableNodes();
+    return project.getLanguageService().getAllAvailableNodes({ activeUri });
   };
   private _initialize = async ({ projectId }) => {
     this._logger.info(`Setting connection project ID to ${projectId}`);

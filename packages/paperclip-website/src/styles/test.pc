@@ -1,5 +1,3 @@
-<import src="file:///Users/crcn/Developer/private/paperclip/packages/tandem-design-system/src/atoms.pc"
-  as="atoms" />
 <style>
   @mixin mobile {
     @media screen and (max-width: 480px) {
@@ -166,3 +164,9 @@
     <TodoItem alt checked>talk dog</TodoItem>
     <TodoItem>Pick up milk</TodoItem>
   </fragment>} />
+
+
+<!--
+  @frame { height: 768, width: 1024, x: -3215, y: 1741 }
+-->
+<div component as="Testtt">{child}</div>

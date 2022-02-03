@@ -88,10 +88,11 @@ export class PaperclipEngineManager {
   }
 
   private async _loadInsertableElements() {
+    const state: AppState = this._store.getState();
     const insertableNodes = await this._pm
       .getMainProject()
       .getPaperclip()
-      .loadInsertableNodes();
+      .loadInsertableNodes({ activeUri: state.designer.ui.query.canvasFile });
     this._store.dispatch(
       workspaceActions.insertableNodesLoaded(insertableNodes)
     );

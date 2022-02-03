@@ -598,6 +598,27 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `Can insert a instance of a component within the same document`,
+        {
+          "/hello.pc": `<div component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  name: "Test",
+                  sourceUri: "/hello.pc",
+                },
+              },
+            ],
+            `<div component as="Test" /><Test />`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);
@@ -611,18 +632,5 @@ describe(__filename + "#", () => {
         }
       });
     });
-
-    xit(`Annotations don't add extra whitespace when edited`);
-
-    // Need to ensure that we're not out of range
-    xit(`Replaced annotations properly set the delete count`);
-
-    xit(
-      `Slotted children are wrapped in a fragment if another child is inserted`
-    );
-    xit(
-      `An import is added if inserting an instance that's not already imported`
-    );
-    xit(`The instance type of a component can be changed`);
   });
 });

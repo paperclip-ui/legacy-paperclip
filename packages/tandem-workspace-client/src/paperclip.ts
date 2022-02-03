@@ -7,6 +7,10 @@ import {
   revealNodeSourceChannel,
 } from "@tandem-ui/workspace-core";
 
+type LoadInsertableNodesOptions = {
+  activeUri: string;
+};
+
 export class PaperclipManager {
   private _inspectNodeStyle: ReturnType<typeof inspectNodeStyleChannel>;
   private _loadInsertableNodes: ReturnType<typeof loadInsertableNodesChannel>;
@@ -31,8 +35,8 @@ export class PaperclipManager {
     await this._revealBySourceId.call(sourceId);
   }
 
-  async loadInsertableNodes() {
-    return await this._loadInsertableNodes.call();
+  async loadInsertableNodes({ activeUri }: LoadInsertableNodesOptions) {
+    return await this._loadInsertableNodes.call({ activeUri });
   }
 
   /**

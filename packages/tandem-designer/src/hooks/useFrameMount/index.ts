@@ -12,11 +12,13 @@ type UseFrameStageOuterProps = {
 type UseFrameStageInnerProps = {
   frameUri: string;
   frameIndex: number;
+  showSlotPlaceholders?: boolean;
 };
 
 export const useFrameMount = ({
   frameUri,
   frameIndex,
+  showSlotPlaceholders,
   onUpdate,
 }: UseFrameStageOuterProps) => {
   const loadedPCData = useSelector(getFileContent(frameUri)) as LoadedPCData;
@@ -48,11 +50,13 @@ export const useFrameMount = ({
     ) {
       mount = state.mount;
       patchFrame(state.mount, frameIndex, state.loadedPCData, loadedPCData, {
+        showSlotPlaceholders,
         domFactory: document,
         resolveUrl,
       });
     } else {
       mount = renderFrame(loadedPCData, frameIndex, {
+        showSlotPlaceholders,
         domFactory: document,
         resolveUrl,
       });

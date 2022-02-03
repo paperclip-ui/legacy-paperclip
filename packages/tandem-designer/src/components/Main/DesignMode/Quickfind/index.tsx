@@ -18,6 +18,7 @@ import { stripFileProtocol } from "@paperclip-ui/utils";
 import { uiActions } from "../../../../actions/ui-actions";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { useDrag } from "react-dnd";
+import { intersection } from "lodash";
 
 export const Quickfind = () => {
   const {
@@ -55,12 +56,7 @@ export const Quickfind = () => {
             return insertableNodes
               .slice(cursor, cursor + maxRows)
               .map((node, i) => (
-                <InsertableNode
-                  node={node}
-                  key={i}
-                  projectDir={projectDir}
-                  onDragStart={onDragItemStart}
-                />
+                <InsertableNode node={node} key={i} projectDir={projectDir} />
               ));
           }}
         </InfiniteScroller>
@@ -72,7 +68,7 @@ export const Quickfind = () => {
 const useQuickfind = () => {
   const visible = useSelector(shouldShowQuickfind);
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState<string>();
+  const [filter, setFilter] = useState<string[]>();
   const insertableNodes = useSelector(getInsertableNodes);
   const onDragItemStart = (node: AvailableNode) => {
     dispatch(uiActions.quickfindItemStartDrag(node));
@@ -81,7 +77,7 @@ const useQuickfind = () => {
     dispatch(uiActions.quickfindItemClick(node));
   };
   const onFilterChange = (value: string) => {
-    setFilter(value && value.toLowerCase());
+    setFilter(value && value.replace(/\s+/, " ").trim().split(" "));
   };
   const projectDir = useSelector(
     (state: AppState) => state.designer.projectDirectory?.url
@@ -93,14 +89,23 @@ const useQuickfind = () => {
     onDragItemStart,
     onClickItem,
     insertableNodes: insertableNodes.filter((node) => {
-      return (
-        !filter ||
-        node.name.toLowerCase().includes(filter) ||
-        node.kind.toLowerCase().includes(filter) ||
-        ((node as AvailableInstance).sourceUri || "")
-          .toLowerCase()
-          .includes(filter)
-      );
+      if (!filter) {
+        return true;
+      }
+      const tries = [
+        node.name.toLowerCase(),
+        node.kind.toLowerCase(),
+        (node as AvailableInstance).sourceUri || "",
+      ]
+        .join("")
+        .trim();
+
+      for (const part of filter) {
+        if (!tries.includes(part)) {
+          return false;
+        }
+      }
+      return true;
     }),
     onFilterChange,
   };
@@ -109,36 +114,33 @@ const useQuickfind = () => {
 type InsertableNodeProps = {
   node: AvailableNode;
   projectDir: string;
-  onDragStart: (node: AvailableNode) => void;
 };
 
-const InsertableNode = memo(
-  ({ node, projectDir, onDragStart }: InsertableNodeProps) => {
-    const [{ isDragging }, drag, dragPreview] = useDrag(
-      () => ({
-        type: "insertableNode",
-        item: node,
-        collect: (monitor) => ({
-          isDragging: monitor.isDragging(),
-        }),
+const InsertableNode = memo(({ node, projectDir }: InsertableNodeProps) => {
+  const [_, drag, dragPreview] = useDrag(
+    () => ({
+      type: "insertableNode",
+      item: node,
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
       }),
-      [node]
-    );
+    }),
+    [node]
+  );
 
-    return (
-      <div ref={dragPreview}>
-        <styles.Item
-          ref={drag}
-          isText={node.kind === AvailableNodeKind.Text}
-          isElement={node.kind === AvailableNodeKind.Element}
-          isComponent={node.kind === AvailableNodeKind.Instance}
-          title={node.name}
-          description={node.description || getSourceDesc(node, projectDir)}
-        />
-      </div>
-    );
-  }
-);
+  return (
+    <div ref={dragPreview}>
+      <styles.Item
+        ref={drag}
+        isText={node.kind === AvailableNodeKind.Text}
+        isElement={node.kind === AvailableNodeKind.Element}
+        isComponent={node.kind === AvailableNodeKind.Instance}
+        title={node.name}
+        description={node.description || getSourceDesc(node, projectDir)}
+      />
+    </div>
+  );
+});
 
 export const getSourceDesc = (node: AvailableNode, projectDir: string) => {
   if (node.kind == AvailableNodeKind.Instance) {
