@@ -442,6 +442,24 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `Can insert a new frame`,
+        {
+          "/hello.pc": "<div />",
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: { kind: ChildInsertionKind.Text, value: "text" },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\ntext`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);

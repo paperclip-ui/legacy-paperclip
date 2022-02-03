@@ -18,6 +18,7 @@ export type RPCClientAdapter = {
 
 export const createMockRPCServer = () => {
   const hostEm = new EventEmitter();
+  hostEm.setMaxListeners(30);
 
   return {
     onConnection(listener) {
@@ -26,6 +27,8 @@ export const createMockRPCServer = () => {
     createConnection(delay?: boolean): RPCClientAdapter {
       const remote = new EventEmitter();
       const local = new EventEmitter();
+      remote.setMaxListeners(30);
+      local.setMaxListeners(30);
 
       const remoteCon = createMockClient(delay, local, remote);
       const localCon = createMockClient(delay, remote, local);
@@ -145,6 +148,7 @@ export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
   ws.binaryType = "arraybuffer";
 
   const em = new EventEmitter();
+  em.setMaxListeners(30);
 
   if (ws.on) {
     ws.on("open", em.emit.bind(em, "open"));

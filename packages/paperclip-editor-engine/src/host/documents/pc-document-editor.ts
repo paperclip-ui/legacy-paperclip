@@ -9,6 +9,7 @@ import {
   ChildInsertionKind,
   ChildInsertion,
   DeleteNode,
+  AddFrame,
 } from "../../core";
 import { DocumentManager } from "./manager";
 import {
@@ -80,6 +81,8 @@ const mapVirtualSourceEdit =
         return updateAttribute(uri, engine, edit);
       case VirtualObjectEditKind.SetAnnotations:
         return setAnnotations(uri, engine, edit);
+      case VirtualObjectEditKind.AddFrame:
+        return addFrame(uri, engine, edit);
       case VirtualObjectEditKind.DeleteNode:
         return deleteNode(uri, engine, edit);
       default: {
@@ -379,16 +382,38 @@ const setTextNodeValue = (
   engine: EngineDelegate,
   edit: SetTextNodeValue
 ) => {
-  {
-    const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
-    return {
-      uri: info.textSource.uri,
-      chars: edit.value.split(""),
-      index: info.textSource.range.start.pos,
-      deleteCount:
-        info.textSource.range.end.pos - info.textSource.range.start.pos,
-    };
-  }
+  const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+  return {
+    uri: info.textSource.uri,
+    chars: edit.value.split(""),
+    index: info.textSource.range.start.pos,
+    deleteCount:
+      info.textSource.range.end.pos - info.textSource.range.start.pos,
+  };
+};
+
+const addFrame = (
+  uri: string,
+  engine: EngineDelegate,
+  { child, box }: AddFrame
+) => {
+  const info = getSourceNodeFromPath(uri, engine, "");
+  const [exprUri, expr] = engine.getExpressionById(info.sourceId) as [
+    string,
+    Fragment | Element | Reference
+  ];
+
+  return {
+    uri: exprUri,
+    chars: (
+      `\n\n<!--\n  @frame { x: ${Math.round(box.x)}, y: ${Math.round(
+        box.y
+      )}, width: ${Math.round(box.width)}, height: ${Math.round(
+        box.height
+      )} }\n-->\n` + getChildInsertionContent(child, false)
+    ).split(""),
+    index: expr.range.end.pos,
+  };
 };
 
 const getChildInsertionContent = (

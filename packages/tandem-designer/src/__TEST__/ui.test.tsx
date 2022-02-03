@@ -80,7 +80,9 @@ describe("Quickfind items", () => {
       uiActions.toolLayerDrop({ node, point: { x: 0, y: 0 } })
     );
     expect(mock.store.getState().designer.showInsertModal).toEqual(false);
-    await timeout(50);
-    expect(source.getText().replace(/[\n\s]+/g, " ")).toEqual("a");
+    await 1;
+    expect(source.getText().replace(/[\n\s]+/g, " ")).toEqual(
+      ' <div export component as="Test" /> <div component as="Test2" /> <!-- @frame { x: -512, y: -384, width: 1024, height: 768 } --> Double click to edit'
+    );
   });
 });

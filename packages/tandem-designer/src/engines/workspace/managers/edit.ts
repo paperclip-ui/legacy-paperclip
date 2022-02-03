@@ -9,9 +9,11 @@ import {
 } from "@paperclip-ui/editor-engine/lib/core";
 import { computeVirtScriptObject } from "@paperclip-ui/utils";
 import {
+  DEFAULT_FRAME_BOX,
   DesignerState,
   flattenFrameBoxes,
   getFrameFromIndex,
+  getScaledPoint,
 } from "../../../state";
 import { uiActions } from "../../../actions/ui-actions";
 import {
@@ -89,12 +91,17 @@ const getDropEdit = (
   action: ReturnType<typeof uiActions.toolLayerDrop>
 ): VirtualObjectEdit[] => {
   const child = mapAvailableNodeToInsertable(action.payload.node);
-  console.log(action.payload.node, state.highlightNodePath, child);
+  const point = getScaledPoint(action.payload.point, state.canvas.transform);
   return [
     {
-      kind: VirtualObjectEditKind.AppendChild,
+      kind: VirtualObjectEditKind.AddFrame,
       child,
-      nodePath: state.highlightNodePath,
+      box: {
+        x: point.x - DEFAULT_FRAME_BOX.width / 2,
+        y: point.y - DEFAULT_FRAME_BOX.height / 2,
+        width: DEFAULT_FRAME_BOX.width,
+        height: DEFAULT_FRAME_BOX.height,
+      },
     },
   ];
 };
@@ -105,10 +112,10 @@ const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
   } else if (node.kind === AvailableNodeKind.Element) {
     return { kind: ChildInsertionKind.Element, value: `<${node.name} />` };
   } else if (node.kind === AvailableNodeKind.Instance) {
-    return {
-      kind: ChildInsertionKind.Instance,
-      name: node.name,
-      sourceUri: node.sourceUri,
-    };
+    // return {
+    //   kind: ChildInsertionKind.Instance,
+    //   // name: node.name,
+    //   sourceUri: node.sourceUri,
+    // };
   }
 };

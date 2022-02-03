@@ -156,7 +156,7 @@
 
 
 <!--
-  @frame { title: "Todos / Desktop", width: 1049, height: 768, x: -670, y: 96 }
+  @frame { height: 768, title: "Todos / Desktop", width: 1024, x: -1648, y: 1556 }
 -->
 <App title="Add todos"
   todos={<fragment>
