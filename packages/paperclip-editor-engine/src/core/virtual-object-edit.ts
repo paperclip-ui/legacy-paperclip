@@ -13,6 +13,7 @@ export enum VirtualObjectEditKind {
   // inserts a child into a parent element. This will happen
   // if there are no siblings to insert before
   AppendChild = "AppendChild",
+  PrependChild = "PrependChild",
   AddFrame = "AddFrame",
   DeleteNode = "DeleteNode",
 
@@ -30,7 +31,7 @@ export enum ChildInsertionKind {
 }
 
 type BaseChildInsertion<TKind extends ChildInsertionKind> = {
-  kind: ChildInsertionKind;
+  kind: TKind;
 };
 
 export type TextInsertion = {
@@ -41,7 +42,34 @@ export type ElementInsertion = {
   value: string;
 } & BaseChildInsertion<ChildInsertionKind.Element>;
 
-export type ChildInsertion = TextInsertion | ElementInsertion;
+export type InstanceInsertion = {
+  name: string;
+  sourceUri: string;
+} & BaseChildInsertion<ChildInsertionKind.Instance>;
+
+export type ChildInsertion =
+  | TextInsertion
+  | ElementInsertion
+  | InstanceInsertion;
+
+export enum EditTargetKind {
+  VirtualNode = "VirtualNode",
+  Expression = "Expression",
+}
+
+export type BaseEditTarget<TKind extends EditTargetKind> = {
+  kind: TKind;
+};
+
+export type ExpressionEditTarget = {
+  sourceId: string;
+} & BaseEditTarget<EditTargetKind.Expression>;
+
+export type VirtualNodeEditTarget = {
+  nodePath: string;
+} & BaseEditTarget<EditTargetKind.VirtualNode>;
+
+export type EditTarget = ExpressionEditTarget | VirtualNodeEditTarget;
 
 /**
  */
@@ -61,7 +89,7 @@ export type SetTextNodeValue = {
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.SetTextNodeValue>;
 
 export type AddAttribute = {
-  nodePath: string;
+  target: EditTarget;
   name: string;
   value: string;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.AddAttribute>;
@@ -83,6 +111,11 @@ export type AppendChild = {
   child: ChildInsertion;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.AppendChild>;
 
+export type PrependChild = {
+  target?: EditTarget;
+  child: ChildInsertion;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.PrependChild>;
+
 export type AddFrame = {
   box: { x: number; y: number; width: number; height: number };
   child: ChildInsertion;
@@ -100,6 +133,7 @@ export type VirtualObjectEdit =
   | AddAttribute
   | UpdateAttribute
   | SetTextNodeValue
+  | PrependChild
   | AddFrame
   | DeleteNode
   | SetAnnotations

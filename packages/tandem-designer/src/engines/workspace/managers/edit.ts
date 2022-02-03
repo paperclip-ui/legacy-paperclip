@@ -112,10 +112,10 @@ const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
   } else if (node.kind === AvailableNodeKind.Element) {
     return { kind: ChildInsertionKind.Element, value: `<${node.name} />` };
   } else if (node.kind === AvailableNodeKind.Instance) {
-    // return {
-    //   kind: ChildInsertionKind.Instance,
-    //   // name: node.name,
-    //   sourceUri: node.sourceUri,
-    // };
+    return {
+      kind: ChildInsertionKind.Instance,
+      name: node.name,
+      sourceUri: node.sourceUri,
+    };
   }
 };

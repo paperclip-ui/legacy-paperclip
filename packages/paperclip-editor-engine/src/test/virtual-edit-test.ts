@@ -7,6 +7,7 @@ import { expect } from "chai";
 import {
   AppendChild,
   ChildInsertionKind,
+  EditTargetKind,
   VirtualObjectEditKind,
 } from "../core";
 import { createMockHost } from "./utils";
@@ -193,7 +194,7 @@ describe(__filename + "#", () => {
       doc.editVirtualObjects([
         {
           kind: VirtualObjectEditKind.AddAttribute,
-          nodePath: "0",
+          target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
           name: "a",
           value: '"b"',
         },
@@ -457,6 +458,122 @@ describe(__filename + "#", () => {
               },
             ],
             `<div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\ntext`,
+          ],
+        },
+      ],
+      [
+        `Can insert a new instance frame`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" as="hello" /><div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import src="/hello2.pc" as="hello" /><div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello.Test />`,
+          ],
+        },
+      ],
+      [
+        `Adds a ns to an import if including an instance from another doc`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" /><div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import as="hello2" src="/hello2.pc" /><div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello2.Test />`,
+          ],
+        },
+      ],
+      [
+        `If inserting an instance of element that's not imported, the import is added`,
+        {
+          "/hello.pc": `<div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import src="/hello2.pc" as="hello2" />\n<div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello2.Test />`,
+          ],
+        },
+      ],
+      [
+        `When inserting an instance into an element, the instance is auto-imported`,
+        {
+          "/hello.pc": `<div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+              },
+            ],
+            `<import src="/hello2.pc" as="hello2" />\n<div ><hello2.Test /></div>`,
+          ],
+        },
+      ],
+      [
+        `Auto-imports a module if an import shares the same NS but not source`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" as="hello" /><div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+          "/hello3.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello3.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import src="/hello3.pc" as="hello3" />\n<import src="/hello2.pc" as="hello" /><div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello3.Test />`,
           ],
         },
       ],

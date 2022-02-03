@@ -6,6 +6,8 @@ import {
 import { createMock, DesignerMock, timeout } from "./utils";
 import { AppState } from "../state";
 import {
+  AvailableElement,
+  AvailableInstance,
   AvailableNode,
   AvailableNodeKind,
 } from "@paperclip-ui/language-service";
@@ -63,7 +65,7 @@ describe("Quickfind items", () => {
     expect(mock.store.getState().designer.draggingInsertableNode).toEqual(null);
   });
 
-  test(`When dropped into an empty area of the document, it's created as a frame`, async () => {
+  test(`When a text node dropped into an empty area of the document, it's created as a frame`, async () => {
     const source = await mock.project
       .getDocuments()
       .open(mock.testServer.fixtureUris["test.pc"])
@@ -83,6 +85,53 @@ describe("Quickfind items", () => {
     await 1;
     expect(source.getText().replace(/[\n\s]+/g, " ")).toEqual(
       ' <div export component as="Test" /> <div component as="Test2" /> <!-- @frame { x: -512, y: -384, width: 1024, height: 768 } --> Double click to edit'
+    );
+  });
+
+  test(`When an element is dropped into an empty area of the document, it's created as a frame`, async () => {
+    const source = await mock.project
+      .getDocuments()
+      .open(mock.testServer.fixtureUris["test.pc"])
+      .then((doc) => doc.getSource());
+    mock.store.dispatch(globalMetaIKeyPressed(null));
+    const node: AvailableElement = {
+      kind: AvailableNodeKind.Element,
+      name: "div",
+      displayName: "Div",
+      description: "",
+    };
+    expect(mock.store.getState().designer.showInsertModal).toEqual(true);
+    mock.store.dispatch(
+      uiActions.toolLayerDrop({ node, point: { x: 0, y: 0 } })
+    );
+    expect(mock.store.getState().designer.showInsertModal).toEqual(false);
+    await 1;
+    expect(source.getText().replace(/[\n\s]+/g, " ")).toEqual(
+      ' <div export component as="Test" /> <div component as="Test2" /> <!-- @frame { x: -512, y: -384, width: 1024, height: 768 } --> <div />'
+    );
+  });
+
+  test(`When an instance is dropped into an empty area of the document and, it's created & the import is included`, async () => {
+    const source = await mock.project
+      .getDocuments()
+      .open(mock.testServer.fixtureUris["test.pc"])
+      .then((doc) => doc.getSource());
+    mock.store.dispatch(globalMetaIKeyPressed(null));
+    const node: AvailableInstance = {
+      kind: AvailableNodeKind.Instance,
+      sourceUri: mock.testServer.fixtureUris["test2.pc"],
+      name: "Test4",
+      displayName: "Test4",
+      description: "",
+    };
+    expect(mock.store.getState().designer.showInsertModal).toEqual(true);
+    mock.store.dispatch(
+      uiActions.toolLayerDrop({ node, point: { x: 0, y: 0 } })
+    );
+    expect(mock.store.getState().designer.showInsertModal).toEqual(false);
+    await 1;
+    expect(source.getText().replace(/[\n\s]+/g, " ")).toEqual(
+      ' <div export component as="Test" /> <div component as="Test2" /> <!-- @frame { x: -512, y: -384, width: 1024, height: 768 } --> <div />'
     );
   });
 });
