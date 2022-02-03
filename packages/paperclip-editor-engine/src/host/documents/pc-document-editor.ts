@@ -373,24 +373,22 @@ const appendSlot = (
     throw new Error(`Instance element not found`);
   }
 
-  const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
-  const [sourceUri] = engine.getExpressionById(info.sourceId) as [
-    string,
-    Element
-  ];
-  const [child, additionalEdit] = getChildInsertionContent(
+  const [child, additionalEdits] = getChildInsertionContent(
     edit.child,
-    sourceUri,
+    uri,
     engine,
     true
   );
 
-  return updateAttribute(uri, engine, {
-    kind: VirtualObjectEditKind.UpdateAttribute,
-    nodePath: instancePath,
-    name: exprName,
-    value: child,
-  });
+  return [
+    updateAttribute(uri, engine, {
+      kind: VirtualObjectEditKind.UpdateAttribute,
+      nodePath: instancePath,
+      name: exprName,
+      value: child,
+    }),
+    ...additionalEdits,
+  ];
 };
 
 const appendElement = (
@@ -505,7 +503,7 @@ const addFrame = (
 
 const getChildInsertionContent = (
   insertion: ChildInsertion,
-  exprUri: string,
+  documentUri: string,
   engine: EngineDelegate,
   isAttributeValue: boolean
 ): [string, DocumentTextEdit[]] => {
@@ -522,12 +520,10 @@ const getChildInsertionContent = (
       let prefix: string = "";
       let ns: string;
 
-      if (exprUri !== insertion.sourceUri) {
-        const ret = autoAddImport(exprUri, engine, insertion);
-        if (ret) {
-          ns = ret.ns;
-          importEdits.push(ret.edit);
-        }
+      if (documentUri !== insertion.sourceUri) {
+        const ret = autoAddImport(documentUri, engine, insertion);
+        ns = ret.ns;
+        importEdits.push(ret.edit);
       }
 
       if (ns) {
@@ -549,7 +545,7 @@ const autoAddImport = (
   exprUri: string,
   engine: EngineDelegate,
   insertion: InstanceInsertion
-): { ns: string; edit: DocumentTextEdit } | undefined => {
+): { ns: string; edit?: DocumentTextEdit } | undefined => {
   let ns: string;
 
   const ast = engine.getLoadedAst(exprUri) as DependencyNodeContent;
@@ -562,12 +558,13 @@ const autoAddImport = (
       data.dependencies[getAttributeStringValue("src", imp)] ===
         insertion.sourceUri
   );
+
   if (importExpr) {
     ns = getAttributeStringValue("as", importExpr);
 
     // No namespace? add the attribute
     if (!ns) {
-      const ns = getUniqueImportId(insertion.sourceUri, imports);
+      ns = getUniqueImportId(insertion.sourceUri, imports);
       return {
         ns,
         edit: addAttribute(exprUri, engine, {
@@ -584,7 +581,7 @@ const autoAddImport = (
 
     // no import? add it
   } else {
-    const ns = getUniqueImportId(insertion.sourceUri, imports);
+    ns = getUniqueImportId(insertion.sourceUri, imports);
     return {
       ns,
       edit: prependChild(exprUri, engine, {
@@ -600,6 +597,7 @@ const autoAddImport = (
       }),
     };
   }
+  return { ns };
 };
 
 const getUniqueImportId = (uri: string, imports: Element[]) => {

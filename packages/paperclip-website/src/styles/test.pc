@@ -164,9 +164,3 @@
     <TodoItem alt checked>talk dog</TodoItem>
     <TodoItem>Pick up milk</TodoItem>
   </fragment>} />
-
-
-<!--
-  @frame { height: 768, width: 1024, x: -3215, y: 1741 }
--->
-<div component as="Testtt">{child}</div>

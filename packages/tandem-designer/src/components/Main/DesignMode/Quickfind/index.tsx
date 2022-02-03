@@ -95,7 +95,7 @@ const useQuickfind = () => {
       const tries = [
         node.name.toLowerCase(),
         node.kind.toLowerCase(),
-        (node as AvailableInstance).sourceUri || "",
+        ((node as AvailableInstance).sourceUri || "").toLowerCase(),
       ]
         .join("")
         .trim();

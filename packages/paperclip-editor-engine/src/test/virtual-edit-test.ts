@@ -619,6 +619,30 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `When inserting an instance into a slot of an instance that's also imported, the import is added to the slot instance doc`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" as="hello" /><hello.Test1 />`,
+          "/hello2.pc": `<div export component as="Test1">{child}</div>`,
+          "/hello3.pc": `<div export component as="Test2" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0.0",
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  name: "Test2",
+                  sourceUri: "/hello3.pc",
+                },
+              },
+            ],
+            `<import src="/hello3.pc" as="hello3" />\n<import src="/hello2.pc" as="hello" /><hello.Test1 child={<hello3.Test2 />} />`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);
