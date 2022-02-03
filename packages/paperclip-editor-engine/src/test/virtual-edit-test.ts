@@ -549,7 +549,7 @@ describe(__filename + "#", () => {
                 },
               },
             ],
-            `<import src="/hello2.pc" as="hello2" />\n<div ><hello2.Test /></div>`,
+            `<import src="/hello2.pc" as="hello2" />\n<div><hello2.Test /></div>`,
           ],
         },
       ],
@@ -574,6 +574,27 @@ describe(__filename + "#", () => {
               },
             ],
             `<import src="/hello3.pc" as="hello3" />\n<import src="/hello2.pc" as="hello" /><div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello3.Test />`,
+          ],
+        },
+      ],
+      [
+        `Can add a child to a self-closing element at the end of the document`,
+        {
+          "/hello.pc": `<span /><div />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "1",
+                child: {
+                  kind: ChildInsertionKind.Text,
+                  value: "Hello",
+                },
+              },
+            ],
+            `<span /><div>Hello</div>`,
           ],
         },
       ],

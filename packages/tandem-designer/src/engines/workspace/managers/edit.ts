@@ -92,6 +92,18 @@ const getDropEdit = (
 ): VirtualObjectEdit[] => {
   const child = mapAvailableNodeToInsertable(action.payload.node);
   const point = getScaledPoint(action.payload.point, state.canvas.transform);
+  console.log(state.highlightNodePath);
+
+  if (state.highlightNodePath) {
+    return [
+      {
+        kind: VirtualObjectEditKind.AppendChild,
+        nodePath: state.highlightNodePath,
+        child,
+      },
+    ];
+  }
+
   return [
     {
       kind: VirtualObjectEditKind.AddFrame,

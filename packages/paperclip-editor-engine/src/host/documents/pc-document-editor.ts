@@ -414,12 +414,17 @@ const appendElement = (
       engine,
       false
     );
+
+    const tagSrc = source.substring(expr.range.start.pos, expr.range.end.pos);
+
     return [
       {
         uri: exprUri,
         chars: [">", child, `</${expr.tagName}>`].join("").split(""),
-        index: tagBuffer.trim().lastIndexOf("/>"),
-        deleteCount: 2,
+
+        // remove WS at end too so that <div /> isn't converted to <div ></div>
+        index: expr.range.start.pos + tagSrc.replace(/\s*\/>$/, "").length,
+        deleteCount: tagSrc.match(/\s*\/>$/)[0].length,
       },
       ...additionalEdits,
     ];
