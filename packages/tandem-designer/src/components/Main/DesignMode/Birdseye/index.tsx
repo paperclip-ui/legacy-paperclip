@@ -83,7 +83,7 @@ const useBirdseye = () => {
     }
 
     const data = state.designer.allLoadedPCFileData[uri];
-    if (data.kind !== EvaluatedDataKind.PC) {
+    if (data?.kind !== EvaluatedDataKind.PC) {
       continue;
     }
     const frames =

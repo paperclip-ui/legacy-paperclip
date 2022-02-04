@@ -40,12 +40,14 @@ export class ProjectManager {
     action: ReturnType<typeof mainActions.locationChanged>
   ) {
     const currentProjectId = action.payload.query.projectId;
+
     if (currentProjectId !== this._mainProjectId) {
       this._setProjectId(currentProjectId);
     }
   }
 
   private _setProjectId = async (id: string) => {
+    this._mainProjectId = id;
     const project = (this._mainProject = await this._client.openProject({
       id,
     }));

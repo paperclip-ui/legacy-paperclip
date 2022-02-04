@@ -1,17 +1,18 @@
 import * as path from "path";
 import * as CSSOM from "cssom";
+import * as url from "url";
 
 export const mockDOMFactory = {
-  createElement: tagName => {
+  createElement: (tagName) => {
     if (tagName === "style") {
-      return (new StyleElement() as any) as HTMLElement;
+      return new StyleElement() as any as HTMLElement;
     }
 
-    return (new MockElement(tagName) as any) as HTMLElement;
+    return new MockElement(tagName) as any as HTMLElement;
   },
-  createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
-  createDocumentFragment: () => (new MockFragment() as any) as DocumentFragment,
-  createTextNode: nodeValue => (new MockTextNode(nodeValue) as any) as Text
+  createElementNS: (tagName) => new MockElement(tagName) as any as HTMLElement,
+  createDocumentFragment: () => new MockFragment() as any as DocumentFragment,
+  createTextNode: (nodeValue) => new MockTextNode(nodeValue) as any as Text,
 };
 
 abstract class BaseNode {
@@ -35,7 +36,7 @@ abstract class ParentNode extends BaseNode {
   appendChild(child: BaseNode) {
     child.$$parent = this;
     if (child instanceof MockFragment) {
-      child.childNodes.forEach(child => {
+      child.childNodes.forEach((child) => {
         child.$$parent = this;
       });
       this.childNodes.push(...child.childNodes);
@@ -124,7 +125,7 @@ class MockElement extends ParentNode {
     let buffer = `<${this.tagName}`;
     const sortedAttributes = Object.keys(this.attributes)
       .sort()
-      .map(name => ({ name, value: this.attributes[name] }));
+      .map((name) => ({ name, value: this.attributes[name] }));
     for (const { name, value } of sortedAttributes) {
       if (!value) {
         continue;
@@ -170,32 +171,87 @@ class MockTextNode extends BaseNode {
 export type Graph = {
   [identifier: string]: string;
 };
+const stripFileProtocol = (uri) => uri.replace("file://", "");
 
-export const createMockEngineDelegate = engineFactory => (
-  graph: Graph,
-  mode = "SingleFrame"
-) =>
-  engineFactory({
-    io: {
-      readFile: uri =>
-        graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
-      fileExists: uri =>
-        Boolean(
-          graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
-        ),
-      resolveFile: (from, to) => {
-        const prefix = from.indexOf("file:") === 0 ? "file://" : "";
+const mockReadFile = (graph: Graph) => (uri: string | URL) => {
+  const path = uri instanceof URL ? uri.href : uri;
+  return graph[path.replace("file://", "")] || graph[path.replace(/\\+/g, "/")];
+};
 
-        return (
-          prefix +
-          path
-            .join(path.dirname(from.replace("file://", "")), to)
-            .replace(/\\+/g, "/")
-        );
-      }
+const mockReadDir = (graph: Graph) => (uri: string | URL) => {
+  const path = uri instanceof URL ? url.fileURLToPath(uri.href) : uri;
+  return Object.keys(graph)
+    .map(stripFileProtocol)
+    .filter((fp) => fp.indexOf(path) === 0)
+    .map((p) => p.split("/").pop());
+};
+
+const graphContains = (graph, path) =>
+  Object.keys(graph).some((fp) => stripFileProtocol(fp).indexOf(path) === 0);
+
+const mockLStatSync = (graph: Graph) => (uri: string | URL) => {
+  const path = uri instanceof URL ? url.fileURLToPath(uri.href) : uri;
+
+  // simulate lstat sync
+  if (!graphContains(graph, path)) {
+    throw new Error(`no such file or directory`);
+  }
+
+  return {
+    isDirectory() {
+      return (
+        !graph[path] && !graph["file://" + path] && graphContains(graph, path)
+      );
     },
-    mode
-  });
+    isSymbolicLink() {
+      return false;
+    },
+  };
+};
+
+const mockExistsSync = (graph: Graph) => {
+  return (uri) => {
+    const path = uri instanceof URL ? url.fileURLToPath(uri.href) : uri;
+    return graphContains(graph, path);
+  };
+};
+
+export const mockFs = (graph: Graph) => ({
+  realpathSync(uri: string | URL) {
+    if (uri instanceof URL) {
+      return url.fileURLToPath(uri.href);
+    }
+    return uri;
+  },
+  readFileSync: mockReadFile(graph),
+  readdirSync: mockReadDir(graph),
+  existsSync: mockExistsSync(graph),
+  lstatSync: mockLStatSync(graph),
+});
+
+export const createMockEngineDelegate =
+  (engineFactory) =>
+  (graph: Graph, mode = "SingleFrame") =>
+    engineFactory({
+      io: {
+        readFile: mockReadFile(graph),
+        fileExists: (uri) =>
+          Boolean(
+            graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
+          ),
+        resolveFile: (from, to) => {
+          const prefix = from.indexOf("file:") === 0 ? "file://" : "";
+
+          return (
+            prefix +
+            path
+              .join(path.dirname(from.replace("file://", "")), to)
+              .replace(/\\+/g, "/")
+          );
+        },
+      },
+      mode,
+    });
 
 // eslint-disable-next-line
 const noop = () => {};

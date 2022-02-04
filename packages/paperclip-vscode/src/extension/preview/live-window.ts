@@ -35,9 +35,9 @@ export class LiveWindow {
     this._store = new ImmutableStore({
       ...state,
       embedded: true,
-      panelVisible: this._panel.visible
+      panelVisible: this._panel.visible,
     });
-    this._store.update(newState => {
+    this._store.update((newState) => {
       newState.location.query.id = `${Date.now()}.${Math.random()}`;
     });
 
@@ -77,7 +77,7 @@ export class LiveWindow {
   }
 
   setTargetUri(uri: string) {
-    this._store.update(state => {
+    this._store.update((state) => {
       state.location.query.canvasFile = uri;
     });
   }
@@ -132,6 +132,10 @@ export class LiveWindow {
           background: white;
           margin: 0;
         }
+        #app {
+          width: 100vw;
+          height: 100vh;
+        }
         iframe {
           width: 100%;
           height: 100%;
@@ -161,6 +165,10 @@ export class LiveWindow {
       </style>
 
       <script>
+        const defaultStyles = document.getElementById("_defaultStyles");
+        if (defaultStyles) {
+          defaultStyles.remove();
+        }
         const vscode = acquireVsCodeApi();
         const initialState = ${JSON.stringify(state)};
         vscode.setState(initialState);
@@ -175,22 +183,70 @@ export class LiveWindow {
             })
           }
         }
+        const designServerHost = "localhost:${this._devServerPort}";
+        const designServerUrl = "http://" + designServerHost;
+
+        window.DESIGNER_STATE = ${JSON.stringify(
+          state.location.query,
+          null,
+          2
+        )};
+        Object.assign(window.DESIGNER_STATE, { 
+          embedded: true, 
+          host: designServerHost,
+          projectId: "${this._projectId}"
+        });
+
+        // need to go this route instead of in iframe
+        // to allow DND
+        fetch(designServerUrl).then(response => {
+          return response.text();
+        }).then(html => {
+          loadResources(html.match(/[^".]+\\.(js|css)/g))
+        });
+
+        const loadResources = (resources) => {
+          for (const src of resources) {
+            if (/css$/.test(src)) {
+              loadCSS(src);
+            } else {
+              loadJS(src);
+            }
+          } 
+        };
+
+        const loadCSS = (src) => {
+          const href = designServerUrl + src;
+
+          // Oooffff. Still referring to root paths, so prefix with host
+          fetch(href).then(response => response.text()).then(text => {
+            const style = document.createElement("style");
+            style.textContent = text.replace(/url\\((.*?)\\)/g, (match, path) => "url(" + designServerUrl + path + ")");
+            document.head.appendChild(style);
+          });
+        };
+
+        const loadJS = (src) => {
+          const script = document.createElement("script");
+          script.src = designServerUrl + src;
+          document.head.appendChild(script);
+        };
+
+        // history.pushState({}, "", "/?${qs.stringify(
+          state.location.query
+        )}&embedded=1&projectId=${this._projectId}");
       </script>
     </head>
     <body>
-      <iframe id="app" src="http://localhost:${this._devServerPort}${
-      state.location.pathname
-    }?${qs.stringify(state.location.query)}&embedded=1&projectId=${
-      this._projectId
-    }"></iframe>
     <div class="loader"></div>
+    <div id="app"></div>
     </body>
     </html>`;
   }
 
   private _createBindings() {
     this._panel.onDidChangeViewState(() => {
-      this._store.update(state => {
+      this._store.update((state) => {
         state.panelVisible = this._panel.visible;
       });
     });
@@ -207,7 +263,7 @@ export class LiveWindow {
       sticky ? "sticky preview" : `⚡️ ${path.basename(uri)}`,
       ViewColumn.Beside,
       {
-        enableScripts: true
+        enableScripts: true,
       }
     );
 
@@ -232,6 +288,6 @@ export class LiveWindow {
 const getLocationFromUri = (uri: string): LiveWindowLocation => ({
   pathname: "/",
   query: {
-    canvasFile: uri
-  }
+    canvasFile: uri,
+  },
 });

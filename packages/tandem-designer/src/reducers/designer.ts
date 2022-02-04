@@ -59,6 +59,7 @@ import {
   VirtualNodeKind,
 } from "@paperclip-ui/utils";
 import * as path from "path";
+import { uiActions } from "../actions/ui-actions";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -242,9 +243,9 @@ const handleLocationChange = (
   }: ReturnType<typeof mainActions.locationChanged> | RedirectRequested,
   mode: SyncLocationMode
 ) => {
-  return produce(designer, (newDesigner) => {
-    const oldCanvasFile = newDesigner.ui.query.canvasFile;
-
+  const oldCanvasFile = designer.ui.query.canvasFile;
+  const oldShowAll = designer.ui.query.showAll;
+  designer = produce(designer, (newDesigner) => {
     if (payload.query && mode & SyncLocationMode.Query) {
       newDesigner.ui.query = {
         ...newDesigner.ui.query,
@@ -254,6 +255,19 @@ const handleLocationChange = (
 
     expandFilePath(newDesigner, oldCanvasFile);
   });
+
+  if (
+    designer.ui.query.canvasFile !== oldCanvasFile ||
+    designer.ui.query.showAll !== oldShowAll
+  ) {
+    if (designer.canvas.size?.width) {
+      designer = maybeCenterCanvas(designer, true);
+    } else {
+      designer = { ...designer, centeredInitial: false };
+    }
+  }
+
+  return designer;
 };
 
 export const reduceDesigner = (
@@ -377,6 +391,41 @@ export const reduceDesigner = (
         );
       });
       designer = maybeCenterCanvas(designer);
+      return designer;
+    }
+    case ActionType.GLOBAL_META_I_KEY_PRESS: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.loadingInsertableNodes = false;
+        newDesigner.showInsertModal = !newDesigner.showInsertModal;
+      });
+      return designer;
+    }
+    case workspaceActions.insertableNodesLoaded.type: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.insertableNodes = action.payload;
+        newDesigner.loadingInsertableNodes = false;
+      });
+      return designer;
+    }
+    case uiActions.quickfindItemStartDrag.type: {
+      designer = produce(designer, (newDesigner) => {
+        // newDesigner.showInsertModal = false;
+        newDesigner.draggingInsertableNode = action.payload;
+      });
+      return designer;
+    }
+    case uiActions.documentMouseUp.type: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.draggingInsertableNode = null;
+        newDesigner.showInsertModal = false;
+      });
+      return designer;
+    }
+    case uiActions.toolLayerDrop.type: {
+      designer = produce(designer, (newDesigner) => {
+        newDesigner.draggingInsertableNode = null;
+        newDesigner.showInsertModal = false;
+      });
       return designer;
     }
     case workspaceActions.framesLoaded.type: {
@@ -555,6 +604,7 @@ export const reduceDesigner = (
         newDesigner.selectedNodePaths = [];
         newDesigner.scopedElementPath = null;
         newDesigner.showBirdseye = false;
+        newDesigner.showInsertModal = false;
       });
     }
     case ActionType.GLOBAL_META_KEY_DOWN: {
@@ -823,6 +873,7 @@ export const reduceDesigner = (
         );
       });
     }
+    case uiActions.toolLayerDragOver.type:
     case ActionType.CANVAS_MOUSE_MOVED: {
       return highlightNode(designer, action.payload);
     }

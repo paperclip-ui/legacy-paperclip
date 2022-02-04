@@ -90,13 +90,13 @@ const createSlot = (
   showSlotPlaceholders?: boolean,
   inInstance?: boolean
 ) => {
-  if (!inInstance || !showSlotPlaceholders) {
+  if (!showSlotPlaceholders) {
     return domFactory.createTextNode("");
   }
   const placeholder = domFactory.createElement("div");
   placeholder.setAttribute(
     "style",
-    "border: 1px dashed #333; padding: 30px; box-sizing: border-box;"
+    "border: 1px dashed #F0F; padding: 30px; box-sizing: border-box;"
   );
   return placeholder;
 };

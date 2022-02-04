@@ -20,8 +20,6 @@ import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { redirectRequest } from "../../../../actions";
 import { useFrame } from "../../../../hooks/useFrame";
 
-const DEFAULT_COLUMN_COUNT = 5;
-
 type CellProps = {
   filter?: string;
   uri: string;

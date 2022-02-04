@@ -5,11 +5,9 @@ import {
   globalBackspaceKeyPressed,
   globalHKeyDown,
   rectsCaptured,
-  workspaceActions,
 } from "..";
 import { createMock, DesignerMock } from "./utils";
 import { AppState } from "../state";
-import { createMockRPCServer } from "@paperclip-ui/common";
 
 describe(`With a basic project`, () => {
   let mock: DesignerMock;
@@ -18,6 +16,7 @@ describe(`With a basic project`, () => {
     mock = await createMock({
       files: {
         "test.pc": "Hello world",
+        "test2.pc": "<div>blarg</div>",
       },
       canvasFile: "test.pc",
     });
@@ -30,7 +29,7 @@ describe(`With a basic project`, () => {
   test(`Automatically loads the project frame on init`, async () => {
     expect(
       Object.keys(mock.store.getState().designer.allLoadedPCFileData)
-    ).toEqual([`file:///tmp/__TEST__/fixtures/test.pc`]);
+    ).toEqual([mock.testServer.fixtureUris["test.pc"]]);
   });
 
   test(`Automatically centers the canvas when a canvas is loaded`, async () => {
@@ -39,7 +38,7 @@ describe(`With a basic project`, () => {
     expect(state.designer.canvas.transform).toEqual({ x: 988, y: 1116, z: 1 });
   });
 
-  describe(`With a selected canvas element`, () => {
+  describe(`When a selected canvas frame`, () => {
     beforeEach(() => {
       [
         canvasResized({ width: 900, height: 900 }),
@@ -75,9 +74,11 @@ describe(`With a basic project`, () => {
 
     test(`Is deselected when the file is cleared`, async () => {
       expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0"]);
+
       const client = await mock.project
         .getDocuments()
         .open(mock.testServer.fixtureUris["test.pc"]);
+
       const source = await client.getSource();
 
       // clear the doc
@@ -103,7 +104,7 @@ describe(`With a basic project`, () => {
         .open(mock.testServer.fixtureUris["test.pc"]);
       const source = await client.getSource();
       expect(source.getText().replace(/\n/g, " ")).toEqual(
-        `<!--   @frame { visible: false } -->Hello world`
+        `<!--   @frame { visible: false } --> Hello world`
       );
 
       // assert is deselected

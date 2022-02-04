@@ -19,7 +19,10 @@ export class DocumentManager {
   }
   appleDocumentEdits(uri: string, edits: TextEdit[]) {
     const text = TextDocument.applyEdits(this._documents[uri], edits);
-    this._designServer.getEngine().updateVirtualFileContent(uri, text);
+    this._designServer
+      .getCurrentProject()
+      .getEngine()
+      .updateVirtualFileContent(uri, text);
   }
   removeDocument(uri: string) {
     delete this._documents[uri];

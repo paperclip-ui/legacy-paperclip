@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useCallback
+  useCallback,
 } from "react";
 import * as styles from "./index.pc";
 import { Tools } from "./Tools";
@@ -14,12 +14,12 @@ import {
   canvasPanEnd,
   canvasPanned,
   canvasPanStart,
-  canvasResized
+  canvasResized,
 } from "../../../../actions";
 import {
   getActiveFrameIndex,
   getFrameFromIndex,
-  isExpanded
+  isExpanded,
 } from "../../../../state";
 import { getFrameBounds } from "@paperclip-ui/web-renderer";
 
@@ -31,7 +31,7 @@ export const Canvas = React.memo(() => {
       <styles.Inner
         style={{
           transform: `translateX(${actualTransform.x}px) translateY(${actualTransform.y}px) scale(${actualTransform.z}) translateZ(0)`,
-          transformOrigin: "top left"
+          transformOrigin: "top left",
         }}
       >
         <Frames
@@ -49,8 +49,8 @@ const useCanvas = () => {
   const { state, dispatch } = useAppStore();
   const {
     designer: {
-      canvas: { transform }
-    }
+      canvas: { transform },
+    },
   } = state;
 
   const expanded = isExpanded(state.designer);
@@ -68,7 +68,7 @@ const useCanvas = () => {
       return {
         x: -frameBounds.x,
         y: -frameBounds.y,
-        z: 1
+        z: 1,
       };
     } else {
       return transform;
@@ -102,18 +102,18 @@ const useCanvas = () => {
         canvasPanned({
           delta: {
             x: pixelX,
-            y: pixelY
+            y: pixelY,
           },
           mousePosition: {
             x: event.pageX - window.scrollX - rect.left,
-            y: event.pageY - window.scrollY - rect.top
+            y: event.pageY - window.scrollY - rect.top,
           },
           metaKey: event.metaKey,
           ctrlKey: event.ctrlKey,
           size: {
             width: rect.width,
-            height: rect.height
-          }
+            height: rect.height,
+          },
         })
       );
       setCanvasPanTimer(
@@ -139,7 +139,7 @@ const useCanvas = () => {
       dispatch(
         canvasResized({
           width,
-          height
+          height,
         })
       );
     };
@@ -147,7 +147,6 @@ const useCanvas = () => {
     obs.observe(ref);
 
     ref.addEventListener("wheel", onWheel, { passive: false });
-
     window.addEventListener("resize", onResize);
 
     requestAnimationFrame(onResize);

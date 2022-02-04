@@ -54,8 +54,12 @@ export class PaperclipDesignServer {
     } as DesignServerStartedInfo);
   };
 
-  getEngine() {
-    return this._server.getEngine();
+  getCurrentProject() {
+    return this._workspace.getProjectById(this._project.getId());
+  }
+
+  getWorkspace() {
+    return this._workspace;
   }
 
   onRevealSourceRequest = (listener: (source: ExprSource) => void) => {

@@ -1,8 +1,6 @@
 import React, { useRef } from "react";
-import { Frame } from "@paperclip-ui/web-renderer";
-import { memo, useEffect } from "react";
+import { memo } from "react";
 import { noop } from "lodash";
-import { useFrameContainer } from "../../hooks/useFrameContainer";
 import { useFrame } from "../../hooks/useFrame";
 import { LoadedPCData } from "@paperclip-ui/utils";
 
@@ -34,6 +32,7 @@ export const FrameContainer = memo(
       onLoad,
       frameUri,
       frameIndex,
+      showSlotPlaceholders: false,
     });
 
     return (

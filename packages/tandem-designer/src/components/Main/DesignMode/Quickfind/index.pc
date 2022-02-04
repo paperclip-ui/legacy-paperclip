@@ -1,0 +1,149 @@
+<import src="@tandem-ui/design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="@tandem-ui/design-system/src/TextInput.pc" as="TextInput" />
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Item"
+  class:active="active"
+  class:isText="text"
+  class:isComponent="component"
+  class:isElement="element"
+  class:hover="hover">
+  <style>
+    padding: 12px;
+    font-size: 12px;
+    height: 40px;
+    background: rgb(245, 245, 245);
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+    color: #444;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+    &.active, &:hover {
+      background: rgb(225, 240, 255);
+      color: rgb(54, 134, 214);
+    }
+  </style>
+  <div>
+    <style>
+      --size: 20px;
+      display: flex;
+      :global(img) {
+        width: var(--size);
+        height: var(--size);
+      }
+    </style>
+    <div>
+      <style>
+        background: currentColor;
+        height: var(--size);
+        width: var(--size);
+        border-radius: 4px;
+        &:within(.text) {
+          mask-size: 100%;
+          mask-image: url(./text-2.svg);
+        }
+        &:within(.element) {
+          mask-size: 100%;
+          mask-image: url(./element-2.svg);
+        }
+        &:within(.component) {
+          mask-size: 100%;
+          mask-image: url(./lego-2.svg);
+        }
+      </style>
+    </div>
+  </div>
+  <div>
+    <style>
+      overflow: none;
+      text-overflow: ellipsis;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    </style>
+    <div>{title}</div>
+    <div>
+      <style>
+        font-size: 0.8em;
+        opacity: 0.5;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      </style>
+      {description}
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { height: 600, title: "Quickfind", visible: false, width: 805, x: 240, y: -189 }
+-->
+<div export component as="Container">
+  <style>
+    padding: 8px;
+    position: absolute;
+    width: 450px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0px;
+    z-index: 1024;
+    box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.253);
+    background: rgb(218, 218, 218);
+    border-bottom-left-radius: 4px;
+  </style>
+  {filterInput}
+  <div>
+    <style>
+      max-height: 450px;
+      overflow-y: scroll;
+    </style>
+
+    <div>
+      <style>
+        padding: 8px 0px;
+        height: 250px;
+      </style>
+      {items}
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<Container export
+  component
+  as="Preview"
+  filterInput={<TextInput secondary big wide placeholder="Filter..." />}
+  items={<fragment>
+    <Item active isText title="Text" description="A native HTML text node" />
+    <Item hover
+      isElement
+      title="div"
+      description="defines a division or a section in an HTML document" />
+    <Item isElement
+      title="span"
+      description="an inline container used to mark up a part of a text, or a part of a document" />
+    <Item isElement
+      title="form"
+      description="a document section containing interactive controls for submitting information. Some super long text that should be truncated" />
+    <Item isComponent
+      title="Select"
+      description="Some custom description of my component" />
+    <Item isComponent title="Button" />
+  </fragment>} />
+
+<!--
+  @frame { height: 768, width: 1024, x: 1171, y: -358 }
+-->
+<div>
+  <Preview />
+</div>

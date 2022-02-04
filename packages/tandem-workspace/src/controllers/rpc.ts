@@ -20,11 +20,11 @@ import { EngineDelegate, paperclipSourceGlobPattern } from "@paperclip-ui/core";
 import { VirtualNodeSourceInfo } from "@paperclip-ui/core/src/core/delegate";
 import globby from "globby";
 
+// TODO - this needs to be moved to project RPC
 export class RPC {
   constructor(
     server: RPCServer,
     private _workspace: Workspace,
-    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
@@ -37,7 +37,6 @@ export class RPC {
     new Connection(
       connection,
       this._workspace,
-      this._engine,
       this._vfs,
       this._logger,
       this._httpPort,
@@ -59,7 +58,6 @@ class Connection {
   constructor(
     connection: RPCClientAdapter,
     private _workspace: Workspace,
-    private _engine: EngineDelegate,
     private _vfs: VFS,
     private _logger: Logger,
     private _httpPort: number,
@@ -71,6 +69,9 @@ class Connection {
       .loadVirtualNodeSourcesChannel(connection)
       .listen(this._loadNodeSources);
     channels.helloChannel(connection).listen(this._initialize);
+    channels
+      .loadInsertableNodesChannel(connection)
+      .listen(this._loadInsertableNodes);
     // channels.loadDirectoryChannel(connection).listen(this._loadDirectory);
     channels.openProjectChannel(connection).listen(this._openProject);
     channels
@@ -126,7 +127,10 @@ class Connection {
   };
 
   private _revealSource = async (source: VirtNodeSource) => {
-    const info = this._engine.getVirtualNodeSourceInfo(source.path, source.uri);
+    const project = this.getProject();
+    const info = project
+      .getEngine()
+      .getVirtualNodeSourceInfo(source.path, source.uri);
 
     if (info) {
       this._options.adapter?.revealSource(info);
@@ -139,7 +143,8 @@ class Connection {
   };
 
   private _revealSourceById = async (sourceId: string) => {
-    const [uri, expr] = this._engine.getExpressionById(sourceId) as [
+    const project = this.getProject();
+    const [uri, expr] = project.getEngine().getExpressionById(sourceId) as [
       string,
       Expression
     ];
@@ -159,7 +164,7 @@ class Connection {
     const project = this.getProject();
 
     return sources.map((info) => {
-      return this._engine.getVirtualNodeSourceInfo(info.path, info.uri);
+      return project.getEngine().getVirtualNodeSourceInfo(info.path, info.uri);
       // return {
       //   virtualNodePath: info.path,
       //   sourceId: this._engine.getVirtualNodeSourceInfo(info.path, info.uri).sourceId
@@ -179,7 +184,7 @@ class Connection {
     const project = this.getProject();
     return sources.map((source) => [
       source,
-      this._engine.inspectNodeStyles(source, 0),
+      project.getEngine().inspectNodeStyles(source, 0),
     ]);
   };
 
@@ -207,6 +212,10 @@ class Connection {
   };
   private _commitChanges = async ({ description }) => {
     return await this.getProject().commitAndPushChanges(description);
+  };
+  private _loadInsertableNodes = async ({ activeUri }) => {
+    const project = this.getProject();
+    return project.getLanguageService().getAllAvailableNodes({ activeUri });
   };
   private _initialize = async ({ projectId }) => {
     this._logger.info(`Setting connection project ID to ${projectId}`);

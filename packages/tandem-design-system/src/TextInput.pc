@@ -10,6 +10,8 @@
   class="input v2 {class?}"
   class:dark="dark"
   class:light="light"
+  class:secondary="secondary"
+  class:wide="wide"
   {type}
   {onBlur?}
   {onFocus?}
@@ -20,9 +22,9 @@
   {defaultValue?}
   {autoComplete?}
   {autoFocus?}
-  allow-1password="yes">
+  allow-1password="yes"
+  class:big="big">
   <style>
-
 
     background: var(--background-50);
     border: 0;
@@ -33,6 +35,14 @@
     color: var(--text-color);
     box-sizing: border-box;
     border: 2px solid var(--background-200);
+    &.wide {
+      width: 100%;
+    }
+
+    &.big {
+      padding: 12px;
+    }
+
     &:within(:global(.dark)), &.dark {
       background: var(--grey-night-100);
       border: 2px solid var(--grey-night-300);
@@ -46,6 +56,9 @@
     }
     &::placeholder {
       color: var(--grey-300);
+    }
+    &.secondary {
+      background: white;
     }
   </style>
 </input>

@@ -35,11 +35,13 @@ import {
 } from "./geom";
 import * as os from "os";
 import { Result } from "./result";
+import { AvailableNode } from "@paperclip-ui/language-service";
 
 // 2 MB
 export const MAX_FILE_SIZE = 2 * 1000 * 1000;
 
 export const EDITABLE_MIME_TYPES = ["text/plain", "image/svg+xml", "text/css"];
+declare const DESIGNER_STATE: EmbeddedState | null;
 
 const ALT_MIME_TYPES = [
   "application/vnd.ms-fontobject", // .eot
@@ -115,16 +117,22 @@ type ExpandedFrameInfo = {
   previousCanvasTransform: Transform;
 };
 
+export type UIStateQuery = {
+  showAll: boolean;
+  canvasFile: string;
+  projectId?: string;
+  id: string;
+  expanded: boolean;
+  frame: number;
+  embedded: boolean;
+};
+
+export type EmbeddedState = {
+  host: string;
+} & UIStateQuery;
+
 export type UIState = {
-  query: Partial<{
-    showAll: boolean;
-    canvasFile: string;
-    projectId?: string;
-    id: string;
-    expanded: boolean;
-    frame: number;
-    embedded: boolean;
-  }>;
+  query: Partial<UIStateQuery>;
 };
 
 // aut
@@ -189,6 +197,10 @@ export type DesignerState = {
 
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
+  loadingInsertableNodes: boolean;
+  showInsertModal: boolean;
+  draggingInsertableNode: AvailableNode;
+  insertableNodes: AvailableNode[];
   pcFileDataVersion: number;
   // rendererElement?: any;
   availableBrowsers: AvailableBrowser[];
@@ -251,6 +263,10 @@ export type AvailableBrowser = {
   browserVersion: string;
 };
 
+const host =
+  typeof DESIGNER_STATE === "undefined"
+    ? window.location.host
+    : DESIGNER_STATE.host;
 export const INITIAL_STATE: AppState = {
   actions: [],
   history: {
@@ -261,7 +277,11 @@ export const INITIAL_STATE: AppState = {
     documents: {},
   },
   designer: {
+    insertableNodes: [],
+    draggingInsertableNode: null,
+    loadingInsertableNodes: false,
     useLiteEditor: false,
+    showInsertModal: false,
     readonly: false,
     pcFileDataVersion: 0,
     selectedNodeSources: [],
@@ -277,9 +297,7 @@ export const INITIAL_STATE: AppState = {
     centeredInitial: false,
     toolsLayerEnabled: true,
     resourceHost:
-      typeof window !== "undefined"
-        ? window.location.protocol + "//" + window.location.host + "/file/"
-        : null,
+      typeof window !== "undefined" ? "http://" + host + "/file/" : null,
     availableBrowsers: [],
     currentEngineEvents: {},
     allLoadedPCFileData: {},
@@ -488,6 +506,11 @@ const getHoverableNodePaths = memoize(
     return hoverable.map((node) => getNodePath(node, root));
   }
 );
+
+export const shouldShowQuickfind = (state: AppState) =>
+  state.designer.showInsertModal;
+export const getInsertableNodes = (state: AppState) =>
+  state.designer.insertableNodes;
 
 const addHoverableChildren = (
   node: VirtualNode,

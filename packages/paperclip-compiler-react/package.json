@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/compiler-react",
-  "version": "18.5.0",
+  "version": "18.5.2",
   "description": "React compiler for Paperclip",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -8,9 +8,9 @@
     "lib": "lib"
   },
   "dependencies": {
-    "@paperclip-ui/compiler-base-jsx": "^18.5.0",
-    "@paperclip-ui/core": "^18.5.0",
-    "@paperclip-ui/interim": "^18.5.0",
+    "@paperclip-ui/compiler-base-jsx": "^18.5.2",
+    "@paperclip-ui/core": "^18.5.2",
+    "@paperclip-ui/interim": "^18.5.2",
     "crc32": "^0.2.2",
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",

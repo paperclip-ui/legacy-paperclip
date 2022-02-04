@@ -4,7 +4,12 @@ import {
   VirtualElement,
 } from "@paperclip-ui/core";
 import { expect } from "chai";
-import { ChildInsertionKind, VirtualobjectEditKind } from "../core";
+import {
+  AppendChild,
+  ChildInsertionKind,
+  EditTargetKind,
+  VirtualObjectEditKind,
+} from "../core";
 import { createMockHost } from "./utils";
 
 // TODO - test latency
@@ -21,7 +26,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.InsertNodeBefore,
+          kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
           node: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -41,12 +46,12 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.InsertNodeBefore,
+          kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
           node: { kind: ChildInsertionKind.Element, value: "<a />" },
         },
         {
-          kind: VirtualobjectEditKind.InsertNodeBefore,
+          kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
           node: { kind: ChildInsertionKind.Element, value: "<b />" },
         },
@@ -66,7 +71,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetTextNodeValue,
+          kind: VirtualObjectEditKind.SetTextNodeValue,
           nodePath: "0.0",
           value: "Hello world",
         },
@@ -92,7 +97,7 @@ describe(__filename + "#", () => {
 
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetAnnotations,
+          kind: VirtualObjectEditKind.SetAnnotations,
           nodePath: "0",
           value: annotations,
         },
@@ -128,7 +133,7 @@ describe(__filename + "#", () => {
 
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetAnnotations,
+          kind: VirtualObjectEditKind.SetAnnotations,
           nodePath: "0",
           value: annotations,
         },
@@ -160,7 +165,7 @@ describe(__filename + "#", () => {
 
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.SetAnnotations,
+          kind: VirtualObjectEditKind.SetAnnotations,
           nodePath: "0",
           value: annotations,
         },
@@ -188,8 +193,8 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AddAttribute,
-          nodePath: "0",
+          kind: VirtualObjectEditKind.AddAttribute,
+          target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
           name: "a",
           value: '"b"',
         },
@@ -209,7 +214,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.UpdateAttribute,
+          kind: VirtualObjectEditKind.UpdateAttribute,
           nodePath: "0",
           name: "a",
           value: '"b"',
@@ -229,7 +234,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -248,7 +253,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -267,7 +272,7 @@ describe(__filename + "#", () => {
       const doc = await client.getDocuments().open("/hello.pc");
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -290,7 +295,7 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
           child: { kind: ChildInsertionKind.Text, value: "blarg" },
         },
@@ -316,7 +321,7 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
           child: { kind: ChildInsertionKind.Element, value: "<span />" },
         },
@@ -343,12 +348,12 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
           child: { kind: ChildInsertionKind.Element, value: "<a />" },
         },
         {
-          kind: VirtualobjectEditKind.AppendChild,
+          kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.1",
           child: { kind: ChildInsertionKind.Element, value: "<b />" },
         },
@@ -373,7 +378,7 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.DeleteNode,
+          kind: VirtualObjectEditKind.DeleteNode,
           nodePath: "1",
         },
       ]);
@@ -394,24 +399,304 @@ describe(__filename + "#", () => {
       );
       doc.editVirtualObjects([
         {
-          kind: VirtualobjectEditKind.DeleteNode,
+          kind: VirtualObjectEditKind.DeleteNode,
           nodePath: "0",
         },
       ]);
 
       expect(source.getText()).to.eql(`<span />`);
     });
-    xit(`Annotations don't add extra whitespace when edited`);
 
-    // Need to ensure that we're not out of range
-    xit(`Replaced annotations properly set the delete count`);
-
-    xit(
-      `Slotted children are wrapped in a fragment if another child is inserted`
-    );
-    xit(
-      `An import is added if inserting an instance that's not already imported`
-    );
-    xit(`The instance type of a component can be changed`);
+    [
+      [
+        `When annotations are added to an element without them, a new line is also created`,
+        {
+          "/hello.pc": "<div />",
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.SetAnnotations,
+                value: { a: "b" },
+                nodePath: "0",
+              },
+            ],
+            `<!--\n  @a "b"\n-->\n<div />`,
+          ],
+        },
+      ],
+      [
+        `Can insert a text node as a frame`,
+        {
+          "/hello.pc": "<div />",
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                child: { kind: ChildInsertionKind.Text, value: "text" },
+              },
+            ],
+            `<div />text`,
+          ],
+        },
+      ],
+      [
+        `Can insert a new frame`,
+        {
+          "/hello.pc": "<div />",
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: { kind: ChildInsertionKind.Text, value: "text" },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\ntext`,
+          ],
+        },
+      ],
+      [
+        `Can insert a new instance frame`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" as="hello" /><div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import src="/hello2.pc" as="hello" /><div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello.Test />`,
+          ],
+        },
+      ],
+      [
+        `Adds a ns to an import if including an instance from another doc`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" /><div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import as="hello2" src="/hello2.pc" /><div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello2.Test />`,
+          ],
+        },
+      ],
+      [
+        `If inserting an instance of element that's not imported, the import is added`,
+        {
+          "/hello.pc": `<div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import src="/hello2.pc" as="hello2" />\n<div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello2.Test />`,
+          ],
+        },
+      ],
+      [
+        `When inserting an instance into an element, the instance is auto-imported`,
+        {
+          "/hello.pc": `<div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello2.pc",
+                  name: "Test",
+                },
+              },
+            ],
+            `<import src="/hello2.pc" as="hello2" />\n<div><hello2.Test /></div>`,
+          ],
+        },
+      ],
+      [
+        `Auto-imports a module if an import shares the same NS but not source`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" as="hello" /><div />`,
+          "/hello2.pc": `<div export component as="Test" />`,
+          "/hello3.pc": `<div export component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AddFrame,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  sourceUri: "/hello3.pc",
+                  name: "Test",
+                },
+                box: { x: 100, y: 100.1, width: 100, height: 100 },
+              },
+            ],
+            `<import src="/hello3.pc" as="hello3" />\n<import src="/hello2.pc" as="hello" /><div />\n\n<!--\n  @frame { x: 100, y: 100, width: 100, height: 100 }\n-->\n<hello3.Test />`,
+          ],
+        },
+      ],
+      [
+        `Can add a child to a self-closing element at the end of the document`,
+        {
+          "/hello.pc": `<span /><div />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "1",
+                child: {
+                  kind: ChildInsertionKind.Text,
+                  value: "Hello",
+                },
+              },
+            ],
+            `<span /><div>Hello</div>`,
+          ],
+        },
+      ],
+      [
+        `Can insert a instance of a component within the same document`,
+        {
+          "/hello.pc": `<div component as="Test" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  name: "Test",
+                  sourceUri: "/hello.pc",
+                },
+              },
+            ],
+            `<div component as="Test" /><Test />`,
+          ],
+        },
+      ],
+      [
+        `When inserting an instance into a slot of an instance that's also imported, the import is added to the slot instance doc`,
+        {
+          "/hello.pc": `<import src="/hello2.pc" as="hello" /><hello.Test1 />`,
+          "/hello2.pc": `<div export component as="Test1">{child}</div>`,
+          "/hello3.pc": `<div export component as="Test2" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0.0",
+                child: {
+                  kind: ChildInsertionKind.Instance,
+                  name: "Test2",
+                  sourceUri: "/hello3.pc",
+                },
+              },
+            ],
+            `<import src="/hello3.pc" as="hello3" />\n<import src="/hello2.pc" as="hello" /><hello.Test1 child={<hello3.Test2 />} />`,
+          ],
+        },
+      ],
+      [
+        `When inserting a child into a children slot, the child is added as a regular child of an element`,
+        {
+          "/hello.pc": `<div component as="Test">{children}</div><Test />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0.0",
+                child: {
+                  kind: ChildInsertionKind.Text,
+                  value: "Something",
+                },
+              },
+            ],
+            `<div component as="Test">{children}</div><Test>Something</Test>`,
+          ],
+        },
+      ],
+      // [
+      //   `Appending child to instance without children slot results in no-op`,
+      //   {
+      //     "/hello.pc": `<div component as="Test">{child}</div><Test />`,
+      //   },
+      //   {
+      //     "/hello.pc": [
+      //       [
+      //         {
+      //           kind: VirtualObjectEditKind.AppendChild,
+      //           nodePath: "0",
+      //           child: {
+      //             kind: ChildInsertionKind.Text,
+      //             value: "Something",
+      //           },
+      //         },
+      //       ],
+      //       `<div component as="Test">{children}</div><Test>Something</Test>`,
+      //     ],
+      //   },
+      // ],
+    ].forEach(([name, graph, change]: any) => {
+      it(name, async () => {
+        const { server } = await createMockHost(graph);
+        const client = server.createHostClient();
+        for (const fileName in change) {
+          const [edits, expected] = change[fileName];
+          const doc = await client.getDocuments().open(fileName);
+          const source = await doc.getSource();
+          doc.editVirtualObjects(edits);
+          expect(source.getText()).to.eql(expected);
+        }
+      });
+    });
   });
 });

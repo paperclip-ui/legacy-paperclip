@@ -8,13 +8,13 @@ import { isPaperclipResourceFile } from "..";
 export enum ChangeKind {
   Removed,
   Added,
-  Changed
+  Changed,
 }
 
 const CHOKIDAR_EVENT_MAP = {
   add: ChangeKind.Added,
   unlink: ChangeKind.Removed,
-  change: ChangeKind.Changed
+  change: ChangeKind.Changed,
 };
 
 export class PaperclipResourceWatcher {
@@ -32,14 +32,13 @@ export class PaperclipResourceWatcher {
     this._watcher.close();
   }
   private _init() {
-    console.log(paperclipSourceGlobPattern(this._srcDir));
     const watcher = (this._watcher = chokidar.watch(
       paperclipSourceGlobPattern(this._srcDir),
       {
         cwd: this.cwd,
         ignoreInitial: true,
         ignored: "**/node_modules/**",
-        followSymlinks: true
+        followSymlinks: true,
       }
     ));
     watcher.on("all", (eventName, relativePath) => {

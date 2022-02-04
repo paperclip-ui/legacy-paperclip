@@ -2,9 +2,9 @@ import { VFS } from "./vfs";
 import * as url from "url";
 import { SSHKeys } from "./ssh";
 import { Options } from "../core/options";
-import { EngineDelegate } from "@paperclip-ui/core";
+import { EngineMode, loadEngineDelegate } from "@paperclip-ui/core";
 import { getProjectId, Project } from "./project";
-import { Logger } from "@paperclip-ui/common";
+import { Logger, RPCServer } from "@paperclip-ui/common";
 import { EditorHost } from "@paperclip-ui/editor-engine/lib/host/host";
 
 export class Workspace {
@@ -15,16 +15,26 @@ export class Workspace {
     private _ssh: SSHKeys,
     readonly vfs: VFS,
     private _logger: Logger,
-    private _engine: EngineDelegate,
+    private _rpcServer: RPCServer,
     private _options: Options,
-    private _httpPort: number,
-    private _documentManager: EditorHost
+    private _httpPort: number
   ) {}
 
   async start(pathOrUrl: string, branch?: string) {
     const repoUrl = getProjectUrl(pathOrUrl);
 
     this._logger.info(`Starting repo ${repoUrl}#${branch}`);
+
+    const paperclipEngine = await loadEngineDelegate({
+      mode: EngineMode.MultiFrame,
+    });
+
+    const documentManager = await EditorHost.start(
+      paperclipEngine,
+      this._rpcServer,
+      this._logger
+    );
+
     const projectId = getProjectId(repoUrl);
     const project =
       this._projects[projectId] ||
@@ -33,10 +43,10 @@ export class Workspace {
         branch,
         this.vfs,
         this._logger,
-        this._engine,
+        paperclipEngine,
         this._options,
         this._httpPort,
-        this._documentManager
+        documentManager
       ));
     return await project.start();
   }

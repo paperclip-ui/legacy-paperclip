@@ -9,18 +9,24 @@ Considerations:
 
 */
 
-import { EngineDelegate, getEngineImports } from "@paperclip-ui/core";
 import { Observable } from "@paperclip-ui/common";
 import { AutocompleteService } from "./autocomplete";
+import { getAllAvailableNodes } from "./state";
 import { collectASTInfo, ColorInfo } from "./collect-ast-info";
 import { DiagnosticService, LintInfo } from "./error-service";
+import {
+  EngineDelegate,
+  FileSystem,
+  getEngineImports,
+} from "@paperclip-ui/core";
+import { GetAllAvailableNodesOptions } from ".";
 
 export class PaperclipLanguageService {
   private _autocomplete: AutocompleteService;
   private _diagnostics: DiagnosticService;
   readonly events: Observable;
 
-  constructor(private _engine: EngineDelegate, fs?: any) {
+  constructor(private _engine: EngineDelegate, fs?: FileSystem) {
     this._autocomplete = new AutocompleteService(fs);
     this._diagnostics = new DiagnosticService(_engine);
   }
@@ -41,6 +47,12 @@ export class PaperclipLanguageService {
   }
 
   /**
+   * Used when imports are added
+   */
+
+  getUniqueDocumentNamespace(uri: string) {}
+
+  /**
    * returns all document links in the file
    */
 
@@ -56,13 +68,21 @@ export class PaperclipLanguageService {
   }
 
   /**
+   * returns all available nodes in the project (text, native elements, custom components)
+   */
+
+  getAllAvailableNodes(options: GetAllAvailableNodesOptions) {
+    return getAllAvailableNodes(options, this._engine);
+  }
+
+  /**
    * Returns list of options fro autocomplete
    */
 
   getAutoCompletionSuggestions(uri: string, position: number = Infinity) {
     return this._autocomplete.getSuggestions(
       uri,
-      this._engine.getVirtualContent(uri).substr(0, position),
+      this._engine.getVirtualContent(uri).substring(0, position),
       this._engine.getLoadedData(uri),
       getEngineImports(uri, this._engine)
     );

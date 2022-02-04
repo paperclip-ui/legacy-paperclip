@@ -1,30 +1,42 @@
+<import src="@tandem-ui/design-system/src/atoms.pc" as="atoms" inject-styles />
+
 <!--
   @frame { visible: false, width: 1024, height: 768, x: -91, y: 84 }
 -->
-<div export
-  component
-  as="Tools"
-  class="tools"
-  {onClick?}
-  {onMouseUp?}
-  {onMouseDown?}
-  {onDoubleClick?}
-  {onMouseMove?}
-  {onMouseLeave?}
-  {onWheel?}>
+<div export component as="Tools" class:hover="hover">
   <style>
-    position: absolute;
     top: 0px;
     left: 0px;
-    background: transparent;
     width: 100%;
     height: 100%;
+    position: absolute;
+    &.hover {
+      box-shadow: inset 0px 0px 0px 2px rgb(0, 132, 255);
+    }
   </style>
-  {children}
+  <div {onClick?}
+    {onMouseUp?}
+    {onDragEnter?}
+    {onDragOver?}
+    {onDrop?}
+    {onMouseDown?}
+    {onDoubleClick?}
+    {onMouseMove?}
+    {onMouseLeave?}
+    {onWheel?}>
+    <style>
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      background: transparent;
+      width: 100%;
+      height: 100%;
+    </style>
+    {children}
+  </div>
 </div>
 
-
 <!--
-  @frame { visible: false, title: "Title me this", width: 798, height: 586, x: 28, y: -178 }
+  @frame { visible: true, title: "Title me this", width: 798, height: 586, x: 28, y: -178 }
 -->
-<Tools>This is a tool</Tools>
+<Tools hover>This is a tool</Tools>

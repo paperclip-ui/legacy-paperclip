@@ -2,3 +2,4 @@ dist
 pc-coverage
 .paperclip
 node_modules
+coverage/

@@ -1,12 +1,36 @@
-## Todos
+- may need to use inferencing engine
 
-Theme is code quality tools. How to incentivize people to write Previews?
+- prohibit children from being inserted into instances without `{children}`
+- when dropping onto stage, only highlight instable areas (top-level instances, and slots)
+- imported docs should be relative
+- slots
+  - tag slots based on shape
+    - `{}` = null
+    - `{a && b}` = variantOffSlot
+    - `{a || b}` = slotWithDefault
+    - `{a && b || c}` = conditionalSlot
+    - `{!a && b}` = variantOnSlot
+    - `{(a && b || c) || c}` = invalid
+  - display name of slot  
+    - store as metadata
 
-- [ ] coverage tool
-- [ ] tree shaking (needs coverage tool)
-- [ ] A11Y tooling using Axe
-- [ ] diff 
+## Immediate
+
+- quickfind
+  - ability to show & hide
+  - Load all components found in AST that are exported
+    - should be part of language service
+  - when element is selected, store selection in local state
+
+- when insertion is selected in local state, clicking canvas should insert element
+  - should only work with canvas for now
+  - should auto-import element
+  - should identify element that is hovered, and insert into that
 
 
-- coverage tools
-- tree shaking
+## Acceptance
+
+- should be able to create any UI from existing design system
+- should be able to remove elements
+- should be able to drag elements around
+

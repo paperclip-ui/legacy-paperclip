@@ -43,7 +43,7 @@ describe(__filename + "#", () => {
     });
 
     expect(frames.map((frame) => frame.innerHTML).join("")).to.eql(
-      `<div></div><div><style></style></div><div><div class="_cb99d41f _pub-cb99d41f"><div style="border: 1px dashed #333; padding: 30px; box-sizing: border-box;"></div></div></div>`
+      `<div></div><div><style></style></div><div><div class="_cb99d41f _pub-cb99d41f"><div style="border: 1px dashed #F0F; padding: 30px; box-sizing: border-box;"></div></div></div>`
     );
   });
 

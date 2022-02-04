@@ -26,12 +26,12 @@ export enum CompletionItemKind {
   Struct = 22,
   Event = 23,
   Operator = 24,
-  TypeParameter = 25
+  TypeParameter = 25,
 }
 
 export enum InsertTextFormat {
   PlainText = 1,
-  Snippet = 2
+  Snippet = 2,
 }
 
 type Command = {
@@ -67,7 +67,7 @@ export type PCCompletionItem = Omit<CompletionItem, "data"> & {
 
 export const RETRIGGER_COMMAND = {
   command: `editor.action.triggerSuggest`,
-  title: "Autocomplete"
+  title: "Autocomplete",
 };
 
 export const stringArrayToAutoCompleteItems = memoize(
@@ -76,12 +76,16 @@ export const stringArrayToAutoCompleteItems = memoize(
       label: String(value),
 
       // ensures that completion list is always scrolled at the top
-      preselect: i === 0
+      preselect: i === 0,
     }))
 );
 
 export const getStyleExport = (data: LoadedData) =>
-  data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+  data
+    ? data.kind === EvaluatedDataKind.PC
+      ? data.exports.style
+      : data.exports
+    : null;
 
 export const stringArraytoSnippetStringOptions = memoize(
   (values: string[]) => `|${values.join(",")}|`
@@ -102,7 +106,7 @@ export const tagCompletionItem = (
     label: tagName,
     insertText,
     insertTextFormat: InsertTextFormat.Snippet,
-    command: hasAttributes ? RETRIGGER_COMMAND : null
+    command: hasAttributes ? RETRIGGER_COMMAND : null,
   };
 };
 
@@ -115,6 +119,6 @@ export const addCompletionItemData = (
   data: {
     ...data,
     ...(item.data || {}),
-    uri
-  }
+    uri,
+  },
 });

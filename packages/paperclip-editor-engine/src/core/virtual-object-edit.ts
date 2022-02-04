@@ -1,7 +1,7 @@
 /**
  */
 
-export enum VirtualobjectEditKind {
+export enum VirtualObjectEditKind {
   // We use this be default to ensure that we maintain positional information
   // about an inserted element
   InsertNodeBefore = "InsertNodeBefore",
@@ -13,6 +13,8 @@ export enum VirtualobjectEditKind {
   // inserts a child into a parent element. This will happen
   // if there are no siblings to insert before
   AppendChild = "AppendChild",
+  PrependChild = "PrependChild",
+  AddFrame = "AddFrame",
   DeleteNode = "DeleteNode",
 
   // TODO: needs to scan all documents where reference is used. Probably needs to use inferencing engine for this.
@@ -29,7 +31,7 @@ export enum ChildInsertionKind {
 }
 
 type BaseChildInsertion<TKind extends ChildInsertionKind> = {
-  kind: ChildInsertionKind;
+  kind: TKind;
 };
 
 export type TextInsertion = {
@@ -40,51 +42,88 @@ export type ElementInsertion = {
   value: string;
 } & BaseChildInsertion<ChildInsertionKind.Element>;
 
-export type ChildInsertion = TextInsertion | ElementInsertion;
+export type InstanceInsertion = {
+  name: string;
+  sourceUri: string;
+} & BaseChildInsertion<ChildInsertionKind.Instance>;
+
+export type ChildInsertion =
+  | TextInsertion
+  | ElementInsertion
+  | InstanceInsertion;
+
+export enum EditTargetKind {
+  VirtualNode = "VirtualNode",
+  Expression = "Expression",
+}
+
+export type BaseEditTarget<TKind extends EditTargetKind> = {
+  kind: TKind;
+};
+
+export type ExpressionEditTarget = {
+  sourceId: string;
+} & BaseEditTarget<EditTargetKind.Expression>;
+
+export type VirtualNodeEditTarget = {
+  nodePath: string;
+} & BaseEditTarget<EditTargetKind.VirtualNode>;
+
+export type EditTarget = ExpressionEditTarget | VirtualNodeEditTarget;
 
 /**
  */
 
-export type VirtualObjectBaseEdit<TKind extends VirtualobjectEditKind> = {
+export type VirtualObjectBaseEdit<TKind extends VirtualObjectEditKind> = {
   kind: TKind;
 };
 
 export type InsertNodeBefore = {
   beforeNodePath: string;
   node: ChildInsertion;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.InsertNodeBefore>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.InsertNodeBefore>;
 
 export type SetTextNodeValue = {
   nodePath: string;
   value: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.SetTextNodeValue>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.SetTextNodeValue>;
 
 export type AddAttribute = {
-  nodePath: string;
+  target: EditTarget;
   name: string;
   value: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.AddAttribute>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.AddAttribute>;
 
 export type UpdateAttribute = {
   nodePath: string;
   name: string;
   newName?: string;
   value: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.UpdateAttribute>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.UpdateAttribute>;
 
 export type SetAnnotations = {
   nodePath: string;
   value: Record<string, string | Object>;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.SetAnnotations>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.SetAnnotations>;
 
 export type AppendChild = {
-  nodePath: string;
+  nodePath?: string;
   child: ChildInsertion;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.AppendChild>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.AppendChild>;
+
+export type PrependChild = {
+  target?: EditTarget;
+  child: ChildInsertion;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.PrependChild>;
+
+export type AddFrame = {
+  box: { x: number; y: number; width: number; height: number };
+  child: ChildInsertion;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.AddFrame>;
 
 export type DeleteNode = {
   nodePath: string;
-} & VirtualObjectBaseEdit<VirtualobjectEditKind.DeleteNode>;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.DeleteNode>;
 
 /**
  */
@@ -94,6 +133,8 @@ export type VirtualObjectEdit =
   | AddAttribute
   | UpdateAttribute
   | SetTextNodeValue
+  | PrependChild
+  | AddFrame
   | DeleteNode
   | SetAnnotations
   | AppendChild;

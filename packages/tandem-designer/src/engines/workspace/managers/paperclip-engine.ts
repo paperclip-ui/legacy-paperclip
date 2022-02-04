@@ -24,7 +24,8 @@ export class PaperclipEngineManager {
     this._maybeInspectSelectedNodeStyles(action);
     this._maybeRevealNodeSource(action);
     this._maybeRevealSourceFromCanvas(action);
-    this._matbeRevealStyleRuleSource(action);
+    this._maybeRevealStyleRuleSource(action);
+    this._maybeLoadAvailableInsertableElements(action);
   }
 
   /**
@@ -70,12 +71,31 @@ export class PaperclipEngineManager {
     }
   }
 
-  private _matbeRevealStyleRuleSource(action: Action) {
+  private _maybeLoadAvailableInsertableElements(action: Action) {
+    switch (action.type) {
+      case ActionType.GLOBAL_META_I_KEY_PRESS: {
+        this._loadInsertableElements();
+      }
+    }
+  }
+
+  private _maybeRevealStyleRuleSource(action: Action) {
     switch (action.type) {
       case ActionType.STYLE_RULE_FILE_NAME_CLICKED: {
         return this._revealNodeBySourceId(action.payload.styleRuleSourceId);
       }
     }
+  }
+
+  private async _loadInsertableElements() {
+    const state: AppState = this._store.getState();
+    const insertableNodes = await this._pm
+      .getMainProject()
+      .getPaperclip()
+      .loadInsertableNodes({ activeUri: state.designer.ui.query.canvasFile });
+    this._store.dispatch(
+      workspaceActions.insertableNodesLoaded(insertableNodes)
+    );
   }
 
   private async _revealNodeSourceInCanvas() {
@@ -122,13 +142,17 @@ export class PaperclipEngineManager {
       return;
     }
 
-    const inspections = await project.getPaperclip().inspectNodeStyles(
-      selectedNodes.map((selectedNodePath) => ({
-        path: nodePathToAry(selectedNodePath),
-        uri: state.designer.ui.query.canvasFile,
-      }))
-    );
+    try {
+      const inspections = await project.getPaperclip().inspectNodeStyles(
+        selectedNodes.map((selectedNodePath) => ({
+          path: nodePathToAry(selectedNodePath),
+          uri: state.designer.ui.query.canvasFile,
+        }))
+      );
 
-    this._store.dispatch(virtualNodeStylesInspected(inspections));
+      this._store.dispatch(virtualNodeStylesInspected(inspections));
+    } catch (e) {
+      console.error(e);
+    }
   };
 }

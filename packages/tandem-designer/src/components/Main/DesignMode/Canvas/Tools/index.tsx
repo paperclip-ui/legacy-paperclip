@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import {
   mergeBoxes,
   isExpanded,
@@ -22,14 +22,18 @@ import {
   canvasMouseMoved,
 } from "../../../../../actions";
 import { Empty } from "./Empty";
+import { uiActions } from "../../../../../actions/ui-actions";
+import { useDrop } from "react-dnd";
+import { AvailableNode } from "@paperclip-ui/language-service";
 
 export const Tools = () => {
   const {
     frames,
-    toolsRef,
     onMouswDown,
     onMouseMove,
     onMouseLeave,
+    toolsRef,
+    isDraggingOver,
     showEmpty,
     resizerMoving,
     canvas,
@@ -51,6 +55,7 @@ export const Tools = () => {
   return (
     <styles.Tools
       ref={toolsRef}
+      hover={isDraggingOver && !hoveringBox}
       onMouseDown={onMouswDown}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
@@ -115,7 +120,7 @@ const useTools = () => {
       readonly,
     },
   } = state;
-  const toolsRef = useRef<HTMLDivElement>();
+
   const toolsLayerEnabled = !isExpanded(state.designer);
 
   const getMousePoint = (event) => {
@@ -134,6 +139,45 @@ const useTools = () => {
     },
     [dispatch]
   );
+
+  const toolsRef = useRef<HTMLDivElement>();
+
+  const [{ isDraggingOver }, dragRef] = useDrop<AvailableNode, any, any>(
+    {
+      accept: "insertableNode",
+      hover(item, monitor) {
+        const offset = monitor.getClientOffset();
+        const rect = toolsRef.current.getBoundingClientRect();
+
+        dispatch(
+          uiActions.toolLayerDragOver({
+            x: offset.x - rect.x,
+            y: offset.y - rect.y,
+          })
+        );
+      },
+      drop(item, monitor) {
+        dispatch(
+          uiActions.toolLayerDrop({
+            node: item,
+            point: monitor.getSourceClientOffset(),
+          })
+        );
+      },
+      collect(monitor) {
+        return {
+          isDraggingOver: monitor.isOver(),
+        };
+      },
+    },
+    [toolsRef.current]
+  );
+
+  useEffect(() => {
+    if (toolsRef.current) {
+      dragRef(toolsRef.current);
+    }
+  }, [toolsRef.current]);
 
   const onMouswDown = useCallback(
     (event: React.MouseEvent<any>) => {
@@ -155,7 +199,6 @@ const useTools = () => {
 
   const boxes = flattenFrameBoxes(frameBoxes);
 
-  document.body.ondblclick;
   const selectedBox =
     selectedNodePaths.length &&
     mergeBoxes(selectedNodePaths.map((path) => boxes[path]));
@@ -179,6 +222,7 @@ const useTools = () => {
     toolsRef,
     onMouswDown,
     onMouseMove,
+    isDraggingOver,
     onMouseLeave,
     showEmpty,
     virtualNode,

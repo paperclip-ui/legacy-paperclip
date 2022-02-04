@@ -1,7 +1,9 @@
 import * as url from "url";
 
 export const stripFileProtocol = (filePath: string) =>
-  filePath.includes("file://") ? url.fileURLToPath(filePath) : filePath;
+  filePath.includes("file://") && url.fileURLToPath
+    ? url.fileURLToPath(filePath)
+    : filePath.replace("file://", "");
 
 export const paperclipSourceGlobPattern = (dir: string) =>
   dir === "." ? "**/*.pc" : dir + "/**/*.pc";

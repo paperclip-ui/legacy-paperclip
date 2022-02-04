@@ -49,7 +49,7 @@ export class LanguageRequestResolver {
 
   private _onDesignServerStarted = (options: DesignServerStartedInfo) => {
     const service = new PaperclipLanguageService(
-      this._designServer.getEngine()
+      this._designServer.getCurrentProject().getEngine()
     );
     this._resolveService(service);
     service.onLinted(this._onLinted);

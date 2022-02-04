@@ -25,9 +25,7 @@ export class PaperclipManager {
     private _logger: Logger,
     private _engine: EngineDelegate,
     private _documentManager: EditorHost
-  ) {
-    // this._startEngine();
-  }
+  ) {}
 
   /**
    */
