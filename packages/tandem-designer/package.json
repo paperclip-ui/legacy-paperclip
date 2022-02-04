@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "yarn build:paperclip && tsc && webpack",
-    "test": "yarn jest test --runInBand",
+    "test": "yarn jest test --runInBand --forceExit",
     "build:watch": "concurrently \"webpack --watch\" \"tsc --watch --preserveWatchOutput\" \"paperclip-minimal build --watch\"",
     "build:paperclip": "paperclip-minimal build --silent"
   },
