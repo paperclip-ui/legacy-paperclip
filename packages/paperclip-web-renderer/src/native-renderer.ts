@@ -96,7 +96,7 @@ const createSlot = (
   const placeholder = domFactory.createElement("div");
   placeholder.setAttribute(
     "style",
-    "border: 1px dashed #F0F; padding: 30px; box-sizing: border-box; filter: drop-shadow(0 0 2px, white)"
+    "border: 1px dashed #F0F; padding: 30px; box-sizing: border-box;"
   );
   return placeholder;
 };
