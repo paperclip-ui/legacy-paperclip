@@ -643,6 +643,27 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `When inserting a child into a children slot, the child is added as a regular child of an element`,
+        {
+          "/hello.pc": `<div component as="Test">{children}</div><Test />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0.0",
+                child: {
+                  kind: ChildInsertionKind.Text,
+                  value: "Something",
+                },
+              },
+            ],
+            `<div component as="Test">{children}</div><Test>Something</Test>`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);

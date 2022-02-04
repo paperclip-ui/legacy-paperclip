@@ -380,6 +380,14 @@ const appendSlot = (
     true
   );
 
+  if (exprName === "children") {
+    return appendChild(uri, documents, engine, {
+      kind: VirtualObjectEditKind.AppendChild,
+      nodePath: instancePath,
+      child: edit.child,
+    });
+  }
+
   return [
     updateAttribute(uri, engine, {
       kind: VirtualObjectEditKind.UpdateAttribute,

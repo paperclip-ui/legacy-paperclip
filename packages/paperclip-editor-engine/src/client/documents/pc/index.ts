@@ -115,7 +115,6 @@ export class PCDocument extends BaseDocument<PCDocumentContent> {
    */
 
   private _onEngineEvent = async (event: EngineDelegateEvent) => {
-    console.log(event);
     if (!this._content) {
       return;
     }

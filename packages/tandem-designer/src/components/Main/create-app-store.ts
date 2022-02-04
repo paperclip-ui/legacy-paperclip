@@ -4,7 +4,7 @@ import { Middleware } from "redux";
 
 import defaultReducer from "../../reducers";
 import { mainSaga, MainSagaOptions } from "../../sagas";
-import { AppState, INITIAL_STATE } from "../../state";
+import { AppState, DesignerState, INITIAL_STATE } from "../../state";
 import produce from "immer";
 import { engineMiddleware, EngineOptions } from "../../engines";
 
@@ -20,6 +20,7 @@ export type CreateAppStoreOptions = {
   activeFrame?: number;
   showCodeEditorOnStartup?: boolean;
   middleware?: Middleware;
+  initialDesignerState?: Partial<DesignerState>;
 } & MainSagaOptions &
   EngineOptions;
 
@@ -54,6 +55,7 @@ const createState = ({
   showCodeEditorOnStartup,
   codeEditorWidth,
   activeFrame,
+  initialDesignerState,
   floatingPreview,
   rounded,
 }: CreateAppStoreOptions) => {
@@ -61,6 +63,7 @@ const createState = ({
     ...INITIAL_STATE,
     designer: {
       ...INITIAL_STATE.designer,
+      ...(initialDesignerState || {}),
       codeEditorWidth,
     },
   };

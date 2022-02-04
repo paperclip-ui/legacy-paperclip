@@ -142,13 +142,17 @@ export class PaperclipEngineManager {
       return;
     }
 
-    const inspections = await project.getPaperclip().inspectNodeStyles(
-      selectedNodes.map((selectedNodePath) => ({
-        path: nodePathToAry(selectedNodePath),
-        uri: state.designer.ui.query.canvasFile,
-      }))
-    );
+    try {
+      const inspections = await project.getPaperclip().inspectNodeStyles(
+        selectedNodes.map((selectedNodePath) => ({
+          path: nodePathToAry(selectedNodePath),
+          uri: state.designer.ui.query.canvasFile,
+        }))
+      );
 
-    this._store.dispatch(virtualNodeStylesInspected(inspections));
+      this._store.dispatch(virtualNodeStylesInspected(inspections));
+    } catch (e) {
+      console.error(e);
+    }
   };
 }

@@ -11,7 +11,6 @@ import { computeVirtScriptObject } from "@paperclip-ui/utils";
 import {
   DEFAULT_FRAME_BOX,
   DesignerState,
-  flattenFrameBoxes,
   getFrameFromIndex,
   getScaledPoint,
 } from "../../../state";
@@ -65,6 +64,10 @@ const getUpdateAnnotationEdits = (
   state: DesignerState
 ): VirtualObjectEdit[] => {
   return state.selectedNodePaths.map((nodePath) => {
+    // cover 0.0
+    if (nodePath.includes(".")) {
+      return null;
+    }
     const frame = getFrameFromIndex(Number(nodePath), state);
     if (!frame) {
       return null;
@@ -92,7 +95,6 @@ const getDropEdit = (
 ): VirtualObjectEdit[] => {
   const child = mapAvailableNodeToInsertable(action.payload.node);
   const point = getScaledPoint(action.payload.point, state.canvas.transform);
-  console.log(state.highlightNodePath);
 
   if (state.highlightNodePath) {
     return [

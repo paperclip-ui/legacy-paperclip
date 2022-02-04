@@ -5,7 +5,6 @@ import {
   globalBackspaceKeyPressed,
   globalHKeyDown,
   rectsCaptured,
-  workspaceActions,
 } from "..";
 import { createMock, DesignerMock } from "./utils";
 import { AppState } from "../state";
@@ -17,6 +16,7 @@ describe(`With a basic project`, () => {
     mock = await createMock({
       files: {
         "test.pc": "Hello world",
+        "test2.pc": "<div>blarg</div>",
       },
       canvasFile: "test.pc",
     });
@@ -38,7 +38,7 @@ describe(`With a basic project`, () => {
     expect(state.designer.canvas.transform).toEqual({ x: 988, y: 1116, z: 1 });
   });
 
-  describe(`With a selected canvas element`, () => {
+  describe(`When a selected canvas frame`, () => {
     beforeEach(() => {
       [
         canvasResized({ width: 900, height: 900 }),

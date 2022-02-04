@@ -1,4 +1,11 @@
-- ability to insert element
+- slots
+  - tag slots based on shape
+    - `{}` = null
+    - `{a && b}` = variantOffSlot
+    - `{a || b}` = defaultSlot
+    - `{a && b || c}` = conditionalSlot
+    - `{!a && b}` = variantOnSlot
+    - `{(a && b || c) || c}` = invalid
 
 ## Immediate
 

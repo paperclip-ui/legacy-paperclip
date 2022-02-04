@@ -38,7 +38,7 @@ test(`When meta + i is pressed, all available insertable elements are stored in 
 
   // need to wait for all files to load
   const insertableNodes = mock.store.getState().designer.insertableNodes;
-  expect(insertableNodes.length).toEqual(153);
+  expect(insertableNodes.length).toEqual(154);
   const insertableInstances = insertableNodes.filter(
     (node) => node.kind === AvailableNodeKind.Instance
   );
@@ -48,6 +48,13 @@ test(`When meta + i is pressed, all available insertable elements are stored in 
       kind: "Instance",
       displayName: "Test",
       name: "Test",
+      description: "",
+      sourceUri: mock.testServer.fixtureUris["test.pc"],
+    },
+    {
+      kind: "Instance",
+      displayName: "Test2",
+      name: "Test2",
       description: "",
       sourceUri: mock.testServer.fixtureUris["test.pc"],
     },

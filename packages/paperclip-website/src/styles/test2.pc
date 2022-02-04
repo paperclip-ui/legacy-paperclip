@@ -15,5 +15,25 @@
 -->
 <div component as="Test">{children}</div>
 
+<!--
+  @frame { visible: false }
+-->
+<div component as="Testttt">
+  <div>
+    <style>
+      width: 100px;
+    </style>
+    {children}
+  </div>
+</div>
 
-<Test />
+
+
+
+
+<!--
+  @frame { height: 768, width: 1024, x: -540, y: 24 }
+-->
+<div>
+  <Testttt />
+</div>
