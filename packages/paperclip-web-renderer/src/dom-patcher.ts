@@ -23,6 +23,7 @@ export const patchNativeNode = (
   mount: Patchable,
   mutations: Mutation[],
   factory: DOMFactory,
+  showSlotPlaceholders: boolean,
   resolveUrl: (url: string) => string
 ) => {
   for (const mutation of mutations) {
@@ -40,7 +41,7 @@ export const patchNativeNode = (
           factory,
           resolveUrl,
           target.namespaceURI,
-          false
+          showSlotPlaceholders
         );
         if (action.index >= target.childNodes.length) {
           target.appendChild(newChild);
@@ -61,7 +62,7 @@ export const patchNativeNode = (
             factory,
             resolveUrl,
             parent.namespaceURI,
-            false
+            showSlotPlaceholders
           ),
           target as any as ChildNode
         );

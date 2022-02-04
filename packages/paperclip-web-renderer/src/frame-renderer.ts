@@ -382,6 +382,7 @@ export class FramesRenderer {
               this._framesProxy,
               event.data.mutations,
               this._domFactory,
+              false,
               this._resolveUrl
             );
 

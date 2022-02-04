@@ -1,8 +1,19 @@
 <import src="./test3.pc" as="test3" />
 
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 0, y: 0 }
+-->
 <div class="$test3.el">
   <style>
     color: orange;
   </style>
   I'm some text
 </div>
+
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 60, y: -55 }
+-->
+<div component as="Test">{children}</div>
+
+
+<Test />
