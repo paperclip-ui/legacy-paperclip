@@ -202,7 +202,7 @@ export class LiveWindow {
         fetch(designServerUrl).then(response => {
           return response.text();
         }).then(html => {
-          loadResources(html.match(/[^".]+\.(js|css)/g))
+          loadResources(html.match(/[^".]+\\.(js|css)/g))
         });
 
         const loadResources = (resources) => {

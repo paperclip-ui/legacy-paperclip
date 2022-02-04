@@ -53,6 +53,9 @@ module.exports = {
     chokidar: "{}",
     fs: "{}",
   },
+  experiments: {
+    asyncWebAssembly: true,
+  },
 
   module: {
     rules: [

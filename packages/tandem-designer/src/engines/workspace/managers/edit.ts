@@ -24,9 +24,11 @@ export class EditManager {
   constructor(private _pm: ProjectManager, private _store: Store) {}
   async handleAction(action: Action) {
     const state = this._store.getState();
-    const edits = getEdits(this._store.getState().designer, action);
+    const edits = getEdits(this._store.getState().designer, action).filter(
+      Boolean
+    );
 
-    if (!edits) {
+    if (!edits.length) {
       return;
     }
 
@@ -57,7 +59,7 @@ const getEdits = (
       return getDropEdit(state, action);
     }
   }
-  return null;
+  return [];
 };
 
 const getUpdateAnnotationEdits = (

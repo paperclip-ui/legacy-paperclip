@@ -1,11 +1,18 @@
+- may need to use inferencing engine
+
+- prohibit children from being inserted into instances without `{children}`
+- when dropping onto stage, only highlight instable areas (top-level instances, and slots)
+- imported docs should be relative
 - slots
   - tag slots based on shape
     - `{}` = null
     - `{a && b}` = variantOffSlot
-    - `{a || b}` = defaultSlot
+    - `{a || b}` = slotWithDefault
     - `{a && b || c}` = conditionalSlot
     - `{!a && b}` = variantOnSlot
     - `{(a && b || c) || c}` = invalid
+  - display name of slot  
+    - store as metadata
 
 ## Immediate
 

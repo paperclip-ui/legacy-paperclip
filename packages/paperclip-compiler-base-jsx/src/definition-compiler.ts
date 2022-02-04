@@ -8,11 +8,7 @@ import {
   writeJoin,
 } from "./utils";
 import { InterimComponent, InterimModule } from "@paperclip-ui/interim";
-import {
-  CompilerOptions,
-  hasAttribute,
-  PaperclipConfig,
-} from "@paperclip-ui/utils";
+import { CompilerOptions, PaperclipConfig } from "@paperclip-ui/utils";
 
 export type DefinitionCompilerOptions = {
   imports: string;
