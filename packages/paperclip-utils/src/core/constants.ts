@@ -10,3 +10,4 @@ export const PC_MODULE_NAMESPACE = "@paperclip-ui";
 
 // deprecated
 export const LOGIC_TAG_NAME = "logic";
+export const ELEMENT_INSERT_ATTR = "data-pc-show-insert";

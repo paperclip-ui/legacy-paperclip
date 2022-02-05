@@ -30,6 +30,17 @@
 </div>
 
 <!--
-  @frame { height: 419, title: "Title me this", width: 707, x: -854, y: -327 }
+  @frame { height: 419, title: "Title me this", width: 707, x: -854, y: -326 }
 -->
-<Testttt child="Double click to edit" />
+<Testttt child={<div>Span</div>} />
+
+<!--
+  @frame { x: -1354, y: -832, width: 1024, height: 768 }
+-->
+<div>
+  Double click to edit<div>
+    <ul>
+      <li>Double click to edit</li>
+    </ul>
+  </div>
+</div>

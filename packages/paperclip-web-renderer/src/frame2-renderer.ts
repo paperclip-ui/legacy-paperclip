@@ -1,6 +1,7 @@
 // FYI this code is super dumb and can definitely be made faster
 
 import {
+  ELEMENT_INSERT_ATTR,
   LoadedData,
   LoadedPCData,
   memoize,
@@ -17,6 +18,7 @@ import {
 } from "@paperclip-ui/utils";
 import { Box, DOMFactory } from "./base";
 import {
+  addInsert,
   createNativeNode,
   createNativeStyleFromSheet,
   renderSheetText,
@@ -423,10 +425,20 @@ const patchAttributes = (
       value = options.resolveUrl(value);
     }
     node.setAttribute(key, value);
+
+    if (key === ELEMENT_INSERT_ATTR) {
+      addInsert(node);
+    }
   }
   for (const key in prev.attributes) {
     if (curr.attributes[key] == null) {
       node.removeAttribute(key);
+
+      // problematic if explicit style attr is present. I can live with this
+      // bug 🤷‍♂️
+      if (key === ELEMENT_INSERT_ATTR) {
+        node.removeAttribute("style");
+      }
     }
   }
 };

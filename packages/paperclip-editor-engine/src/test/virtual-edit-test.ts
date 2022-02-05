@@ -1,5 +1,6 @@
 import {
   computeVirtScriptObject,
+  ELEMENT_INSERT_ATTR,
   stringifyVirtualNode,
   VirtualElement,
 } from "@paperclip-ui/core";
@@ -33,31 +34,6 @@ describe(__filename + "#", () => {
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
-      );
-    });
-
-    it(`Can insert multiple nodes in the same edit`, async () => {
-      const { server } = await createMockHost({
-        "/hello.pc": "<div>blah</div>",
-      });
-
-      const client = server.createHostClient();
-
-      const doc = await client.getDocuments().open("/hello.pc");
-      doc.editVirtualObjects([
-        {
-          kind: VirtualObjectEditKind.InsertNodeBefore,
-          beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<a />" },
-        },
-        {
-          kind: VirtualObjectEditKind.InsertNodeBefore,
-          beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<b />" },
-        },
-      ]);
-      expect(stringifyVirtualNode(doc.getContent().preview)).to.equals(
-        `<div class="_5cd17222 _pub-5cd17222"><b class="_5cd17222 _pub-5cd17222"></b><a class="_5cd17222 _pub-5cd17222"></a>blah</div>`
       );
     });
 
@@ -334,37 +310,6 @@ describe(__filename + "#", () => {
       );
     });
 
-    // just a quick smoke test
-    it(`Can insert multiple slots at the same time`, async () => {
-      const { server } = await createMockHost({
-        "/hello.pc": `<div component as="Test">{child}{child2}</div><Test />`,
-      });
-      const client = server.createHostClient();
-
-      const doc = await client.getDocuments().open("/hello.pc");
-      const source = await doc.getSource();
-      expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
-        `<div class="_5cd17222 _pub-5cd17222">[slot][slot]</div>`
-      );
-      doc.editVirtualObjects([
-        {
-          kind: VirtualObjectEditKind.AppendChild,
-          nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Element, value: "<a />" },
-        },
-        {
-          kind: VirtualObjectEditKind.AppendChild,
-          nodePath: "0.1",
-          child: { kind: ChildInsertionKind.Element, value: "<b />" },
-        },
-      ]);
-      expect(source.getText()).to.eql(
-        `<div component as="Test">{child}{child2}</div><Test child2={<b />} child={<a />} />`
-      );
-      expect(stringifyVirtualNode(doc.getContent().preview)).to.eq(
-        `<div class="_5cd17222 _pub-5cd17222"><a class="_5cd17222 _pub-5cd17222"></a><b class="_5cd17222 _pub-5cd17222"></b></div>`
-      );
-    });
     it(`Can remove a node`, async () => {
       const { server } = await createMockHost({
         "/hello.pc": `a<span />b`,
@@ -767,6 +712,24 @@ describe(__filename + "#", () => {
               },
             ],
             `<div component as="Test">{child}</div><Test child={<div></div>} />`,
+          ],
+        },
+      ],
+      [
+        `When appending to element with ${ELEMENT_INSERT_ATTR}, the ${ELEMENT_INSERT_ATTR} attr is removed`,
+        {
+          "/hello.pc": `<div ${ELEMENT_INSERT_ATTR}></div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { kind: ChildInsertionKind.Element, value: "<span />" },
+              },
+            ],
+            `<div><span /></div>`,
           ],
         },
       ],

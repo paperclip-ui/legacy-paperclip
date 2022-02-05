@@ -7,7 +7,10 @@ import {
   VirtualObjectEdit,
   VirtualObjectEditKind,
 } from "@paperclip-ui/editor-engine/lib/core";
-import { computeVirtScriptObject } from "@paperclip-ui/utils";
+import {
+  computeVirtScriptObject,
+  ELEMENT_INSERT_ATTR,
+} from "@paperclip-ui/utils";
 import {
   DEFAULT_FRAME_BOX,
   DesignerState,
@@ -127,7 +130,10 @@ const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
   if (node.kind === AvailableNodeKind.Text) {
     return { kind: ChildInsertionKind.Text, value: "Double click to edit" };
   } else if (node.kind === AvailableNodeKind.Element) {
-    return { kind: ChildInsertionKind.Element, value: `<${node.name} />` };
+    return {
+      kind: ChildInsertionKind.Element,
+      value: `<${node.name} ${ELEMENT_INSERT_ATTR} />`,
+    };
   } else if (node.kind === AvailableNodeKind.Instance) {
     return {
       kind: ChildInsertionKind.Instance,

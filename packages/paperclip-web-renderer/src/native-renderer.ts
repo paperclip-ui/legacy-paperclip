@@ -11,6 +11,7 @@ import {
   VirtualNode,
   VirtualNodeKind,
   VirtualSlot,
+  ELEMENT_INSERT_ATTR,
 } from "@paperclip-ui/utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
@@ -94,11 +95,15 @@ const createSlot = (
     return domFactory.createTextNode("");
   }
   const placeholder = domFactory.createElement("div");
-  placeholder.setAttribute(
+  addInsert(placeholder);
+  return placeholder;
+};
+
+export const addInsert = (element: HTMLElement) => {
+  element.setAttribute(
     "style",
     "border: 1px dashed #F0F; padding: 30px; box-sizing: border-box;"
   );
-  return placeholder;
 };
 
 const ruleIsValid = (ruleText: string) => {
@@ -182,6 +187,10 @@ const createNativeElement = (
     const aliasName = ATTR_ALIASES[name] || name;
 
     nativeElement.setAttribute(aliasName, value);
+  }
+
+  if (element.attributes[ELEMENT_INSERT_ATTR]) {
+    addInsert(nativeElement as HTMLElement);
   }
 
   for (const child of element.children) {

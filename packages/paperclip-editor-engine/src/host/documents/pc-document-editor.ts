@@ -34,18 +34,15 @@ import {
   VirtualElement,
   VirtualText,
   Fragment,
-  DependencyContent,
   DependencyNodeContent,
   getImports,
   getAttributeStringValue,
   infer,
   Expression,
-  RootNode,
-  RootExpressionKind,
-  getASTParent,
   isAttribute,
-  AttributeKind,
   getASTAncestors,
+  getAttribute,
+  ELEMENT_INSERT_ATTR,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { flatten, camelCase } from "lodash";
@@ -426,6 +423,12 @@ const appendSlot = (
     ...additionalEdits,
   ];
 };
+const deleteAttr = (uri: string, expr: Expression): DocumentTextEdit => ({
+  uri,
+  chars: [],
+  index: expr.range.start.pos - 1,
+  deleteCount: expr.range.end.pos - expr.range.start.pos + 1,
+});
 
 const appendElement = (
   uri: string,
@@ -434,7 +437,7 @@ const appendElement = (
   expr: Element,
   exprUri: string,
   edit: AppendChild
-) => {
+): DocumentTextEdit[] => {
   const element = getNodeByPath(
     edit.nodePath,
     (engine.getLoadedData(uri) as LoadedPCData).preview
@@ -442,6 +445,8 @@ const appendElement = (
 
   const [_componentUri, component] =
     getInstanceComponentInfo(expr, exprUri, engine.getLoadedGraph()) || [];
+
+  const edits: DocumentTextEdit[] = [];
 
   // if appending to instance of component, need to make sure that
   // {children} exists, otherwise it's a no-op
@@ -459,51 +464,46 @@ const appendElement = (
     expr.openTagRange.end.pos
   );
 
-  // self closing
-  if (tagBuffer.trim().lastIndexOf("/>") !== -1) {
-    const [child, additionalEdits] = getChildInsertionContent(
-      edit.child,
-      exprUri,
-      engine,
-      false
-    );
-
-    const tagSrc = source.substring(expr.range.start.pos, expr.range.end.pos);
-
-    return [
-      {
-        uri: exprUri,
-        chars: [">", child, `</${expr.tagName}>`].join("").split(""),
-
-        // remove WS at end too so that <div /> isn't converted to <div ></div>
-        index: expr.range.start.pos + tagSrc.replace(/\s*\/>$/, "").length,
-        deleteCount: tagSrc.match(/\s*\/>$/)[0].length,
-      },
-      ...additionalEdits,
-    ];
-  }
-
-  const endTagPos =
-    expr.range.start.pos +
-    source
-      .substring(expr.range.start.pos, expr.range.end.pos)
-      .lastIndexOf(`</${expr.tagName}>`);
-
-  const [child, additionalEdit] = getChildInsertionContent(
+  const [child, additionalChildEdits] = getChildInsertionContent(
     edit.child,
     exprUri,
     engine,
     false
   );
 
-  return [
-    {
+  // self closing
+  if (tagBuffer.trim().lastIndexOf("/>") !== -1) {
+    const tagSrc = source.substring(expr.range.start.pos, expr.range.end.pos);
+
+    edits.push({
+      uri: exprUri,
+      chars: [">", child, `</${expr.tagName}>`].join("").split(""),
+
+      // remove WS at end too so that <div /> isn't converted to <div ></div>
+      index: expr.range.start.pos + tagSrc.replace(/\s*\/>$/, "").length,
+      deleteCount: tagSrc.match(/\s*\/>$/)[0].length,
+    });
+  } else {
+    const endTagPos =
+      expr.range.start.pos +
+      source
+        .substring(expr.range.start.pos, expr.range.end.pos)
+        .lastIndexOf(`</${expr.tagName}>`);
+
+    edits.push({
       uri: exprUri,
       chars: child.split(""),
       index: endTagPos,
-    },
-    ...additionalEdit,
-  ];
+    });
+  }
+
+  const insertAttrExpr = getAttribute(ELEMENT_INSERT_ATTR, expr);
+
+  if (insertAttrExpr) {
+    edits.unshift(deleteAttr(exprUri, insertAttrExpr));
+  }
+
+  return [...edits, ...additionalChildEdits];
 };
 
 const setTextNodeValue = (
