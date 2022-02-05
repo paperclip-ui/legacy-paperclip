@@ -127,18 +127,18 @@ const deleteNode = (
 
   const [sourceUri, expr] = engine.getExpressionById(info.sourceId);
 
-  const parentExpr = getASTAncestors(
+  const ownerExpr = getASTAncestors(
     expr,
     engine.getLoadedAst(uri) as DependencyNodeContent
-  ).find(isAttribute);
+  ).find((expr) => isAttribute(expr) || isNode(expr));
 
-  if (parentExpr) {
+  if (ownerExpr && isAttribute(ownerExpr)) {
     return [
       {
         uri: sourceUri,
         chars: [],
-        index: parentExpr.range.start.pos,
-        deleteCount: parentExpr.range.end.pos - parentExpr.range.start.pos,
+        index: ownerExpr.range.start.pos,
+        deleteCount: ownerExpr.range.end.pos - ownerExpr.range.start.pos,
       },
     ];
   }

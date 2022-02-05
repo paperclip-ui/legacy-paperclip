@@ -753,6 +753,23 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `If deleting a child of a slotted element, that child is deleted`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child={<div>to delete</div>} />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test child={<div></div>} />`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);
