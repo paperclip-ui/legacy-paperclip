@@ -32,7 +32,7 @@ export const FrameContainer = memo(
       onLoad,
       frameUri,
       frameIndex,
-      showSlotPlaceholders: false,
+      showSlotPlaceholders: true,
     });
 
     return (
