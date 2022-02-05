@@ -664,27 +664,27 @@ describe(__filename + "#", () => {
           ],
         },
       ],
-      // [
-      //   `Appending child to instance without children slot results in no-op`,
-      //   {
-      //     "/hello.pc": `<div component as="Test">{child}</div><Test />`,
-      //   },
-      //   {
-      //     "/hello.pc": [
-      //       [
-      //         {
-      //           kind: VirtualObjectEditKind.AppendChild,
-      //           nodePath: "0",
-      //           child: {
-      //             kind: ChildInsertionKind.Text,
-      //             value: "Something",
-      //           },
-      //         },
-      //       ],
-      //       `<div component as="Test">{children}</div><Test>Something</Test>`,
-      //     ],
-      //   },
-      // ],
+      [
+        `Appending child to instance without children slot results in no-op`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: {
+                  kind: ChildInsertionKind.Text,
+                  value: "Something",
+                },
+              },
+            ],
+            `<div component as="Test">{child}</div><Test />`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);

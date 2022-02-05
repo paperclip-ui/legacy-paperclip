@@ -2,7 +2,7 @@ import {
   ScriptExpression,
   ScriptExpressionKind,
   Reference,
-  traverseJSExpression
+  traverseJSExpression,
 } from "../script/ast";
 import {
   Sheet,
@@ -10,7 +10,7 @@ import {
   MixinRule,
   RuleKind,
   isRule,
-  StyleExpression
+  StyleExpression,
 } from "../css/ast";
 import { BasicRaws, StringRange } from "../base/ast";
 import { flattenTreeNode, getNodePath, getTreeNodeMap } from "./tree";
@@ -21,9 +21,10 @@ import {
   LOGIC_TAG_NAME,
   DEFAULT_PART_ID,
   AS_ATTR_NAME,
-  PREVIEW_ATTR_NAME
+  PREVIEW_ATTR_NAME,
 } from "../core/constants";
 import { memoize } from "../core/memo";
+import { DependencyGraph, DependencyNodeContent } from "../core/graph";
 
 export enum NodeKind {
   Fragment = "Fragment",
@@ -32,7 +33,7 @@ export enum NodeKind {
   Comment = "Comment",
   Element = "Element",
   StyleElement = "StyleElement",
-  Slot = "Slot"
+  Slot = "Slot",
 }
 
 export type BaseNode<TKind extends NodeKind> = {
@@ -60,7 +61,7 @@ export declare type Comment = {
 
 export enum AnnotationPropertyKind {
   Text = "Text",
-  Declaration = "Declaration"
+  Declaration = "Declaration",
 }
 
 type BaseAnnotationProperty<TKind extends AnnotationPropertyKind> = {
@@ -110,7 +111,7 @@ export enum AttributeKind {
   ShorthandAttribute = "ShorthandAttribute",
   KeyValueAttribute = "KeyValueAttribute",
   SpreadAttribute = "SpreadAttribute",
-  PropertyBoundAttribute = "PropertyBoundAttribute"
+  PropertyBoundAttribute = "PropertyBoundAttribute",
 }
 
 type BaseAttribute<TKind extends AttributeKind> = {
@@ -153,7 +154,7 @@ export type Attribute =
 export enum AttributeValueKind {
   DyanmicString = "DyanmicString",
   String = "String",
-  Slot = "Slot"
+  Slot = "Slot",
 }
 
 export type BaseAttributeValue<TKind extends AttributeValueKind> = {
@@ -168,7 +169,7 @@ export type StringAttributeValue = {
 export enum DynamicStringAttributeValuePartKind {
   Literal = "Literal",
   ClassNamePierce = "ClassNamePierce",
-  Slot = "Slot"
+  Slot = "Slot",
 }
 
 type BaseDynamicStringAttributeValuePart<
@@ -180,16 +181,12 @@ type BaseDynamicStringAttributeValuePart<
 type DynamicStringLiteralPart = {
   range: StringRange;
   value: string;
-} & BaseDynamicStringAttributeValuePart<
-  DynamicStringAttributeValuePartKind.Literal
->;
+} & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Literal>;
 
 type DynamicStringClassNamePiercePart = {
   range: StringRange;
   className: string;
-} & BaseDynamicStringAttributeValuePart<
-  DynamicStringAttributeValuePartKind.ClassNamePierce
->;
+} & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.ClassNamePierce>;
 
 type DynamicStringSlotPart = ScriptExpression &
   BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Slot>;
@@ -244,34 +241,32 @@ export type Expression =
 
 const a: AttributeValue = null;
 export const getImports = (ast: Node): Element[] =>
-  getChildrenByTagName("import", ast).filter(child => {
+  getChildrenByTagName("import", ast).filter((child) => {
     return hasAttribute("src", child);
   });
 
-export const getRelativeFilePath = fs => (
-  fromFilePath: string,
-  importFilePath: string
-) => {
-  const logicPath = resolveImportFile(fs)(fromFilePath, importFilePath);
-  let relativePath = path.relative(path.dirname(fromFilePath), logicPath);
-  if (relativePath.charAt(0) !== ".") {
-    relativePath = `./${relativePath}`;
-  }
-  return relativePath;
-};
+export const getRelativeFilePath =
+  (fs) => (fromFilePath: string, importFilePath: string) => {
+    const logicPath = resolveImportFile(fs)(fromFilePath, importFilePath);
+    let relativePath = path.relative(path.dirname(fromFilePath), logicPath);
+    if (relativePath.charAt(0) !== ".") {
+      relativePath = `./${relativePath}`;
+    }
+    return relativePath;
+  };
 
 export const getImportIds = (ast: Node): string[] =>
   getImports(ast)
-    .map(node => getAttributeStringValue(AS_ATTR_NAME, node))
+    .map((node) => getAttributeStringValue(AS_ATTR_NAME, node))
     .filter(Boolean) as string[];
 
 export const getImportById = (id: string, ast: Node): Element | null =>
-  getImports(ast).find(imp => {
+  getImports(ast).find((imp) => {
     return getAttributeStringValue(AS_ATTR_NAME, imp) === id;
   });
 
 export const getImportBySrc = (src: string, ast: Node): Element | null =>
-  getImports(ast).find(imp => {
+  getImports(ast).find((imp) => {
     return getAttributeStringValue("src", imp) === src;
   });
 
@@ -290,7 +285,7 @@ export const getStyleScopeId = (filePath: string) => {
 };
 
 export const getChildrenByTagName = (tagName: string, parent: Node) =>
-  getChildren(parent).filter(child => {
+  getChildren(parent).filter((child) => {
     return child.nodeKind === NodeKind.Element && child.tagName === tagName;
   }) as Element[];
 
@@ -343,7 +338,7 @@ export const findByNamespace = (
 
 export const getMetaValue = (name: string, root: Node) => {
   const metaElement = getChildrenByTagName("meta", root).find(
-    meta =>
+    (meta) =>
       hasAttribute("src", meta) &&
       getAttributeStringValue("name", meta) === name
   );
@@ -351,7 +346,7 @@ export const getMetaValue = (name: string, root: Node) => {
 };
 
 export const getAttribute = (name: string, element: Element) =>
-  element.attributes.find(attr => {
+  element.attributes.find((attr) => {
     return (
       attr.attrKind === AttributeKind.KeyValueAttribute && attr.name === name
     );
@@ -407,17 +402,17 @@ export const getParts = (ast: Node): Element[] =>
 
 export const getPartIds = (ast: Node): string[] =>
   getParts(ast)
-    .map(node => getAttributeStringValue(AS_ATTR_NAME, node))
+    .map((node) => getAttributeStringValue(AS_ATTR_NAME, node))
     .filter(Boolean) as string[];
 
 export const getDefaultPart = (ast: Node): Element =>
   getParts(ast).find(
-    part => getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID
+    (part) => getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID
   );
 
 export const getLogicElement = (ast: Node): Element | null => {
   return getChildren(ast).find(
-    child =>
+    (child) =>
       child.nodeKind === NodeKind.Element && child.tagName === LOGIC_TAG_NAME
   ) as Element;
 };
@@ -447,7 +442,7 @@ export const getPCNodeAnnotations = (node: Node, root: Node) => {
 };
 
 export const getNodeById = memoize((nodeId: string, root: Node) => {
-  return flattenTreeNode(root).find(desc => desc.id === nodeId);
+  return flattenTreeNode(root).find((desc) => desc.id === nodeId);
 });
 
 export const isComponentInstance = (
@@ -458,6 +453,43 @@ export const isComponentInstance = (
     node.nodeKind === NodeKind.Element &&
     importIds.indexOf(node.tagName.split(".").shift()) !== -1
   );
+};
+
+export const getDocumentComponents = (root: Node) =>
+  (root.nodeKind === NodeKind.Fragment ? root.children : [root]).filter(
+    isComponent
+  );
+
+export const getComponentMap = memoize(
+  (root: Node): Record<string, Element> =>
+    getDocumentComponents(root).reduce((map, element) => {
+      map[getAttributeStringValue("as", element)] = element;
+      return map;
+    }, {})
+);
+
+export const getInstanceComponentInfo = (
+  instance: Element,
+  uri: string,
+  graph: DependencyGraph
+): [string, Element] => {
+  const entry = graph[uri];
+
+  const components = getComponentMap(entry.content as DependencyNodeContent);
+
+  if (components[instance.tagName]) {
+    const component = components[instance.tagName];
+
+    return [uri, component];
+  } else if (instance.tagName.includes(".")) {
+    const parts = instance.tagName.split(".");
+    const depUri = entry.dependencies[parts.shift()];
+    const dep = graph[depUri];
+    const component = getComponentMap(dep.content as DependencyNodeContent)[
+      parts.shift() || "default"
+    ];
+    return [depUri, component];
+  }
 };
 
 const maybeAddReference = (
@@ -473,7 +505,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
   const styles = getStyleElements(ast);
   const mixins: Record<string, MixinRule> = {};
   for (const style of styles) {
-    traverseSheet(style.sheet, rule => {
+    traverseSheet(style.sheet, (rule) => {
       if (rule && isRule(rule) && rule.ruleKind === RuleKind.Mixin) {
         mixins[rule.name.value] = rule;
       }

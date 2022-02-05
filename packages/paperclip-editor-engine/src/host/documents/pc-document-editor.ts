@@ -26,6 +26,7 @@ import {
   isScriptExpression,
   LoadedPCData,
   NodeKind,
+  getInstanceComponentInfo,
   Reference,
   ScriptExpressionKind,
   ScriptObject,
@@ -36,6 +37,7 @@ import {
   DependencyNodeContent,
   getImports,
   getAttributeStringValue,
+  infer,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { flatten, camelCase } from "lodash";
@@ -312,7 +314,7 @@ const appendChild = (
   ];
   if (isNode(expr)) {
     if (expr.nodeKind === NodeKind.Element) {
-      return appendElement(documents, engine, expr, exprUri, edit);
+      return appendElement(uri, documents, engine, expr, exprUri, edit);
     } else if (expr.nodeKind === NodeKind.Fragment) {
       return appendRoot(expr, engine, exprUri, edit);
     }
@@ -400,12 +402,30 @@ const appendSlot = (
 };
 
 const appendElement = (
+  uri: string,
   documents: DocumentManager,
   engine: EngineDelegate,
   expr: Element,
   exprUri: string,
   edit: AppendChild
 ) => {
+  const element = getNodeByPath(
+    edit.nodePath,
+    (engine.getLoadedData(uri) as LoadedPCData).preview
+  );
+
+  const [_componentUri, component] =
+    getInstanceComponentInfo(expr, exprUri, engine.getLoadedGraph()) || [];
+
+  // if appending to instance of component, need to make sure that
+  // {children} exists, otherwise it's a no-op
+  if (component) {
+    const inference = infer(component);
+    if (!inference.properties.children) {
+      return null;
+    }
+  }
+
   const source = documents.open(exprUri).openSource().getText();
 
   const tagBuffer = source.substring(
