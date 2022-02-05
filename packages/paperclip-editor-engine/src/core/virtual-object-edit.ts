@@ -7,6 +7,7 @@ export enum VirtualObjectEditKind {
   InsertNodeBefore = "InsertNodeBefore",
   SetTextNodeValue = "SetTextNodeValue",
   AddAttribute = "AddAttribute",
+  DeleteAttribute = "DeleteAttribute",
   UpdateAttribute = "UpdateAttribute",
   SetAnnotations = "SetAnnotations",
 
@@ -94,6 +95,11 @@ export type AddAttribute = {
   value: string;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.AddAttribute>;
 
+export type DeleteAttribute = {
+  target: EditTarget;
+  name: string;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.DeleteAttribute>;
+
 export type UpdateAttribute = {
   nodePath: string;
   name: string;
@@ -134,6 +140,7 @@ export type VirtualObjectEdit =
   | UpdateAttribute
   | SetTextNodeValue
   | PrependChild
+  | DeleteAttribute
   | AddFrame
   | DeleteNode
   | SetAnnotations

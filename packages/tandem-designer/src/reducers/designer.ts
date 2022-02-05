@@ -409,7 +409,6 @@ export const reduceDesigner = (
     }
     case uiActions.quickfindItemStartDrag.type: {
       designer = produce(designer, (newDesigner) => {
-        // newDesigner.showInsertModal = false;
         newDesigner.draggingInsertableNode = action.payload;
       });
       return designer;

@@ -23,7 +23,7 @@
     <style>
       width: 100px;
       height: 100px;
-      background: red;
+      background: rgb(87, 214, 28);
     </style>
     {child}
   </div>

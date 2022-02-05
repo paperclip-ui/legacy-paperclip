@@ -4,6 +4,7 @@ use crate::base::ast::Range;
 use crate::base::parser::{get_buffer, ParseError};
 use crate::base::string_scanner::StringScanner;
 use crate::core::id_generator::IDGenerator;
+use crate::core::ast as core_ast;
 use crate::pc::parser::parse_tag;
 use crate::pc::parser::Context as PCContext;
 use crate::pc::tokenizer::Tokenizer as PCTokenizer;
@@ -169,7 +170,7 @@ fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression
   })?
   .to_string();
   context.tokenizer.next_expect(start)?;
-  Ok(ast::Expression::String(ast::Str {
+  Ok(ast::Expression::String(core_ast::StringLiteral {
     id: context.id_generator.new_id(),
     value,
     range: Range::new(start_pos, context.tokenizer.scanner.get_u16pos()),

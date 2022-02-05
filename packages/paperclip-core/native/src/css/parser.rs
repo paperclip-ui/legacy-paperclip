@@ -7,6 +7,7 @@ use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Range};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::ast as css_ast;
 use crate::base::string_scanner::{StringScanner, U16Position};
 use crate::core::id_generator::IDGenerator;
 use std::collections::HashMap;
@@ -384,7 +385,7 @@ fn parse_mixin_rule<'a, 'b>(
     id: context.id_generator.new_id(),
     range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
     raws: BasicRaws::new(raw_start, raw_after),
-    name: MixinName {
+    name: css_ast::StringLiteral {
       id: context.id_generator.new_id(),
       value: name,
       range: name_range,

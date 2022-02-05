@@ -257,14 +257,16 @@ impl Engine {
           .dependency_graph
           .get_expression_by_id(descendent.get_source_id())
       })
-      .and_then(|(uri, expr)| match expr {
-        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node.get_id(), pc_node.get_range())),
-        pc_ast::Expression::Script(pc_script) => Some((uri, pc_script.get_id(), pc_script.get_range())),
-        _ => None,
+      .and_then(|(uri, expr)| match &expr {
+        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node.get_id().clone(), pc_node.get_range().clone())),
+        pc_ast::Expression::Script(pc_script) => Some((uri, pc_script.get_id().clone(), pc_script.get_range().clone())),
+        pc_ast::Expression::Attribute(expr) => Some((uri, expr.get_id().clone(), expr.get_range().clone())),
+        pc_ast::Expression::CSS(expr) => Some((uri.clone(), expr.get_id().clone(), expr.get_range().clone())),
+        pc_ast::Expression::String(expr) => Some((uri, expr.id.clone(), expr.range.clone())),
       })
       .and_then(|(uri, id, range)| {
         Some(ast::ExprSource::new(
-          id,
+          id.as_str(),
           Some(&ast::ExprTextSource::new(uri, range.clone())),
         ))
       })

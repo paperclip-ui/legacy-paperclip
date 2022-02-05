@@ -3,6 +3,7 @@ use crate::base::ast::{BasicRaws, Range};
 use crate::core::ast::{walk_exprs, Expr, ExprVisitor};
 use crate::css::ast as css_ast;
 use crate::script::ast as script_ast;
+use crate::core::ast as core_ast;
 use serde::Serialize;
 use std::fmt;
 use std::str;
@@ -80,6 +81,7 @@ pub enum Expression<'a> {
   Attribute(&'a Attribute),
   CSS(css_ast::Expression<'a>),
   Script(&'a script_ast::Expression),
+  String(&'a core_ast::StringLiteral)
 }
 
 impl<'a> Expression<'a> {
@@ -89,6 +91,7 @@ impl<'a> Expression<'a> {
       Expression::Attribute(attr) => attr.get_range(),
       Expression::CSS(css) => css.get_range(),
       Expression::Script(js) => js.get_range(),
+      Expression::String(value) => &value.range
     }
   }
 }
@@ -188,13 +191,6 @@ impl fmt::Display for Node {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct AttributeStringValue {
-  pub id: String,
-  pub value: String,
-  pub range: Range,
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSlotValue {
   pub id: String,
   pub script: script_ast::Expression,
@@ -247,7 +243,7 @@ impl fmt::Display for AttributeDynamicStringValue {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "partKind")]
 pub enum AttributeDynamicStringPart {
-  Literal(AttributeDynamicStringLiteral),
+  Literal(core_ast::StringLiteral),
   ClassNamePierce(AttributeDynamicStringClassNamePierce),
   Slot(script_ast::Expression),
 }
@@ -271,25 +267,12 @@ impl AttributeDynamicStringPart {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct AttributeDynamicStringLiteral {
-  pub id: String,
-  pub value: String,
-  pub range: Range,
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "className")]
 pub struct AttributeDynamicStringClassNamePierce {
   pub id: String,
   #[serde(rename = "className")]
   pub class_name: String,
   pub range: Range,
-}
-
-impl fmt::Display for AttributeStringValue {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "\"{}\"", self.value)
-  }
 }
 
 pub fn fmt_attributes(attributes: &Vec<Attribute>, f: &mut fmt::Formatter) -> fmt::Result {
@@ -336,6 +319,14 @@ pub enum Attribute {
 }
 
 impl Attribute {
+  pub fn get_id(&self) -> &String {
+    match self {
+      Attribute::ShorthandAttribute(expr) => &expr.id,
+      Attribute::SpreadAttribute(expr) => &expr.id,
+      Attribute::KeyValueAttribute(expr) => &expr.id,
+      Attribute::PropertyBoundAttribute(expr) => &expr.id,
+    }
+  }
   pub fn get_range(&self) -> &Range {
     match self {
       Attribute::ShorthandAttribute(expr) => &expr.range,
@@ -497,7 +488,7 @@ impl fmt::Display for KeyValueAttribute {
 #[serde(tag = "attrValueKind")]
 pub enum AttributeValue {
   DyanmicString(AttributeDynamicStringValue),
-  String(AttributeStringValue),
+  String(core_ast::StringLiteral),
   Slot(AttributeSlotValue),
 }
 
@@ -513,7 +504,7 @@ impl AttributeValue {
     match self {
       AttributeValue::DyanmicString(ds) => ds.walk_inside(visitor),
       AttributeValue::Slot(ds) => ds.walk_inside(visitor),
-      AttributeValue::String(_ds) => {}
+      AttributeValue::String(ds) => ds.walk(visitor)
     }
   }
 }
@@ -521,7 +512,7 @@ impl AttributeValue {
 impl fmt::Display for AttributeValue {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match &self {
-      AttributeValue::String(value) => write!(f, "{}", value.to_string()),
+      AttributeValue::String(value) => write!(f, "{}", value.value),
       AttributeValue::Slot(value) => write!(f, "{{{}}}", value.script.to_string()),
       AttributeValue::DyanmicString(script) => write!(f, "{{{}}}", script.to_string()),
     }

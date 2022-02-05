@@ -2,7 +2,7 @@ import { EngineDelegate } from "@paperclip-ui/core";
 import {
   CSSDeclarationChanged,
   PCMutation,
-  PCMutationActionKind
+  PCMutationActionKind,
 } from "./mutations";
 import {
   ExprTextSource,
@@ -14,7 +14,7 @@ import {
   getParentNode,
   DependencyNodeContent,
   getPCNodeAnnotations,
-  getNodeById
+  getNodeById,
 } from "@paperclip-ui/utils";
 import { editString } from "./string-editor";
 
@@ -65,7 +65,7 @@ export class PCSourceWriter {
             this._getAnnotationChange(
               textSource,
               getPCNodeAnnotations(
-                getNodeById(targetAst.id, documentAst),
+                getNodeById((targetAst as Node).id, documentAst),
                 documentAst
               )?.range,
               action.annotations
@@ -79,7 +79,7 @@ export class PCSourceWriter {
         }
         case PCMutationActionKind.EXPRESSION_DELETED: {
           changes.push(
-            ...this._getExpressionDeletedChanged(textSource, targetAst)
+            ...this._getExpressionDeletedChanged(textSource, targetAst as Node)
           );
           break;
         }
@@ -104,7 +104,7 @@ export class PCSourceWriter {
   ): ContentChange[] {
     const node = getAssocNode(exprTextSource, ast);
     const parent = getParentNode(node, ast);
-    const childIndex = parent.children.findIndex(child => child === node);
+    const childIndex = parent.children.findIndex((child) => child === node);
 
     const changes = [];
 
@@ -116,7 +116,7 @@ export class PCSourceWriter {
         uri: exprTextSource.uri,
         start: beforeChild.range.start.pos,
         end: beforeChild.range.end.pos,
-        value: ""
+        value: "",
       });
     }
 
@@ -124,7 +124,7 @@ export class PCSourceWriter {
       uri: exprTextSource.uri,
       start: exprTextSource.range.start.pos,
       end: exprTextSource.range.end.pos,
-      value: ""
+      value: "",
     });
 
     return changes;
@@ -138,7 +138,7 @@ export class PCSourceWriter {
       uri: exprTextSource.uri,
       start: exprTextSource.range.start.pos,
       end: exprTextSource.range.end.pos,
-      value: `${action.name}: ${action.value};`
+      value: `${action.name}: ${action.value};`,
     };
   }
 
@@ -194,14 +194,14 @@ export class PCSourceWriter {
         : exprTextSource.range.start.pos,
 
       // newline may have been clipped off, so re-add if that happens
-      value: buffer.join("")
+      value: buffer.join(""),
     };
   }
 }
 
 const getAssocNode = (exprTextSource: ExprTextSource, root: Node): Node => {
   let foundExpr: Expression;
-  traverseExpression(root, node => {
+  traverseExpression(root, null, (node) => {
     if (
       node.range.start.pos === exprTextSource.range.start.pos &&
       node.range.end.pos === exprTextSource.range.end.pos

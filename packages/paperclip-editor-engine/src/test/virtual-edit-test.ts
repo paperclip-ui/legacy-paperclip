@@ -685,6 +685,74 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `Can delete a nested element`,
+        {
+          "/hello.pc": `<div>abc</div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div></div>`,
+          ],
+        },
+      ],
+      [
+        `When deleting a slotted string attribute, the attribute is removed`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child="abba" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test  />`,
+          ],
+        },
+      ],
+      [
+        `When deleting a slotted node attribute, the attribute is removed`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child={<div />} />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test  />`,
+          ],
+        },
+      ],
+      [
+        `When deleting a slotted script attribute, the attribute is removed`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child={"a"} />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test  />`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);

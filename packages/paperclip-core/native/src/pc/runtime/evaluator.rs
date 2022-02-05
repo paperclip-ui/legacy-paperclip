@@ -6,6 +6,7 @@ use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_id, get_document_style_public_scope, is_relative_path};
 use crate::core::ast::ExprVisitor;
+use crate::core::ast as core_ast;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
@@ -281,6 +282,7 @@ impl<'a> ExprVisitor<'a> for CollectNodePropVisitor {
   fn visit_css_decl(&mut self, _decl: &'a css_ast::Declaration) {}
   fn visit_css_sheet(&mut self, _decl: &'a css_ast::Sheet) {}
   fn visit_attr(&mut self, _attr: &'a ast::Attribute) {}
+  fn visit_str(&mut self, _attr: &'a core_ast::StringLiteral) {}
 }
 
 fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
@@ -753,9 +755,6 @@ fn evaluate_slot<'a>(
   let script = &slot.script;
   let mut script_value = evaluate_js(script, depth + 1, context)?;
 
-
-  
-
   // if array of values, then treat as document fragment
   if let script_virt::Value::Array(ary) = &mut script_value {
     let mut children = vec![];
@@ -784,7 +783,7 @@ fn evaluate_slot<'a>(
   if !matches!(script_value, script_virt::Value::Undefined(_)) {
     Ok(Some(virt::Node::Text(virt::Text {
       id: context.id_generator.new_id(),
-      source_id: use_expr_id(script.get_id(), context),
+      source_id: use_expr_id(script_value.get_source_id(), context),
       annotations: None,
       value: if script_value.truthy() || script_value.is_number() {
         script_value.to_string()

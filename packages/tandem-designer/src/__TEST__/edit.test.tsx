@@ -1,4 +1,9 @@
-import { Action, resizerMoved, resizerStoppedMoving } from "..";
+import {
+  Action,
+  globalBackspaceKeyPressed,
+  resizerMoved,
+  resizerStoppedMoving,
+} from "..";
 import { createMock, DesignerMock, timeout } from "./utils";
 
 describe(`With a selected child of a frame`, () => {
@@ -46,5 +51,17 @@ describe(`With a selected child of a frame`, () => {
     expect(doc.getText().replace(/[\n\s]+/g, " ")).not.toEqual(
       `<div><!-- @frame { height: 100, width: 100, x: 100, y: 100 } --> Hello world</div>`
     );
+  });
+
+  it(`When the delete key is pressed, the selected node is removed`, async () => {
+    const doc = await mock.project
+      .getDocuments()
+      .open(mock.testServer.fixtureUris["test.pc"])
+      .then((doc) => doc.getSource());
+    mock.store.dispatch(globalBackspaceKeyPressed(null));
+
+    await timeout(10);
+    console.log(doc.getText());
+    expect(doc.getText().replace(/[\n\s]+/g, " ")).toEqual(`<div></div>`);
   });
 });

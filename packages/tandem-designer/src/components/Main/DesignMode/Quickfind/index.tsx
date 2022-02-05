@@ -117,7 +117,7 @@ type InsertableNodeProps = {
 };
 
 const InsertableNode = memo(({ node, projectDir }: InsertableNodeProps) => {
-  const [_, drag, dragPreview] = useDrag(
+  const [{ isDragging }, drag, dragPreview] = useDrag(
     () => ({
       type: "insertableNode",
       item: node,

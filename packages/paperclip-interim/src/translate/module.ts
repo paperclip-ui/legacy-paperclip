@@ -2,7 +2,7 @@ import {
   EngineDelegate,
   Node,
   VirtSheet,
-  isErrorResult
+  isErrorResult,
 } from "@paperclip-ui/core";
 import * as path from "path";
 import * as fs from "fs";
@@ -22,7 +22,7 @@ import {
   traverseExpression,
   ModuleKind,
   CSSExports,
-  isCSSExports
+  isCSSExports,
 } from "@paperclip-ui/utils";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
@@ -44,7 +44,7 @@ const defaultFIO: FIO = {
   },
   getFileSize(filePath: string) {
     return fs.lstatSync(castAsFilePath(filePath)).size;
-  }
+  },
 };
 
 export class InterimCompiler {
@@ -55,7 +55,7 @@ export class InterimCompiler {
   ) {
     this.options = {
       io: defaultFIO,
-      ...options
+      ...options,
     };
   }
   parseFile(filePath: string): InterimModule {
@@ -106,7 +106,7 @@ const translateInterim = (
       isCSSExports(exports) ? exports : exports.style,
       assets
     ),
-    assets
+    assets,
   };
 };
 
@@ -117,7 +117,7 @@ const translateImports = (
   options: InterimCompilerOptions
 ): InterimImport[] => {
   return getImports(ast)
-    .map(imp => {
+    .map((imp) => {
       if (!hasAttribute("src", imp)) {
         return null;
       }
@@ -139,7 +139,7 @@ const translateImports = (
 
       const namespace = getAttributeStringValue("as", imp);
 
-      traverseExpression(ast, node => {
+      traverseExpression(ast, null, (node) => {
         if (
           isNode(node) &&
           node.nodeKind === NodeKind.Element &&
@@ -160,7 +160,7 @@ const translateImports = (
         publicScopeId: `_pub-${getStyleScopeId(resolvedFilePath)}`,
         namespace,
         usedTagNames: Object.keys(usedTagNames) as string[],
-        injectedStyles: hasAttribute("inject-styles", imp)
+        injectedStyles: hasAttribute("inject-styles", imp),
       };
     })
     .filter(Boolean);

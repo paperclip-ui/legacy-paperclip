@@ -25,6 +25,7 @@ import {
 } from "../core/constants";
 import { memoize } from "../core/memo";
 import { DependencyGraph, DependencyNodeContent } from "../core/graph";
+import { StringLiteral } from "../core/ast";
 
 export enum NodeKind {
   Fragment = "Fragment",
@@ -42,10 +43,7 @@ export type BaseNode<TKind extends NodeKind> = {
 };
 
 // TODO - include location here.
-export type Text = {
-  value: string;
-  range: StringRange;
-} & BaseNode<NodeKind.Text>;
+export type Text = StringLiteral & BaseNode<NodeKind.Text>;
 
 export type Annotation = {
   properties: AnnotationProperty[];
@@ -158,13 +156,12 @@ export enum AttributeValueKind {
 }
 
 export type BaseAttributeValue<TKind extends AttributeValueKind> = {
+  id: string;
   attrValueKind: TKind;
 };
 
-export type StringAttributeValue = {
-  value: string;
-  range: StringRange;
-} & BaseAttributeValue<AttributeValueKind.String>;
+export type StringAttributeValue = StringLiteral &
+  BaseAttributeValue<AttributeValueKind.String>;
 
 export enum DynamicStringAttributeValuePartKind {
   Literal = "Literal",
@@ -175,6 +172,7 @@ export enum DynamicStringAttributeValuePartKind {
 type BaseDynamicStringAttributeValuePart<
   TPartKind extends DynamicStringAttributeValuePartKind
 > = {
+  id: string;
   partKind: TPartKind;
 };
 
@@ -231,13 +229,43 @@ export type Node =
   | Slot
   | Annotation
   | Comment;
+
 export type Expression =
   | Node
   | Attribute
   | AttributeValue
   | StyleExpression
   | ScriptExpression
-  | DynamicStringAttributeValuePart;
+  | DynamicStringAttributeValuePart
+  | StringLiteral;
+
+export enum RootExpressionKind {
+  String = "String",
+  Node = "Node",
+  Attribute = "Attribute",
+  CSS = "CSS",
+  Script = "Script",
+}
+
+type BaseRootExpression<TKind extends RootExpressionKind> = {
+  pcObjectKind: TKind;
+};
+
+export type RootString = StringLiteral &
+  BaseRootExpression<RootExpressionKind.String>;
+export type RootNode = Node & BaseRootExpression<RootExpressionKind.Node>;
+export type RootAttribute = Node &
+  BaseRootExpression<RootExpressionKind.Attribute>;
+export type RootCSS = StyleExpression &
+  BaseRootExpression<RootExpressionKind.CSS>;
+export type RootScript = ScriptExpression &
+  BaseRootExpression<RootExpressionKind.Script>;
+export type RootExpression =
+  | RootString
+  | RootNode
+  | RootCSS
+  | RootScript
+  | RootAttribute;
 
 const a: AttributeValue = null;
 export const getImports = (ast: Node): Element[] =>
@@ -367,7 +395,7 @@ export const getAttributeStringValue = (name: string, element: Element) => {
 export const getStyleElements = (ast: Node): StyleElement[] => {
   const styleElements: StyleElement[] = [];
 
-  traverseExpression(ast, (node: Node) => {
+  traverseExpression(ast, null, (node: Node) => {
     if (node.nodeKind === NodeKind.StyleElement) {
       styleElements.push(node);
     }
@@ -505,7 +533,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
   const styles = getStyleElements(ast);
   const mixins: Record<string, MixinRule> = {};
   for (const style of styles) {
-    traverseSheet(style.sheet, (rule) => {
+    traverseSheet(style.sheet, style, (rule) => {
       if (rule && isRule(rule) && rule.ruleKind === RuleKind.Mixin) {
         mixins[rule.name.value] = rule;
       }
@@ -514,6 +542,37 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
 
   return mixins;
 };
+
+export const getASTParentChildMap = memoize(
+  (ast: Expression): Record<string, Expression> => {
+    const childParentMap = {};
+    traverseExpression(ast, null, (expr, owner) => {
+      childParentMap[expr.id] = owner;
+    });
+    return childParentMap;
+  }
+);
+
+export const getASTParent = (ast: Expression, root: Expression): Expression => {
+  return getASTParentChildMap(root)[ast.id];
+};
+
+export const getASTAncestors = memoize(
+  (ast: Expression, root: Expression): Expression[] => {
+    let curr = ast;
+    const map = getASTParentChildMap(root);
+    const ancestors = [];
+
+    while (curr) {
+      curr = map[curr.id];
+      if (curr) {
+        ancestors.push(curr);
+      }
+    }
+
+    return ancestors;
+  }
+);
 
 export const isNode = (ast: Expression): ast is Node =>
   NodeKind[(ast as Node).nodeKind] != null;
@@ -533,36 +592,37 @@ export const isDynamicStringAttributeValuePart = (
 
 export const traverseExpression = (
   ast: Expression,
-  each: (node: Expression) => void | boolean
+  owner: Expression,
+  each: (node: Expression, parent: Expression) => void | boolean
 ) => {
-  if (each(ast) === false) {
+  if (each(ast, owner) === false) {
     return false;
   }
   if (isNode(ast)) {
     switch (ast.nodeKind) {
       case NodeKind.Element: {
         return (
-          traverseExpressions(ast.attributes, each) &&
-          traverseExpressions(ast.children, each)
+          traverseExpressions(ast.attributes, ast, each) &&
+          traverseExpressions(ast.children, ast, each)
         );
       }
       case NodeKind.Fragment: {
-        return traverseExpressions(ast.children, each);
+        return traverseExpressions(ast.children, ast, each);
       }
       case NodeKind.Slot: {
-        return traverseJSExpression(ast.script, each);
+        return traverseJSExpression(ast.script, ast, each);
       }
       case NodeKind.StyleElement: {
-        return traverseSheet(ast.sheet, each);
+        return traverseSheet(ast.sheet, ast, each);
       }
     }
   } else if (isAttribute(ast)) {
     if (ast.attrKind === AttributeKind.KeyValueAttribute && ast.value) {
-      return traverseExpression(ast.value, each);
+      return traverseExpression(ast.value, ast, each);
     }
   } else if (isAttributeValue(ast)) {
     if (ast.attrValueKind === AttributeValueKind.Slot) {
-      return traverseJSExpression(ast.script, each);
+      return traverseJSExpression(ast.script, ast, each);
     }
   }
   return true;
@@ -570,10 +630,11 @@ export const traverseExpression = (
 
 const traverseExpressions = (
   expressions: Expression[],
-  each: (node: Expression) => void | boolean
+  owner: Expression,
+  each: (node: Expression, parent: Expression) => void | boolean
 ) => {
   for (const child of expressions) {
-    if (!traverseExpression(child, each)) {
+    if (!traverseExpression(child, owner, each)) {
       return false;
     }
   }

@@ -14,6 +14,7 @@ import {
   EditTargetKind,
   PrependChild,
   InstanceInsertion,
+  DeleteAttribute,
 } from "../../core";
 import { DocumentManager } from "./manager";
 import {
@@ -38,6 +39,13 @@ import {
   getImports,
   getAttributeStringValue,
   infer,
+  Expression,
+  RootNode,
+  RootExpressionKind,
+  getASTParent,
+  isAttribute,
+  AttributeKind,
+  getASTAncestors,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { flatten, camelCase } from "lodash";
@@ -116,6 +124,24 @@ const deleteNode = (
 ): DocumentTextEdit[] => {
   const nodePath = edit.nodePath.split(".").map(Number);
   const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
+
+  const [sourceUri, expr] = engine.getExpressionById(info.sourceId);
+
+  const parentExpr = getASTAncestors(
+    expr,
+    engine.getLoadedAst(uri) as DependencyNodeContent
+  ).find(isAttribute);
+
+  if (parentExpr) {
+    return [
+      {
+        uri: sourceUri,
+        chars: [],
+        index: parentExpr.range.start.pos,
+        deleteCount: parentExpr.range.end.pos - parentExpr.range.start.pos,
+      },
+    ];
+  }
 
   const edits: DocumentTextEdit[] = [
     {
@@ -212,7 +238,7 @@ const addAttribute = (
   return {
     uri: sourceUri,
     chars: (" " + buffer.join("")).split(""),
-    index: expr.tagNameRange.end.pos,
+    index: (expr as Element).tagNameRange.end.pos,
   };
 };
 

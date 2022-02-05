@@ -1,5 +1,5 @@
 use crate::base::ast::Range;
-use crate::core::ast::{Expr, ExprVisitor};
+use crate::core::ast::{Expr, ExprVisitor, StringLiteral};
 use crate::pc::ast as pc_ast;
 use serde::Serialize;
 use std::fmt;
@@ -12,7 +12,7 @@ pub enum Expression {
   Not(Not),
   Reference(Reference),
   Boolean(Boolean),
-  String(Str),
+  String(StringLiteral),
   Number(Number),
   Array(Array),
   Object(Object),
@@ -50,12 +50,6 @@ impl Expr for Expression {
   }
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct Str {
-  pub id: String,
-  pub value: String,
-  pub range: Range,
-}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Number {

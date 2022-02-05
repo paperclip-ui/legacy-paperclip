@@ -53,6 +53,7 @@ const getEdits = (
       return getUpdateAnnotationEdits(state);
     }
     case ActionType.GLOBAL_BACKSPACE_KEY_PRESSED: {
+      console.log("DEL", state.selectedNodePaths);
       return getDeletionEdit(state);
     }
     case uiActions.toolLayerDrop.type: {

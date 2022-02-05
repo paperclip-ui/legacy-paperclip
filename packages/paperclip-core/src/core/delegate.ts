@@ -17,6 +17,7 @@ import {
   INJECT_STYLES_TAG_NAME,
   CoverageReport,
   NodeStyleInspection,
+  RootExpression,
   VirtNodeSource,
   Dependency,
   Module,
@@ -273,7 +274,7 @@ export class EngineDelegate {
     return this._rendered[uri];
   }
 
-  public getExpressionById(id: string): [string, any] {
+  public getExpressionById(id: string): [string, RootExpression] {
     return this._native.get_expression_by_id(id);
   }
 

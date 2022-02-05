@@ -15,6 +15,7 @@ use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
 use crate::script::ast as script_ast;
 use crate::script::parser::parse_with_tokenizer as parse_js_with_tokenizer;
 use crate::script::tokenizer::Tokenizer as JSTokenizer;
+use crate::core::ast as core_ast;
 use crc::crc32;
 use std::str;
 
@@ -705,7 +706,7 @@ fn parse_attribute_string_value<'a>(
       })?
       .to_string();
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({
-        pc_ast::AttributeDynamicStringLiteral {
+        core_ast::StringLiteral {
           id: context.id_generator.new_id(),
           value,
           range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
@@ -728,7 +729,7 @@ fn parse_attribute_string_value<'a>(
 
   if parts.len() == 0 {
     return Ok(pc_ast::AttributeValue::String(
-      pc_ast::AttributeStringValue {
+      core_ast::StringLiteral {
         id: context.id_generator.new_id(),
         value: "".to_string(),
         range,
@@ -739,7 +740,7 @@ fn parse_attribute_string_value<'a>(
   if parts.len() == 1 {
     if let pc_ast::AttributeDynamicStringPart::Literal(value) = &parts[0] {
       return Ok(pc_ast::AttributeValue::String(
-        pc_ast::AttributeStringValue {
+        core_ast::StringLiteral {
           id: context.id_generator.new_id(),
           value: value.value.clone(),
           range,
@@ -793,7 +794,7 @@ fn parse_attribute_string<'a>(
   )))
   .and_then(|value| {
     Ok(pc_ast::AttributeValue::String(
-      pc_ast::AttributeStringValue {
+      core_ast::StringLiteral {
         id: context.id_generator.new_id(),
         value: value.to_string(),
         range: Range::new(inner_start, inner_end),

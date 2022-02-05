@@ -206,7 +206,7 @@ const getSheetASTInfo = memoize((ast: Sheet) => {
   const keyframes: KeyframesRule[] = [];
   const mixins: MixinRule[] = [];
 
-  traverseSheet(ast, (expr) => {
+  traverseSheet(ast, null, (expr) => {
     if (
       isStyleDeclaration(expr) &&
       expr.declarationKind === StyleDeclarationKind.KeyValue
@@ -252,7 +252,7 @@ const getNodeASTInfo = memoize((root: Node) => {
   const components = getComponentMap(root);
   const imports = getImportMap(root);
 
-  traverseExpression(root, (node: Node) => {
+  traverseExpression(root, null, (node: Node) => {
     if (node.nodeKind === NodeKind.StyleElement) {
       const { declarations, mixins, keyframes } = getSheetASTInfo(node.sheet);
       allDecls.push(...declarations);
