@@ -148,8 +148,12 @@ export class DocumentManager {
       };
     });
 
+    const now = Date.now();
     source.applyEdits(edits);
-    console.log("DocumentManager::_onDocumentChange");
+    console.log(
+      "DocumentManager::_onDocumentChange in %d ms",
+      Date.now() - now
+    );
   };
 
   private _onDesignServerStarted = (info: DesignServerStartedInfo) => {
@@ -201,7 +205,6 @@ const applyTextEditsFromPatch = async (
 
   const op = patch.diffs.props.text[Object.keys(patch.diffs.props.text)[0]];
 
-  console.log(op);
   if (op.type === "text") {
     for (const edit of op.edits) {
       if (edit.action === "multi-insert") {

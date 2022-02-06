@@ -772,6 +772,24 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `Can append a child to a self-closing element with an insertion attr`,
+        {
+          "/hello.pc": `<div data-pc-show-insert />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { value: "<span />" },
+              },
+            ],
+            `<div>\n  <span />\n</div>`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server } = await createMockHost(graph);

@@ -1,4 +1,4 @@
-- format children when inserted
+- ability to style elements (plain text)
 - double click to edit text
 
 - when dropping onto stage, only highlight instable areas (top-level instances, and slots)

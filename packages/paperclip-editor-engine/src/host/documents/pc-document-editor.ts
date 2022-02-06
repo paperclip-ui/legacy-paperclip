@@ -549,7 +549,7 @@ const appendElement = (
   const insertAttrExpr = getAttribute(ELEMENT_INSERT_ATTR, expr);
 
   if (insertAttrExpr) {
-    edits.unshift(deleteAttr(exprUri, insertAttrExpr));
+    edits.push(deleteAttr(exprUri, insertAttrExpr));
   }
 
   return [...edits, ...additionalChildEdits];

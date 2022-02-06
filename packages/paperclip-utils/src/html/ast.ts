@@ -509,9 +509,12 @@ export const getInstanceComponentInfo = (
     const component = components[instance.tagName];
 
     return [uri, component];
-  } else if (instance.tagName.includes(".")) {
+  } else {
     const parts = instance.tagName.split(".");
     const depUri = entry.dependencies[parts.shift()];
+    if (!depUri) {
+      return null;
+    }
     const dep = graph[depUri];
     const component = getComponentMap(dep.content as DependencyNodeContent)[
       parts.shift() || "default"
