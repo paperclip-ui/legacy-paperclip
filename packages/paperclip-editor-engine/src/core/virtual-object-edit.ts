@@ -1,6 +1,8 @@
 /**
  */
 
+import { Node } from "@paperclip-ui/core";
+
 export enum VirtualObjectEditKind {
   // We use this be default to ensure that we maintain positional information
   // about an inserted element
@@ -25,33 +27,18 @@ export enum VirtualObjectEditKind {
   RenameComponentName = "RenameComponentName",
 }
 
-export enum ChildInsertionKind {
-  Text = "Text",
-  Element = "Element",
-  Instance = "Instance",
-}
+/**
+ * Child insertion struct that contains all of the infomation to insert elements
+ * into a document. Elements with namespaces will be auto-imported into the doc
+ */
 
-type BaseChildInsertion<TKind extends ChildInsertionKind> = {
-  kind: TKind;
+export type ChildInsertion = {
+  // String value of the child to insert
+  value: string;
+
+  // source documents of any elements that are included
+  namespaces?: Record<string, string>;
 };
-
-export type TextInsertion = {
-  value: string;
-} & BaseChildInsertion<ChildInsertionKind.Text>;
-
-export type ElementInsertion = {
-  value: string;
-} & BaseChildInsertion<ChildInsertionKind.Element>;
-
-export type InstanceInsertion = {
-  name: string;
-  sourceUri: string;
-} & BaseChildInsertion<ChildInsertionKind.Instance>;
-
-export type ChildInsertion =
-  | TextInsertion
-  | ElementInsertion
-  | InstanceInsertion;
 
 export enum EditTargetKind {
   VirtualNode = "VirtualNode",

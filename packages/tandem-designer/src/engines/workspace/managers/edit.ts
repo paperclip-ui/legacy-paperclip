@@ -3,7 +3,6 @@ import { ProjectManager } from "./project";
 import { Store } from "../../base";
 import {
   ChildInsertion,
-  ChildInsertionKind,
   VirtualObjectEdit,
   VirtualObjectEditKind,
 } from "@paperclip-ui/editor-engine/lib/core";
@@ -56,7 +55,6 @@ const getEdits = (
       return getUpdateAnnotationEdits(state);
     }
     case ActionType.GLOBAL_BACKSPACE_KEY_PRESSED: {
-      console.log("DEL", state.selectedNodePaths);
       return getDeletionEdit(state);
     }
     case uiActions.toolLayerDrop.type: {
@@ -128,17 +126,21 @@ const getDropEdit = (
 
 const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
   if (node.kind === AvailableNodeKind.Text) {
-    return { kind: ChildInsertionKind.Text, value: "Double click to edit" };
+    return { value: "Double click to edit" };
   } else if (node.kind === AvailableNodeKind.Element) {
     return {
-      kind: ChildInsertionKind.Element,
-      value: `<${node.name} ${ELEMENT_INSERT_ATTR} />`,
+      value: `<${node.name}${
+        isContainer(node.name) ? " " + ELEMENT_INSERT_ATTR : ""
+      } />`,
     };
   } else if (node.kind === AvailableNodeKind.Instance) {
     return {
-      kind: ChildInsertionKind.Instance,
-      name: node.name,
-      sourceUri: node.sourceUri,
+      value: `<inst.${node.name} />`,
+      namespaces: {
+        inst: node.sourceUri,
+      },
     };
   }
 };
+
+const isContainer = (name: string) => !/^(input|select|br|hr)$/.test(name);

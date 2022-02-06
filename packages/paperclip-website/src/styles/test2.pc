@@ -1,3 +1,9 @@
+<import src="file:///Users/crcn/Developer/private/paperclip/packages/tandem-designer/src/components/Tree/index.pc"
+  as="index3" />
+<import src="file:///Users/crcn/Developer/private/paperclip/packages/tandem-designer/src/components/Main/LeftSidebar/symbols/index.pc"
+  as="index2" />
+<import src="file:///Users/crcn/Developer/private/paperclip/packages/tandem-designer/src/components/Toggle/index.pc"
+  as="index" />
 <import src="./test3.pc" as="test3" />
 
 <!--
@@ -26,21 +32,5 @@
       background: rgb(87, 214, 28);
     </style>
     {child}
-  </div>
-</div>
-
-<!--
-  @frame { height: 419, title: "Title me this", width: 707, x: -854, y: -326 }
--->
-<Testttt child={<div>Span</div>} />
-
-<!--
-  @frame { x: -1354, y: -832, width: 1024, height: 768 }
--->
-<div>
-  Double click to edit<div>
-    <ul>
-      <li>Double click to edit</li>
-    </ul>
   </div>
 </div>

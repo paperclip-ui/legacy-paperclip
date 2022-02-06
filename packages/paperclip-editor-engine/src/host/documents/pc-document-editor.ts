@@ -6,17 +6,15 @@ import {
   VirtualObjectEdit,
   SetAnnotations,
   InsertNodeBefore,
-  ChildInsertionKind,
   ChildInsertion,
   DeleteNode,
   AddFrame,
   EditTarget,
   EditTargetKind,
   PrependChild,
-  InstanceInsertion,
-  DeleteAttribute,
 } from "../../core";
 import { DocumentManager } from "./manager";
+import * as prettier from "prettier";
 import {
   Element,
   EngineDelegate,
@@ -43,12 +41,18 @@ import {
   getASTAncestors,
   getAttribute,
   ELEMENT_INSERT_ATTR,
+  Module,
+  PCModule,
+  Node,
+  getASTParent,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { flatten, camelCase } from "lodash";
 import * as path from "path";
 import { VirtualObjectEditKind } from "../../core";
 import { PCDocument } from "./pc";
+
+const INDENT = "  ";
 
 type DocumentTextEdit = {
   uri: string;
@@ -170,6 +174,29 @@ const deleteNode = (
   }
 
   return edits;
+};
+
+const getNodeIndentation = (
+  uri: string,
+  engine: EngineDelegate,
+  nodePath: string
+) => {
+  const info = getSourceNodeFromPath(uri, engine, nodePath);
+  const [exprUri, expr] = engine.getExpressionById(info.sourceId) as [
+    string,
+    Element
+  ];
+  return getExprIndentation(exprUri, engine, expr);
+};
+
+const getExprIndentation = (
+  uri: string,
+  engine: EngineDelegate,
+  expr: Expression
+) => {
+  const content = engine.getVirtualContent(uri);
+  const lines = content.split("\n");
+  return lines[expr.range.start.line - 1].match(/^[\s\t]*/)[0];
 };
 
 const insertNodeBefore = (
@@ -438,11 +465,6 @@ const appendElement = (
   exprUri: string,
   edit: AppendChild
 ): DocumentTextEdit[] => {
-  const element = getNodeByPath(
-    edit.nodePath,
-    (engine.getLoadedData(uri) as LoadedPCData).preview
-  );
-
   const [_componentUri, component] =
     getInstanceComponentInfo(expr, exprUri, engine.getLoadedGraph()) || [];
 
@@ -471,29 +493,56 @@ const appendElement = (
     false
   );
 
+  const parentIndentation = getNodeIndentation(exprUri, engine, edit.nodePath);
+
   // self closing
   if (tagBuffer.trim().lastIndexOf("/>") !== -1) {
     const tagSrc = source.substring(expr.range.start.pos, expr.range.end.pos);
 
     edits.push({
       uri: exprUri,
-      chars: [">", child, `</${expr.tagName}>`].join("").split(""),
+      chars: [
+        ">\n",
+        parentIndentation,
+        INDENT,
+        child,
+        `\n${parentIndentation}</${expr.tagName}>`,
+      ]
+        .join("")
+        .split(""),
 
       // remove WS at end too so that <div /> isn't converted to <div ></div>
       index: expr.range.start.pos + tagSrc.replace(/\s*\/>$/, "").length,
       deleteCount: tagSrc.match(/\s*\/>$/)[0].length,
     });
   } else {
-    const endTagPos =
-      expr.range.start.pos +
-      source
-        .substring(expr.range.start.pos, expr.range.end.pos)
-        .lastIndexOf(`</${expr.tagName}>`);
+    const indentation = !expr.children.length
+      ? parentIndentation + INDENT
+      : getExprIndentation(
+          exprUri,
+          engine,
+          expr.children[expr.children.length - 1]
+        );
+    let endTagIndentation = "";
+
+    let buffer = child;
+
+    // if inline, then maintain that
+    if (
+      expr.range.end.line !== expr.range.start.line ||
+      !expr.children.length
+    ) {
+      buffer = "\n" + indentation + child + "\n";
+
+      if (!expr.children.length) {
+        buffer += parentIndentation;
+      }
+    }
 
     edits.push({
       uri: exprUri,
-      chars: child.split(""),
-      index: endTagPos,
+      chars: buffer.split(""),
+      index: expr.range.end.pos - `</${expr.tagName}>`.length,
     });
   }
 
@@ -561,44 +610,54 @@ const getChildInsertionContent = (
   engine: EngineDelegate,
   isAttributeValue: boolean
 ): [string, DocumentTextEdit[]] => {
-  switch (insertion.kind) {
-    case ChildInsertionKind.Element: {
-      return [isAttributeValue ? `{${insertion.value}}` : insertion.value, []];
-    }
-    case ChildInsertionKind.Text: {
-      return [isAttributeValue ? `"${insertion.value}"` : insertion.value, []];
-    }
-    case ChildInsertionKind.Instance: {
-      const importEdits: DocumentTextEdit[] = [];
+  const child = (engine.parseContent(insertion.value, "virt.pc") as Fragment)
+    .children[0];
+  const isText = child.nodeKind === NodeKind.Text;
 
-      let prefix: string = "";
-      let ns: string;
+  let buffer = insertion.value;
+  const edits = [];
 
-      if (documentUri !== insertion.sourceUri) {
-        const ret = autoAddImport(documentUri, engine, insertion);
-        ns = ret.ns;
-        importEdits.push(ret.edit);
+  if (insertion.namespaces) {
+    for (const namespace in insertion.namespaces) {
+      // double check to make sure that the namespace is actually used
+      if (!buffer.includes(`<${namespace}.`)) {
+        continue;
       }
 
-      if (ns) {
-        prefix = `${ns}.`;
+      const importUri = insertion.namespaces[namespace];
+
+      if (importUri === documentUri) {
+        buffer = buffer.replace(new RegExp(`${namespace}.`, "g"), ``);
+      } else {
+        const { ns, edit } = autoAddImport(documentUri, engine, importUri);
+        buffer = buffer.replace(new RegExp(`${namespace}.`, "g"), `${ns}.`);
+        edits.push(edit);
       }
-
-      let buffer = `<${prefix}${insertion.name} />`;
-
-      if (isAttributeValue) {
-        buffer = `{${buffer}}`;
-      }
-
-      return [buffer, importEdits];
     }
   }
+
+  if (isAttributeValue) {
+    if (isText) {
+      buffer = `"${buffer}"`;
+    } else {
+      buffer = `{${buffer}}`;
+    }
+  }
+
+  return [buffer, edits];
+};
+
+const maybeBreak = (buffer: string, ast: Node, isFirstChild: boolean) => {
+  if (isNode(ast) && ast.nodeKind === NodeKind.Element) {
+    return `\n${INDENT}${buffer}\n`;
+  }
+  return buffer;
 };
 
 const autoAddImport = (
   exprUri: string,
   engine: EngineDelegate,
-  insertion: InstanceInsertion
+  importUri: string
 ): { ns: string; edit?: DocumentTextEdit } | undefined => {
   let ns: string;
 
@@ -607,10 +666,8 @@ const autoAddImport = (
   const imports = getImports(ast);
   const importExpr = imports.find(
     (imp) =>
-      data.dependencies[getAttributeStringValue("as", imp)] ===
-        insertion.sourceUri ||
-      data.dependencies[getAttributeStringValue("src", imp)] ===
-        insertion.sourceUri
+      data.dependencies[getAttributeStringValue("as", imp)] === importUri ||
+      data.dependencies[getAttributeStringValue("src", imp)] === importUri
   );
 
   if (importExpr) {
@@ -618,7 +675,7 @@ const autoAddImport = (
 
     // No namespace? add the attribute
     if (!ns) {
-      ns = getUniqueImportId(insertion.sourceUri, imports);
+      ns = getUniqueImportId(importUri, imports);
       return {
         ns,
         edit: addAttribute(exprUri, engine, {
@@ -635,17 +692,16 @@ const autoAddImport = (
 
     // no import? add it
   } else {
-    ns = getUniqueImportId(insertion.sourceUri, imports);
+    ns = getUniqueImportId(importUri, imports);
     return {
       ns,
       edit: prependChild(exprUri, engine, {
         kind: VirtualObjectEditKind.PrependChild,
         target: { kind: EditTargetKind.Expression, sourceId: ast.id },
         child: {
-          kind: ChildInsertionKind.Element,
           value: `<import src="${engine.resolveFile(
             exprUri,
-            insertion.sourceUri
+            importUri
           )}" as="${ns}" />\n`,
         },
       }),

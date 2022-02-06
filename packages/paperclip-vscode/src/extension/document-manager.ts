@@ -116,11 +116,14 @@ export class DocumentManager {
 
       // If not identical, then patch text editor doc to match CRDT doc since that is
       // the source of truth
-      const syncEdits: TextEdit[] = getTextEditsFromPatch(e, patch);
-
-      const wsEdit = new WorkspaceEdit();
-      wsEdit.set(Uri.parse(uri), syncEdits);
-      workspace.applyEdit(wsEdit);
+      this._editing[e.uri.toString()] = true;
+      applyTextEditsFromPatch(e, patch, async (edit) => {
+        const wsEdit = new WorkspaceEdit();
+        wsEdit.set(Uri.parse(uri), [edit]);
+        await workspace.applyEdit(wsEdit);
+      }).then(() => {
+        this._editing[e.uri.toString()] = false;
+      });
     });
   };
 
@@ -133,7 +136,7 @@ export class DocumentManager {
 
     // This will happen on sync, so make sure we're not executing OTs on a doc
     // where the transforms originally came from
-    if (event.document.getText() === source.getText()) {
+    if (event.document.getText() === source.getText() || this._editing[uri]) {
       return;
     }
 
@@ -189,21 +192,27 @@ export class DocumentManager {
   };
 }
 
-const getTextEditsFromPatch = (doc: TextDocument, patch: Automerge.Patch) => {
+const applyTextEditsFromPatch = async (
+  doc: TextDocument,
+  patch: Automerge.Patch,
+  next: (edit: TextEdit) => Promise<any>
+) => {
   const syncEdits: TextEdit[] = [];
 
   const op = patch.diffs.props.text[Object.keys(patch.diffs.props.text)[0]];
+
+  console.log(op);
   if (op.type === "text") {
     for (const edit of op.edits) {
       if (edit.action === "multi-insert") {
-        syncEdits.push(
+        await next(
           new TextEdit(
             new Range(doc.positionAt(edit.index), doc.positionAt(edit.index)),
             edit.values.join("")
           )
         );
       } else if (edit.action === "remove") {
-        syncEdits.push(
+        await next(
           new TextEdit(
             new Range(
               doc.positionAt(edit.index),

@@ -1,6 +1,6 @@
-- may need to use inferencing engine
+- format children when inserted
+- double click to edit text
 
-- prohibit children from being inserted into instances without `{children}`
 - when dropping onto stage, only highlight instable areas (top-level instances, and slots)
 - imported docs should be relative
 - slots

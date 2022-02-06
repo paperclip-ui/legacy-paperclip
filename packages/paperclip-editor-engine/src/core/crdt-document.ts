@@ -63,30 +63,27 @@ export class CRDTTextDocument {
 
   applyEdits(edits: TextEdit[]) {
     let curr = this._doc;
-    try {
-      const forkedChanges: Automerge.BinaryChange[] = edits.reduce(
-        (changes, edit) => {
-          const copy: SourceDocumentData = Automerge.load(
-            Automerge.save(this._doc)
-          );
 
-          const newDoc = Automerge.change(copy, (doc) => {
-            applyTextEdit(edit, doc.text);
-          });
+    const forkedChanges: Automerge.BinaryChange[] = edits.reduce(
+      (changes, edit) => {
+        const copy: SourceDocumentData = Automerge.load(
+          Automerge.save(this._doc)
+        );
 
-          return [...changes, ...Automerge.getChanges(this._doc, newDoc)];
-        },
-        []
-      );
+        const newDoc = Automerge.change(copy, (doc) => {
+          applyTextEdit(edit, doc.text);
+        });
 
-      const [newDoc] = Automerge.applyChanges(this._doc, forkedChanges);
+        return [...changes, ...Automerge.getChanges(this._doc, newDoc)];
+      },
+      []
+    );
 
-      const changes = this._setDoc(newDoc, this._doc);
-      this._em.emit("edited", changes);
-      return changes;
-    } catch (e) {
-      console.error(e.stack);
-    }
+    const [newDoc] = Automerge.applyChanges(this._doc, forkedChanges);
+
+    const changes = this._setDoc(newDoc, this._doc);
+    this._em.emit("edited", changes);
+    return changes;
   }
 
   /**

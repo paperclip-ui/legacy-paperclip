@@ -5,12 +5,7 @@ import {
   VirtualElement,
 } from "@paperclip-ui/core";
 import { expect } from "chai";
-import {
-  AppendChild,
-  ChildInsertionKind,
-  EditTargetKind,
-  VirtualObjectEditKind,
-} from "../core";
+import { AppendChild, EditTargetKind, VirtualObjectEditKind } from "../core";
 import { createMockHost } from "./utils";
 
 // TODO - test latency
@@ -29,7 +24,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<span />" },
+          node: { value: "<span />" },
         },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -212,7 +207,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -231,7 +226,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -250,7 +245,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -273,7 +268,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Text, value: "blarg" },
+          child: { value: "blarg" },
         },
       ]);
       expect(source.getText()).to.eql(
@@ -299,7 +294,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(source.getText()).to.eql(
@@ -381,7 +376,7 @@ describe(__filename + "#", () => {
             [
               {
                 kind: VirtualObjectEditKind.AppendChild,
-                child: { kind: ChildInsertionKind.Text, value: "text" },
+                child: { value: "text" },
               },
             ],
             `<div />text`,
@@ -398,7 +393,7 @@ describe(__filename + "#", () => {
             [
               {
                 kind: VirtualObjectEditKind.AddFrame,
-                child: { kind: ChildInsertionKind.Text, value: "text" },
+                child: { value: "text" },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
             ],
@@ -418,9 +413,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -441,9 +435,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -464,9 +457,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -488,13 +480,12 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0",
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
               },
             ],
-            `<import src="/hello2.pc" as="hello2" />\n<div><hello2.Test /></div>`,
+            `<import src="/hello2.pc" as="hello2" />\n<div>\n  <hello2.Test />\n</div>`,
           ],
         },
       ],
@@ -511,9 +502,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello3.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello3.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -534,12 +524,11 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "1",
                 child: {
-                  kind: ChildInsertionKind.Text,
                   value: "Hello",
                 },
               },
             ],
-            `<span /><div>Hello</div>`,
+            `<span /><div>\n  Hello\n</div>`,
           ],
         },
       ],
@@ -554,9 +543,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AppendChild,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  name: "Test",
-                  sourceUri: "/hello.pc",
+                  namespaces: { abba: "/hello.pc" },
+                  value: `<abba.Test />`,
                 },
               },
             ],
@@ -578,9 +566,8 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0.0",
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  name: "Test2",
-                  sourceUri: "/hello3.pc",
+                  namespaces: { abba: "/hello3.pc" },
+                  value: `<abba.Test2 />`,
                 },
               },
             ],
@@ -600,12 +587,11 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0.0",
                 child: {
-                  kind: ChildInsertionKind.Text,
                   value: "Something",
                 },
               },
             ],
-            `<div component as="Test">{children}</div><Test>Something</Test>`,
+            `<div component as="Test">{children}</div><Test>\n  Something\n</Test>`,
           ],
         },
       ],
@@ -621,7 +607,6 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0",
                 child: {
-                  kind: ChildInsertionKind.Text,
                   value: "Something",
                 },
               },
@@ -726,10 +711,64 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0",
-                child: { kind: ChildInsertionKind.Element, value: "<span />" },
+                child: { value: "<span />" },
               },
             ],
-            `<div><span /></div>`,
+            `<div>\n  <span />\n</div>`,
+          ],
+        },
+      ],
+      [
+        `If appending to an element without children, the indentation is based on parent spacing`,
+        {
+          "/hello.pc": ` <div></div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { value: "<span />" },
+              },
+            ],
+            ` <div>\n   <span />\n </div>`,
+          ],
+        },
+      ],
+      [
+        `If appending to an element with a child, the indentation is maintained based on the previous child`,
+        {
+          "/hello.pc": `<div>\n    child</div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { value: "<span />" },
+              },
+            ],
+            `<div>\n    child\n    <span />\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When adding a child to a nested self-closing element, the parent end tag matches the start`,
+        {
+          "/hello.pc": `<a>\n  <b />\n</a>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0.0",
+                child: { value: "<span />" },
+              },
+            ],
+            `<a>\n  <b>\n    <span />\n  </b>\n</a>`,
           ],
         },
       ],
