@@ -386,10 +386,17 @@
 <!--
   @frame { visible: false }
 -->
-<button export component as="Tab" class="button-reset" class:active="active">
+<button export
+  component
+  as="Tab"
+  class="button-reset"
+  class:active="active"
+  {onClick?}>
   <style>
     border-top: 2px solid transparent;
+    cursor: pointer;
     padding: var(--spacing-3) var(--spacing-4);
+    transition: 0.2s;
     &.active {
       border-top: 2px solid rgb(66, 164, 255);
     }
@@ -448,7 +455,7 @@
       <span class="decl-value">{value}</span>
     </div>
   </div>
-  {children}
+  {children? || ""}
 </div>
 
 
@@ -480,8 +487,8 @@
 -->
 <Pane.Container export component as="Preview" class="$font-regular">
   <Tabs>
-    <Tab active>Rules</Tab>
-    <Tab>Computed</Tab>
+    <Tab active={!showComputed}>Rules</Tab>
+    <Tab active={showComputed}>Computed</Tab>
   </Tabs>
   {showComputed && <fragment>
     <ComputedStyles>
@@ -593,5 +600,7 @@
 -->
 <Preview />
 
-
-something!!!!
+<!--
+  @frame { height: 768, width: 348, x: 564, y: -143 }
+-->
+<Preview showComputed />

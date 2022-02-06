@@ -1,4 +1,6 @@
-- ability to style elements (plain text)
+- show computed properties
+  
+
 - double click to edit text
 
 - when dropping onto stage, only highlight instable areas (top-level instances, and slots)

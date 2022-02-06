@@ -8,7 +8,7 @@ import {
   titleDoubleClicked,
   redirectRequest,
   zoomInputChanged,
-  popoutButtonClicked
+  popoutButtonClicked,
 } from "../../../../actions";
 import { useTextInput } from "@tandem-ui/design-system";
 import { isExpanded } from "../../../../state";
@@ -26,7 +26,7 @@ export type ToolbarProps = {
 export const Toolbar = ({ onMouseDown, onMouseUp }: ToolbarProps) => {
   const { state, dispatch } = useAppStore();
   const {
-    designer: { canvas, projectDirectory, sharable, readonly, birdseyeFilter }
+    designer: { canvas, projectDirectory, sharable, readonly, birdseyeFilter },
   } = state;
   const expanded = isExpanded(state.designer);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
@@ -51,8 +51,8 @@ export const Toolbar = ({ onMouseDown, onMouseUp }: ToolbarProps) => {
       redirectRequest({
         query: {
           ...state.designer.ui.query,
-          expanded: undefined
-        }
+          expanded: undefined,
+        },
       })
     );
   }, [state.designer.ui]);
@@ -70,7 +70,7 @@ export const Toolbar = ({ onMouseDown, onMouseUp }: ToolbarProps) => {
     value: birdseyeFilter,
     onValueChange: (value: string) => {
       dispatch(birdseyeFilterChanged({ value }));
-    }
+    },
   });
 
   const onFilterBlur = () => {
@@ -81,9 +81,9 @@ export const Toolbar = ({ onMouseDown, onMouseUp }: ToolbarProps) => {
     setShowEnvironmentPopup(false);
   };
 
-  const relativePath = canvasFile
-    ?.replace(projectDirectory?.url, "")
-    .replace(/^\//, "");
+  const relativePath =
+    projectDirectory?.url &&
+    canvasFile?.replace(projectDirectory?.url, "").replace(/^\//, "");
 
   const onDoubleClick = () => {
     dispatch(titleDoubleClicked({ uri: canvasFile }));
@@ -100,9 +100,9 @@ export const Toolbar = ({ onMouseDown, onMouseUp }: ToolbarProps) => {
     onEnterPressed() {
       setShowZoomInput(false);
     },
-    onValueChange: value => {
+    onValueChange: (value) => {
       dispatch(zoomInputChanged({ value: Number(value.replace("%", "")) }));
-    }
+    },
   });
 
   return (
