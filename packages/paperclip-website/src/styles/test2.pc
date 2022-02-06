@@ -1,9 +1,3 @@
-<import src="file:///Users/crcn/Developer/private/paperclip/packages/tandem-designer/src/components/Tree/index.pc"
-  as="index3" />
-<import src="file:///Users/crcn/Developer/private/paperclip/packages/tandem-designer/src/components/Main/LeftSidebar/symbols/index.pc"
-  as="index2" />
-<import src="file:///Users/crcn/Developer/private/paperclip/packages/tandem-designer/src/components/Toggle/index.pc"
-  as="index" />
 <import src="./test3.pc" as="test3" />
 
 <!--
