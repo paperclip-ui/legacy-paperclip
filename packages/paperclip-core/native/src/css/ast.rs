@@ -1138,7 +1138,7 @@ impl Expr for Sheet {
     visitor.visit_css_sheet(self);
     // walk_rules_and_decls(&self.rules, &self.declarations, visitor);
     walk_exprs(&self.rules, visitor);
-    walk_exprs(&self.rules, visitor);
+    walk_exprs(&self.declarations, visitor);
   }
   fn get_id<'a>(&'a self) -> &'a String {
     &self.id

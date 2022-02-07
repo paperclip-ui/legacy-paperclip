@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
-import * as styles from "./index.pc";
-import { useAppStore } from "../../../../../hooks/useAppStore";
+import * as styles from "../index.pc";
+import { useAppStore } from "../../../../../../hooks/useAppStore";
 import { StyleRule } from "./StyleRule";
 import { useTextInput } from "@tandem-ui/design-system";
 import * as ast from "@paperclip-ui/utils";
-import Pane from "../../../../Pane/index.pc";
+import Pane from "../../../../../Pane/index.pc";
 
 export const RulesInspector = React.memo(() => {
   const { state, dispatch } = useAppStore();

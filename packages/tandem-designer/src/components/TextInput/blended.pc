@@ -20,7 +20,7 @@
 <div export component as="Container" class:autoResize="auto-resize">
   <style>
     position: relative;
-    & :global(input) {
+    & :global(textarea, input) {
       line-height: inherit;
       font-size: inherit;
       font-family: inherit;

@@ -474,12 +474,18 @@ export const getNodeById = memoize((nodeId: string, root: Node) => {
 });
 
 export const isComponentInstance = (
-  node: Node,
-  importIds: string[]
+  node: Expression,
+  root: Node
 ): node is Element => {
+  if (!isNode(node) || node.nodeKind !== NodeKind.Element) {
+    return false;
+  }
+  const importIds = getImportIds(root);
+  const internalComponents = getComponentMap(root);
+
   return (
-    node.nodeKind === NodeKind.Element &&
-    importIds.indexOf(node.tagName.split(".").shift()) !== -1
+    importIds.includes(node.tagName.split(".").shift()) ||
+    internalComponents[node.tagName] != null
   );
 };
 

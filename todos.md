@@ -1,3 +1,5 @@
+- ability to change existing style ules
+- display scoped style by default
 - show computed properties
   
 

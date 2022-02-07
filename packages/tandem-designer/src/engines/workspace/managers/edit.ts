@@ -1,4 +1,8 @@
-import { Action, ActionType } from "../../..";
+import {
+  Action,
+  ActionType,
+  VirtualStyleDeclarationValueChanged,
+} from "../../..";
 import { ProjectManager } from "./project";
 import { Store } from "../../base";
 import {
@@ -59,6 +63,9 @@ const getEdits = (
     }
     case uiActions.toolLayerDrop.type: {
       return getDropEdit(state, action);
+    }
+    case ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED: {
+      return getStyleDeclarationEdit(action);
     }
   }
   return [];
@@ -144,3 +151,7 @@ const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
 };
 
 const isContainer = (name: string) => !/^(input|select|br|hr)$/.test(name);
+
+export const getStyleDeclarationEdit = ({
+  payload: { declarationId },
+}: VirtualStyleDeclarationValueChanged) => {};

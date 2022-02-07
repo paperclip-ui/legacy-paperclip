@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as styles from "./index.pc";
-import Pane, { Container as PaneContainer } from "../../../../Pane/index.pc";
-import { RulesInspector } from "./RulesInspector";
+import { Container as PaneContainer } from "../../../../Pane/index.pc";
+import { RulesInspector } from "./RuleInspector";
 import { ComputedInspector } from "./ComputedInspector";
 
 enum Tabs {

@@ -47,6 +47,11 @@ pub struct SetElementSourceInfo {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SetElementSourceId {
+  pub value: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ReplaceNode {
   pub replacement: Node,
 }
@@ -60,7 +65,10 @@ pub enum Action {
   SetAttribute(SetAttribute),
   SetText(SetText),
   SetAnnotations(SetAnnotations),
+
+  // DEPRECATED, should use source ID and pull AST from that
   SetElementSourceInfo(SetElementSourceInfo),
+  SetElementSourceId(SetElementSourceId),
   RemoveAttribute(RemoveAttribute),
   UpdateSheet(UpdateSheet),
 }

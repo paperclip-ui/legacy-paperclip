@@ -1,8 +1,10 @@
 // 1:1 with Rust
 
+import { memoize } from "../core/memo";
+
 export enum SelectorScopeKind {
   Element = "Element",
-  Document = "Document"
+  Document = "Document",
 }
 
 type BaseSelectorScope<TKind extends SelectorScopeKind> = {
@@ -10,9 +12,8 @@ type BaseSelectorScope<TKind extends SelectorScopeKind> = {
 };
 
 export type ElementSelectorScope = BaseSelectorScope<SelectorScopeKind.Element>;
-export type DocumentSelectorScope = BaseSelectorScope<
-  SelectorScopeKind.Document
->;
+export type DocumentSelectorScope =
+  BaseSelectorScope<SelectorScopeKind.Document>;
 
 export type SelectorScope = ElementSelectorScope | DocumentSelectorScope;
 
@@ -30,7 +31,7 @@ export enum SelectorInfoKind {
   Child = "Child",
   Descendent = "Descendent",
   Adjacent = "Adjacent",
-  Sibling = "Sibling"
+  Sibling = "Sibling",
 }
 
 export type BaseSelectorInfo<TKind extends SelectorInfoKind> = {
@@ -57,15 +58,12 @@ export type BinarySelectorInfo<TKind extends SelectorInfoKind> = {
 export type ListSelectorInfo = GroupSelectorInfo<SelectorInfoKind.List>;
 export type ElementSelectorInfo = TargetSelectorInfo<SelectorInfoKind.Element>;
 export type AllSelectorInfo = GroupSelectorInfo<SelectorInfoKind.All>;
-export type PseudoElementSelectorInfo = TargetSelectorInfo<
-  SelectorInfoKind.PseudoElement
->;
-export type PseudoParamElementSelectorInfo = TargetSelectorInfo<
-  SelectorInfoKind.PsuedoParamElement
->;
-export type AttributeSelectorInfo = TargetSelectorInfo<
-  SelectorInfoKind.Attribute
->;
+export type PseudoElementSelectorInfo =
+  TargetSelectorInfo<SelectorInfoKind.PseudoElement>;
+export type PseudoParamElementSelectorInfo =
+  TargetSelectorInfo<SelectorInfoKind.PsuedoParamElement>;
+export type AttributeSelectorInfo =
+  TargetSelectorInfo<SelectorInfoKind.Attribute>;
 export type NotSelectorInfo = WrapperSelectorInfo<SelectorInfoKind.Not>;
 export type IdSelectorInfo = TargetSelectorInfo<SelectorInfoKind.Id>;
 
@@ -77,12 +75,10 @@ export type ClassSelectorInfo = {
 
 export type ComboSelectorInfo = GroupSelectorInfo<SelectorInfoKind.Combo>;
 export type ChildSelectorInfo = BinarySelectorInfo<SelectorInfoKind.Child>;
-export type DescendentSelectorInfo = BinarySelectorInfo<
-  SelectorInfoKind.Descendent
->;
-export type AdjacentSelectorInfo = BinarySelectorInfo<
-  SelectorInfoKind.Adjacent
->;
+export type DescendentSelectorInfo =
+  BinarySelectorInfo<SelectorInfoKind.Descendent>;
+export type AdjacentSelectorInfo =
+  BinarySelectorInfo<SelectorInfoKind.Adjacent>;
 export type SiblingSelectorInfo = BinarySelectorInfo<SelectorInfoKind.Sibling>;
 
 export type SelectorInfo =
@@ -128,3 +124,37 @@ export type StyleRuleInfo = {
 export type NodeStyleInspection = {
   styleRules: StyleRuleInfo[];
 };
+
+export type ComputedDeclarationInfo = {
+  name: string;
+  value: string;
+  variable?: boolean;
+  sourceRules: StyleRuleInfo[];
+};
+
+export type SquashedStyleInspection = Record<string, StyleRuleInfo[]>;
+
+export const squashInspection = memoize(
+  (inspection: NodeStyleInspection): ComputedDeclarationInfo[] => {
+    const squashed: Record<string, { value: string; rules: StyleRuleInfo[] }> =
+      {};
+
+    for (const rule of inspection.styleRules) {
+      for (const declaration of rule.declarations) {
+        if (!squashed[declaration.name]) {
+          squashed[declaration.name] = { value: declaration.value, rules: [] };
+        }
+        squashed[declaration.name].rules.push(rule);
+      }
+    }
+
+    return Object.keys(squashed)
+      .sort()
+      .map((name) => ({
+        name,
+        value: squashed[name].value,
+        variable: name.indexOf("--") === 0,
+        sourceRules: squashed[name].rules,
+      }));
+  }
+);

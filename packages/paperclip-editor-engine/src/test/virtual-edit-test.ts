@@ -1,6 +1,8 @@
 import {
   computeVirtScriptObject,
   ELEMENT_INSERT_ATTR,
+  Fragment,
+  Node,
   stringifyVirtualNode,
   VirtualElement,
 } from "@paperclip-ui/core";
@@ -27,6 +29,7 @@ describe(__filename + "#", () => {
           node: { value: "<span />" },
         },
       ]);
+
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
       );
@@ -790,15 +793,128 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `Can change a style declaration on a specific declaration ID`,
+        {
+          "/hello.pc": `<div><style>width: 100px;height: 100px;</style></div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              // console.log(JSON.stringify(ast, null, 2));
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: {
+                    kind: EditTargetKind.Expression,
+                    sourceId: "5cd17222-1-1",
+                  },
+                  name: "width",
+                  value: "999px",
+                },
+              ];
+            },
+            `<div><style>width: 999px;height: 100px;</style></div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element that doesn't have a style block, a new style block is added`,
+        {
+          "/hello.pc": `<div />`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "width",
+                  value: "999px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    width: 999px;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element that doesn't have a style block and has a children, the style is prepended to the beginning`,
+        {
+          "/hello.pc": `<div>\n  <span />\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "width",
+                  value: "999px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    width: 999px;\n  </style>\n  <span />\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element with a style and the declaration doesn't exist, the declaration is added`,
+        {
+          "/hello.pc": `<div>\n  <style>\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "height",
+                  value: "100px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    height: 100px;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element with a style that includes an existing declaration, the declaration is added at the end`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    width: 100px;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "height",
+                  value: "100px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    width: 100px;\n    height: 100px;\n  </style>\n</div>`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
-        const { server } = await createMockHost(graph);
+        const { server, engine } = await createMockHost(graph);
         const client = server.createHostClient();
         for (const fileName in change) {
           const [edits, expected] = change[fileName];
           const doc = await client.getDocuments().open(fileName);
           const source = await doc.getSource();
-          doc.editVirtualObjects(edits);
+          doc.editVirtualObjects(
+            typeof edits === "function"
+              ? edits(engine.getLoadedAst(fileName))
+              : edits
+          );
           expect(source.getText()).to.eql(expected);
         }
       });

@@ -15,6 +15,7 @@ pub struct NodeSource {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
   pub id: String,
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub children: Vec<Node>,
 }
@@ -34,6 +35,7 @@ pub struct ElementSourceInfo {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Slot {
   pub id: String,
+  #[serde(rename = "sourceId")]
   pub source_id: String
 }
 
@@ -41,6 +43,7 @@ pub struct Slot {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   pub id: String,
+  #[serde(rename = "sourceId")]
   pub source_id: String,
 
 
@@ -86,6 +89,7 @@ impl Element {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
   pub id: String,
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub sheet: css_virt::CSSSheet,
 }
@@ -105,6 +109,7 @@ impl Element {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
   pub id: String,
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub annotations: Option<script_virt::Object>,
   pub value: String,

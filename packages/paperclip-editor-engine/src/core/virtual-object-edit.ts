@@ -16,6 +16,7 @@ export enum VirtualObjectEditKind {
   // inserts a child into a parent element. This will happen
   // if there are no siblings to insert before
   AppendChild = "AppendChild",
+  SetStyleDeclaration = "SetStyleDeclaration",
   PrependChild = "PrependChild",
   AddFrame = "AddFrame",
   DeleteNode = "DeleteNode",
@@ -82,6 +83,12 @@ export type AddAttribute = {
   value: string;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.AddAttribute>;
 
+export type SetStyleDeclaration = {
+  target: EditTarget;
+  name: string;
+  value: string;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.SetStyleDeclaration>;
+
 export type DeleteAttribute = {
   target: EditTarget;
   name: string;
@@ -100,7 +107,7 @@ export type SetAnnotations = {
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.SetAnnotations>;
 
 export type AppendChild = {
-  nodePath?: string;
+  nodePath: string;
   child: ChildInsertion;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.AppendChild>;
 
@@ -127,6 +134,7 @@ export type VirtualObjectEdit =
   | UpdateAttribute
   | SetTextNodeValue
   | PrependChild
+  | SetStyleDeclaration
   | DeleteAttribute
   | AddFrame
   | DeleteNode

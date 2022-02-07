@@ -6,6 +6,7 @@ import { memoize } from "../core/memo";
 import { getNodeAncestors, getNodePath } from "./tree";
 import { Mutation } from "./virt-mtuation";
 import { CSSMutation } from "../css/virt-mutation";
+import { flattenTreeNode } from "..";
 
 export enum VirtualNodeKind {
   Element = "Element",
@@ -103,6 +104,7 @@ export type LoadedCSSData = EvaluatedCSSData;
 export type LoadedData = LoadedPCData | LoadedCSSData;
 
 type VirtualBaseNode<KKind extends VirtualNodeKind> = {
+  sourceId: string;
   id: string;
   kind: KKind;
 };
@@ -164,6 +166,27 @@ export const isInstance = (node: VirtualNode) =>
 
 export const getInstanceAncestor = (node: VirtualNode, root: VirtualNode) =>
   getNodeAncestors(getNodePath(node, root), root).find(isInstance);
+
+export const getVirtNodeIdMap = memoize(
+  (node: VirtualNode): Record<string, VirtualNode> => {
+    const children = flattenTreeNode(node) as VirtualNode[];
+    const map = {};
+    for (const child of children) {
+      map[child.id] = child;
+    }
+    return map;
+  }
+);
+
+export const getVirtNodeBySourceId = (node: VirtualNode, sourceId: string) => {
+  const map = getVirtNodeIdMap(node);
+  for (const virtId in map) {
+    if (map[virtId].sourceId === sourceId) {
+      return map[virtId];
+    }
+  }
+  return null;
+};
 
 // export const createVirtNodeSource = (path: number[], uri: string): VirtNodeSource => ({
 //   uri,

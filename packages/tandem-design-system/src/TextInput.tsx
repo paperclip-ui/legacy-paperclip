@@ -65,7 +65,7 @@ export const useTextInput = ({
   select = false,
   autoFocus,
 }: UseTextInputProps) => {
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<any>();
   const [internalValue, setInternalValue] = useState<string>(value);
   const [refValue, setRefValue] = useState<string>(value);
 

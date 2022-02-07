@@ -12,6 +12,7 @@ import {
   EditTarget,
   EditTargetKind,
   PrependChild,
+  SetStyleDeclaration,
 } from "../../core";
 import { DocumentManager } from "./manager";
 import * as prettier from "prettier";
@@ -45,6 +46,10 @@ import {
   PCModule,
   Node,
   getASTParent,
+  isStyleDeclaration,
+  getVirtNodeBySourceId,
+  getNodePath,
+  StyleElement,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { flatten, camelCase } from "lodash";
@@ -90,7 +95,7 @@ const mapVirtualSourceEdit =
   (edit: VirtualObjectEdit): DocumentTextEdit | DocumentTextEdit[] => {
     switch (edit.kind) {
       case VirtualObjectEditKind.InsertNodeBefore:
-        return insertNodeBefore(uri, engine, edit);
+        return insertNodeBefore(uri, documents, engine, edit);
       case VirtualObjectEditKind.AppendChild:
         return appendChild(uri, documents, engine, edit);
       case VirtualObjectEditKind.SetTextNodeValue:
@@ -102,14 +107,80 @@ const mapVirtualSourceEdit =
       case VirtualObjectEditKind.SetAnnotations:
         return setAnnotations(uri, engine, edit);
       case VirtualObjectEditKind.AddFrame:
-        return addFrame(uri, engine, edit);
+        return addFrame(uri, documents, engine, edit);
       case VirtualObjectEditKind.DeleteNode:
         return deleteNode(uri, engine, edit);
+      case VirtualObjectEditKind.SetStyleDeclaration:
+        return cssSetDeclaration(uri, documents, engine, edit);
       default: {
         throw new Error(`Unhandled edit`);
       }
     }
   };
+
+const cssSetDeclaration = (
+  uri: string,
+  documents: DocumentManager,
+  engine: EngineDelegate,
+  edit: SetStyleDeclaration
+) => {
+  const [exprUri, expr] = getEditTarget(edit.target, uri, engine);
+
+  const decl = `${edit.name}: ${edit.value};`;
+
+  if (isStyleDeclaration(expr)) {
+    return {
+      uri: exprUri,
+      chars: decl.split(""),
+      index: expr.range.start.pos,
+      deleteCount: expr.range.end.pos - expr.range.start.pos,
+    };
+  }
+
+  if (isNode(expr) && expr.nodeKind === NodeKind.Element) {
+    const styleBlock = expr.children.find(
+      (child) => child.nodeKind === NodeKind.StyleElement
+    ) as StyleElement;
+    if (styleBlock) {
+      const lastDecl = styleBlock.sheet.declarations.length
+        ? styleBlock.sheet.declarations[
+            styleBlock.sheet.declarations.length - 1
+          ]
+        : null;
+      if (lastDecl) {
+        return {
+          uri: exprUri,
+          chars: (
+            "\n" +
+            getExprIndentation(exprUri, engine, styleBlock) +
+            INDENT +
+            decl
+          ).split(""),
+          index: lastDecl.range.end.pos,
+        };
+      } else {
+        return {
+          uri: exprUri,
+          chars: (
+            "\n" +
+            getExprIndentation(exprUri, engine, styleBlock) +
+            INDENT +
+            decl
+          ).split(""),
+          index: styleBlock.range.start.pos + "<style>".length,
+        };
+      }
+    } else {
+      return prependChild(exprUri, documents, engine, {
+        kind: VirtualObjectEditKind.PrependChild,
+        target: { kind: EditTargetKind.Expression, sourceId: expr.id },
+        child: { value: `<style>\n${INDENT}${decl}\n</style>` },
+      });
+    }
+  }
+
+  return null;
+};
 
 const getSourceNodeFromPath = (
   uri: string,
@@ -201,29 +272,88 @@ const getExprIndentation = (
 
 const insertNodeBefore = (
   uri: string,
+  documents: DocumentManager,
   engine: EngineDelegate,
   edit: InsertNodeBefore
 ) => {
-  const info = getSourceNodeFromPath(uri, engine, edit.beforeNodePath);
+  const [exprUri, expr] = getEditTarget(
+    { kind: EditTargetKind.VirtualNode, nodePath: edit.beforeNodePath },
+    uri,
+    engine
+  );
+  const parentExpr = getASTParent(
+    expr,
+    engine.getLoadedAst(uri) as DependencyNodeContent
+  ) as Fragment | Element;
   const [child, additionalEdit] = getChildInsertionContent(
     edit.node,
-    info.textSource.uri,
+    documents,
+    exprUri,
     engine,
     false
   );
+
+  const trailing =
+    parentExpr.range.end.line === parentExpr.range.start.line ? "" : "\n";
+  const chars = addMultiLineIndentation(
+    child,
+    getExprIndentation(exprUri, engine, expr)
+  ).split("");
+  if (
+    parentExpr.children.findIndex((child) => child.id === expr.id) === 0 &&
+    parentExpr.nodeKind === NodeKind.Element
+  ) {
+    return {
+      uri: exprUri,
+      chars: ["\n", ...chars],
+      index: parentExpr.tagNameRange.end.pos + 1,
+    };
+  }
+
   return {
-    uri: info.textSource.uri,
-    chars: child.split(""),
-    index: info.textSource.range.start.pos,
+    uri: exprUri,
+    chars: [...chars, trailing],
+    index: expr.range.start.pos,
   };
 };
 const prependChild = (
   uri: string,
+  documents: DocumentManager,
   engine: EngineDelegate,
   edit: PrependChild
 ) => {
-  const [exprUri, expr] = getEditTarget(edit.target, uri, engine);
-  const [child] = getChildInsertionContent(edit.child, exprUri, engine, false);
+  const [exprUri, expr] = getEditTarget(edit.target, uri, engine) as [
+    string,
+    Node
+  ];
+  const [child] = getChildInsertionContent(
+    edit.child,
+    documents,
+    exprUri,
+    engine,
+    false
+  );
+
+  if (expr.nodeKind === NodeKind.Element) {
+    if (expr.children.length === 0) {
+      const root = (engine.getLoadedData(exprUri) as LoadedPCData).preview;
+      const virtNode = getVirtNodeBySourceId(root, expr.id);
+      return appendChild(uri, documents, engine, {
+        kind: VirtualObjectEditKind.AppendChild,
+        nodePath: getNodePath(virtNode, root),
+        child: { value: child },
+      });
+    } else {
+      const root = (engine.getLoadedData(exprUri) as LoadedPCData).preview;
+      const virtNode = getVirtNodeBySourceId(root, expr.children[0].id);
+      return insertNodeBefore(uri, documents, engine, {
+        kind: VirtualObjectEditKind.InsertNodeBefore,
+        beforeNodePath: getNodePath(virtNode, root),
+        node: { value: child },
+      });
+    }
+  }
+
   return {
     uri: exprUri,
     chars: child.split(""),
@@ -357,16 +487,16 @@ const appendChild = (
   engine: EngineDelegate,
   edit: AppendChild
 ): DocumentTextEdit | DocumentTextEdit[] => {
-  const info = getSourceNodeFromPath(uri, engine, edit.nodePath);
-  const [exprUri, expr] = engine.getExpressionById(info.sourceId) as [
-    string,
-    Fragment | Element | Reference
-  ];
+  const [exprUri, expr] = getEditTarget(
+    { kind: EditTargetKind.VirtualNode, nodePath: edit.nodePath },
+    uri,
+    engine
+  );
   if (isNode(expr)) {
     if (expr.nodeKind === NodeKind.Element) {
       return appendElement(uri, documents, engine, expr, exprUri, edit);
     } else if (expr.nodeKind === NodeKind.Fragment) {
-      return appendRoot(expr, engine, exprUri, edit);
+      return appendRoot(expr, documents, engine, exprUri, edit);
     }
   } else if (isScriptExpression(expr)) {
     if (expr.scriptKind === ScriptExpressionKind.Reference) {
@@ -379,11 +509,18 @@ const appendChild = (
 
 const appendRoot = (
   expr: Fragment,
+  documents: DocumentManager,
   engine: EngineDelegate,
   exprUri: string,
   edit: AppendChild
 ) => {
-  const [child] = getChildInsertionContent(edit.child, exprUri, engine, false);
+  const [child] = getChildInsertionContent(
+    edit.child,
+    documents,
+    exprUri,
+    engine,
+    false
+  );
   return {
     uri: exprUri,
     chars: child.split(""),
@@ -427,6 +564,7 @@ const appendSlot = (
 
   const [child, additionalEdits] = getChildInsertionContent(
     edit.child,
+    documents,
     uri,
     engine,
     true
@@ -456,6 +594,13 @@ const deleteAttr = (uri: string, expr: Expression): DocumentTextEdit => ({
   index: expr.range.start.pos - 1,
   deleteCount: expr.range.end.pos - expr.range.start.pos + 1,
 });
+
+const addMultiLineIndentation = (buffer: string, indent: string) => {
+  return buffer
+    .split("\n")
+    .map((line) => indent + line)
+    .join("\n");
+};
 
 const appendElement = (
   uri: string,
@@ -488,12 +633,13 @@ const appendElement = (
 
   const [child, additionalChildEdits] = getChildInsertionContent(
     edit.child,
+    documents,
     exprUri,
     engine,
     false
   );
 
-  const parentIndentation = getNodeIndentation(exprUri, engine, edit.nodePath);
+  const parentIndentation = getExprIndentation(exprUri, engine, expr);
 
   // self closing
   if (tagBuffer.trim().lastIndexOf("/>") !== -1) {
@@ -503,9 +649,7 @@ const appendElement = (
       uri: exprUri,
       chars: [
         ">\n",
-        parentIndentation,
-        INDENT,
-        child,
+        addMultiLineIndentation(child, parentIndentation + INDENT),
         `\n${parentIndentation}</${expr.tagName}>`,
       ]
         .join("")
@@ -572,6 +716,7 @@ const setTextNodeValue = (
 
 const addFrame = (
   uri: string,
+  documents: DocumentManager,
   engine: EngineDelegate,
   { child, box }: AddFrame
 ) => {
@@ -583,6 +728,7 @@ const addFrame = (
 
   const [childValue, additionalEdits] = getChildInsertionContent(
     child,
+    documents,
     exprUri,
     engine,
     false
@@ -606,6 +752,7 @@ const addFrame = (
 
 const getChildInsertionContent = (
   insertion: ChildInsertion,
+  documents: DocumentManager,
   documentUri: string,
   engine: EngineDelegate,
   isAttributeValue: boolean
@@ -629,7 +776,12 @@ const getChildInsertionContent = (
       if (importUri === documentUri) {
         buffer = buffer.replace(new RegExp(`${namespace}.`, "g"), ``);
       } else {
-        const { ns, edit } = autoAddImport(documentUri, engine, importUri);
+        const { ns, edit } = autoAddImport(
+          documentUri,
+          documents,
+          engine,
+          importUri
+        );
         buffer = buffer.replace(new RegExp(`${namespace}.`, "g"), `${ns}.`);
         edits.push(edit);
       }
@@ -656,6 +808,7 @@ const maybeBreak = (buffer: string, ast: Node, isFirstChild: boolean) => {
 
 const autoAddImport = (
   exprUri: string,
+  documents: DocumentManager,
   engine: EngineDelegate,
   importUri: string
 ): { ns: string; edit?: DocumentTextEdit } | undefined => {
@@ -695,7 +848,7 @@ const autoAddImport = (
     ns = getUniqueImportId(importUri, imports);
     return {
       ns,
-      edit: prependChild(exprUri, engine, {
+      edit: prependChild(exprUri, documents, engine, {
         kind: VirtualObjectEditKind.PrependChild,
         target: { kind: EditTargetKind.Expression, sourceId: ast.id },
         child: {

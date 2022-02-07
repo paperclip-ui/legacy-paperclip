@@ -422,7 +422,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ComputedProperty" class:collapsed="collapsed">
+<div export
+  component
+  as="ComputedProperty"
+  class:collapsed="collapsed"
+  {onClick}>
   <div>
     <style>
       display: flex;
@@ -445,7 +449,7 @@
       <style>
         display: flex;
         flex: 1;
-        grid-column-gap: var(--spacing-2);
+        grid-column-gap: var(--spacing-3);
         & > * {
           display: inline-block;
           flex: 1;
@@ -483,6 +487,18 @@
 </div>
 
 <!--
+  @frame { visible: false }
+-->
+<input export component as="PropertyInput" {value?}>
+  <style>
+    border: 1px solid grey;
+    border-radius: 2px;
+    display: inline-block;
+    width: 100%;
+  </style>
+</input>
+
+<!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
 <Pane.Container export component as="Preview" class="$font-regular">
@@ -498,7 +514,7 @@
         sources={<fragment />} />
       <ComputedProperty collapsed
         name="color"
-        value="red"
+        value={<PropertyInput />}
         sources={<fragment />} />
       <ComputedProperty name="background-color"
         value="orange"
@@ -510,7 +526,7 @@
           fileName="global.css" />
       </ComputedProperty>
       <ComputedProperty collapsed
-        name="box-shadow"
+        name={<PropertyInput />}
         value="0px 0px 1px #FF00FF"
         sources={<fragment />} />
     </ComputedStyles>
@@ -526,9 +542,7 @@
           properties={<fragment>
             <StyleRuleProperty name="background-color"
               value={<StyleRulePropertyValue>
-                <Expression>
-                  var(--page-background-color, var(--gray-gray-90))
-                </Expression>
+                <Expression />
               </StyleRulePropertyValue>} />
             <StyleRuleProperty boldName
               disabled
@@ -594,13 +608,26 @@
   </fragment>}
 </Pane.Container>
 
-
 <!--
   @frame { title: "Inspector", width: 265, height: 900, x: 230, y: -138 }
 -->
 <Preview />
 
 <!--
-  @frame { height: 768, width: 348, x: 564, y: -143 }
+  @frame { height: 768, width: 348, x: 563, y: -143 }
 -->
 <Preview showComputed />
+
+
+<!--
+  @frame { x: -1171, y: -60, width: 1024, height: 768 }
+-->
+<div>
+  <div>
+    <style>
+      width: 100px;
+      height: 100px;
+      background: red;
+    </style>
+  </div>
+</div>

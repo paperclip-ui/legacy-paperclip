@@ -63,6 +63,16 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
       }),
     ));
   }
+
+  if (a.source_id != b.source_id) {
+    context.mutations.push(Mutation::new(
+      context.node_path.clone(),
+      Action::SetElementSourceId(SetElementSourceId {
+        value: b.source_id.to_string()
+      }),
+    ));
+  }
+
   if (a.source_info != b.source_info) {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),
