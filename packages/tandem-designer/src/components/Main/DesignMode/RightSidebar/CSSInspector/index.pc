@@ -635,13 +635,13 @@
 
 
 <!--
-  @frame { x: -1171, y: -60, width: 1024, height: 768 }
+  @frame { height: 213, width: 209, x: -1171, y: -60 }
 -->
 <div>
   <div>
     <style>
-      width: 500px;
-      height: 500px;
+      width: 100px;
+      height: 100px;
       background: purple;
     </style>
   </div>
