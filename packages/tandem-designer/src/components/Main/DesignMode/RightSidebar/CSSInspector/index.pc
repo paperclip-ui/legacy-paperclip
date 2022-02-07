@@ -630,16 +630,15 @@
 -->
 <Preview showComputed />
 
-
 <!--
-  @frame { height: 213, width: 209, x: -1171, y: -60 }
+  @frame { height: 213, width: 209, x: -154, y: -137 }
 -->
 <div>
-  <div>
+  <div class="box">
     <style>
       width: 100px;
       height: 100px;
-      background: red;
+      background: blue;
     </style>
   </div>
 </div>

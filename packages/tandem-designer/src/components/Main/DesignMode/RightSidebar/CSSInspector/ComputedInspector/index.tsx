@@ -1,9 +1,11 @@
 import React, { memo, useState } from "react";
 import * as path from "path";
 import { AppState } from "../../../../../../state";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as styles from "../index.pc";
 import { squashInspection, ComputedDeclarationInfo } from "@paperclip-ui/utils";
+import { DeclarationValue } from "../Declaration";
+import { uiActions } from "../../../../../../actions";
 
 export const ComputedInspector = () => {
   const inspection = useSelector(
@@ -29,15 +31,33 @@ type ComputedDeclarationProps = {
 };
 
 const ComputedDeclaration = memo(({ info }: ComputedDeclarationProps) => {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+  const onValueChange = (value: string) => {
+    dispatch(
+      uiActions.computedStyleDeclarationChanged({
+        name: info.name,
+        value: value,
+      })
+    );
+  };
+  const onNameChange = (value: string) => {
+    dispatch(
+      uiActions.computedStyleDeclarationChanged({
+        oldName: info.name,
+        name: value,
+        value: info.value,
+      })
+    );
+  };
   const onClick = () => {
     setOpen(!open);
   };
   return (
     <styles.ComputedProperty
       collapsed={!open}
-      name={info.name}
-      value={info.value}
+      name={<DeclarationValue value={info.name} onChange={onNameChange} />}
+      value={<DeclarationValue value={info.value} onChange={onValueChange} />}
       onExpandClick={onClick}
     >
       {open &&

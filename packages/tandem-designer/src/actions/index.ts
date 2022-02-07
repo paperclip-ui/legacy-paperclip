@@ -8,6 +8,7 @@ export * from "./instance-actions";
 export * from "./server-actions";
 export * from "./external-actions";
 export * from "./workspace-actions";
+export * from "./ui-actions";
 
 export type Action =
   | InstanceAction

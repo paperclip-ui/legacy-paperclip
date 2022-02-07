@@ -902,6 +902,49 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `When setting a style that already exists on an element, that style is replaced`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "background",
+                  value: "blue",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    background: blue;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `Can rename a style on a style element`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "color",
+                  oldName: "background",
+                  value: "blue",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    color: blue;\n  </style>\n</div>`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server, engine } = await createMockHost(graph);

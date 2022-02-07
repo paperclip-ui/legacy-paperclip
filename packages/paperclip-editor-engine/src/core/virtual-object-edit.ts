@@ -86,6 +86,7 @@ export type AddAttribute = {
 export type SetStyleDeclaration = {
   target: EditTarget;
   name: string;
+  oldName?: string;
   value: string;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.SetStyleDeclaration>;
 

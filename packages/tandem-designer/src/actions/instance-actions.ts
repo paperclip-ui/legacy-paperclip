@@ -121,12 +121,12 @@ export enum ActionType {
 
 export const mainActions = actionCreators(
   {
-    locationChanged: (payload: {
+    locationChanged: identity<{
       protocol: string;
       host: string;
       pathname: string;
       query: any;
-    }) => payload,
+    }>(),
   },
   "main"
 );

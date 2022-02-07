@@ -1,6 +1,7 @@
 import {
   Action,
   ActionType,
+  mainActions,
   VirtualStyleDeclarationValueChanged,
 } from "../../..";
 import { ProjectManager } from "./project";
@@ -67,6 +68,9 @@ const getEdits = (
     }
     case ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED: {
       return getStyleDeclarationEdit(action);
+    }
+    case uiActions.computedStyleDeclarationChanged.type: {
+      return getComputedStyleDeclarationEdit(state, action);
     }
   }
   return [];
@@ -160,6 +164,26 @@ export const getStyleDeclarationEdit = ({
     {
       kind: VirtualObjectEditKind.SetStyleDeclaration,
       target: { kind: EditTargetKind.Expression, sourceId: declarationId },
+      name,
+      value,
+    },
+  ];
+};
+
+export const getComputedStyleDeclarationEdit = (
+  state: DesignerState,
+  {
+    payload: { oldName, name, value },
+  }: ReturnType<typeof uiActions.computedStyleDeclarationChanged>
+): VirtualObjectEdit[] => {
+  return [
+    {
+      kind: VirtualObjectEditKind.SetStyleDeclaration,
+      target: {
+        kind: EditTargetKind.VirtualNode,
+        nodePath: state.selectedNodePaths[0],
+      },
+      oldName,
       name,
       value,
     },

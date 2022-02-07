@@ -50,6 +50,7 @@ import {
   getVirtNodeBySourceId,
   getNodePath,
   StyleElement,
+  StyleDeclarationKind,
 } from "@paperclip-ui/core";
 import { TextEdit } from "../../core/crdt-document";
 import { flatten, camelCase } from "lodash";
@@ -142,33 +143,50 @@ const cssSetDeclaration = (
       (child) => child.nodeKind === NodeKind.StyleElement
     ) as StyleElement;
     if (styleBlock) {
-      const lastDecl = styleBlock.sheet.declarations.length
-        ? styleBlock.sheet.declarations[
-            styleBlock.sheet.declarations.length - 1
-          ]
-        : null;
-      if (lastDecl) {
+      const existingDecl = styleBlock.sheet.declarations.find(
+        (decl) =>
+          decl.declarationKind === StyleDeclarationKind.KeyValue &&
+          (edit.oldName != null
+            ? decl.name === edit.oldName
+            : decl.name === edit.name)
+      );
+      if (existingDecl) {
         return {
           uri: exprUri,
-          chars: (
-            "\n" +
-            getExprIndentation(exprUri, engine, styleBlock) +
-            INDENT +
-            decl
-          ).split(""),
-          index: lastDecl.range.end.pos,
+          chars: decl.split(""),
+          index: existingDecl.range.start.pos,
+          deleteCount:
+            existingDecl.range.end.pos - existingDecl.range.start.pos,
         };
       } else {
-        return {
-          uri: exprUri,
-          chars: (
-            "\n" +
-            getExprIndentation(exprUri, engine, styleBlock) +
-            INDENT +
-            decl
-          ).split(""),
-          index: styleBlock.range.start.pos + "<style>".length,
-        };
+        const lastDecl = styleBlock.sheet.declarations.length
+          ? styleBlock.sheet.declarations[
+              styleBlock.sheet.declarations.length - 1
+            ]
+          : null;
+        if (lastDecl) {
+          return {
+            uri: exprUri,
+            chars: (
+              "\n" +
+              getExprIndentation(exprUri, engine, styleBlock) +
+              INDENT +
+              decl
+            ).split(""),
+            index: lastDecl.range.end.pos,
+          };
+        } else {
+          return {
+            uri: exprUri,
+            chars: (
+              "\n" +
+              getExprIndentation(exprUri, engine, styleBlock) +
+              INDENT +
+              decl
+            ).split(""),
+            index: styleBlock.range.start.pos + "<style>".length,
+          };
+        }
       }
     } else {
       return prependChild(exprUri, documents, engine, {
