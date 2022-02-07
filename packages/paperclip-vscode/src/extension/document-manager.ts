@@ -158,7 +158,7 @@ export class DocumentManager {
 
   private _onDesignServerStarted = (info: DesignServerStartedInfo) => {
     this._editorClient = new EditorClient(
-      wsAdapter(new ws.WebSocket(`ws://localhost:${info.httpPort}/ws`))
+      wsAdapter(() => new ws.WebSocket(`ws://localhost:${info.httpPort}/ws`))
     );
 
     workspace.onDidOpenTextDocument(this._onDidOpenTextDocument);
