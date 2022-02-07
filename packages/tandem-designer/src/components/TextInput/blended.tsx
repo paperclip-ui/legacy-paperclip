@@ -8,11 +8,15 @@ export const BlendedTextInput = ({
   onValueChange,
   onEnterPressed,
   onBlur,
+  select,
+  autoFocus,
   value,
   placeholder,
 }: TextInputProps) => {
   const autoResizeDummyRef = useRef<HTMLSpanElement>();
   const { inputProps, refValue } = useTextInput({
+    select,
+    autoFocus,
     onValueChange,
     onEnterPressed,
     onBlur,

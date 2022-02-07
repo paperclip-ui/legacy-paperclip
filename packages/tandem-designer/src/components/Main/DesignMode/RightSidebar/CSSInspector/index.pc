@@ -422,21 +422,18 @@
 <!--
   @frame { visible: false }
 -->
-<div export
-  component
-  as="ComputedProperty"
-  class:collapsed="collapsed"
-  {onClick}>
+<div export component as="ComputedProperty" class:collapsed="collapsed">
   <div>
     <style>
       display: flex;
       align-items: center;
       padding: var(--spacing-2) var(--spacing-4);
     </style>
-    <div>
+    <div onClick={onExpandClick}>
       <style>
         --size: 1em;
         margin-right: var(--spacing-3);
+        cursor: pointer;
         &:within(.collapsed) {
           transform: rotate(-90deg);
         }
@@ -642,7 +639,7 @@
     <style>
       width: 100px;
       height: 100px;
-      background: purple;
+      background: red;
     </style>
   </div>
 </div>

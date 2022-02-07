@@ -37,6 +37,7 @@ export type TextInputProps = {
   autoResize?: boolean;
   value?: string;
   placeholder?: string;
+  select?: boolean;
   big?: boolean;
   secondary?: boolean;
   wide?: boolean;

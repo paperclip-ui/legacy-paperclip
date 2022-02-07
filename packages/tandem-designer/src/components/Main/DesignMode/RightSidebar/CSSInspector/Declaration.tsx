@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleDeclarationInfo } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
 import { BlendedTextInput } from "../../../../TextInput/blended";
+import { noop } from "lodash";
 
 export type StyleRuleProps = {
   info: StyleDeclarationInfo;
@@ -21,11 +22,6 @@ export const StyleDeclaration = ({
     setInternalValue(info.value);
   }, [info.value]);
 
-  const onClick = () => setEditingValue(true);
-  const onBlur = () => {
-    setEditingValue(false);
-  };
-
   return (
     <styles.StyleRuleProperty
       disabled={!info.active}
@@ -33,28 +29,58 @@ export const StyleDeclaration = ({
       boldName={filter && filter(info.name)}
       boldValue={filter && filter(info.value)}
       value={
-        <styles.StyleRulePropertyValue onClick={onClick}>
-          {editingValue ? (
-            <styles.Expression key="child">
-              <BlendedTextInput
-                autoResize
-                value={internalValue}
-                onValueChange={setInternalValue}
-                onEnterPressed={() => {
-                  onValueChange(internalValue);
-                  setEditingValue(false);
-                }}
-                onBlur={() => {
-                  onValueChange(internalValue);
-                  onBlur();
-                }}
-              />
-            </styles.Expression>
-          ) : (
-            <styles.Expression>{internalValue}</styles.Expression>
-          )}
+        <styles.StyleRulePropertyValue>
+          <styles.Expression>
+            <DeclarationValue value={info.value} onChange={onValueChange} />
+          </styles.Expression>
         </styles.StyleRulePropertyValue>
       }
     />
+  );
+};
+
+export type DeclarationValueProps = {
+  value: string;
+  onChange: (value: string) => void;
+};
+
+export const DeclarationValue = ({
+  value,
+  onChange,
+}: DeclarationValueProps) => {
+  const [editingValue, setEditingValue] = useState(false);
+  const [internalValue, setInternalValue] = useState(value);
+
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
+
+  const onClick = () => setEditingValue(true);
+  const onBlur = () => {
+    setEditingValue(false);
+  };
+
+  return (
+    <span onClick={onClick}>
+      {editingValue ? (
+        <BlendedTextInput
+          autoResize
+          autoFocus
+          select
+          value={internalValue}
+          onValueChange={setInternalValue}
+          onEnterPressed={() => {
+            onChange(internalValue);
+            setEditingValue(false);
+          }}
+          onBlur={() => {
+            onChange(internalValue);
+            onBlur();
+          }}
+        />
+      ) : (
+        internalValue
+      )}
+    </span>
   );
 };

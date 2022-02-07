@@ -38,7 +38,7 @@ const ComputedDeclaration = memo(({ info }: ComputedDeclarationProps) => {
       collapsed={!open}
       name={info.name}
       value={info.value}
-      onClick={onClick}
+      onExpandClick={onClick}
     >
       {open &&
         info.sourceRules.map((rule) => (
