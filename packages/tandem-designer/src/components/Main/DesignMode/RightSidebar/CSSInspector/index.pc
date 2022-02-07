@@ -489,6 +489,19 @@
 <!--
   @frame { visible: false }
 -->
+<div export component as="Controls">
+  <style>
+    padding: var(--spacing-3) var(--spacing-4);
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
 <input export component as="PropertyInput" {value?}>
   <style>
     border: 1px solid grey;
@@ -505,6 +518,8 @@
   <Tabs>
     <Tab active={!showComputed}>Rules</Tab>
     <Tab active={showComputed}>Computed</Tab>
+
+    <Controls>&plus;</Controls>
   </Tabs>
   {showComputed && <fragment>
     <ComputedStyles>
@@ -625,9 +640,9 @@
 <div>
   <div>
     <style>
-      width: 100px;
-      height: 100px;
-      background: red;
+      width: 500px;
+      height: 500px;
+      background: purple;
     </style>
   </div>
 </div>

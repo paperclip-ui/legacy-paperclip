@@ -6,6 +6,7 @@ import { TextInputProps, useTextInput } from "@tandem-ui/design-system";
 export const BlendedTextInput = ({
   autoResize,
   onValueChange,
+  onEnterPressed,
   onBlur,
   value,
   placeholder,
@@ -13,9 +14,11 @@ export const BlendedTextInput = ({
   const autoResizeDummyRef = useRef<HTMLSpanElement>();
   const { inputProps, refValue } = useTextInput({
     onValueChange,
+    onEnterPressed,
     onBlur,
     value,
   });
+
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
 

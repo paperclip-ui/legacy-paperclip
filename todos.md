@@ -1,4 +1,4 @@
-- ability to change existing style ules
+- ability to change existing style rules
 - display scoped style by default
 - show computed properties
   

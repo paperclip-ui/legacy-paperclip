@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleDeclarationInfo } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
 import { BlendedTextInput } from "../../../../TextInput/blended";
@@ -15,6 +15,11 @@ export const StyleDeclaration = ({
   filter,
 }: StyleRuleProps) => {
   const [editingValue, setEditingValue] = useState(false);
+  const [internalValue, setInternalValue] = useState("");
+
+  useEffect(() => {
+    setInternalValue(info.value);
+  }, [info.value]);
 
   const onClick = () => setEditingValue(true);
   const onBlur = () => {
@@ -33,13 +38,20 @@ export const StyleDeclaration = ({
             <styles.Expression key="child">
               <BlendedTextInput
                 autoResize
-                value={info.value}
-                onValueChange={onValueChange}
-                onBlur={onBlur}
+                value={internalValue}
+                onValueChange={setInternalValue}
+                onEnterPressed={() => {
+                  onValueChange(internalValue);
+                  setEditingValue(false);
+                }}
+                onBlur={() => {
+                  onValueChange(internalValue);
+                  onBlur();
+                }}
               />
             </styles.Expression>
           ) : (
-            <styles.Expression>{info.value}</styles.Expression>
+            <styles.Expression>{internalValue}</styles.Expression>
           )}
         </styles.StyleRulePropertyValue>
       }

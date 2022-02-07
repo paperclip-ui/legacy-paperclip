@@ -5,12 +5,12 @@ import { RulesInspector } from "./RuleInspector";
 import { ComputedInspector } from "./ComputedInspector";
 
 enum Tabs {
-  Rules = "Rules",
   Computed = "Computed",
+  Rules = "Rules",
 }
 
 export const ElementInspector = React.memo(() => {
-  const [activeTab, setActiveTab] = useState(Tabs.Rules);
+  const [activeTab, setActiveTab] = useState(Tabs.Computed);
 
   return (
     <>

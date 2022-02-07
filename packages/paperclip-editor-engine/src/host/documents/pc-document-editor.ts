@@ -848,16 +848,14 @@ const autoAddImport = (
     ns = getUniqueImportId(importUri, imports);
     return {
       ns,
-      edit: prependChild(exprUri, documents, engine, {
-        kind: VirtualObjectEditKind.PrependChild,
-        target: { kind: EditTargetKind.Expression, sourceId: ast.id },
-        child: {
-          value: `<import src="${engine.resolveFile(
-            exprUri,
-            importUri
-          )}" as="${ns}" />\n`,
-        },
-      }),
+      edit: {
+        uri: exprUri,
+        chars: `<import src="${engine.resolveFile(
+          exprUri,
+          importUri
+        )}" as="${ns}" />\n`.split(""),
+        index: 0,
+      },
     };
   }
   return { ns };

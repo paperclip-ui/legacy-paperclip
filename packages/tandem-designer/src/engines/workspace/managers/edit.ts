@@ -7,6 +7,7 @@ import { ProjectManager } from "./project";
 import { Store } from "../../base";
 import {
   ChildInsertion,
+  EditTargetKind,
   VirtualObjectEdit,
   VirtualObjectEditKind,
 } from "@paperclip-ui/editor-engine/lib/core";
@@ -153,5 +154,14 @@ const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
 const isContainer = (name: string) => !/^(input|select|br|hr)$/.test(name);
 
 export const getStyleDeclarationEdit = ({
-  payload: { declarationId },
-}: VirtualStyleDeclarationValueChanged) => {};
+  payload: { declarationId, name, value },
+}: VirtualStyleDeclarationValueChanged): VirtualObjectEdit[] => {
+  return [
+    {
+      kind: VirtualObjectEditKind.SetStyleDeclaration,
+      target: { kind: EditTargetKind.Expression, sourceId: declarationId },
+      name,
+      value,
+    },
+  ];
+};
