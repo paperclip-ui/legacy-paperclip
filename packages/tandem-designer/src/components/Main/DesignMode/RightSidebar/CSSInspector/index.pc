@@ -408,7 +408,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ComputedStyles">
+<div export component as="ComputedStyles" {onFocus?} {onBlur?}>
   <style>
     border-top: 1px solid rgb(206, 206, 206);
     & > :nth-child(2n) {
@@ -631,14 +631,16 @@
 <Preview showComputed />
 
 <!--
-  @frame { height: 213, width: 209, x: -154, y: -137 }
+  @frame { height: 213, width: 209, x: -107, y: -186 }
 -->
 <div>
   <div class="box">
     <style>
-      width: 100px;
-      height: 100px;
-      background: blue;
+      width: 50px;
+      height: 50px;
+      background: orange;
+      box-sizing: content-box;
+      font-family: Open Sans;
     </style>
   </div>
 </div>

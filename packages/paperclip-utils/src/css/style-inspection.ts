@@ -136,25 +136,26 @@ export type SquashedStyleInspection = Record<string, StyleRuleInfo[]>;
 
 export const squashInspection = memoize(
   (inspection: NodeStyleInspection): ComputedDeclarationInfo[] => {
-    const squashed: Record<string, { value: string; rules: StyleRuleInfo[] }> =
-      {};
+    const squashed: Array<ComputedDeclarationInfo> = [];
+
+    const used: Record<string, ComputedDeclarationInfo> = {};
 
     for (const rule of inspection.styleRules) {
       for (const declaration of rule.declarations) {
-        if (!squashed[declaration.name]) {
-          squashed[declaration.name] = { value: declaration.value, rules: [] };
+        if (!used[declaration.name]) {
+          squashed.push(
+            (used[declaration.name] = {
+              name: declaration.name,
+              variable: declaration.name.indexOf("--") === 0,
+              value: declaration.value,
+              sourceRules: [],
+            })
+          );
         }
-        squashed[declaration.name].rules.push(rule);
+        used[declaration.name].sourceRules.push(rule);
       }
     }
 
-    return Object.keys(squashed)
-      .sort()
-      .map((name) => ({
-        name,
-        value: squashed[name].value,
-        variable: name.indexOf("--") === 0,
-        sourceRules: squashed[name].rules,
-      }));
+    return squashed;
   }
 );

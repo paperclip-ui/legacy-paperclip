@@ -41,15 +41,24 @@ export const StyleDeclaration = ({
 
 export type DeclarationValueProps = {
   value: string;
+  showInput?: boolean;
+  onKeyDown?: (event: React.KeyboardEvent<any>) => void;
+  onTab?: () => void;
   onChange: (value: string) => void;
 };
 
 export const DeclarationValue = ({
   value,
   onChange,
+  showInput,
+  onKeyDown = noop,
+  onTab = noop,
 }: DeclarationValueProps) => {
-  const [editingValue, setEditingValue] = useState(false);
+  const [editingValue, setEditingValue] = useState(showInput);
   const [internalValue, setInternalValue] = useState(value);
+  const onFocus = () => {
+    setEditingValue(true);
+  };
 
   useEffect(() => {
     setInternalValue(value);
@@ -61,13 +70,20 @@ export const DeclarationValue = ({
   };
 
   return (
-    <span onClick={onClick}>
+    <span tabIndex={0} onClick={onClick} onFocus={onFocus}>
       {editingValue ? (
         <BlendedTextInput
           autoResize
           autoFocus
           select
           value={internalValue}
+          onKeyDown={(event: React.KeyboardEvent<any>) => {
+            if (event.key === "Tab") {
+              onChange(internalValue);
+              onTab();
+            }
+            onKeyDown(event);
+          }}
           onValueChange={setInternalValue}
           onEnterPressed={() => {
             onChange(internalValue);

@@ -1,6 +1,9 @@
 - ability to change existing style rules
 - display scoped style by default
 - show computed properties
+- ability to add computed prop
+- ability to delete computed prop
+- color picker
   
 
 - double click to edit text

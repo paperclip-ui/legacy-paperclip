@@ -21,6 +21,7 @@
   {value?}
   {defaultValue?}
   {autoComplete?}
+  {onKeyDown?}
   {autoFocus?}
   allow-1password="yes"
   class:big="big">

@@ -10,6 +10,7 @@ export const TextInput = ({
   onValueChange,
   onBlur,
   placeholder,
+  onKeyDown,
   onEnterPressed,
   wide,
   autoFocus,
@@ -18,6 +19,7 @@ export const TextInput = ({
     value,
     onValueChange,
     onBlur,
+    onKeyDown,
     onEnterPressed,
     autoFocus,
   });
@@ -41,6 +43,7 @@ export type TextInputProps = {
   big?: boolean;
   secondary?: boolean;
   wide?: boolean;
+  onKeyDown?: (event: React.KeyboardEvent<any>) => void;
   onEnterPressed?: () => void;
   onValueChange: (value: string) => void;
   onBlur?: () => void;
@@ -50,6 +53,7 @@ export type TextInputProps = {
 type UseTextInputProps = {
   value: string;
   onBlur?: () => void;
+  onKeyDown?: (event: React.KeyboardEvent<any>) => void;
   onValueChange?: (value: string) => any;
   onEnterPressed?: (value: string) => any;
   onEscape?: () => any;
@@ -62,6 +66,7 @@ export const useTextInput = ({
   onValueChange = noop,
   onEnterPressed = noop,
   onBlur = noop,
+  onKeyDown = noop,
   onEscape = noop,
   select = false,
   autoFocus,
@@ -121,6 +126,7 @@ export const useTextInput = ({
     onFocus,
     onBlur: onBlur2,
     onKeyPress,
+    onKeyDown,
     defaultValue: internalValue,
   };
 
