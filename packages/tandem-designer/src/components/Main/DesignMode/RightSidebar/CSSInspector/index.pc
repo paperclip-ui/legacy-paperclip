@@ -152,50 +152,132 @@
   component
   as="StyleRuleProperty"
   class="code"
-  class:disabled="disabled">
-  <style>
-    display: flex;
-    grid-column-gap: var(--spacing-3);
-    flex-wrap: wrap;
-    grid-row-gap: var(--spacing-2);
-    line-height: var(--spacing-6);
-    padding: 0px var(--spacing-4);
-    &.disabled {
-      text-decoration: line-through;
-      opacity: 0.5;
-    }
-    &:last-child {
-      border-bottom-color: transparent;
-    }
-    :global(input) {
-      border: none;
-      padding-left: 0;
-      margin: 0;
-      color: inherit;
-    }
-  </style>
-  <div class:boldName="bold-name">
+  class:disabled="disabled"
+  class:computed="computed"
+  class:collapsed="collapsed">
+  <div>
     <style>
-      white-space: nowrap;
-      display: inline;
-      &.bold-name {
-        font-weight: 600;
+      display: flex;
+      grid-column-gap: var(--spacing-3);
+      grid-row-gap: var(--spacing-2);
+      line-height: var(--spacing-6);
+      padding: 0px var(--spacing-4);
+      &.disabled {
+        text-decoration: line-through;
+        opacity: 0.5;
+      }
+      &:last-child {
+        border-bottom-color: transparent;
+      }
+      :global(input) {
+        border: none;
+        padding-left: 0;
+        margin: 0;
+        color: inherit;
+      }
+      &:within(.computed) {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: inherit;
+        grid-column-gap: initial;
+        flex-wrap: initial;
+        line-height: inherit;
       }
     </style>
-    <span class="decl-name">{name}</span>
-    <span class="token">:</span>
+    {computed? && <div onClick={onExpandClick}>
+      <style>
+        --size: 1em;
+        margin-right: var(--spacing-3);
+        cursor: pointer;
+        &:within(.collapsed) {
+          transform: rotate(-90deg);
+        }
+        @include utils.mask {
+          mask-image: url("assets/chevron.svg");
+        }
+      </style>
+    </div>}
+
+    <div>
+      <style>
+        display: flex;
+        flex-wrap: wrap;
+        grid-column-gap: var(--spacing-3);
+        &:within(.computed) {
+          flex: 1;
+          & > * {
+            display: inline-block;
+            flex: 1;
+          }
+        }
+      </style>
+      <div class:boldName="bold-name">
+        <style>
+          white-space: nowrap;
+          display: inline;
+          &.bold-name {
+            font-weight: 600;
+          }
+        </style>
+        <span class="decl-name">{name}</span>
+        {!computed && <span class="token">:</span>}
+      </div>
+      <div class="decl-value" class:boldValue="bold-value">
+        <style>
+          flex: 1;
+          display: flex;
+          align-items: center;
+          &.bold-value {
+            font-weight: 600;
+          }
+        </style>
+        {value}
+      </div>
+    </div>
   </div>
-  <div class="decl-value" class:boldValue="bold-value">
+  {children? || ""}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedProperty" class:collapsed="collapsed">
+  <div>
     <style>
-      flex: 1;
       display: flex;
       align-items: center;
-      &.bold-value {
-        font-weight: 600;
-      }
+      padding: var(--spacing-2) var(--spacing-4);
     </style>
-    {value}
+    <div onClick={onExpandClick}>
+      <style>
+        --size: 1em;
+        margin-right: var(--spacing-3);
+        cursor: pointer;
+        &:within(.collapsed) {
+          transform: rotate(-90deg);
+        }
+        @include utils.mask {
+          mask-image: url("assets/chevron.svg");
+        }
+      </style>
+    </div>
+    <div>
+      <style>
+        display: flex;
+        flex: 1;
+        grid-column-gap: var(--spacing-3);
+        & > * {
+          display: inline-block;
+          flex: 1;
+        }
+      </style>
+      <span class="decl-name">{name}</span>
+      <span class="decl-value">{value}</span>
+    </div>
   </div>
+  {children? || ""}
 </div>
 
 
@@ -419,46 +501,6 @@
 </div>
 
 
-<!--
-  @frame { visible: false }
--->
-<div export component as="ComputedProperty" class:collapsed="collapsed">
-  <div>
-    <style>
-      display: flex;
-      align-items: center;
-      padding: var(--spacing-2) var(--spacing-4);
-    </style>
-    <div onClick={onExpandClick}>
-      <style>
-        --size: 1em;
-        margin-right: var(--spacing-3);
-        cursor: pointer;
-        &:within(.collapsed) {
-          transform: rotate(-90deg);
-        }
-        @include utils.mask {
-          mask-image: url("assets/chevron.svg");
-        }
-      </style>
-    </div>
-    <div>
-      <style>
-        display: flex;
-        flex: 1;
-        grid-column-gap: var(--spacing-3);
-        & > * {
-          display: inline-block;
-          flex: 1;
-        }
-      </style>
-      <span class="decl-name">{name}</span>
-      <span class="decl-value">{value}</span>
-    </div>
-  </div>
-  {children? || ""}
-</div>
-
 
 <!--
   @frame { visible: false }
@@ -520,15 +562,18 @@
   </Tabs>
   {showComputed && <fragment>
     <ComputedStyles>
-      <ComputedProperty collapsed
+      <StyleRuleProperty computed
+        collapsed
         name="display"
         value="flex"
         sources={<fragment />} />
-      <ComputedProperty collapsed
+      <StyleRuleProperty computed
+        collapsed
         name="color"
         value={<PropertyInput />}
         sources={<fragment />} />
-      <ComputedProperty name="background-color"
+      <StyleRuleProperty computed
+        name="background-color"
         value="orange"
         sources={<fragment />}>
         <ComputedPropertySource selector=".Pane.Container"
@@ -536,8 +581,8 @@
         <ComputedPropertySource disabled
           selector={<ScopedElementSelector />}
           fileName="global.css" />
-      </ComputedProperty>
-      <ComputedProperty collapsed
+      </StyleRuleProperty>
+      <StyleRuleProperty computed
         name={<PropertyInput />}
         value="0px 0px 1px #FF00FF"
         sources={<fragment />} />
@@ -621,7 +666,7 @@
 </Pane.Container>
 
 <!--
-  @frame { title: "Inspector", width: 265, height: 900, x: 230, y: -138 }
+  @frame { height: 900, title: "Inspector", width: 284, x: 211, y: -139 }
 -->
 <Preview />
 
@@ -638,7 +683,7 @@
     <style>
       width: 50px;
       height: 50px;
-      background: orange;
+      background: green;
       box-sizing: content-box;
       font-family: Open Sans;
     </style>

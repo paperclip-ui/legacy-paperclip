@@ -32,23 +32,12 @@ export const ComputedInspector = () => {
   const onLastValueTab = () => {
     setNewDeclarationCount(newDeclarationCount + 1);
   };
-  console.log(focused);
 
   const syncFocus = () => {
     setTimeout(() => {
-      console.log(document.activeElement);
       setFocused(ref.current.contains(document.activeElement));
-    }, 10);
+    }, 100);
   };
-
-  // const onSave = () => {
-  //   setShowNewInput(false);
-  //   syncFocus();
-  // }
-  // const onClear = () => {
-  //   setShowNewInput(false);
-  //   syncFocus();
-  // }
 
   const ref = useRef<HTMLElement>();
 
@@ -69,7 +58,20 @@ export const ComputedInspector = () => {
         {Array.from({ length: newDeclarationCount }).map((decl, i) => (
           <NewDeclaration
             key={i}
-            onTab={i === newDeclarationCount - 1 && onLastValueTab}
+            onSave={(name, value) => {
+              if (!name || !value) {
+                setNewDeclarationCount(newDeclarationCount - 1);
+              }
+              syncFocus();
+            }}
+            onTab={
+              i === newDeclarationCount - 1 &&
+              ((name, value) => {
+                if (name && value) {
+                  onLastValueTab();
+                }
+              })
+            }
           />
         ))}
       </styles.ComputedStyles>
@@ -78,11 +80,14 @@ export const ComputedInspector = () => {
 };
 
 type BaseComputedDeclaration = {
+  ref?: any;
   showNameInput?: boolean;
   name?: string;
   value?: string;
-  onNameChange: (value: string) => void;
-  onValueChange: (value: string) => void;
+  onNameChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
+  onNameSave: (value: string) => void;
+  onValueSave: (value: string) => void;
   onExpandClick?: () => void;
   onValueTab?: () => void;
   sourceRules?: StyleRuleInfo[];
@@ -90,6 +95,7 @@ type BaseComputedDeclaration = {
 };
 
 const BaseComputedDeclaration = ({
+  ref,
   name,
   value,
   showSourceRules,
@@ -98,21 +104,27 @@ const BaseComputedDeclaration = ({
   onExpandClick,
   onNameChange,
   onValueChange,
+  onNameSave,
+  onValueSave,
   onValueTab,
 }: BaseComputedDeclaration) => {
   return (
-    <styles.ComputedProperty
+    <styles.StyleRuleProperty
+      ref={ref}
       collapsed={!showSourceRules}
+      computed
       name={
         <DeclarationPart
           showInput={showNameInput}
           value={name}
+          onSave={onNameSave}
           onChange={onNameChange}
         />
       }
       value={
         <DeclarationPart
           value={value}
+          onSave={onValueSave}
           onChange={onValueChange}
           onTab={onValueTab}
         />
@@ -126,20 +138,22 @@ const BaseComputedDeclaration = ({
             selector={rule.selectorText}
           />
         ))}
-    </styles.ComputedProperty>
+    </styles.StyleRuleProperty>
   );
 };
 
 type NewDeclarationProps = {
-  onTab?: () => void;
+  onTab?: (name?: string, value?: string) => void;
+  onSave?: (name?: string, value?: string) => void;
 };
 
-const NewDeclaration = ({ onTab }: NewDeclarationProps) => {
+const NewDeclaration = ({ onTab, onSave }: NewDeclarationProps) => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [value, setValue] = useState("");
+  const ref = useRef<HTMLElement>();
 
-  useEffect(() => {
+  const onSave2 = () => {
     if (name && value) {
       dispatch(
         uiActions.computedStyleDeclarationChanged({
@@ -147,15 +161,24 @@ const NewDeclaration = ({ onTab }: NewDeclarationProps) => {
           value,
         })
       );
+      onSave(name, value);
     }
-  }, [name, value]);
+  };
 
   return (
     <BaseComputedDeclaration
+      ref={ref}
       showNameInput
       onNameChange={setName}
+      onNameSave={onSave2}
+      onValueSave={onSave2}
       onValueChange={setValue}
-      onValueTab={onTab}
+      onValueTab={() =>
+        setTimeout(() => {
+          onSave2();
+          onTab(name, value);
+        }, 5)
+      }
     />
   );
 };
@@ -169,7 +192,7 @@ const ComputedDeclaration = memo(
   ({ info, onTab }: ComputedDeclarationProps) => {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-    const onValueChange = (value: string) => {
+    const onValueSave = (value: string) => {
       dispatch(
         uiActions.computedStyleDeclarationChanged({
           name: info.name,
@@ -177,7 +200,7 @@ const ComputedDeclaration = memo(
         })
       );
     };
-    const onNameChange = (value: string) => {
+    const onNameSave = (value: string) => {
       dispatch(
         uiActions.computedStyleDeclarationChanged({
           oldName: info.name,
@@ -194,8 +217,8 @@ const ComputedDeclaration = memo(
         name={info.name}
         value={info.value}
         sourceRules={info.sourceRules}
-        onNameChange={onNameChange}
-        onValueChange={onValueChange}
+        onNameSave={onNameSave}
+        onValueSave={onValueSave}
         onExpandClick={onClick}
         showSourceRules={open}
         onValueTab={onTab}

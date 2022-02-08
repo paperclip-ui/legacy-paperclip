@@ -31,7 +31,7 @@ export const StyleDeclaration = ({
       value={
         <styles.StyleRulePropertyValue>
           <styles.Expression>
-            <DeclarationValue value={info.value} onChange={onValueChange} />
+            <DeclarationValue value={info.value} onSave={onValueChange} />
           </styles.Expression>
         </styles.StyleRulePropertyValue>
       }
@@ -44,12 +44,14 @@ export type DeclarationValueProps = {
   showInput?: boolean;
   onKeyDown?: (event: React.KeyboardEvent<any>) => void;
   onTab?: () => void;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
+  onSave?: (value: string) => void;
 };
 
 export const DeclarationValue = ({
   value,
-  onChange,
+  onSave = noop,
+  onChange = noop,
   showInput,
   onKeyDown = noop,
   onTab = noop,
@@ -63,6 +65,10 @@ export const DeclarationValue = ({
   useEffect(() => {
     setInternalValue(value);
   }, [value]);
+
+  useEffect(() => {
+    onChange(internalValue);
+  }, [internalValue]);
 
   const onClick = () => setEditingValue(true);
   const onBlur = () => {
@@ -79,18 +85,20 @@ export const DeclarationValue = ({
           value={internalValue}
           onKeyDown={(event: React.KeyboardEvent<any>) => {
             if (event.key === "Tab") {
-              onChange(internalValue);
-              onTab();
+              onSave(internalValue);
+              if (!event.shiftKey) {
+                onTab();
+              }
             }
             onKeyDown(event);
           }}
           onValueChange={setInternalValue}
           onEnterPressed={() => {
-            onChange(internalValue);
+            onSave(internalValue);
             setEditingValue(false);
           }}
           onBlur={() => {
-            onChange(internalValue);
+            onSave(internalValue);
             onBlur();
           }}
         />
