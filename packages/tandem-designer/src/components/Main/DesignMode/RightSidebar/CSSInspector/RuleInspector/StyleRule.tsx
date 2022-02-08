@@ -11,11 +11,9 @@ import {
 import * as styles from "../index.pc";
 import * as path from "path";
 import { StyleDeclaration } from "../Declaration";
-import {
-  styleRuleFileNameClicked,
-  virtualStyleDeclarationValueChanged,
-} from "../../../../../../actions";
+import { styleRuleFileNameClicked } from "../../../../../../actions";
 import { SelectorScopeKind } from "@paperclip-ui/utils";
+import { StyleDeclarationList } from "../DeclarationList";
 
 export type StyleRuleProps = {
   dispatch: any;
@@ -25,20 +23,6 @@ export type StyleRuleProps = {
 
 export const StyleRule = React.memo(
   ({ dispatch, info, filter }: StyleRuleProps) => {
-    const onDeclarationValueChange = (
-      declarationId: string,
-      name: string,
-      value: string
-    ) => {
-      dispatch(
-        virtualStyleDeclarationValueChanged({
-          declarationId,
-          name,
-          value,
-        })
-      );
-    };
-
     const onFileNameClick = () => {
       dispatch(
         styleRuleFileNameClicked({
@@ -56,22 +40,31 @@ export const StyleRule = React.memo(
         isGlobal={isSelectorPartiallyGlobal(info.selectorInfo)}
         fileName={path.basename(info.sourceUri)}
         selector={generateSelector(info.selectorInfo)}
-        properties={info.declarations.map((declaration, i) => {
-          return (
-            <StyleDeclaration
-              key={i}
-              filter={filter}
-              info={declaration}
-              onValueChange={(value) => {
-                onDeclarationValueChange(
-                  declaration.sourceId,
-                  declaration.name,
-                  value
-                );
-              }}
-            />
-          );
-        })}
+        // properties={info.declarations.map((declaration, i) => {
+        //   return (
+        //     <StyleDeclaration
+        //       key={i}
+        //       filter={filter}
+        //       info={declaration}
+        //       onValueChange={(value) => {
+        //         onDeclarationValueChange(
+        //           declaration.sourceId,
+        //           declaration.name,
+        //           value
+        //         );
+        //       }}
+        //     />
+        //   );
+        // })}
+        properties={
+          <StyleDeclarationList
+            items={info.declarations.map((decl) => ({
+              name: decl.name,
+              value: decl.value,
+              id: decl.sourceId,
+            }))}
+          />
+        }
       />
     );
   }

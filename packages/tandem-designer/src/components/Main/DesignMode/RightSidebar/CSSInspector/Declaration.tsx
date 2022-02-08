@@ -15,15 +15,10 @@ export const StyleDeclaration = ({
   onValueChange,
   filter,
 }: StyleRuleProps) => {
-  const [editingValue, setEditingValue] = useState(false);
-  const [internalValue, setInternalValue] = useState("");
-
-  useEffect(() => {
-    setInternalValue(info.value);
-  }, [info.value]);
-
   return (
     <styles.StyleRuleProperty
+      computed={false}
+      onExpandClick={noop}
       disabled={!info.active}
       name={info.name}
       boldName={filter && filter(info.name)}

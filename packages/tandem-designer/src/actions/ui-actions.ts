@@ -14,7 +14,12 @@ export const uiActions = actionCreators(
     toolLayerDrop: identity<{ node: AvailableNode; point: Point }>(),
     documentMouseUp: null,
     computedStyleDeclarationChanged:
-      identity<{ oldName?: string; name: string; value: string }>(),
+      identity<{
+        oldName?: string;
+        id?: string;
+        name: string;
+        value: string;
+      }>(),
   },
   "uiActions"
 );

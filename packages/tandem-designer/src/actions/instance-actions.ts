@@ -111,7 +111,7 @@ export enum ActionType {
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
   VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
-  VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED",
+
   STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED",
   LAYER_LEAF_CLICKED = "LAYER_LEAF_CLICKED",
   LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED",
@@ -215,15 +215,6 @@ export type MetaClicked = BaseAction<
 export type BirdseyeFilterChanged = BaseAction<
   ActionType.BIRDSEYE_FILTER_CHANGED,
   {
-    value: string;
-  }
->;
-
-export type VirtualStyleDeclarationValueChanged = BaseAction<
-  ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED,
-  {
-    declarationId: string;
-    name: string;
     value: string;
   }
 >;
@@ -568,11 +559,6 @@ export const fileItemClicked = actionCreator<FileItemClicked>(
   ActionType.FILE_ITEM_CLICKED
 );
 
-export const virtualStyleDeclarationValueChanged =
-  actionCreator<VirtualStyleDeclarationValueChanged>(
-    ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED
-  );
-
 export const styleRuleFileNameClicked = actionCreator<StyleRuleFileNameClicked>(
   ActionType.STYLE_RULE_FILE_NAME_CLICKED
 );
@@ -750,7 +736,6 @@ export type InstanceAction =
   | RectsCaptured
   | CanvasMouseUp
   | ResizerPathMoved
-  | VirtualStyleDeclarationValueChanged
   | VirtualNodesSelected
   | NodeBreadcrumbClicked
   | ResizerPathStoppedMoving

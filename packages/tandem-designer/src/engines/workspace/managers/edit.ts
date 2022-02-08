@@ -1,9 +1,4 @@
-import {
-  Action,
-  ActionType,
-  mainActions,
-  VirtualStyleDeclarationValueChanged,
-} from "../../..";
+import { Action, ActionType, mainActions } from "../../..";
 import { ProjectManager } from "./project";
 import { Store } from "../../base";
 import {
@@ -65,9 +60,6 @@ const getEdits = (
     }
     case uiActions.toolLayerDrop.type: {
       return getDropEdit(state, action);
-    }
-    case ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED: {
-      return getStyleDeclarationEdit(action);
     }
     case uiActions.computedStyleDeclarationChanged.type: {
       return getComputedStyleDeclarationEdit(state, action);
@@ -158,8 +150,10 @@ const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
 const isContainer = (name: string) => !/^(input|select|br|hr)$/.test(name);
 
 export const getStyleDeclarationEdit = ({
-  payload: { declarationId, name, value },
-}: VirtualStyleDeclarationValueChanged): VirtualObjectEdit[] => {
+  payload: { id: declarationId, name, value },
+}: ReturnType<
+  typeof uiActions.computedStyleDeclarationChanged
+>): VirtualObjectEdit[] => {
   return [
     {
       kind: VirtualObjectEditKind.SetStyleDeclaration,
@@ -172,10 +166,15 @@ export const getStyleDeclarationEdit = ({
 
 export const getComputedStyleDeclarationEdit = (
   state: DesignerState,
-  {
-    payload: { oldName, name, value },
-  }: ReturnType<typeof uiActions.computedStyleDeclarationChanged>
+  action: ReturnType<typeof uiActions.computedStyleDeclarationChanged>
 ): VirtualObjectEdit[] => {
+  const {
+    payload: { id, oldName, name, value },
+  } = action;
+
+  if (id) {
+    return getStyleDeclarationEdit(action);
+  }
   return [
     {
       kind: VirtualObjectEditKind.SetStyleDeclaration,

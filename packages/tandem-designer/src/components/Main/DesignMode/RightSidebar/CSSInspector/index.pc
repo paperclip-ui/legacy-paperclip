@@ -243,47 +243,6 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ComputedProperty" class:collapsed="collapsed">
-  <div>
-    <style>
-      display: flex;
-      align-items: center;
-      padding: var(--spacing-2) var(--spacing-4);
-    </style>
-    <div onClick={onExpandClick}>
-      <style>
-        --size: 1em;
-        margin-right: var(--spacing-3);
-        cursor: pointer;
-        &:within(.collapsed) {
-          transform: rotate(-90deg);
-        }
-        @include utils.mask {
-          mask-image: url("assets/chevron.svg");
-        }
-      </style>
-    </div>
-    <div>
-      <style>
-        display: flex;
-        flex: 1;
-        grid-column-gap: var(--spacing-3);
-        & > * {
-          display: inline-block;
-          flex: 1;
-        }
-      </style>
-      <span class="decl-name">{name}</span>
-      <span class="decl-value">{value}</span>
-    </div>
-  </div>
-  {children? || ""}
-</div>
-
-
-<!--
-  @frame { visible: false }
--->
 <span export component as="Expression" {class?} {style?} class:last="last">
   <style>
     & > :global(*) {
@@ -675,17 +634,19 @@
 -->
 <Preview showComputed />
 
+
+
+
 <!--
-  @frame { height: 213, width: 209, x: -107, y: -186 }
+  @frame { height: 288, width: 302, x: -688, y: -598 }
 -->
 <div>
-  <div class="box">
+  <div>
     <style>
-      width: 50px;
-      height: 50px;
-      background: green;
-      box-sizing: content-box;
-      font-family: Open Sans;
+      font-family: sans-serif;
+      width: 100px;
+      height: 100px;
+      box-sizing: border-box;
     </style>
   </div>
 </div>
