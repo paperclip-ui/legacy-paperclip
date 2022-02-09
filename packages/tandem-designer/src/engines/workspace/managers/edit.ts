@@ -58,6 +58,9 @@ const getEdits = (
     case ActionType.GLOBAL_BACKSPACE_KEY_PRESSED: {
       return getDeletionEdit(state);
     }
+    case uiActions.canvasTextContentChanges.type: {
+      return getCanvasTextContentEdit(state, action);
+    }
     case uiActions.toolLayerDrop.type: {
       return getDropEdit(state, action);
     }
@@ -84,6 +87,19 @@ const getUpdateAnnotationEdits = (
       kind: VirtualObjectEditKind.SetAnnotations,
       nodePath,
       value: computeVirtScriptObject(frame.annotations),
+    };
+  });
+};
+
+const getCanvasTextContentEdit = (
+  state: DesignerState,
+  { payload: { value } }: ReturnType<typeof uiActions.canvasTextContentChanges>
+): VirtualObjectEdit[] => {
+  return state.selectedNodePaths.map((nodePath) => {
+    return {
+      kind: VirtualObjectEditKind.SetTextNodeValue,
+      nodePath,
+      value,
     };
   });
 };

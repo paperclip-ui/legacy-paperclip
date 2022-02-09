@@ -197,18 +197,24 @@ export const getFrameRects = (
   traverseNativeNode(
     mount.childNodes[STAGE_INDEX].childNodes[0],
     (node, path) => {
+      const pathStr = path.length ? index + "." + path.join(".") : index;
+      let clientRect: DOMRect;
       if (node.nodeType === 1) {
-        const pathStr = path.length ? index + "." + path.join(".") : index;
-        if (pathStr) {
-          const clientRect = (node as Element).getBoundingClientRect();
+        clientRect = (node as Element).getBoundingClientRect();
+      } else if (node.nodeType === 3) {
+        const range = document.createRange();
+        range.selectNode(node);
+        clientRect = range.getBoundingClientRect();
+        range.detach();
+      }
 
-          rects[pathStr] = {
-            width: clientRect.width,
-            height: clientRect.height,
-            x: clientRect.left + bounds.x,
-            y: clientRect.top + bounds.y,
-          };
-        }
+      if (clientRect) {
+        rects[pathStr] = {
+          width: clientRect.width,
+          height: clientRect.height,
+          x: clientRect.left + bounds.x,
+          y: clientRect.top + bounds.y,
+        };
       }
     }
   );

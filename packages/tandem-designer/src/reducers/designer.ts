@@ -62,6 +62,7 @@ import {
 } from "@paperclip-ui/utils";
 import * as path from "path";
 import { uiActions } from "../actions/ui-actions";
+import { AvailableNodeKind } from "@paperclip-ui/language-service";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -442,6 +443,9 @@ export const reduceDesigner = (
         } else {
           newDesigner.selectedNodePaths = [String(root.children.length)];
         }
+        if (action.payload.node.kind === AvailableNodeKind.Text) {
+          newDesigner.showTextEditor = true;
+        }
       });
       return designer;
     }
@@ -580,6 +584,12 @@ export const reduceDesigner = (
       });
       return designer;
     }
+    case uiActions.canvasTextContentChanges.type: {
+      return produce(designer, (newDesigner) => {
+        newDesigner.showTextEditor = false;
+      });
+    }
+
     case ActionType.RECTS_CAPTURED: {
       designer = produce(designer, (newDesigner) => {
         newDesigner.frameBoxes[action.payload.frameIndex] =

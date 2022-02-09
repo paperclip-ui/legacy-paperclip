@@ -105,6 +105,7 @@ describe(`With a selected element`, () => {
   it(`When a new element is dropped, that child is selected`, async () => {
     mock.store.dispatch(canvasMouseMoved({ x: 100, y: 100 }));
     expect(mock.store.getState().designer.highlightNodePath).toEqual("0");
+    expect(mock.store.getState().designer.showTextEditor).toEqual(false);
     mock.store.dispatch(
       uiActions.toolLayerDrop({
         node: {
@@ -117,10 +118,31 @@ describe(`With a selected element`, () => {
       })
     );
     expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0.1"]);
+    expect(mock.store.getState().designer.showTextEditor).toEqual(false);
     await timeout(10);
     expect(doc.getText()).toEqual(
       `<div>Hello world<div data-pc-show-insert /></div>`
     );
+  });
+
+  it(`And a text node is dropped, the editor is put into secondary edit mode`, async () => {
+    mock.store.dispatch(canvasMouseMoved({ x: 100, y: 100 }));
+    expect(mock.store.getState().designer.showTextEditor).toEqual(false);
+    mock.store.dispatch(
+      uiActions.toolLayerDrop({
+        node: {
+          kind: AvailableNodeKind.Text,
+          displayName: "text",
+          name: "text",
+          description: "",
+        },
+        point: { x: 500, y: 500 },
+      })
+    );
+    expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0.1"]);
+    expect(mock.store.getState().designer.showTextEditor).toEqual(true);
+    await timeout(10);
+    expect(doc.getText()).toEqual(`<div>Hello worldDouble click to edit</div>`);
   });
 });
 

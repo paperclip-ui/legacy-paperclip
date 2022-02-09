@@ -32,8 +32,12 @@ export const BlendedTextInput = ({
     if (!autoResizeDummyRef.current) {
       return;
     }
-    setWidth(autoResizeDummyRef.current.getBoundingClientRect().width);
-    setHeight(autoResizeDummyRef.current.getBoundingClientRect().height);
+    setWidth(
+      Math.max(20, autoResizeDummyRef.current.getBoundingClientRect().width)
+    );
+    setHeight(
+      Math.max(10, autoResizeDummyRef.current.getBoundingClientRect().height)
+    );
   }, [autoResizeDummyRef.current, refValue]);
 
   return (

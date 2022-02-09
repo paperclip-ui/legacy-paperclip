@@ -1,15 +1,8 @@
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import * as path from "path";
 import { AppState } from "../../../../../../state";
-import { useDispatch, useSelector } from "react-redux";
-import * as styles from "../index.pc";
-import {
-  squashInspection,
-  ComputedDeclarationInfo,
-  StyleRuleInfo,
-} from "@paperclip-ui/utils";
-import { DeclarationValue as DeclarationPart } from "../Declaration";
-import { uiActions } from "../../../../../../actions";
+import { useSelector } from "react-redux";
+import { squashInspection } from "@paperclip-ui/utils";
 import { StyleDeclarationList } from "../DeclarationList";
 
 export const ComputedInspector = () => {

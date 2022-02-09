@@ -633,11 +633,3 @@
   @frame { height: 768, width: 348, x: 563, y: -143 }
 -->
 <Preview showComputed />
-
-
-<!--
-  @frame { x: -1110, y: 92, width: 1024, height: 768 }
--->
-<div>
-  <div>something like this</div>
-</div>
