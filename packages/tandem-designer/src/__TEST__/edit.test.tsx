@@ -66,7 +66,7 @@ describe(`With a selected text child of a frame`, () => {
   });
 });
 
-describe(`With a selected element`, () => {
+describe(`With a selected element that has a child element`, () => {
   let mock: DesignerMock;
   let doc: CRDTTextDocument;
 
@@ -125,7 +125,54 @@ describe(`With a selected element`, () => {
     );
   });
 
-  it(`And a text node is dropped, the editor is put into secondary edit mode`, async () => {
+  it(`And a text node is dropped, the editor will select the first child since it's merged with the dropped text`, async () => {
+    mock.store.dispatch(canvasMouseMoved({ x: 100, y: 100 }));
+    expect(mock.store.getState().designer.showTextEditor).toEqual(false);
+    mock.store.dispatch(
+      uiActions.toolLayerDrop({
+        node: {
+          kind: AvailableNodeKind.Text,
+          displayName: "text",
+          name: "text",
+          description: "",
+        },
+        point: { x: 500, y: 500 },
+      })
+    );
+    expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0.0"]);
+    expect(mock.store.getState().designer.showTextEditor).toEqual(true);
+    await timeout(10);
+    expect(doc.getText()).toEqual(`<div>Hello worldDouble click to edit</div>`);
+  });
+});
+
+describe(`With an element that has an element child`, () => {
+  let mock: DesignerMock;
+  let doc: CRDTTextDocument;
+
+  beforeEach(async () => {
+    mock = await createMock({
+      files: {
+        "test.pc": `<div><span /></div>`,
+      },
+      canvasFile: "test.pc",
+      initialDesignerState: {
+        selectedNodePaths: ["0"],
+        frameBoxes: {
+          0: {
+            "0": { x: 100, y: 100, width: 100, height: 100 },
+          },
+        },
+      },
+    });
+    doc = await mock.project
+      .getDocuments()
+      .open(mock.testServer.fixtureUris["test.pc"])
+      .then((doc) => doc.getSource());
+    await timeout(100);
+  });
+
+  it(`And a text node is dropped, the editor will select it`, async () => {
     mock.store.dispatch(canvasMouseMoved({ x: 100, y: 100 }));
     expect(mock.store.getState().designer.showTextEditor).toEqual(false);
     mock.store.dispatch(
@@ -142,7 +189,7 @@ describe(`With a selected element`, () => {
     expect(mock.store.getState().designer.selectedNodePaths).toEqual(["0.1"]);
     expect(mock.store.getState().designer.showTextEditor).toEqual(true);
     await timeout(10);
-    expect(doc.getText()).toEqual(`<div>Hello worldDouble click to edit</div>`);
+    expect(doc.getText()).toEqual(`<div><span />Double click to edit</div>`);
   });
 });
 

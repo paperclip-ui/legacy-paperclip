@@ -21,8 +21,8 @@ export const TextEditor = ({
     return null;
   }
 
-  const left = (box.x - canvasScroll.x) * canvasTransform.z + canvasTransform.x;
-  const top = (box.y - canvasScroll.y) * canvasTransform.z + canvasTransform.y;
+  const left = box.x - canvasScroll.x + canvasTransform.x;
+  const top = box.y - canvasScroll.y + canvasTransform.y;
 
   const ref = useRef<HTMLTextAreaElement>();
   const dispatch = useDispatch();
@@ -32,13 +32,7 @@ export const TextEditor = ({
     width: box.width,
     zIndex: 9999,
     height: box.height,
-    left: box.x,
-    top: box.y,
-
-    "--zoom": 1,
     transform: `translateX(${left}px) translateY(${top}px) scale(${canvasTransform.z})`,
-    // width: box.width * canvasTransform.z,
-    // height: box.height * canvasTransform.z,
     transformOrigin: `top left`,
   };
 

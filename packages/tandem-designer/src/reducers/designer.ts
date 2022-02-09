@@ -437,9 +437,28 @@ export const reduceDesigner = (
             newDesigner.highlightNodePath,
             root
           ) as any as VirtualElement;
-          newDesigner.selectedNodePaths = [
-            newDesigner.highlightNodePath + "." + parent.children.length,
-          ];
+
+          const lastChild = parent.children.length
+            ? parent.children[parent.children.length - 1]
+            : null;
+
+          // If previous child is text, and dropped element is text, then they will be merged together, so
+          // select the last child
+          if (
+            action.payload.node.kind === AvailableNodeKind.Text &&
+            lastChild &&
+            lastChild.kind === VirtualNodeKind.Text
+          ) {
+            newDesigner.selectedNodePaths = [
+              newDesigner.highlightNodePath +
+                "." +
+                (parent.children.length - 1),
+            ];
+          } else {
+            newDesigner.selectedNodePaths = [
+              newDesigner.highlightNodePath + "." + parent.children.length,
+            ];
+          }
         } else {
           newDesigner.selectedNodePaths = [String(root.children.length)];
         }

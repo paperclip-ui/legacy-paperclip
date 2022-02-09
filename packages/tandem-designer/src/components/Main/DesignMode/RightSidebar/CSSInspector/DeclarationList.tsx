@@ -50,8 +50,14 @@ export const StyleDeclarationList = ({
     syncFocus();
   };
 
+  const onClick = () => {
+    if (!internalItems.length && !newDeclarationCount) {
+      setNewDeclarationCount(newDeclarationCount + 1);
+    }
+  };
+
   return (
-    <div ref={ref} onBlur={onBlur2}>
+    <div ref={ref} onBlur={onBlur2} onClick={onClick}>
       {internalItems.map((item, i) => (
         <ComputedDeclaration
           key={item.name}
