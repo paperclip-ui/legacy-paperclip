@@ -15,7 +15,6 @@ import {
   SetStyleDeclaration,
 } from "../../core";
 import { DocumentManager } from "./manager";
-import * as prettier from "prettier";
 import {
   Element,
   EngineDelegate,
@@ -42,8 +41,6 @@ import {
   getASTAncestors,
   getAttribute,
   ELEMENT_INSERT_ATTR,
-  Module,
-  PCModule,
   Node,
   getASTParent,
   isStyleDeclaration,

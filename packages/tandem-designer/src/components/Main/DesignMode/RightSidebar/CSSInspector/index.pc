@@ -635,18 +635,9 @@
 <Preview showComputed />
 
 
-
-
 <!--
-  @frame { height: 288, width: 302, x: -688, y: -598 }
+  @frame { x: -1110, y: 92, width: 1024, height: 768 }
 -->
 <div>
-  <div>
-    <style>
-      font-family: sans-serif;
-      width: 100px;
-      height: 100px;
-      box-sizing: border-box;
-    </style>
-  </div>
+  <div>something like this</div>
 </div>

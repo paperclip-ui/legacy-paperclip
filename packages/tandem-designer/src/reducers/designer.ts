@@ -57,6 +57,8 @@ import {
   isInstance,
   stripFileProtocol,
   VirtualNodeKind,
+  VirtualElement,
+  VirtualFragment,
 } from "@paperclip-ui/utils";
 import * as path from "path";
 import { uiActions } from "../actions/ui-actions";
@@ -424,6 +426,22 @@ export const reduceDesigner = (
       designer = produce(designer, (newDesigner) => {
         newDesigner.draggingInsertableNode = null;
         newDesigner.showInsertModal = false;
+        const root = (
+          newDesigner.allLoadedPCFileData[
+            newDesigner.ui.query.canvasFile
+          ] as LoadedPCData
+        ).preview as VirtualFragment;
+        if (newDesigner.highlightNodePath) {
+          const parent = getNodeByPath(
+            newDesigner.highlightNodePath,
+            root
+          ) as any as VirtualElement;
+          newDesigner.selectedNodePaths = [
+            newDesigner.highlightNodePath + "." + parent.children.length,
+          ];
+        } else {
+          newDesigner.selectedNodePaths = [String(root.children.length)];
+        }
       });
       return designer;
     }

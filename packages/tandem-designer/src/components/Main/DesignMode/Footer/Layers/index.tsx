@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getNodeByPath,
   nodePathToAry,
-  VirtualElement
+  VirtualElement,
 } from "@paperclip-ui/utils";
 import { Element } from "./Element";
 import * as styles from "./index.pc";
 import {
   layerExpandToggleClicked,
-  layerLeafClicked
+  layerLeafClicked,
 } from "../../../../../actions";
 import { Node } from "./Node";
 
@@ -37,6 +37,11 @@ export const Layers = React.memo(() => {
   const nodePath = nodePathToAry(selectedNodePath);
   const preview = getCurrentPreview(state.designer);
   const frame = getNodeByPath(String(nodePath[0]), preview) as VirtualElement;
+
+  // will exist if frame doesn't exist yet (on insert)
+  if (!frame) {
+    return null;
+  }
 
   return (
     <styles.Container>
