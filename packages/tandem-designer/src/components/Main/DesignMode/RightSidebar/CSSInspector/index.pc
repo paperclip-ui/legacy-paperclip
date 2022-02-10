@@ -672,6 +672,17 @@
       opacity: 0.5;
     </style>
 
-    <div data-pc-show-insert />
+    <div>
+      <style>
+        color: red;
+        background: blue;
+        width: 100px;
+        height: 100px;
+        font-family: Comic Sans MS;
+        padding: 15px;
+      </style>
+
+      Double click to edit
+    </div>
   </div>
 </div>

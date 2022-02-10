@@ -690,7 +690,21 @@ export const reduceDesigner = (
 
       [designer, doubleClicked] = handleDoubleClick(designer, action);
 
+      console.log(doubleClicked);
+
       if (doubleClicked) {
+        if (designer.selectedNodePaths.length) {
+          const node = getNodeByPath(
+            designer.selectedNodePaths[0],
+            getCurrentPreview(designer)
+          );
+          console.log(node);
+          if (node && node.kind === VirtualNodeKind.Text) {
+            designer = produce(designer, (newDesigner) => {
+              newDesigner.showTextEditor = true;
+            });
+          }
+        }
         return designer;
       }
 

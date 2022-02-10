@@ -1,5 +1,5 @@
 import { VirtualNode, VirtualNodeKind } from "@paperclip-ui/utils";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { uiActions } from "../../../../../../actions";
 import { Box, Point, Transform } from "../../../../../../state";
@@ -21,8 +21,8 @@ export const TextEditor = ({
     return null;
   }
 
-  const left = box.x - canvasScroll.x + canvasTransform.x;
-  const top = box.y - canvasScroll.y + canvasTransform.y;
+  const left = (box.x - canvasScroll.x) * canvasTransform.z + canvasTransform.x;
+  const top = (box.y - canvasScroll.y) * canvasTransform.z + canvasTransform.y;
 
   const ref = useRef<HTMLTextAreaElement>();
   const dispatch = useDispatch();
@@ -48,11 +48,17 @@ export const TextEditor = ({
     }
   };
 
+  // need this in case of double click to edit
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  }, [ref.current]);
+
   return (
     <textarea
       style={style}
       ref={ref}
-      autoFocus
       defaultValue={node.value.trim()}
       onBlur={onBlur}
       onKeyPress={onKeyPress}
