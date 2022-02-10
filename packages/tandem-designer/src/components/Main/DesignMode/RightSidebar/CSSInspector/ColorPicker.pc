@@ -48,6 +48,25 @@
 <!--
   @frame { visible: false }
 -->
+<div export
+  component
+  as="Variant"
+  class:enabled="enabled"
+  style="background:{value}">
+  <style>
+    width: 20px;
+    height: 20px;
+    border-radius: 2px;
+    &.enabled {
+      opacity: 1;
+      box-shadow: inset 0px 0px 0px 2px grey;
+    }
+  </style>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="DocVar">
   <style>
     display: flex;
@@ -59,19 +78,12 @@
       gap: 8px;
       align-items: center;
     </style>
-    <div style="background:{value}">
-      <style>
-        width: 20px;
-        height: 20px;
-        border-radius: 2px;
-      </style>
-    </div>
+    {variants}
     {name}
   </div>
   <div>
     <style>
       opacity: 0.5;
-      text-decoration: ;
     </style>
     {source}
   </div>
@@ -109,13 +121,34 @@
       <style>
         opacity: 0.5;
       </style>
-      <DocVar name="--color-red" value="red" source="atoms.pc" />
-      <DocVar name="--color-red" value="blue" source="atoms.pc" />
-      <DocVar name="--color-red" value="blue" source="atoms.pc" />
-      <DocVar name="--color-red" value="blue" source="atoms.pc" />
-      <DocVar name="--color-red" value="blue" source="atoms.pc" />
-      <DocVar name="--color-red" value="blue" source="atoms.pc" />
-      <DocVar name="--color-red" value="blue" source="atoms.pc" />
+      <DocVar name="--color-red"
+        value="red"
+        variants={<Variant value="red" enabled />}
+        source="atoms.pc" />
+      <DocVar name="--color-red"
+        value="blue"
+        variants={<Variant value="red" enabled />}
+        source="atoms.pc" />
+      <DocVar name="--color-red"
+        value="blue"
+        variants={<Variant value="red" enabled />}
+        source="atoms.pc" />
+      <DocVar name="--color-red"
+        value="blue"
+        variants={<Variant value="red" enabled />}
+        source="atoms.pc" />
+      <DocVar name="--color-red"
+        value="blue"
+        variants={<Variant value="red" enabled />}
+        source="atoms.pc" />
+      <DocVar name="--color-red"
+        value="blue"
+        variants={<Variant value="red" enabled />}
+        source="atoms.pc" />
+      <DocVar name="--color-red"
+        value="blue"
+        variants={<Variant value="red" />}
+        source="atoms.pc" />
     </VarList>
   </div>
 </div>
