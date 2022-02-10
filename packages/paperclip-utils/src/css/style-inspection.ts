@@ -134,6 +134,46 @@ export type ComputedDeclarationInfo = {
 
 export type SquashedStyleInspection = Record<string, StyleRuleInfo[]>;
 
+const INHERITED_DECLS = [
+  "border-collapse",
+  "border-spacing",
+  "caption-side",
+  "color",
+  "cursor",
+  "direction",
+  "empty-cells",
+  "font-family",
+  "font-size",
+  "font-style",
+  "font-variant",
+  "font-weight",
+  "font-size-adjust",
+  "font-stretch",
+  "font",
+  "letter-spacing",
+  "line-height",
+  "list-style-image",
+  "list-style-position",
+  "list-style-type",
+  "list-style",
+  "orphans",
+  "quotes",
+  "tab-size",
+  "text-align",
+  "text-align-last",
+  "text-decoration-color",
+  "text-indent",
+  "text-justify",
+  "text-shadow",
+  "text-transform",
+  "visibility",
+  "white-space",
+  "widows",
+  "word-break",
+  "word-spacing",
+  "word-wrap",
+];
+
 export const squashInspection = memoize(
   (inspection: NodeStyleInspection): ComputedDeclarationInfo[] => {
     const squashed: Array<ComputedDeclarationInfo> = [];
@@ -142,6 +182,9 @@ export const squashInspection = memoize(
 
     for (const rule of inspection.styleRules) {
       for (const declaration of rule.declarations) {
+        if (rule.inherited && !INHERITED_DECLS.includes(declaration.name)) {
+          continue;
+        }
         if (!used[declaration.name]) {
           squashed.push(
             (used[declaration.name] = {

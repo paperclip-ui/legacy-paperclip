@@ -243,26 +243,40 @@ type ComputedDeclarationProps = {
 
 const ComputedDeclaration = memo(
   ({ item, computed, onTab }: ComputedDeclarationProps) => {
+    // need to use so much internal state since state is locked in so long
+    // as there's focus on the declaration list.
+
+    const [oldName, setOldName] = useState(item.name);
+    const [name, setName] = useState(item.name);
+    const [value, setValue] = useState(item.value);
+
+    useEffect(() => {
+      setName(item.name);
+      setValue(item.value);
+      setOldName(item.name);
+    }, [item]);
+
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-    const onValueSave = (value: string) => {
+    const onValueSave = () => {
       dispatch(
         uiActions.computedStyleDeclarationChanged({
           id: item.id,
-          name: item.name,
+          name: name,
           value: value,
         })
       );
     };
-    const onNameSave = (value: string) => {
+    const onNameSave = () => {
       dispatch(
         uiActions.computedStyleDeclarationChanged({
           id: item.id,
-          oldName: item.name,
-          name: value,
-          value: item.value,
+          oldName,
+          name,
+          value,
         })
       );
+      setOldName(name);
     };
     const onClick = () => {
       setOpen(!open);
@@ -273,6 +287,8 @@ const ComputedDeclaration = memo(
         name={item.name}
         value={item.value}
         sourceRules={item.sourceRules}
+        onNameChange={setName}
+        onValueChange={setValue}
         onNameSave={onNameSave}
         onValueSave={onValueSave}
         onExpandClick={onClick}

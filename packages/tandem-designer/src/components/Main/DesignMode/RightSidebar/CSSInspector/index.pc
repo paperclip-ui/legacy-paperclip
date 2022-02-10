@@ -510,9 +510,13 @@
 </input>
 
 <!--
-  @frame { height: 768, width: 1024, x: 1089, y: -352 }
+  @frame { height: 148, title: "AddStyleButton", width: 314, x: 1020, y: -760 }
 -->
-<button export component as="AddStyleButton" {onClick}>add style</button>
+<button export component as="AddStyleButton" {onClick}>
+  <style>
+  </style>
+  add style
+</button>
 
 <!--
   @frame { visible: false }
@@ -653,3 +657,21 @@
   @frame { height: 768, width: 348, x: 563, y: -143 }
 -->
 <Preview showComputed />
+
+<!--
+  @frame { height: 357, width: 576, x: 1330, y: -343 }
+-->
+<div>
+  <div>
+    <style>
+      font-family: Open Sans;
+      background: grey;
+      box-sizing: border-box;
+      width: 100%;
+      height: 50px;
+      opacity: 0.5;
+    </style>
+
+    <div data-pc-show-insert />
+  </div>
+</div>

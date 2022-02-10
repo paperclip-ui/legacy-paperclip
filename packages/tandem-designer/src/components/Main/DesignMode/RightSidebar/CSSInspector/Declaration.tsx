@@ -70,8 +70,14 @@ export const DeclarationValue = ({
     setEditingValue(false);
   };
 
+  const onSave2 = () => {
+    if (internalValue !== value) {
+      onSave(internalValue);
+    }
+  };
+
   return (
-    <span tabIndex={0} onClick={onClick} onFocus={onFocus}>
+    <span tabIndex={editingValue ? -1 : 0} onClick={onClick} onFocus={onFocus}>
       {editingValue ? (
         <BlendedTextInput
           autoResize
@@ -80,7 +86,7 @@ export const DeclarationValue = ({
           value={internalValue}
           onKeyDown={(event: React.KeyboardEvent<any>) => {
             if (event.key === "Tab") {
-              onSave(internalValue);
+              onSave2();
               if (!event.shiftKey) {
                 onTab();
               }
@@ -89,11 +95,11 @@ export const DeclarationValue = ({
           }}
           onValueChange={setInternalValue}
           onEnterPressed={() => {
-            onSave(internalValue);
+            onSave2();
             setEditingValue(false);
           }}
           onBlur={() => {
-            onSave(internalValue);
+            onSave2();
             onBlur();
           }}
         />
