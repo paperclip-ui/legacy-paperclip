@@ -124,7 +124,8 @@ const cssSetDeclaration = (
 ) => {
   const [exprUri, expr] = getEditTarget(edit.target, uri, engine);
 
-  const decl = `${edit.name}: ${edit.value};`;
+  // no name? Clear it
+  const decl = edit.name && edit.value ? `${edit.name}: ${edit.value};` : "";
 
   if (isStyleDeclaration(expr)) {
     return {

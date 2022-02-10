@@ -510,16 +510,36 @@
 </input>
 
 <!--
+  @frame { height: 768, width: 1024, x: 1089, y: -352 }
+-->
+<button export component as="AddStyleButton" {onClick}>add style</button>
+
+<!--
+  @frame { visible: false }
+-->
+<fragment export component as="ComputedStylesContainer">
+  {children}
+
+  <div>
+    <style>
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    </style>
+    {footerControls}
+  </div>
+</fragment>
+
+<!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
 <Pane.Container export component as="Preview" class="$font-regular">
   <Tabs>
     <Tab active={!showComputed}>Rules</Tab>
     <Tab active={showComputed}>Computed</Tab>
-
-    <Controls>&plus;</Controls>
   </Tabs>
-  {showComputed && <fragment>
+  {showComputed && <ComputedStylesContainer footerControls={<AddStyleButton />}>
     <ComputedStyles>
       <StyleRuleProperty computed
         collapsed
@@ -546,7 +566,7 @@
         value="0px 0px 1px #FF00FF"
         sources={<fragment />} />
     </ComputedStyles>
-  </fragment>}
+  </ComputedStylesContainer>}
 
   {!showComputed && <fragment>
     <Header input={<FilterInput />} />
@@ -625,7 +645,7 @@
 </Pane.Container>
 
 <!--
-  @frame { height: 900, title: "Inspector", width: 284, x: 211, y: -139 }
+  @frame { height: 900, title: "Inspector", width: 284, x: 210, y: -139 }
 -->
 <Preview />
 

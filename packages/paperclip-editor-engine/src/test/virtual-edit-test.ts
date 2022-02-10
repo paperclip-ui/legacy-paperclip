@@ -945,6 +945,51 @@ describe(__filename + "#", () => {
           ],
         },
       ],
+      [
+        `Clearing the name of a declaration removes it`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "",
+                  oldName: "background",
+                  value: "blue",
+                },
+              ];
+            },
+
+            `<div>\n  <style>\n    \n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `Clearing the value of a declaration removes it`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "background",
+                  value: "",
+                },
+              ];
+            },
+
+            `<div>\n  <style>\n    \n  </style>\n</div>`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
         const { server, engine } = await createMockHost(graph);

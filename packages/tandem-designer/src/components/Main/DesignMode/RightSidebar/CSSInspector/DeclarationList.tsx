@@ -16,45 +16,22 @@ type DeclarationItem = {
 type StyleDeclarationListProps = {
   items: DeclarationItem[];
   computed?: boolean;
+  showNewInput?: boolean;
 };
 
-export const StyleDeclarationList = ({
-  items,
-  computed,
-}: StyleDeclarationListProps) => {
-  const [internalItems, setInternalItems] = useState(items);
-
-  const [focused, setFocused] = useState(false);
-  const [newDeclarationCount, setNewDeclarationCount] = useState(0);
-
-  useEffect(() => {
-    if (!focused) {
-      setInternalItems(items);
-      setNewDeclarationCount(0);
-    }
-  }, [focused, items]);
-
-  const onLastValueTab = () => {
-    setNewDeclarationCount(newDeclarationCount + 1);
-  };
-
-  const syncFocus = () => {
-    setTimeout(() => {
-      setFocused(ref.current.contains(document.activeElement));
-    }, 100);
-  };
-
-  const ref = useRef<HTMLDivElement>();
-
-  const onBlur2 = () => {
-    syncFocus();
-  };
-
-  const onClick = () => {
-    if (!internalItems.length && !newDeclarationCount) {
-      setNewDeclarationCount(newDeclarationCount + 1);
-    }
-  };
+export const StyleDeclarationList = (props: StyleDeclarationListProps) => {
+  const {
+    ref,
+    onBlur2,
+    onClick,
+    internalItems,
+    computed,
+    items,
+    onLastValueTab,
+    newDeclarationCount,
+    setNewDeclarationCount,
+    syncFocus,
+  } = useStyleDeclarationList(props);
 
   return (
     <div ref={ref} onBlur={onBlur2} onClick={onClick}>
@@ -88,6 +65,65 @@ export const StyleDeclarationList = ({
       ))}
     </div>
   );
+};
+
+const useStyleDeclarationList = ({
+  items,
+  computed,
+  showNewInput,
+}: StyleDeclarationListProps) => {
+  const [internalItems, setInternalItems] = useState(items);
+
+  const [focused, setFocused] = useState(false);
+  const [newDeclarationCount, setNewDeclarationCount] = useState(0);
+
+  useEffect(() => {
+    if (!focused) {
+      setInternalItems(items);
+      setNewDeclarationCount(0);
+    }
+  }, [focused, items]);
+
+  useEffect(() => {
+    if (showNewInput && !newDeclarationCount) {
+      setNewDeclarationCount(1);
+    }
+  }, [showNewInput]);
+
+  const onLastValueTab = () => {
+    setNewDeclarationCount(newDeclarationCount + 1);
+  };
+
+  const syncFocus = () => {
+    setTimeout(() => {
+      setFocused(ref.current.contains(document.activeElement));
+    }, 100);
+  };
+
+  const ref = useRef<HTMLDivElement>();
+
+  const onBlur2 = () => {
+    syncFocus();
+  };
+
+  const onClick = () => {
+    if (!internalItems.length && !newDeclarationCount) {
+      setNewDeclarationCount(newDeclarationCount + 1);
+    }
+  };
+
+  return {
+    internalItems,
+    onBlur2,
+    onLastValueTab,
+    setNewDeclarationCount,
+    syncFocus,
+    newDeclarationCount,
+    computed,
+    items,
+    ref,
+    onClick,
+  };
 };
 
 type BaseComputedDeclaration = {
