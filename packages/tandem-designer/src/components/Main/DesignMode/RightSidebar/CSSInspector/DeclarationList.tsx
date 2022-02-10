@@ -5,6 +5,7 @@ import * as styles from "./index.pc";
 import { StyleRuleInfo } from "@paperclip-ui/utils";
 import { DeclarationValue as DeclarationPart } from "./Declaration";
 import { uiActions } from "../../../../../actions";
+import { noop } from "lodash";
 
 type DeclarationItem = {
   name: string;
@@ -198,14 +199,23 @@ type NewDeclarationProps = {
   onSave?: (name?: string, value?: string) => void;
 };
 
-const NewDeclaration = ({ computed, onTab, onSave }: NewDeclarationProps) => {
+const NewDeclaration = ({
+  computed,
+  onTab = noop,
+  onSave,
+}: NewDeclarationProps) => {
   const dispatch = useDispatch();
+  const [currInfo, setCurrentInfo] = useState<{
+    name?: string;
+    value?: string;
+  }>({});
   const [name, setName] = useState("");
   const [value, setValue] = useState("");
   const ref = useRef<HTMLElement>();
 
   const onSave2 = () => {
-    if (name && value) {
+    if ((name && value) || (currInfo.name && currInfo.value)) {
+      setCurrentInfo({ name, value });
       dispatch(
         uiActions.computedStyleDeclarationChanged({
           name,
@@ -219,6 +229,8 @@ const NewDeclaration = ({ computed, onTab, onSave }: NewDeclarationProps) => {
   return (
     <BaseComputedDeclaration
       ref={ref}
+      name={currInfo.name}
+      value={currInfo.value}
       showNameInput
       computed={computed}
       onNameChange={setName}
@@ -227,8 +239,9 @@ const NewDeclaration = ({ computed, onTab, onSave }: NewDeclarationProps) => {
       onValueChange={setValue}
       onValueTab={() =>
         setTimeout(() => {
-          onSave2();
-          onTab(name, value);
+          if (onTab) {
+            onTab(name, value);
+          }
         }, 5)
       }
     />
@@ -245,15 +258,14 @@ const ComputedDeclaration = memo(
   ({ item, computed, onTab }: ComputedDeclarationProps) => {
     // need to use so much internal state since state is locked in so long
     // as there's focus on the declaration list.
-
-    const [oldName, setOldName] = useState(item.name);
+    const [currItem, setCurrItem] = useState(item);
     const [name, setName] = useState(item.name);
     const [value, setValue] = useState(item.value);
 
     useEffect(() => {
+      setCurrItem(currItem);
       setName(item.name);
       setValue(item.value);
-      setOldName(item.name);
     }, [item]);
 
     const dispatch = useDispatch();
@@ -266,17 +278,18 @@ const ComputedDeclaration = memo(
           value: value,
         })
       );
+      setCurrItem({ ...currItem, value });
     };
     const onNameSave = () => {
       dispatch(
         uiActions.computedStyleDeclarationChanged({
           id: item.id,
-          oldName,
+          oldName: currItem.name,
           name,
           value,
         })
       );
-      setOldName(name);
+      setCurrItem({ ...currItem, name });
     };
     const onClick = () => {
       setOpen(!open);
@@ -284,8 +297,8 @@ const ComputedDeclaration = memo(
     return (
       <BaseComputedDeclaration
         computed={computed}
-        name={item.name}
-        value={item.value}
+        name={currItem.name}
+        value={currItem.value}
         sourceRules={item.sourceRules}
         onNameChange={setName}
         onValueChange={setValue}

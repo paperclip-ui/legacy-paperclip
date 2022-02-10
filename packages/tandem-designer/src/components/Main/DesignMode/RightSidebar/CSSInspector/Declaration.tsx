@@ -53,6 +53,7 @@ export const DeclarationValue = ({
 }: DeclarationValueProps) => {
   const [editingValue, setEditingValue] = useState(showInput);
   const [internalValue, setInternalValue] = useState(value);
+  const [saved, setSaved] = useState(false);
   const onFocus = () => {
     setEditingValue(true);
   };
@@ -63,6 +64,7 @@ export const DeclarationValue = ({
 
   useEffect(() => {
     onChange(internalValue);
+    setSaved(false);
   }, [internalValue]);
 
   const onClick = () => setEditingValue(true);
@@ -71,6 +73,10 @@ export const DeclarationValue = ({
   };
 
   const onSave2 = () => {
+    if (saved) {
+      return;
+    }
+    setSaved(true);
     if (internalValue !== value) {
       onSave(internalValue);
     }
@@ -87,7 +93,7 @@ export const DeclarationValue = ({
           onKeyDown={(event: React.KeyboardEvent<any>) => {
             if (event.key === "Tab") {
               onSave2();
-              if (!event.shiftKey) {
+              if (!event.shiftKey && onTab) {
                 onTab();
               }
             }

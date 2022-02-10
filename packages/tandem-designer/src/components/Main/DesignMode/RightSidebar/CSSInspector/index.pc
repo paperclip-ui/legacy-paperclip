@@ -510,7 +510,7 @@
 </input>
 
 <!--
-  @frame { height: 148, title: "AddStyleButton", width: 314, x: 1020, y: -760 }
+  @frame { height: 148, title: "AddStyleButton", width: 314, x: 579, y: -393 }
 -->
 <button export component as="AddStyleButton" {onClick}>
   <style>
@@ -649,40 +649,82 @@
 </Pane.Container>
 
 <!--
-  @frame { height: 900, title: "Inspector", width: 284, x: 210, y: -139 }
+  @frame { height: 900, title: "Inspector", width: 284, x: 107, y: -141 }
 -->
 <Preview />
 
 <!--
-  @frame { height: 768, width: 348, x: 563, y: -143 }
+  @frame { height: 768, title: "Computed CSS", width: 348, x: 478, y: -138 }
 -->
 <Preview showComputed />
 
+
+
+
+
+
+
 <!--
-  @frame { height: 357, width: 576, x: 1330, y: -343 }
+  @frame { height: 768, title: "Decl name list", width: 304, x: -470, y: -134 }
 -->
 <div>
+  <style>
+    .item {
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .header {
+      background: rgb(214, 214, 214);
+    }
+    .tag {
+      align-self: flex-end;
+      background: rgb(206, 206, 206);
+      color: #333;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      opacity: 0.5;
+    }
+    .tags {
+      display: flex;
+      gap: 6px;
+    }
+  </style>
   <div>
     <style>
-      font-family: Open Sans;
-      background: grey;
-      box-sizing: border-box;
-      width: 100%;
-      height: 50px;
-      opacity: 0.5;
+      padding: 16px;
     </style>
-
-    <div>
+    <input class="filter" placeholder="filter..">
       <style>
-        color: red;
-        background: blue;
-        width: 100px;
-        height: 100px;
-        font-family: Comic Sans MS;
-        padding: 15px;
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid grey;
       </style>
-
-      Double click to edit
-    </div>
+    </input>
+  </div>
+  <div class="item">
+    <span>display</span><span class="tags">
+      <span class="tag">layout</span>
+      <span class="tag">flex</span>
+    </span>
+  </div>
+  <div class="item">
+    <span>gap</span><span class="tags">
+      <span class="tag">grid</span>
+      <span class="tag">flex</span>
+    </span>
+  </div>
+  <div class="item">
+    <span>flex-direction</span><span class="tags">
+      <span class="tag">flex</span>
+    </span>
+  </div>
+  <div class="item">
+    <span>font-family</span><span class="tags">
+      <span class="tag">font</span>
+      <span class="tag">inherited</span>
+    </span>
   </div>
 </div>
