@@ -1,10 +1,11 @@
-- ability to change existing style rules
-- display scoped style by default
-- show computed properties
-- ability to add computed prop
-- ability to delete computed prop
-- color picker
-  
+Objective is to build UIs in Tandem in a scalable way, starting from HTML -> components -> organizing into files
+
+Immediate:
+
+- render color information in inspector pane
+  - need to parse declaration values & pull information about them (esp variables)
+
+
 
 - double click to edit text
 
