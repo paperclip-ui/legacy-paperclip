@@ -3,10 +3,11 @@ import * as path from "path";
 import { useDispatch } from "react-redux";
 import * as styles from "./index.pc";
 import { StyleRuleInfo } from "@paperclip-ui/utils";
-import { DeclarationPart } from "./Declaration";
 import { uiActions } from "../../../../../actions";
 import { noop } from "lodash";
 import { RootValue } from "@paperclip-ui/utils/lib/css/decl-value-ast";
+import { DeclarationName } from "./Declaration/Name";
+import { DeclarationValue } from "./Declaration/Value";
 
 type DeclarationItem = {
   name: string;
@@ -166,7 +167,7 @@ const BaseComputedDeclaration = ({
       collapsed={!showSourceRules}
       computed={computed}
       name={
-        <DeclarationPart
+        <DeclarationName
           showInput={showNameInput}
           value={name}
           onSave={onNameSave}
@@ -174,7 +175,7 @@ const BaseComputedDeclaration = ({
         />
       }
       value={
-        <DeclarationPart
+        <DeclarationValue
           value={value}
           onSave={onValueSave}
           onChange={onValueChange}

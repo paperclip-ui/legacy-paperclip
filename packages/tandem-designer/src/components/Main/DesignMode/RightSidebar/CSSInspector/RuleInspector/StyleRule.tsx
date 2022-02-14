@@ -10,7 +10,6 @@ import {
 } from "@paperclip-ui/utils";
 import * as styles from "../index.pc";
 import * as path from "path";
-import { StyleDeclaration } from "../Declaration";
 import { styleRuleFileNameClicked } from "../../../../../../actions";
 import { SelectorScopeKind } from "@paperclip-ui/utils";
 import { StyleDeclarationList } from "../DeclarationList";
@@ -40,22 +39,6 @@ export const StyleRule = React.memo(
         isGlobal={isSelectorPartiallyGlobal(info.selectorInfo)}
         fileName={path.basename(info.sourceUri)}
         selector={generateSelector(info.selectorInfo)}
-        // properties={info.declarations.map((declaration, i) => {
-        //   return (
-        //     <StyleDeclaration
-        //       key={i}
-        //       filter={filter}
-        //       info={declaration}
-        //       onValueChange={(value) => {
-        //         onDeclarationValueChange(
-        //           declaration.sourceId,
-        //           declaration.name,
-        //           value
-        //         );
-        //       }}
-        //     />
-        //   );
-        // })}
         properties={
           <StyleDeclarationList
             items={info.declarations.map((decl) => ({
