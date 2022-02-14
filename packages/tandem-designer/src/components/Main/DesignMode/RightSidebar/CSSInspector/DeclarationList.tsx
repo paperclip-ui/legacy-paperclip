@@ -5,13 +5,13 @@ import * as styles from "./index.pc";
 import { StyleRuleInfo } from "@paperclip-ui/utils";
 import { uiActions } from "../../../../../actions";
 import { noop } from "lodash";
-import { RootValue } from "@paperclip-ui/utils/lib/css/decl-value-ast";
+import * as declAst from "@paperclip-ui/utils/lib/css/decl-value-ast";
 import { DeclarationName } from "./Declaration/Name";
 import { DeclarationValue } from "./Declaration/Value";
 
 type DeclarationItem = {
   name: string;
-  value: RootValue;
+  value: declAst.DeclValueRoot;
   rawValue: string;
   id?: string;
   sourceRules?: StyleRuleInfo[];
@@ -136,6 +136,7 @@ type BaseComputedDeclaration = {
   name?: string;
   computed?: boolean;
   value?: string;
+  valueExpr: declAst.DeclValueRoot;
   onNameChange?: (value: string) => void;
   onValueChange?: (value: string) => void;
   onNameSave: (value: string) => void;
@@ -157,6 +158,7 @@ const BaseComputedDeclaration = ({
   onExpandClick,
   onNameChange,
   onValueChange,
+  valueExpr,
   onNameSave,
   onValueSave,
   onValueTab,
@@ -176,6 +178,7 @@ const BaseComputedDeclaration = ({
       }
       value={
         <DeclarationValue
+          exprValue={valueExpr}
           value={value}
           onSave={onValueSave}
           onChange={onValueChange}
@@ -234,6 +237,7 @@ const NewDeclaration = ({
       ref={ref}
       name={currInfo.name}
       value={currInfo.value}
+      valueExpr={null}
       showNameInput
       computed={computed}
       onNameChange={setName}
@@ -304,6 +308,7 @@ const ComputedDeclaration = memo(
         computed={computed}
         name={currItem.name}
         value={currItem.rawValue}
+        valueExpr={currItem.value}
         sourceRules={item.sourceRules}
         onNameChange={setName}
         onValueChange={setValue}

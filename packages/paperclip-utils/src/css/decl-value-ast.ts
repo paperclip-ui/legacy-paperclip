@@ -14,10 +14,10 @@ export type BaseRootValue<TKind extends DeclRootValueKind> = {
 };
 
 export type List = {
-  items: ListItem;
+  items: ListItem[];
 } & BaseRootValue<DeclRootValueKind.List>;
 
-type ListItem = Group | Value;
+export type ListItem = Group | Value;
 
 export enum ListItemKind {
   Group = "Group",

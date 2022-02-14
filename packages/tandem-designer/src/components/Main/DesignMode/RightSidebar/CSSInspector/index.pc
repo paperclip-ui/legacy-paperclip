@@ -284,7 +284,7 @@
 <!--
   @frame { visible: false }
 -->
-<Expression component as="UnitPart">
+<Expression export component as="UnitPart">
   <span class="keyword-input">
     <style>
       border-radius: var(--radius-1);
@@ -314,13 +314,13 @@
 <!--
   @frame { visible: false }
 -->
-<UnitPart component as="KeywordPart" {value} class="keyword-input" />
+<UnitPart export component as="KeywordPart" {value} class="keyword-input" />
 
 
 <!--
   @frame { visible: false }
 -->
-<Expression component as="ColorPropertyPart" style="--value: {value}">
+<Expression export component as="ColorPropertyPart" style="--value: {value}">
   <style>
     display: inline-flex;
     grid-column-gap: var(--spacing-2);
@@ -649,7 +649,7 @@
 </Pane.Container>
 
 <!--
-  @frame { height: 900, title: "Inspector", width: 284, x: 107, y: -141 }
+  @frame { height: 900, title: "Inspector", width: 284, x: 107, y: -140 }
 -->
 <Preview />
 
