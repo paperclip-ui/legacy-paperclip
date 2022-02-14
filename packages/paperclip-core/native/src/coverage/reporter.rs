@@ -1,6 +1,6 @@
 use crate::base::ast as base_ast;
-use crate::core::ast::{Expr, ExprVisitor};
 use crate::core::ast as core_ast;
+use crate::core::ast::{Expr, ExprVisitor};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;

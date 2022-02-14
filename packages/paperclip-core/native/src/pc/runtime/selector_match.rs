@@ -96,7 +96,7 @@ Combo selectors? `a b, c > d` would yield:
 
 use super::virt::{Element as VirtElement, Node as VirtNode};
 use crate::css::ast as css_ast;
-use crate::css::parser::{parse_selector as parse_css_selector};
+use crate::css::parser::parse_selector as parse_css_selector;
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use regex::Regex;

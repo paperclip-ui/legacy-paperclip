@@ -10,6 +10,7 @@ TODO:
 
 use super::evaluator::EvalInfo as PCEvalInfo;
 use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
+
 use super::inspect_selector_info as iso;
 use super::selector_match::{
   element_matches_selector_text_edge, get_selector_text_matching_sub_selector,
@@ -17,6 +18,8 @@ use super::selector_match::{
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::DependencyGraph;
 use crate::css::ast as css_ast;
+use crate::css::declaration_value_ast;
+use crate::css::declaration_value_parser;
 use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
@@ -78,10 +81,10 @@ pub struct StyleDeclarationInfo {
   pub source_id: String,
 
   pub name: String,
+  pub value: Option<declaration_value_ast::Root>,
 
-  // TODO - should parse this out and provide AST here. For
-  // MVP this is fine however.
-  pub value: String,
+  #[serde(rename = "rawValue")]
+  pub raw_value: String,
 
   // true / false if being used. Needs to be here in case of !important flag
   pub active: bool,
@@ -92,12 +95,19 @@ impl StyleDeclarationInfo {
     StyleDeclarationInfo {
       source_id: source.source_id.to_string(),
       name: source.name.to_string(),
-      value: source.value.to_string(),
+      raw_value: source.value.to_string(),
+      value: declaration_value_parser::parse(source.value.as_str(), "").map(|value| {
+        Some(value)
+      }).unwrap_or(None),
       active: true,
     }
   }
   pub fn important(&self) -> bool {
-    self.value.contains(" !important")
+    if let Some(value) = &self.value {
+      value.important
+    } else {
+      false
+    }
   }
   pub fn overrides(&mut self, other: &mut StyleDeclarationInfo) {
     if self.inherits() {
@@ -153,7 +163,7 @@ impl StyleDeclarationInfo {
     inherited_prop_names.contains(&self.name.as_str()) || self.name.starts_with("--")
   }
   pub fn inherits(&self) -> bool {
-    self.value == "inherit"
+    self.raw_value == "inherit"
   }
 }
 

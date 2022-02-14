@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import * as path from "path";
 import { AppState } from "../../../../../../state";
 import { useSelector } from "react-redux";
 import { squashInspection } from "@paperclip-ui/utils";
@@ -12,13 +11,7 @@ export const ComputedInspector = () => {
   );
   const [showNewInput, setShowNewInput] = useState(false);
   const items = useMemo(() => {
-    return squashInspection(inspection)
-      .filter((comp) => !comp.variable)
-      .map((decl) => ({
-        name: decl.name,
-        value: decl.value,
-        sourceRules: decl.sourceRules,
-      }));
+    return squashInspection(inspection).filter((comp) => !comp.variable);
   }, [inspection]);
 
   return (

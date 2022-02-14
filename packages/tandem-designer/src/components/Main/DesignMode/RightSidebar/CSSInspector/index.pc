@@ -510,7 +510,7 @@
 </input>
 
 <!--
-  @frame { height: 148, title: "AddStyleButton", width: 314, x: 579, y: -393 }
+  @frame { height: 65, title: "AddStyleButton", width: 186, x: 494, y: -396 }
 -->
 <button export component as="AddStyleButton" {onClick}>
   <style>
@@ -658,14 +658,8 @@
 -->
 <Preview showComputed />
 
-
-
-
-
-
-
 <!--
-  @frame { height: 768, title: "Decl name list", width: 304, x: -470, y: -134 }
+  @frame { height: 768, title: "Decl name list", width: 304, x: -242, y: -140 }
 -->
 <div>
   <style>

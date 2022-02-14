@@ -3,6 +3,7 @@ import { StyleDeclarationInfo } from "@paperclip-ui/utils";
 import * as styles from "./index.pc";
 import { BlendedTextInput } from "../../../../TextInput/blended";
 import { noop } from "lodash";
+import { RootValue } from "@paperclip-ui/utils/lib/css/decl-value-ast";
 
 export type StyleRuleProps = {
   info: StyleDeclarationInfo;
@@ -22,11 +23,11 @@ export const StyleDeclaration = ({
       disabled={!info.active}
       name={info.name}
       boldName={filter && filter(info.name)}
-      boldValue={filter && filter(info.value)}
+      boldValue={filter && filter(info.rawValue)}
       value={
         <styles.StyleRulePropertyValue>
           <styles.Expression>
-            <DeclarationValue value={info.value} onSave={onValueChange} />
+            <DeclarationPart value={info.rawValue} onSave={onValueChange} />
           </styles.Expression>
         </styles.StyleRulePropertyValue>
       }
@@ -34,7 +35,7 @@ export const StyleDeclaration = ({
   );
 };
 
-export type DeclarationValueProps = {
+export type DeclarationPartProps = {
   value: string;
   showInput?: boolean;
   onKeyDown?: (event: React.KeyboardEvent<any>) => void;
@@ -43,14 +44,14 @@ export type DeclarationValueProps = {
   onSave?: (value: string) => void;
 };
 
-export const DeclarationValue = ({
+export const DeclarationPart = ({
   value,
   onSave = noop,
   onChange = noop,
   showInput,
   onKeyDown = noop,
   onTab = noop,
-}: DeclarationValueProps) => {
+}: DeclarationPartProps) => {
   const [editingValue, setEditingValue] = useState(showInput);
   const [internalValue, setInternalValue] = useState(value);
   const [saved, setSaved] = useState(false);
@@ -115,3 +116,9 @@ export const DeclarationValue = ({
     </span>
   );
 };
+
+export type DeclarationValueProps = {
+  value: RootValue;
+};
+
+export const DeclarationValue = ({ value }: DeclarationValueProps) => {};

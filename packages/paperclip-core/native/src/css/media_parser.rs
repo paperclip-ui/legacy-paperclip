@@ -204,7 +204,10 @@ fn parse_media_feature<'a>(context: &mut Context<'a>) -> Result<MediaFeature, Pa
       Token::Whitespace | Token::ParenClose
     ))
   })?;
-  Ok(MediaFeature::Plain(MFPlain { name, value }))
+  Ok(MediaFeature::Plain(MFPlain {
+    name,
+    value: value.value,
+  }))
 }
 
 #[cfg(test)]

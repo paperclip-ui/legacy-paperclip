@@ -1,9 +1,9 @@
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{BasicRaws, Range};
+use crate::core::ast as core_ast;
 use crate::core::ast::{walk_exprs, Expr, ExprVisitor};
 use crate::css::ast as css_ast;
 use crate::script::ast as script_ast;
-use crate::core::ast as core_ast;
 use serde::Serialize;
 use std::fmt;
 use std::str;
@@ -81,7 +81,7 @@ pub enum Expression<'a> {
   Attribute(&'a Attribute),
   CSS(css_ast::Expression<'a>),
   Script(&'a script_ast::Expression),
-  String(&'a core_ast::StringLiteral)
+  String(&'a core_ast::StringLiteral),
 }
 
 impl<'a> Expression<'a> {
@@ -91,7 +91,7 @@ impl<'a> Expression<'a> {
       Expression::Attribute(attr) => attr.get_range(),
       Expression::CSS(css) => css.get_range(),
       Expression::Script(js) => js.get_range(),
-      Expression::String(value) => &value.range
+      Expression::String(value) => &value.range,
     }
   }
 }
@@ -504,7 +504,7 @@ impl AttributeValue {
     match self {
       AttributeValue::DyanmicString(ds) => ds.walk_inside(visitor),
       AttributeValue::Slot(ds) => ds.walk_inside(visitor),
-      AttributeValue::String(ds) => ds.walk(visitor)
+      AttributeValue::String(ds) => ds.walk(visitor),
     }
   }
 }

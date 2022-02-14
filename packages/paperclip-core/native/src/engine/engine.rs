@@ -4,8 +4,9 @@ use crate::base::ast;
 use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
+use crate::core::graph::GraphError;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::core::id_generator::{IDGenerator};
+use crate::core::id_generator::IDGenerator;
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::coverage::reporter::{generate_coverage_report, CoverageReport};
 use crate::css::ast as css_ast;
@@ -16,7 +17,6 @@ use crate::css::runtime::export as css_export;
 use crate::css::runtime::mutation as css_mutation;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
-use crate::core::graph::GraphError;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
@@ -213,7 +213,11 @@ impl Engine {
     self.handle_load_result(uri, load_result)
   }
 
-  fn handle_load_result(&mut self, uri: &String, load_result: Result<Vec<String>, GraphError>) -> Result<(), EngineError> {
+  fn handle_load_result(
+    &mut self,
+    uri: &String,
+    load_result: Result<Vec<String>, GraphError>,
+  ) -> Result<(), EngineError> {
     match load_result {
       Ok(_) => {
         let mut stack = HashSet::new();
@@ -258,10 +262,20 @@ impl Engine {
           .get_expression_by_id(descendent.get_source_id())
       })
       .and_then(|(uri, expr)| match &expr {
-        pc_ast::Expression::Node(pc_node) => Some((uri, pc_node.get_id().clone(), pc_node.get_range().clone())),
-        pc_ast::Expression::Script(pc_script) => Some((uri, pc_script.get_id().clone(), pc_script.get_range().clone())),
-        pc_ast::Expression::Attribute(expr) => Some((uri, expr.get_id().clone(), expr.get_range().clone())),
-        pc_ast::Expression::CSS(expr) => Some((uri.clone(), expr.get_id().clone(), expr.get_range().clone())),
+        pc_ast::Expression::Node(pc_node) => {
+          Some((uri, pc_node.get_id().clone(), pc_node.get_range().clone()))
+        }
+        pc_ast::Expression::Script(pc_script) => Some((
+          uri,
+          pc_script.get_id().clone(),
+          pc_script.get_range().clone(),
+        )),
+        pc_ast::Expression::Attribute(expr) => {
+          Some((uri, expr.get_id().clone(), expr.get_range().clone()))
+        }
+        pc_ast::Expression::CSS(expr) => {
+          Some((uri.clone(), expr.get_id().clone(), expr.get_range().clone()))
+        }
         pc_ast::Expression::String(expr) => Some((uri, expr.id.clone(), expr.range.clone())),
       })
       .and_then(|(uri, id, range)| {
@@ -387,7 +401,6 @@ impl Engine {
     Ok(())
   }
 
-
   fn set_diagnostic_error<'a>(&mut self, uri: &String, error: EngineError) {
     self.diagnostics.insert(
       uri.to_string(),
@@ -439,7 +452,7 @@ impl Engine {
       .collect::<Vec<(String, String)>>();
 
     for (id, dep_uri) in relative_deps {
-      if  self.evaluated_data.get(dep_uri) == None {
+      if self.evaluated_data.get(dep_uri) == None {
         self.evaluate(dep_uri, stack)?;
       }
     }
@@ -447,10 +460,14 @@ impl Engine {
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
     let eval_result: Result<DependencyEvalInfo, RuntimeError> = match &dependency.content {
-      DependencyContent::StyleSheet(_) => {
-        evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data, self.id_generator.new_id())
-          .and_then(|info| Ok(DependencyEvalInfo::CSS(info)))
-      }
+      DependencyContent::StyleSheet(_) => evaluate_css(
+        uri,
+        &self.dependency_graph,
+        &self.vfs,
+        &self.evaluated_data,
+        self.id_generator.new_id(),
+      )
+      .and_then(|info| Ok(DependencyEvalInfo::CSS(info))),
 
       DependencyContent::Node(_) => evaluate_pc(
         uri,
@@ -459,7 +476,7 @@ impl Engine {
         &self.evaluated_data,
         self.include_used_exprs,
         &self.mode,
-        self.id_generator.new_id()
+        self.id_generator.new_id(),
       )
       .and_then(|info| Ok(DependencyEvalInfo::PC(info))),
     };

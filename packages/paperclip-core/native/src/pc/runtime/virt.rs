@@ -36,16 +36,14 @@ pub struct ElementSourceInfo {
 pub struct Slot {
   pub id: String,
   #[serde(rename = "sourceId")]
-  pub source_id: String
+  pub source_id: String,
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   pub id: String,
   #[serde(rename = "sourceId")]
   pub source_id: String,
-
 
   // Deprecated, use source_id instead
   pub annotations: Option<script_virt::Object>,
@@ -94,7 +92,6 @@ pub struct StyleElement {
   pub sheet: css_virt::CSSSheet,
 }
 
-
 impl Element {
   pub fn get_attribute<'a>(&self, name: &'a str) -> Option<Option<String>> {
     for (key, value) in &self.attributes {
@@ -114,7 +111,6 @@ pub struct Text {
   pub annotations: Option<script_virt::Object>,
   pub value: String,
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]

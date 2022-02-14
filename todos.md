@@ -3,7 +3,7 @@ Objective is to build UIs in Tandem in a scalable way, starting from HTML -> com
 Immediate:
 
 - render color information in inspector pane
-  - need to parse declaration values & pull information about them (esp variables)
+  - display declaration AST
 
 
 

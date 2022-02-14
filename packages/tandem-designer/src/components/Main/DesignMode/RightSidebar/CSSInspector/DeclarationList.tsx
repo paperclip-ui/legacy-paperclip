@@ -3,13 +3,15 @@ import * as path from "path";
 import { useDispatch } from "react-redux";
 import * as styles from "./index.pc";
 import { StyleRuleInfo } from "@paperclip-ui/utils";
-import { DeclarationValue as DeclarationPart } from "./Declaration";
+import { DeclarationPart } from "./Declaration";
 import { uiActions } from "../../../../../actions";
 import { noop } from "lodash";
+import { RootValue } from "@paperclip-ui/utils/lib/css/decl-value-ast";
 
 type DeclarationItem = {
   name: string;
-  value: string;
+  value: RootValue;
+  rawValue: string;
   id?: string;
   sourceRules?: StyleRuleInfo[];
 };
@@ -260,12 +262,14 @@ const ComputedDeclaration = memo(
     // as there's focus on the declaration list.
     const [currItem, setCurrItem] = useState(item);
     const [name, setName] = useState(item.name);
-    const [value, setValue] = useState(item.value);
+    const [value, setValue] = useState(item.rawValue);
+
+    console.log(item.value);
 
     useEffect(() => {
       setCurrItem(currItem);
       setName(item.name);
-      setValue(item.value);
+      setValue(item.rawValue);
     }, [item]);
 
     const dispatch = useDispatch();
@@ -278,7 +282,7 @@ const ComputedDeclaration = memo(
           value: value,
         })
       );
-      setCurrItem({ ...currItem, value });
+      setCurrItem({ ...currItem, rawValue: value });
     };
     const onNameSave = () => {
       dispatch(
@@ -298,7 +302,7 @@ const ComputedDeclaration = memo(
       <BaseComputedDeclaration
         computed={computed}
         name={currItem.name}
-        value={currItem.value}
+        value={currItem.rawValue}
         sourceRules={item.sourceRules}
         onNameChange={setName}
         onValueChange={setValue}

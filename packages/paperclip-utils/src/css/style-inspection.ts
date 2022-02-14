@@ -1,6 +1,7 @@
 // 1:1 with Rust
 
 import { memoize } from "../core/memo";
+import { RootValue } from "./decl-value-ast";
 
 export enum SelectorScopeKind {
   Element = "Element",
@@ -100,7 +101,8 @@ export type SelectorInfo =
 export type StyleDeclarationInfo = {
   sourceId: string;
   name: string;
-  value: string;
+  rawValue: string;
+  value: RootValue;
   active: boolean;
 };
 
@@ -127,7 +129,8 @@ export type NodeStyleInspection = {
 
 export type ComputedDeclarationInfo = {
   name: string;
-  value: string;
+  rawValue: string;
+  value: RootValue;
   variable?: boolean;
   sourceRules: StyleRuleInfo[];
 };
@@ -191,6 +194,7 @@ export const squashInspection = memoize(
               name: declaration.name,
               variable: declaration.name.indexOf("--") === 0,
               value: declaration.value,
+              rawValue: declaration.rawValue,
               sourceRules: [],
             })
           );

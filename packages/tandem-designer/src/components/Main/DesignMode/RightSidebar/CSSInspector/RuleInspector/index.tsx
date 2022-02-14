@@ -73,7 +73,7 @@ const filterRule = (
     !filter ||
     filter(rule.selectorText) ||
     rule.declarations.some((decl) => {
-      return filter(decl.name) || filter(decl.value);
+      return filter(decl.name) || filter(decl.rawValue);
     })
   );
 };

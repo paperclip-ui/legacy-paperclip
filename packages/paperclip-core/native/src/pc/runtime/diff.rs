@@ -68,7 +68,7 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),
       Action::SetElementSourceId(SetElementSourceId {
-        value: b.source_id.to_string()
+        value: b.source_id.to_string(),
       }),
     ));
   }

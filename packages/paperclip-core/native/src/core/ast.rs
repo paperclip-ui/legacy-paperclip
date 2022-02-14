@@ -92,10 +92,8 @@ impl<'a> ExprVisitor<'a> for ExprByIdFinder<'a> {
 }
 
 pub enum CoreExpression {
-  StringLiteral(StringLiteral)
+  StringLiteral(StringLiteral),
 }
-
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StringLiteral {
@@ -105,7 +103,6 @@ pub struct StringLiteral {
 }
 
 impl Expr for StringLiteral {
-
   fn walk<'a>(&'a self, visitor: &mut ExprVisitor<'a>) {
     visitor.visit_str(self);
   }

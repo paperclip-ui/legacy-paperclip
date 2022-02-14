@@ -309,7 +309,7 @@ impl<'a> Dependency {
       content: DependencyContent::StyleSheet(expression),
       dependencies: BTreeMap::new(),
       dependency_uri_maps: BTreeMap::new(),
-      sorted_import_ids: vec![]
+      sorted_import_ids: vec![],
     })
   }
 
@@ -339,14 +339,11 @@ impl<'a> Dependency {
 
       if let Some(resolved_src) = resolved_src_option {
         let import_id = pc_ast::get_import_identifier(import)
-        .unwrap()
-        .as_str()
-        .to_string();
+          .unwrap()
+          .as_str()
+          .to_string();
 
-        dependencies.insert(
-          import_id.to_string(),
-          resolved_src.to_string(),
-        );
+        dependencies.insert(import_id.to_string(), resolved_src.to_string());
         sorted_import_ids.push(import_id.to_string());
         dependency_uri_maps.insert(src.to_string(), resolved_src.to_string());
       } else {

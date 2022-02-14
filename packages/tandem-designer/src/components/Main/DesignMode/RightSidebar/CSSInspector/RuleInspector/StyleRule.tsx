@@ -61,6 +61,7 @@ export const StyleRule = React.memo(
             items={info.declarations.map((decl) => ({
               name: decl.name,
               value: decl.value,
+              rawValue: decl.rawValue,
               id: decl.sourceId,
             }))}
           />

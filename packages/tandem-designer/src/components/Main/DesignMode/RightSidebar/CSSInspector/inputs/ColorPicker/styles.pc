@@ -90,7 +90,7 @@
 </div>
 
 <!--
-  @frame { height: 768, width: 1024, x: 21, y: 32 }
+  @frame { height: 768, width: 367, x: 678, y: 32 }
 -->
 <div>
   <style>
@@ -116,7 +116,20 @@
     <style>
       border-top: 1px solid rgb(223, 223, 223);
     </style>
-    Variables
+    <div>
+      <style>
+        display: flex;
+        justify-content: space-between;
+      </style>
+      Variables
+
+      <input placeholder="Filter...">
+        <style>
+          border-radius: 4px;
+          border: 1px solid grey;
+        </style>
+      </input>
+    </div>
     <VarList>
       <style>
         opacity: 0.5;

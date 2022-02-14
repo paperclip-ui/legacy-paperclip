@@ -2,8 +2,8 @@ use super::super::ast;
 use super::virt;
 use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
-use crate::pc::ast as pc_ast;
 use crate::core::ast as core_ast;
+use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{
   evaluate_node as evaluate_pc_node, use_expr_id, Context as PCContext,
 };
