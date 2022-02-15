@@ -137,7 +137,7 @@ function Home() {
                 gives you complete control over how styles are applied, even by
                 third-party modules. With Paperclip, you never have to worry
                 about style collisions again.
-              </>
+              </>,
               // <>Paperclip keeps CSS frameworks scoped, so you know exactly how they're used in your application. No more worrying about CSS frameworks accidentally overriding styles. </>
 
               // "Feel free to use any CSS framework you want. Paperclip keeps them scoped so that you have complete control how they're used throughout "
@@ -172,7 +172,8 @@ function Home() {
               <>
                 Paperclip comes with tools to help you easily keep track of{" "}
                 <i>all</i> visual changes across your application, so you can
-                confidently make big CSS changes knowing that you'll be able to track just about every visual bug that comes up.
+                confidently make big CSS changes knowing that you'll be able to
+                track just about every visual bug that comes up.
               </>
             }
             ctaText="Learn about visual regression tooling"
@@ -203,9 +204,8 @@ function Home() {
             description={
               <>
                 Paperclip currently compiles to <strong>React</strong> and{" "}
-                <strong>static HTML</strong>, and works with frameworks such as <strong>NextJS</strong>, and <strong>GatsbyJS</strong>. Want to try it out? Just check out
-                the <a href="/repl">playground</a>, or run one of the following
-                commands in your existing codebase.{" "}
+                <strong>static HTML</strong>, and works with frameworks such as{" "}
+                <strong>NextJS</strong>, and <strong>GatsbyJS</strong>.
               </>
             }
             actions={

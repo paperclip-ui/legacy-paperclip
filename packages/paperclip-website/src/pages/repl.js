@@ -1,5 +1,5 @@
 import React from "react";
-import CodeBlock from "../../plugins/theme/CodeBlock";
+// import CodeBlock from "../../plugins/theme/CodeBlock";
 
 const EXAMPLE = `
 // file: main.pc
@@ -17,11 +17,12 @@ const EXAMPLE = `
 `;
 
 function REPL() {
-  return (
-    <CodeBlock live fullScreen showAllFrames={false}>
-      {EXAMPLE}
-    </CodeBlock>
-  );
+  return null;
+  // return (
+  //   <CodeBlock live fullScreen showAllFrames={false}>
+  //     {EXAMPLE}
+  //   </CodeBlock>
+  // );
 }
 
 export default REPL;
