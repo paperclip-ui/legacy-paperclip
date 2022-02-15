@@ -100,6 +100,10 @@ export const traverseJSExpression = (
   owner: Expression,
   each: (expr: ScriptExpression, parent: Expression) => void | boolean
 ) => {
+  if (expr.scriptKind === ScriptExpressionKind.Node) {
+    return traverseExpression(expr, owner, each);
+  }
+
   if (each(expr, owner) === false) {
     return false;
   }
@@ -115,8 +119,6 @@ export const traverseJSExpression = (
         return false;
       }
     }
-  } else if (expr.scriptKind === ScriptExpressionKind.Node) {
-    return traverseExpression(expr, owner, each);
   }
   return true;
 };
