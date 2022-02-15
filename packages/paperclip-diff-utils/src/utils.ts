@@ -107,6 +107,7 @@ export const eachFrame = async (
         (frame.annotations && computeVirtScriptObject(frame.annotations)) || {};
 
       const root: VirtualFragment = {
+        sourceId: null,
         id: null,
         children: [
           ...importedSheets.map(({ sheet }) => createStyle(sheet)),
@@ -185,6 +186,7 @@ const isEmpty = (source: string) => {
 const createStyle = (sheet: any): VirtualStyleElement => {
   return {
     id: null,
+    sourceId: null,
     sheet,
     kind: VirtualNodeKind.StyleElement,
   };
