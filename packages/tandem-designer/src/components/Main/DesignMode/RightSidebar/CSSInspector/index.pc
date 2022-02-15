@@ -261,13 +261,17 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="StyleRulePropertyValue" {onClick?}>
+<span export
+  component
+  as="StyleRulePropertyValue"
+  {onClick?}
+  class:showClosing="show-closing">
   <style>
     display: inline-flex;
     outline: none;
     flex-wrap: wrap;
     grid-column-gap: var(--spacing-3);
-    & > :last-child {
+    .show-closing > :last-child {
       .closing {
         display: inline;
         &:after {
@@ -326,10 +330,11 @@
     grid-column-gap: var(--spacing-2);
     align-items: center;
   </style>
-  <div>
+  <div onMouseDown={onColorBoxMouseDown}>
     <style>
       --size: 0.8em;
       background: var(--value);
+      cursor: pointer;
       width: var(--size);
       height: var(--size);
       border-radius: var(--radius-1);
@@ -538,7 +543,7 @@
 <!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
-<Pane.Container export component as="Preview" class="$font-regular">
+<Pane.Container export component as="Preview" class="$font-regular {class?}">
   <Tabs>
     <Tab active={!showComputed}>Rules</Tab>
     <Tab active={showComputed}>Computed</Tab>
@@ -689,7 +694,7 @@
     <style>
       padding: 16px;
     </style>
-    <input class="filter" placeholder="filter..">
+    <input class="filter" placeholder="filter...">
       <style>
         width: 100%;
         padding: 8px;
@@ -721,17 +726,4 @@
       <span class="tag">inherited</span>
     </span>
   </div>
-</div>
-
-<!--
-  @frame { height: 269, width: 360, x: -256, y: -562 }
--->
-<div>
-  <style>
-    background: rgb(0,0,0);
-    color: white;
-    padding: 16px;
-  </style>
-
-  but it might not be
 </div>

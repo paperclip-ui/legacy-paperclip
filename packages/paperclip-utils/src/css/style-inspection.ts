@@ -1,7 +1,7 @@
 // 1:1 with Rust
 
 import { memoize } from "../core/memo";
-import { RootValue } from "./decl-value-ast";
+import { DeclValueRoot, RootValue } from "./decl-value-ast";
 
 export enum SelectorScopeKind {
   Element = "Element",
@@ -102,7 +102,7 @@ export type StyleDeclarationInfo = {
   sourceId: string;
   name: string;
   rawValue: string;
-  value: RootValue;
+  value: DeclValueRoot;
   active: boolean;
 };
 
@@ -130,7 +130,7 @@ export type NodeStyleInspection = {
 export type ComputedDeclarationInfo = {
   name: string;
   rawValue: string;
-  value: RootValue;
+  value: DeclValueRoot;
   variable?: boolean;
   sourceRules: StyleRuleInfo[];
 };

@@ -1,6 +1,6 @@
 import * as declAst from "@paperclip-ui/utils/lib/css/decl-value-ast";
 import * as styles from "../index.pc";
-import React from "react";
+import React, { useRef } from "react";
 import { BlendedTextInput } from "../../../../../TextInput/blended";
 import {
   useDeclarationPart,
@@ -55,8 +55,6 @@ export const DeclarationValue = ({
             onBlur();
           }}
         />
-      ) : exprValue ? (
-        <RichValue value={exprValue} />
       ) : (
         internalValue
       )}
@@ -70,9 +68,9 @@ type RichValueProps = {
 
 const RichValue = ({ value }: RichValueProps) => {
   return (
-    <styles.Expression>
+    <styles.StyleRulePropertyValue>
       <RichRootValue value={value.value} />
-    </styles.Expression>
+    </styles.StyleRulePropertyValue>
   );
 };
 
@@ -145,7 +143,7 @@ const RichValuePart = ({ value }: RichValuePartProps) => {
       return <styles.UnitPart value={stringifyDeclAST(value)} />;
     }
     case declAst.ValueKind.Hex: {
-      return <styles.ColorPropertyPart value={stringifyDeclAST(value)} />;
+      return <ColorValuePart value={value} />;
     }
     case declAst.ValueKind.FunctionCall: {
       return <RichFunctionCall value={value} />;
@@ -155,13 +153,35 @@ const RichValuePart = ({ value }: RichValuePartProps) => {
   return null;
 };
 
+type ColorValuePartProps = {
+  value: declAst.Value;
+};
+
+const ColorValuePart = ({ value }: ColorValuePartProps) => {
+  const strValue = stringifyDeclAST(value);
+  const ref = useRef<HTMLDivElement>();
+
+  const onColorBoxMouseDown = (event: React.MouseEvent<any>) => {
+    event.preventDefault();
+  };
+  return (
+    <>
+      <styles.ColorPropertyPart
+        ref={ref}
+        value={strValue}
+        onColorBoxMouseDown={onColorBoxMouseDown}
+      />
+    </>
+  );
+};
+
 type RichFunctionCallProps = {
   value: declAst.FunctionCall;
 };
 
 const RichFunctionCall = ({ value }: RichFunctionCallProps) => {
   if (/rgba?|hsl|hwb|lab/.test(value.name)) {
-    return <styles.ColorPropertyPart value={stringifyDeclAST(value)} />;
+    return <ColorValuePart value={value} />;
   }
 
   return null;

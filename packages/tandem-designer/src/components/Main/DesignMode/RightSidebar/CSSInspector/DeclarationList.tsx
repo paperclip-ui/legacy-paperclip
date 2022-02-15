@@ -269,10 +269,8 @@ const ComputedDeclaration = memo(
     const [name, setName] = useState(item.name);
     const [value, setValue] = useState(item.rawValue);
 
-    console.log(item.value);
-
     useEffect(() => {
-      setCurrItem(currItem);
+      setCurrItem(item);
       setName(item.name);
       setValue(item.rawValue);
     }, [item]);
