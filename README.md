@@ -8,6 +8,18 @@
 
 <br />
 
+<!--Paperclip is a data format for UI builders that aims to make it easier for non-developers to build web applications. 
+
+Here's what Paperclip looks like:
+
+```html
+<div export component as="Button">
+  
+</div>  
+```-->
+
+
+
 
 Paperclip is a tiny DSL for HTML & CSS that aims to bring scoped styles & a richer UI development experience to any language. It works by exposing primitive components that you can import into your existing codebase. Here's an example Paperclip file:
 

@@ -1,4 +1,5 @@
 use crate::base::ast::{BasicRaws, Range};
+use crate::core::ast as core_ast;
 use crate::core::ast::{Expr, ExprVisitor};
 use crate::pc::ast as pc_ast;
 use serde::Serialize;
@@ -64,6 +65,14 @@ pub enum Expression<'a> {
 }
 
 impl<'a> Expression<'a> {
+  pub fn get_id(&self) -> &String {
+    match self {
+      Expression::Declaration(decl) => decl.get_id(),
+      Expression::Rule(rule) => rule.get_id(),
+      Expression::Sheet(rule) => &rule.id,
+      Expression::StyleRule(rule) => &rule.id,
+    }
+  }
   pub fn get_range(&self) -> &Range {
     match self {
       Expression::Declaration(decl) => decl.get_range(),
@@ -453,7 +462,7 @@ impl fmt::Display for ConditionRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinRule {
   pub id: String,
-  pub name: MixinName,
+  pub name: core_ast::StringLiteral,
   pub raws: BasicRaws,
   pub range: Range,
   pub declarations: Vec<Declaration>,
@@ -480,13 +489,6 @@ impl MixinRule {
     walk_exprs(&self.rules, visitor);
     walk_exprs(&self.declarations, visitor);
   }
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct MixinName {
-  pub id: String,
-  pub value: String,
-  pub range: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -1136,7 +1138,7 @@ impl Expr for Sheet {
     visitor.visit_css_sheet(self);
     // walk_rules_and_decls(&self.rules, &self.declarations, visitor);
     walk_exprs(&self.rules, visitor);
-    walk_exprs(&self.rules, visitor);
+    walk_exprs(&self.declarations, visitor);
   }
   fn get_id<'a>(&'a self) -> &'a String {
     &self.id

@@ -9,6 +9,7 @@ use crate::base::parser::{get_buffer, ParseError};
 use crate::base::string_scanner::StringScanner;
 use crate::base::string_scanner::U16Position;
 use crate::base::utils::get_document_id;
+use crate::core::ast as core_ast;
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
@@ -705,7 +706,7 @@ fn parse_attribute_string_value<'a>(
       })?
       .to_string();
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({
-        pc_ast::AttributeDynamicStringLiteral {
+        core_ast::StringLiteral {
           id: context.id_generator.new_id(),
           value,
           range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
@@ -727,24 +728,20 @@ fn parse_attribute_string_value<'a>(
   let range = Range::new(inner_value_start_pos, inner_value_end_pos);
 
   if parts.len() == 0 {
-    return Ok(pc_ast::AttributeValue::String(
-      pc_ast::AttributeStringValue {
-        id: context.id_generator.new_id(),
-        value: "".to_string(),
-        range,
-      },
-    ));
+    return Ok(pc_ast::AttributeValue::String(core_ast::StringLiteral {
+      id: context.id_generator.new_id(),
+      value: "".to_string(),
+      range,
+    }));
   }
 
   if parts.len() == 1 {
     if let pc_ast::AttributeDynamicStringPart::Literal(value) = &parts[0] {
-      return Ok(pc_ast::AttributeValue::String(
-        pc_ast::AttributeStringValue {
-          id: context.id_generator.new_id(),
-          value: value.value.clone(),
-          range,
-        },
-      ));
+      return Ok(pc_ast::AttributeValue::String(core_ast::StringLiteral {
+        id: context.id_generator.new_id(),
+        value: value.value.clone(),
+        range,
+      }));
     }
   }
 
@@ -792,13 +789,11 @@ fn parse_attribute_string<'a>(
     start.range_from(context.tokenizer.scanner.get_u16pos()),
   )))
   .and_then(|value| {
-    Ok(pc_ast::AttributeValue::String(
-      pc_ast::AttributeStringValue {
-        id: context.id_generator.new_id(),
-        value: value.to_string(),
-        range: Range::new(inner_start, inner_end),
-      },
-    ))
+    Ok(pc_ast::AttributeValue::String(core_ast::StringLiteral {
+      id: context.id_generator.new_id(),
+      value: value.to_string(),
+      range: Range::new(inner_start, inner_end),
+    }))
   })
 }
 

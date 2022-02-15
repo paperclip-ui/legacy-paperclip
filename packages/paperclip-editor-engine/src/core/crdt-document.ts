@@ -1,5 +1,6 @@
 import * as Automerge from "automerge";
 import { EventEmitter } from "events";
+import { mapParallelEditsToSequential } from "./string-editor";
 import { createListener } from "./utils";
 
 export type SourceDocumentData = {
@@ -62,15 +63,30 @@ export class CRDTTextDocument {
    */
 
   applyEdits(edits: TextEdit[]) {
-    let curr = this._doc;
+    let newDoc: SourceDocumentData;
 
-    for (const edit of edits) {
-      curr = Automerge.change(curr, (doc) => {
-        applyTextEdit(edit, doc.text);
+    // Fast
+    if (edits.length === 1) {
+      newDoc = Automerge.change(this._doc, (doc) => {
+        applyTextEdit(edits[0], doc.text);
       });
+      // Slow
+    } else {
+      const forkedChanges: Automerge.BinaryChange[] = edits.reduce(
+        (changes, edit) => {
+          const copy: SourceDocumentData = Automerge.clone(this._doc);
+          const newDoc = Automerge.change(copy, (doc) => {
+            applyTextEdit(edit, doc.text);
+          });
+          return [...changes, Automerge.getLastLocalChange(newDoc)];
+        },
+        []
+      );
+
+      [newDoc] = Automerge.applyChanges(this._doc, forkedChanges);
     }
 
-    const changes = this._setDoc(curr, this._doc);
+    const changes = this._setDoc(newDoc, this._doc);
     this._em.emit("edited", changes);
     return changes;
   }

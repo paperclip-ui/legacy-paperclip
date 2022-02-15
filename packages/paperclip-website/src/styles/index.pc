@@ -170,7 +170,6 @@
 
     :global(.prism-code, ._code-preview) {
       width: 100%;
-      overflow: scroll;
       && {
         height: 550px;
       }

@@ -38,6 +38,7 @@
 </style>
 
 
+
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 22, y: 4 }
 -->
@@ -53,6 +54,9 @@
   </style>
 </div>
 
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 0, y: 0 }
+-->
 <div export component as="Panes">
   <style>
     display: flex;
@@ -149,50 +153,91 @@
   component
   as="StyleRuleProperty"
   class="code"
-  class:disabled="disabled">
-  <style>
-    display: flex;
-    grid-column-gap: var(--spacing-3);
-    flex-wrap: wrap;
-    grid-row-gap: var(--spacing-2);
-    line-height: var(--spacing-6);
-    padding: 0px var(--spacing-4);
-    &.disabled {
-      text-decoration: line-through;
-      opacity: 0.5;
-    }
-    &:last-child {
-      border-bottom-color: transparent;
-    }
-    :global(input) {
-      border: none;
-      padding-left: 0;
-      margin: 0;
-      color: inherit;
-    }
-  </style>
-  <div class:boldName="bold-name">
+  class:disabled="disabled"
+  class:computed="computed"
+  class:collapsed="collapsed">
+  <div>
     <style>
-      white-space: nowrap;
-      display: inline;
-      &.bold-name {
-        font-weight: 600;
-      }
-    </style>
-    <span class="decl-name">{name}</span>
-    <span class="token">:</span>
-  </div>
-  <div class="decl-value" class:boldValue="bold-value">
-    <style>
-      flex: 1;
       display: flex;
-      align-items: center;
-      &.bold-value {
-        font-weight: 600;
+      grid-column-gap: var(--spacing-3);
+      grid-row-gap: var(--spacing-2);
+      line-height: var(--spacing-6);
+      padding: 0px var(--spacing-4);
+      &.disabled {
+        text-decoration: line-through;
+        opacity: 0.5;
+      }
+      &:last-child {
+        border-bottom-color: transparent;
+      }
+      :global(input) {
+        border: none;
+        padding-left: 0;
+        margin: 0;
+        color: inherit;
+      }
+      &:within(.computed) {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: inherit;
+        grid-column-gap: initial;
+        flex-wrap: initial;
+        line-height: inherit;
       }
     </style>
-    {value}
+    {computed? && <div onClick={onExpandClick}>
+      <style>
+        --size: 1em;
+        margin-right: var(--spacing-3);
+        cursor: pointer;
+        &:within(.collapsed) {
+          transform: rotate(-90deg);
+        }
+        @include utils.mask {
+          mask-image: url("assets/chevron.svg");
+        }
+      </style>
+    </div>}
+
+    <div>
+      <style>
+        display: flex;
+        flex-wrap: wrap;
+        grid-column-gap: var(--spacing-3);
+        &:within(.computed) {
+          flex: 1;
+          & > * {
+            display: inline-block;
+            flex: 1;
+          }
+        }
+      </style>
+      <div class:boldName="bold-name">
+        <style>
+          white-space: nowrap;
+          display: inline;
+          &.bold-name {
+            font-weight: 600;
+          }
+        </style>
+        <span class="decl-name">{name}</span>
+        {!computed && <span class="token">:</span>}
+      </div>
+      <div class="decl-value" class:boldValue="bold-value">
+        <style>
+          flex: 1;
+          display: flex;
+          align-items: center;
+          &.bold-value {
+            font-weight: 600;
+          }
+        </style>
+        {value}
+      </div>
+    </div>
   </div>
+  {children? || ""}
 </div>
 
 
@@ -217,13 +262,17 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="StyleRulePropertyValue" {onClick?}>
+<span export
+  component
+  as="StyleRulePropertyValue"
+  {onClick?}
+  class:showClosing="show-closing">
   <style>
     display: inline-flex;
     outline: none;
     flex-wrap: wrap;
     grid-column-gap: var(--spacing-3);
-    & > :last-child {
+    .show-closing > :last-child {
       .closing {
         display: inline;
         &:after {
@@ -240,7 +289,7 @@
 <!--
   @frame { visible: false }
 -->
-<Expression component as="UnitPart">
+<Expression export component as="UnitPart">
   <span class="keyword-input">
     <style>
       border-radius: var(--radius-1);
@@ -270,22 +319,23 @@
 <!--
   @frame { visible: false }
 -->
-<UnitPart component as="KeywordPart" {value} class="keyword-input" />
+<UnitPart export component as="KeywordPart" {value} class="keyword-input" />
 
 
 <!--
   @frame { visible: false }
 -->
-<Expression component as="ColorPropertyPart" style="--value: {value}">
+<Expression export component as="ColorPropertyPart" style="--value: {value}">
   <style>
     display: inline-flex;
     grid-column-gap: var(--spacing-2);
     align-items: center;
   </style>
-  <div>
+  <div onMouseDown={onColorBoxMouseDown}>
     <style>
       --size: 0.8em;
       background: var(--value);
+      cursor: pointer;
       width: var(--size);
       height: var(--size);
       border-radius: var(--radius-1);
@@ -383,10 +433,17 @@
 <!--
   @frame { visible: false }
 -->
-<button export component as="Tab" class="button-reset" class:active="active">
+<button export
+  component
+  as="Tab"
+  class="button-reset"
+  class:active="active"
+  {onClick?}>
   <style>
     border-top: 2px solid transparent;
+    cursor: pointer;
     padding: var(--spacing-3) var(--spacing-4);
+    transition: 0.2s;
     &.active {
       border-top: 2px solid rgb(66, 164, 255);
     }
@@ -398,7 +455,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ComputedStyles">
+<div export component as="ComputedStyles" {onFocus?} {onBlur?}>
   <style>
     border-top: 1px solid rgb(206, 206, 206);
     & > :nth-child(2n) {
@@ -408,45 +465,6 @@
   {children}
 </div>
 
-
-<!--
-  @frame { visible: false }
--->
-<div export component as="ComputedProperty" class:collapsed="collapsed">
-  <div>
-    <style>
-      display: flex;
-      align-items: center;
-      padding: var(--spacing-2) var(--spacing-4);
-    </style>
-    <div>
-      <style>
-        --size: 1em;
-        margin-right: var(--spacing-3);
-        &:within(.collapsed) {
-          transform: rotate(-90deg);
-        }
-        @include utils.mask {
-          mask-image: url("assets/chevron.svg");
-        }
-      </style>
-    </div>
-    <div>
-      <style>
-        display: flex;
-        flex: 1;
-        grid-column-gap: var(--spacing-2);
-        & > * {
-          display: inline-block;
-          flex: 1;
-        }
-      </style>
-      <span class="decl-name">{name}</span>
-      <span class="decl-value">{value}</span>
-    </div>
-  </div>
-  {children}
-</div>
 
 
 <!--
@@ -473,24 +491,78 @@
 </div>
 
 <!--
+  @frame { visible: false }
+-->
+<div export component as="Controls">
+  <style>
+    padding: var(--spacing-3) var(--spacing-4);
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<input export component as="PropertyInput" {value?}>
+  <style>
+    border: 1px solid grey;
+    border-radius: 2px;
+    display: inline-block;
+    width: 100%;
+  </style>
+</input>
+
+<!--
+  @frame { height: 65, title: "AddStyleButton", width: 186, x: 494, y: -396 }
+-->
+<button export component as="AddStyleButton" {onClick}>
+  <style>
+  </style>
+  add style
+</button>
+
+<!--
+  @frame { visible: false }
+-->
+<fragment export component as="ComputedStylesContainer">
+  {children}
+
+  <div>
+    <style>
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    </style>
+    {footerControls}
+  </div>
+</fragment>
+
+<!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
-<Pane.Container export component as="Preview" class="$font-regular">
+<Pane.Container export component as="Preview" class="$font-regular {class?}">
   <Tabs>
-    <Tab active>Rules</Tab>
-    <Tab>Computed</Tab>
+    <Tab active={!showComputed}>Rules</Tab>
+    <Tab active={showComputed}>Computed</Tab>
   </Tabs>
-  {showComputed && <fragment>
+  {showComputed && <ComputedStylesContainer footerControls={<AddStyleButton />}>
     <ComputedStyles>
-      <ComputedProperty collapsed
+      <StyleRuleProperty computed
+        collapsed
         name="display"
         value="flex"
         sources={<fragment />} />
-      <ComputedProperty collapsed
+      <StyleRuleProperty computed
+        collapsed
         name="color"
-        value="red"
+        value={<PropertyInput />}
         sources={<fragment />} />
-      <ComputedProperty name="background-color"
+      <StyleRuleProperty computed
+        name="background-color"
         value="orange"
         sources={<fragment />}>
         <ComputedPropertySource selector=".Pane.Container"
@@ -498,13 +570,13 @@
         <ComputedPropertySource disabled
           selector={<ScopedElementSelector />}
           fileName="global.css" />
-      </ComputedProperty>
-      <ComputedProperty collapsed
-        name="box-shadow"
+      </StyleRuleProperty>
+      <StyleRuleProperty computed
+        name={<PropertyInput />}
         value="0px 0px 1px #FF00FF"
         sources={<fragment />} />
     </ComputedStyles>
-  </fragment>}
+  </ComputedStylesContainer>}
 
   {!showComputed && <fragment>
     <Header input={<FilterInput />} />
@@ -516,9 +588,7 @@
           properties={<fragment>
             <StyleRuleProperty name="background-color"
               value={<StyleRulePropertyValue>
-                <Expression>
-                  var(--page-background-color, var(--gray-gray-90))
-                </Expression>
+                <Expression />
               </StyleRulePropertyValue>} />
             <StyleRuleProperty boldName
               disabled
@@ -584,8 +654,77 @@
   </fragment>}
 </Pane.Container>
 
-
 <!--
-  @frame { title: "Inspector", width: 265, height: 900, x: 230, y: -138 }
+  @frame { height: 900, title: "Inspector", width: 284, x: 107, y: -140 }
 -->
 <Preview />
+
+<!--
+  @frame { height: 768, title: "Computed CSS", width: 348, x: 478, y: -138 }
+-->
+<Preview showComputed />
+
+<!--
+  @frame { height: 768, title: "Decl name list", width: 304, x: -242, y: -140 }
+-->
+<div>
+  <style>
+    .item {
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .header {
+      background: rgb(214, 214, 214);
+    }
+    .tag {
+      align-self: flex-end;
+      background: rgb(206, 206, 206);
+      color: #333;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      opacity: 0.5;
+    }
+    .tags {
+      display: flex;
+      gap: 6px;
+    }
+  </style>
+  <div>
+    <style>
+      padding: 16px;
+    </style>
+    <input class="filter" placeholder="filter...">
+      <style>
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid grey;
+      </style>
+    </input>
+  </div>
+  <div class="item">
+    <span>display</span><span class="tags">
+      <span class="tag">layout</span>
+      <span class="tag">flex</span>
+    </span>
+  </div>
+  <div class="item">
+    <span>gap</span><span class="tags">
+      <span class="tag">grid</span>
+      <span class="tag">flex</span>
+    </span>
+  </div>
+  <div class="item">
+    <span>flex-direction</span><span class="tags">
+      <span class="tag">flex</span>
+    </span>
+  </div>
+  <div class="item">
+    <span>font-family</span><span class="tags">
+      <span class="tag">font</span>
+      <span class="tag">inherited</span>
+    </span>
+  </div>
+</div>

@@ -13,13 +13,14 @@ declare const DESIGNER_STATE: EmbeddedState | null;
 
 const createDefaultRPCClient = () =>
   wsAdapter(
-    new WebSocket(
-      "ws://" +
-        (typeof DESIGNER_STATE === "undefined"
-          ? location.host
-          : DESIGNER_STATE.host) +
-        "/ws"
-    )
+    () =>
+      new WebSocket(
+        "ws://" +
+          (typeof DESIGNER_STATE === "undefined"
+            ? location.host
+            : DESIGNER_STATE.host) +
+          "/ws"
+      )
   );
 
 export type WorkspaceEngineOptions = {

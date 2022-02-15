@@ -2,6 +2,7 @@ use super::super::ast;
 use super::virt;
 use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
+use crate::core::ast as core_ast;
 use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{
   evaluate_node as evaluate_pc_node, use_expr_id, Context as PCContext,
@@ -104,7 +105,7 @@ fn evaluate_node<'a>(
 }
 
 fn evaluate_string<'a>(
-  value: &ast::Str,
+  value: &core_ast::StringLiteral,
   context: &'a mut PCContext,
 ) -> Result<virt::Value, RuntimeError> {
   use_expr_id(&value.id, context);

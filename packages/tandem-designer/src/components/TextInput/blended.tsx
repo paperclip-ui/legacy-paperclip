@@ -6,32 +6,43 @@ import { TextInputProps, useTextInput } from "@tandem-ui/design-system";
 export const BlendedTextInput = ({
   autoResize,
   onValueChange,
+  onEnterPressed,
   onBlur,
+  onKeyDown,
+  select,
+  autoFocus,
   value,
-  placeholder
+  placeholder,
 }: TextInputProps) => {
   const autoResizeDummyRef = useRef<HTMLSpanElement>();
   const { inputProps, refValue } = useTextInput({
+    select,
+    autoFocus,
     onValueChange,
+    onKeyDown,
+    onEnterPressed,
     onBlur,
-    value
+    value,
   });
+
   const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
   useLayoutEffect(() => {
     if (!autoResizeDummyRef.current) {
       return;
     }
-    setWidth(autoResizeDummyRef.current.getBoundingClientRect().width);
+    setWidth(
+      Math.max(20, autoResizeDummyRef.current.getBoundingClientRect().width)
+    );
+    setHeight(
+      Math.max(10, autoResizeDummyRef.current.getBoundingClientRect().height)
+    );
   }, [autoResizeDummyRef.current, refValue]);
 
   return (
     <styles.Container autoResize={autoResize}>
-      <input
-        {...inputProps}
-        placeholder={placeholder}
-        style={width ? { width } : {}}
-      />
+      <input {...inputProps} style={width ? { width, height } : {}} />
       {autoResize && (
         <styles.DummySpan ref={autoResizeDummyRef}>{refValue}</styles.DummySpan>
       )}

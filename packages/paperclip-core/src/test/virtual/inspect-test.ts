@@ -10,7 +10,7 @@ describe(__filename + "#", () => {
           <style>
             color: red;
           </style>
-        </div>`
+        </div>`,
       },
       100,
       [0],
@@ -28,8 +28,8 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
+                    id: "406d2856",
+                  },
                 },
                 {
                   kind: "Class",
@@ -37,10 +37,10 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
-                }
-              ]
+                    id: "406d2856",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "406d2856",
@@ -50,14 +50,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                rawValue: "red",
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    value: "red",
+                    valueKind: "Raw",
+                  },
+                },
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Sets inline style at a higher priority than document class",
@@ -73,7 +81,7 @@ describe(__filename + "#", () => {
               color: red;
             </style>
           </div>
-        `
+        `,
       },
       100,
       [0],
@@ -91,8 +99,8 @@ describe(__filename + "#", () => {
                   value: "._376a18c0",
                   scope: {
                     kind: "Element",
-                    id: "376a18c0"
-                  }
+                    id: "376a18c0",
+                  },
                 },
                 {
                   kind: "Class",
@@ -100,10 +108,10 @@ describe(__filename + "#", () => {
                   value: "._376a18c0",
                   scope: {
                     kind: "Element",
-                    id: "376a18c0"
-                  }
-                }
-              ]
+                    id: "376a18c0",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "376a18c0",
@@ -113,11 +121,19 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-6-1",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
+            specificity: 4,
           },
           {
             inherited: false,
@@ -127,7 +143,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -135,10 +151,10 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_item",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
-                }
-              ]
+                    id: "80f4925f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-2",
@@ -148,14 +164,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "color",
-                value: "blue",
-                active: false
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "blue",
+                  },
+                },
+                rawValue: "blue",
+                active: false,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Ignores :hover selector",
@@ -169,7 +193,7 @@ describe(__filename + "#", () => {
               }
             </style>
           </div>
-        `
+        `,
       },
       100,
       [0],
@@ -187,8 +211,8 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
+                    id: "406d2856",
+                  },
                 },
                 {
                   kind: "Class",
@@ -196,10 +220,10 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
-                }
-              ]
+                    id: "406d2856",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "406d2856",
@@ -209,14 +233,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-4-1",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Combo has different specificity than class",
@@ -231,7 +263,7 @@ describe(__filename + "#", () => {
             }
           </style>
           <div class="a b" />
-        `
+        `,
       },
       100,
       [0],
@@ -249,8 +281,8 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_a",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
+                    id: "80f4925f",
+                  },
                 },
                 {
                   kind: "Class",
@@ -258,8 +290,8 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_b",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
+                    id: "80f4925f",
+                  },
                 },
                 {
                   kind: "Class",
@@ -267,10 +299,10 @@ describe(__filename + "#", () => {
                   value: "._80f4925f",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
-                }
-              ]
+                    id: "80f4925f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-5",
@@ -280,11 +312,19 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-4",
                 name: "color",
-                value: "blue",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "blue",
+                  },
+                },
+                rawValue: "blue",
+                active: true,
+              },
             ],
-            specificity: 6
+            specificity: 6,
           },
           {
             inherited: false,
@@ -294,7 +334,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -302,10 +342,10 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_a",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
-                }
-              ]
+                    id: "80f4925f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-2",
@@ -315,14 +355,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "color",
-                value: "red",
-                active: false
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: false,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Can inspect global styles",
@@ -334,7 +382,7 @@ describe(__filename + "#", () => {
             }
           </style>
           <div class="a b" />
-        `
+        `,
       },
       100,
       [0],
@@ -347,7 +395,7 @@ describe(__filename + "#", () => {
               kind: "Class",
               name: "a",
               value: ".a",
-              scope: null
+              scope: null,
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-3",
@@ -357,14 +405,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-2",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 2
-          }
-        ]
-      }
+            specificity: 2,
+          },
+        ],
+      },
     ],
     [
       "Can inspect a nested media query",
@@ -382,7 +438,7 @@ describe(__filename + "#", () => {
           </style>
           <div class="a">
           </div>
-        `
+        `,
       },
       1300,
       [0],
@@ -396,7 +452,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -404,30 +460,38 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_a",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
-                }
-              ]
+                    id: "80f4925f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-2",
             sourceUri: "/entry.pc",
             media: {
               conditionText: "(min-width: 1280px)",
-              active: false
+              active: false,
             },
             declarations: [
               {
                 sourceId: "80f4925f-1-1",
                 name: "color",
-                value: "blue",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "blue",
+                  },
+                },
+                rawValue: "blue",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Can inspect imported styles",
@@ -440,7 +504,7 @@ describe(__filename + "#", () => {
           .a {
             color: red;
           }
-        `
+        `,
       },
       100,
       [0],
@@ -454,7 +518,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -462,10 +526,10 @@ describe(__filename + "#", () => {
                   value: "._pub-b8a55827_a",
                   scope: {
                     kind: "Document",
-                    id: "b8a55827"
-                  }
-                }
-              ]
+                    id: "b8a55827",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "b8a55827-2",
@@ -475,14 +539,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "b8a55827-1",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Inspect captures escaped selectors",
@@ -495,7 +567,7 @@ describe(__filename + "#", () => {
           </style>
           <div class="a:b:c">
           </div>
-        `
+        `,
       },
       100,
       [0],
@@ -509,7 +581,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -517,10 +589,10 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_a\\:b\\:c",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
-                }
-              ]
+                    id: "80f4925f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-2",
@@ -530,14 +602,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "inherits font-family from parent",
@@ -549,7 +629,7 @@ describe(__filename + "#", () => {
             </style>
             <div />
           </div>
-        `
+        `,
       },
       100,
       [0, 0],
@@ -567,8 +647,8 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
+                    id: "406d2856",
+                  },
                 },
                 {
                   kind: "Class",
@@ -576,10 +656,10 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
-                }
-              ]
+                    id: "406d2856",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "406d2856",
@@ -589,14 +669,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "font-family",
-                value: "sans-serif",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "sans-serif",
+                  },
+                },
+                rawValue: "sans-serif",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "When inherit is declared, then prop is inherited from parent",
@@ -612,7 +700,7 @@ describe(__filename + "#", () => {
               </style>
             </div>
           </div>
-        `
+        `,
       },
       100,
       [0, 0],
@@ -630,8 +718,8 @@ describe(__filename + "#", () => {
                   value: "._e9795a6f",
                   scope: {
                     kind: "Element",
-                    id: "e9795a6f"
-                  }
+                    id: "e9795a6f",
+                  },
                 },
                 {
                   kind: "Class",
@@ -639,10 +727,10 @@ describe(__filename + "#", () => {
                   value: "._e9795a6f",
                   scope: {
                     kind: "Element",
-                    id: "e9795a6f"
-                  }
-                }
-              ]
+                    id: "e9795a6f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "e9795a6f",
@@ -652,11 +740,19 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-3-1",
                 name: "background",
-                value: "inherit",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "inherit",
+                  },
+                },
+                rawValue: "inherit",
+                active: true,
+              },
             ],
-            specificity: 4
+            specificity: 4,
           },
           {
             inherited: true,
@@ -670,8 +766,8 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
+                    id: "406d2856",
+                  },
                 },
                 {
                   kind: "Class",
@@ -679,10 +775,10 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
-                }
-              ]
+                    id: "406d2856",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "406d2856",
@@ -692,14 +788,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "background",
-                value: "blue",
-                active: false
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "blue",
+                  },
+                },
+                rawValue: "blue",
+                active: false,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Skips duplicated inherited styles",
@@ -713,7 +817,7 @@ describe(__filename + "#", () => {
               <div />
             </div>
           </div>
-        `
+        `,
       },
       100,
       [0, 0, 0],
@@ -731,8 +835,8 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
+                    id: "406d2856",
+                  },
                 },
                 {
                   kind: "Class",
@@ -740,10 +844,10 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
-                }
-              ]
+                    id: "406d2856",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "406d2856",
@@ -753,14 +857,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "font-family",
-                value: "sans-serif",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "sans-serif",
+                  },
+                },
+                rawValue: "sans-serif",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "&&& and proceeding :within gets declaration value overrides correct",
@@ -778,7 +890,7 @@ describe(__filename + "#", () => {
               </style>
             </div>
           </div>
-        `
+        `,
       },
       100,
       [0, 0],
@@ -797,8 +909,8 @@ describe(__filename + "#", () => {
                   value: "._9e7e6af9",
                   scope: {
                     kind: "Element",
-                    id: "9e7e6af9"
-                  }
+                    id: "9e7e6af9",
+                  },
                 },
                 {
                   kind: "Class",
@@ -806,8 +918,8 @@ describe(__filename + "#", () => {
                   value: "._9e7e6af9",
                   scope: {
                     kind: "Element",
-                    id: "9e7e6af9"
-                  }
+                    id: "9e7e6af9",
+                  },
                 },
                 {
                   kind: "Class",
@@ -815,8 +927,8 @@ describe(__filename + "#", () => {
                   value: "._9e7e6af9",
                   scope: {
                     kind: "Element",
-                    id: "9e7e6af9"
-                  }
+                    id: "9e7e6af9",
+                  },
                 },
                 {
                   kind: "Class",
@@ -824,8 +936,8 @@ describe(__filename + "#", () => {
                   value: "._9e7e6af9",
                   scope: {
                     kind: "Element",
-                    id: "9e7e6af9"
-                  }
+                    id: "9e7e6af9",
+                  },
                 },
                 {
                   kind: "Class",
@@ -833,8 +945,8 @@ describe(__filename + "#", () => {
                   value: "._9e7e6af9",
                   scope: {
                     kind: "Element",
-                    id: "9e7e6af9"
-                  }
+                    id: "9e7e6af9",
+                  },
                 },
                 {
                   kind: "Class",
@@ -842,10 +954,10 @@ describe(__filename + "#", () => {
                   value: "._9e7e6af9",
                   scope: {
                     kind: "Element",
-                    id: "9e7e6af9"
-                  }
-                }
-              ]
+                    id: "9e7e6af9",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-4-5",
@@ -855,11 +967,19 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-4-4",
                 name: "ab",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 12
+            specificity: 12,
           },
           {
             inherited: false,
@@ -871,7 +991,7 @@ describe(__filename + "#", () => {
                 selectors: [
                   {
                     kind: "Attribute",
-                    value: "[class]"
+                    value: "[class]",
                   },
                   {
                     kind: "Class",
@@ -879,10 +999,10 @@ describe(__filename + "#", () => {
                     value: "._80f4925f_test",
                     scope: {
                       kind: "Document",
-                      id: "80f4925f"
-                    }
-                  }
-                ]
+                      id: "80f4925f",
+                    },
+                  },
+                ],
               },
               right: {
                 kind: "Combo",
@@ -893,8 +1013,8 @@ describe(__filename + "#", () => {
                     value: "._9e7e6af9",
                     scope: {
                       kind: "Element",
-                      id: "9e7e6af9"
-                    }
+                      id: "9e7e6af9",
+                    },
                   },
                   {
                     kind: "Class",
@@ -902,11 +1022,11 @@ describe(__filename + "#", () => {
                     value: "._9e7e6af9",
                     scope: {
                       kind: "Element",
-                      id: "9e7e6af9"
-                    }
-                  }
-                ]
-              }
+                      id: "9e7e6af9",
+                    },
+                  },
+                ],
+              },
             },
             pseudoElementName: null,
             sourceId: "80f4925f-4-9",
@@ -916,14 +1036,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-4-8",
                 name: "ab",
-                value: "blue",
-                active: false
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "blue",
+                  },
+                },
+                rawValue: "blue",
+                active: false,
+              },
             ],
-            specificity: 8
-          }
-        ]
-      }
+            specificity: 8,
+          },
+        ],
+      },
     ],
     [
       "Can inspect styles in slots",
@@ -938,7 +1066,7 @@ describe(__filename + "#", () => {
           </div>
 
           <Test show />
-        `
+        `,
       },
       100,
       [0, 0],
@@ -956,8 +1084,8 @@ describe(__filename + "#", () => {
                   value: "._3024ebf3",
                   scope: {
                     kind: "Element",
-                    id: "3024ebf3"
-                  }
+                    id: "3024ebf3",
+                  },
                 },
                 {
                   kind: "Class",
@@ -965,10 +1093,10 @@ describe(__filename + "#", () => {
                   value: "._3024ebf3",
                   scope: {
                     kind: "Element",
-                    id: "3024ebf3"
-                  }
-                }
-              ]
+                    id: "3024ebf3",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "3024ebf3",
@@ -978,14 +1106,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "0-00-2-1-1",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Ignores :focus",
@@ -999,7 +1135,7 @@ describe(__filename + "#", () => {
               }
             </style>
           </div>
-        `
+        `,
       },
       100,
       [0],
@@ -1017,8 +1153,8 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
+                    id: "406d2856",
+                  },
                 },
                 {
                   kind: "Class",
@@ -1026,10 +1162,10 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
-                }
-              ]
+                    id: "406d2856",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "406d2856",
@@ -1039,14 +1175,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "parent selectors with css variables are inherited",
@@ -1058,7 +1202,7 @@ describe(__filename + "#", () => {
             </style>
             <div />
           </div>
-        `
+        `,
       },
       100,
       [0, 0],
@@ -1076,8 +1220,8 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
+                    id: "406d2856",
+                  },
                 },
                 {
                   kind: "Class",
@@ -1085,10 +1229,10 @@ describe(__filename + "#", () => {
                   value: "._406d2856",
                   scope: {
                     kind: "Element",
-                    id: "406d2856"
-                  }
-                }
-              ]
+                    id: "406d2856",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "406d2856",
@@ -1098,14 +1242,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-1",
                 name: "--color",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "classes have priority over :root",
@@ -1126,7 +1278,7 @@ describe(__filename + "#", () => {
               </style>
             </div>
           </div>
-        `
+        `,
       },
       100,
       [0, 0],
@@ -1144,8 +1296,8 @@ describe(__filename + "#", () => {
                   value: "._9fbc00ce",
                   scope: {
                     kind: "Element",
-                    id: "9fbc00ce"
-                  }
+                    id: "9fbc00ce",
+                  },
                 },
                 {
                   kind: "Class",
@@ -1153,10 +1305,10 @@ describe(__filename + "#", () => {
                   value: "._9fbc00ce",
                   scope: {
                     kind: "Element",
-                    id: "9fbc00ce"
-                  }
-                }
-              ]
+                    id: "9fbc00ce",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "9fbc00ce",
@@ -1166,11 +1318,28 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-6-1",
                 name: "color",
-                value: "var(--color)",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "FunctionCall",
+                    name: "var",
+                    parameters: {
+                      items: [
+                        {
+                          listItemKind: "Value",
+                          valueKind: "Raw",
+                          value: "--color",
+                        },
+                      ],
+                    },
+                  },
+                },
+                rawValue: "var(--color)",
+                active: true,
+              },
             ],
-            specificity: 4
+            specificity: 4,
           },
           {
             inherited: true,
@@ -1179,7 +1348,7 @@ describe(__filename + "#", () => {
               kind: "Class",
               name: "theme",
               value: ".theme",
-              scope: null
+              scope: null,
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-6",
@@ -1189,18 +1358,26 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-5",
                 name: "--color",
-                value: "blue",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "blue",
+                  },
+                },
+                rawValue: "blue",
+                active: true,
+              },
             ],
-            specificity: 2
+            specificity: 2,
           },
           {
             inherited: true,
             selectorText: ":root",
             selectorInfo: {
               kind: "PseudoElement",
-              value: ":root"
+              value: ":root",
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-3",
@@ -1210,14 +1387,22 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-1-2",
                 name: "--color",
-                value: "red",
-                active: false
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: false,
+              },
             ],
-            specificity: 1
-          }
-        ]
-      }
+            specificity: 1,
+          },
+        ],
+      },
     ],
     [
       "Inspects styles for injected classes",
@@ -1240,7 +1425,7 @@ describe(__filename + "#", () => {
             }
           }
         </style>
-      `
+      `,
       },
       100,
       [0, 0],
@@ -1258,8 +1443,8 @@ describe(__filename + "#", () => {
                   value: "._9fbc00ce",
                   scope: {
                     kind: "Element",
-                    id: "9fbc00ce"
-                  }
+                    id: "9fbc00ce",
+                  },
                 },
                 {
                   kind: "Class",
@@ -1267,10 +1452,10 @@ describe(__filename + "#", () => {
                   value: "._9fbc00ce",
                   scope: {
                     kind: "Element",
-                    id: "9fbc00ce"
-                  }
-                }
-              ]
+                    id: "9fbc00ce",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "9fbc00ce",
@@ -1280,11 +1465,28 @@ describe(__filename + "#", () => {
               {
                 sourceId: "80f4925f-8-1",
                 name: "color",
-                value: "var(--color)",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "FunctionCall",
+                    name: "var",
+                    parameters: {
+                      items: [
+                        {
+                          listItemKind: "Value",
+                          valueKind: "Raw",
+                          value: "--color",
+                        },
+                      ],
+                    },
+                  },
+                },
+                rawValue: "var(--color)",
+                active: true,
+              },
             ],
-            specificity: 4
+            specificity: 4,
           },
           {
             inherited: true,
@@ -1294,7 +1496,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -1302,10 +1504,10 @@ describe(__filename + "#", () => {
                   value: "._pub-230c4d4a_text-small",
                   scope: {
                     kind: "Document",
-                    id: "230c4d4a"
-                  }
-                }
-              ]
+                    id: "230c4d4a",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "230c4d4a-1-2",
@@ -1315,14 +1517,25 @@ describe(__filename + "#", () => {
               {
                 sourceId: "230c4d4a-1-1",
                 name: "font-size",
-                value: "24px",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Dimension",
+                    value: {
+                      value: "24",
+                    },
+                    unit: "px",
+                  },
+                },
+                rawValue: "24px",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Returns correct sourceId for included media rule",
@@ -1341,7 +1554,7 @@ describe(__filename + "#", () => {
             }
           </style>
           <div class="item" />
-        `
+        `,
       },
       100,
       [0],
@@ -1355,7 +1568,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -1363,30 +1576,38 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_item",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
-                }
-              ]
+                    id: "80f4925f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-8",
             sourceUri: "/entry.pc",
             media: {
               conditionText: "screen and (max-width: 500px)",
-              active: true
+              active: true,
             },
             declarations: [
               {
                 sourceId: "80f4925f-1-7",
                 name: "background",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
+            specificity: 4,
+          },
+        ],
+      },
     ],
     [
       "Uses annotation information for screen size",
@@ -1409,7 +1630,7 @@ describe(__filename + "#", () => {
             @frame { width: 600 }
           -->
           <div class="item" />
-        `
+        `,
       },
       100,
       [0],
@@ -1423,7 +1644,7 @@ describe(__filename + "#", () => {
               selectors: [
                 {
                   kind: "Attribute",
-                  value: "[class]"
+                  value: "[class]",
                 },
                 {
                   kind: "Class",
@@ -1431,31 +1652,39 @@ describe(__filename + "#", () => {
                   value: "._80f4925f_item",
                   scope: {
                     kind: "Document",
-                    id: "80f4925f"
-                  }
-                }
-              ]
+                    id: "80f4925f",
+                  },
+                },
+              ],
             },
             pseudoElementName: null,
             sourceId: "80f4925f-1-8",
             sourceUri: "/entry.pc",
             media: {
               conditionText: "screen and (max-width: 500px)",
-              active: false
+              active: false,
             },
             declarations: [
               {
                 sourceId: "80f4925f-1-7",
                 name: "background",
-                value: "red",
-                active: true
-              }
+                value: {
+                  important: false,
+                  value: {
+                    expressionKind: "Value",
+                    valueKind: "Raw",
+                    value: "red",
+                  },
+                },
+                rawValue: "red",
+                active: true,
+              },
             ],
-            specificity: 4
-          }
-        ]
-      }
-    ]
+            specificity: 4,
+          },
+        ],
+      },
+    ],
   ] as any;
 
   for (const [title, graph, screenWidth, path, result] of cases) {
@@ -1466,6 +1695,8 @@ describe(__filename + "#", () => {
         { path, uri: "/entry.pc" },
         screenWidth
       );
+
+      // console.log(JSON.stringify(inspection, null, 2));
 
       expect(inspection).to.eql(result);
     });

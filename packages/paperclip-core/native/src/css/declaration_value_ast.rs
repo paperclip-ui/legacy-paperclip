@@ -1,6 +1,12 @@
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Root {
+  pub important: bool,
+  pub value: Expression,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "expressionKind")]
 pub enum Expression {
   List(List),
@@ -31,8 +37,10 @@ pub struct Group {
 #[serde(tag = "valueKind")]
 pub enum Value {
   Dimension(Dimension),
+  Operation(Operation),
   Number(Number),
   String(Str),
+  Raw(Raw),
   Hex(Hex),
   Keyword(Keyword),
   FunctionCall(FunctionCall),
@@ -45,6 +53,14 @@ pub struct Dimension {
   pub unit: String, // px, em
 }
 
+// a + b
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Operation {
+  pub left: Box<Value>,
+  pub right: Box<Value>,
+  pub operation: String,
+}
+
 // #F60
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Hex {
@@ -54,6 +70,12 @@ pub struct Hex {
 // 'aab'
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Str {
+  pub value: String,
+}
+
+// 'aab'
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Raw {
   pub value: String,
 }
 
@@ -84,6 +106,6 @@ pub struct Keyword {
 // rgba(0, 0, 100, 150px)
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FunctionCall {
-  name: String,
-  parameters: Vec<Value>,
+  pub name: String,
+  pub parameters: List,
 }

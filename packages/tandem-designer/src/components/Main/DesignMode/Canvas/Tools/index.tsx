@@ -12,6 +12,7 @@ import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
 import {
+  getNodeByPath,
   LoadedPCData,
   VirtualFrame,
   VirtualNodeKind,
@@ -25,6 +26,7 @@ import { Empty } from "./Empty";
 import { uiActions } from "../../../../../actions/ui-actions";
 import { useDrop } from "react-dnd";
 import { AvailableNode } from "@paperclip-ui/language-service";
+import { TextEditor } from "./TextEditor";
 
 export const Tools = () => {
   const {
@@ -39,16 +41,17 @@ export const Tools = () => {
     canvas,
     dispatch,
     selectedBox,
+    showTextEditor,
     state,
     readonly,
     hoveringBox,
-    virtualNode,
+    loadedData,
     toolsLayerEnabled,
     selectedNodePaths,
     optionKeyDown,
   } = useTools();
 
-  if (!virtualNode || !toolsLayerEnabled) {
+  if (!loadedData || !toolsLayerEnabled) {
     return null;
   }
 
@@ -63,6 +66,14 @@ export const Tools = () => {
       <Empty show={showEmpty} />
 
       <Pixels canvas={canvas} />
+      {showTextEditor && (
+        <TextEditor
+          box={selectedBox}
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          node={getNodeByPath(selectedNodePaths[0], loadedData.preview)}
+        />
+      )}
 
       {!resizerMoving && (
         <Selectable
@@ -115,6 +126,7 @@ const useTools = () => {
       ui: {
         query: { canvasFile },
       },
+      showTextEditor,
       optionKeyDown,
       allLoadedPCFileData,
       readonly,
@@ -206,12 +218,12 @@ const useTools = () => {
   const hoveringBox =
     state.designer.highlightNodePath && boxes[state.designer.highlightNodePath];
 
-  const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
+  const loadedData = allLoadedPCFileData[canvasFile] as LoadedPCData;
 
-  const frames = virtualNode
-    ? ((virtualNode.preview.kind === VirtualNodeKind.Fragment
-        ? virtualNode.preview.children
-        : [virtualNode.preview]) as Array<VirtualFrame>)
+  const frames = loadedData
+    ? ((loadedData.preview.kind === VirtualNodeKind.Fragment
+        ? loadedData.preview.children
+        : [loadedData.preview]) as Array<VirtualFrame>)
     : [];
 
   const showEmpty = frames.length === 0;
@@ -225,7 +237,8 @@ const useTools = () => {
     isDraggingOver,
     onMouseLeave,
     showEmpty,
-    virtualNode,
+    showTextEditor,
+    loadedData,
     toolsLayerEnabled,
     canvas,
     dispatch,

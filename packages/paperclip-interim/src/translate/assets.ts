@@ -14,7 +14,7 @@ import {
   AttributeKind,
   AttributeValueKind,
   isNode,
-  NodeKind
+  NodeKind,
 } from "@paperclip-ui/utils";
 import { InterimCompilerOptions } from "./options";
 import { InterimAsset } from "../state/assets";
@@ -53,74 +53,76 @@ export const getAssets = (
         engine,
         options
       )
-    )
+    ),
   ];
 };
 
-const mapAsset = (
-  modulePath: string,
-  outModulePath: string,
-  engine: EngineDelegate,
-  options: InterimCompilerOptions
-) => (originalPath: string) => {
-  let relativeAssetPath = originalPath;
+const mapAsset =
+  (
+    modulePath: string,
+    outModulePath: string,
+    engine: EngineDelegate,
+    options: InterimCompilerOptions
+  ) =>
+  (originalPath: string) => {
+    let relativeAssetPath = originalPath;
 
-  if (relativeAssetPath.indexOf("file") === 0) {
-    relativeAssetPath = URL.fileURLToPath(relativeAssetPath);
-    relativeAssetPath = resolvePath(modulePath, relativeAssetPath);
-  }
-
-  const filePath = engine.resolveFile(modulePath, relativeAssetPath);
-
-  let moduleContent: string;
-  let outputFilePath = filePath;
-
-  const fileSize = options.io.getFileSize(filePath);
-  if (
-    fileSize <= options.targetOptions.embedAssetMaxSize ||
-    options.targetOptions.embedAssetMaxSize === -1
-  ) {
-    moduleContent =
-      `data:${mime.getType(filePath)};base64,` +
-      options.io.readFile(filePath).toString("base64");
-  } else if (options.targetOptions.assetOutDir) {
-    const srcDir = path.join(options.cwd, options.config.srcDir);
-
-    const outputDir = path.join(options.cwd, options.targetOptions.assetOutDir);
-
-    if (options.targetOptions.useAssetHashNames !== false) {
-      const buffer = options.io.readFile(filePath);
-      const md5Name = crypto
-        .createHash("md5")
-        .update(buffer)
-        .digest("hex");
-      outputFilePath = path.join(outputDir, md5Name + path.extname(filePath));
-    } else {
-      outputFilePath = path.join(outputDir, filePath.replace(srcDir, ""));
+    if (relativeAssetPath.indexOf("file") === 0) {
+      relativeAssetPath = URL.fileURLToPath(relativeAssetPath);
+      relativeAssetPath = resolvePath(modulePath, relativeAssetPath);
     }
-    if (options.targetOptions.assetPrefix) {
+
+    const filePath = engine.resolveFile(modulePath, relativeAssetPath);
+
+    let moduleContent: string;
+    let outputFilePath = filePath;
+
+    const fileSize = options.io.getFileSize(filePath);
+    if (
+      fileSize <= options.targetOptions.embedAssetMaxSize ||
+      options.targetOptions.embedAssetMaxSize === -1
+    ) {
       moduleContent =
-        options.targetOptions.assetPrefix +
-        path.relative(options.cwd, outputFilePath);
-    } else {
-      moduleContent = resolvePath(outModulePath, outputFilePath);
-    }
-  }
+        `data:${mime.getType(filePath)};base64,` +
+        options.io.readFile(filePath).toString("base64");
+    } else if (options.targetOptions.assetOutDir) {
+      const srcDir = path.join(options.cwd, options.config.srcDir);
 
-  return {
-    originalPath,
-    filePath,
-    outputFilePath,
-    moduleContent
+      const outputDir = path.join(
+        options.cwd,
+        options.targetOptions.assetOutDir
+      );
+
+      if (options.targetOptions.useAssetHashNames !== false) {
+        const buffer = options.io.readFile(filePath);
+        const md5Name = crypto.createHash("md5").update(buffer).digest("hex");
+        outputFilePath = path.join(outputDir, md5Name + path.extname(filePath));
+      } else {
+        outputFilePath = path.join(outputDir, filePath.replace(srcDir, ""));
+      }
+      if (options.targetOptions.assetPrefix) {
+        moduleContent =
+          options.targetOptions.assetPrefix +
+          path.relative(options.cwd, outputFilePath);
+      } else {
+        moduleContent = resolvePath(outModulePath, outputFilePath);
+      }
+    }
+
+    return {
+      originalPath,
+      filePath,
+      outputFilePath,
+      moduleContent,
+    };
   };
-};
 
 const collectAssetPaths = (root: Node | null, sheet: VirtSheet) => {
   const html = {};
   const css = {};
 
   if (root) {
-    traverseExpression(root, nested => {
+    traverseExpression(root, null, (nested) => {
       if (
         isNode(nested) &&
         nested.nodeKind === NodeKind.Element &&
@@ -141,7 +143,7 @@ const collectAssetPaths = (root: Node | null, sheet: VirtSheet) => {
     });
   }
 
-  traverseVirtSheet(sheet, rule => {
+  traverseVirtSheet(sheet, (rule) => {
     if (rule.style) {
       for (const { value } of rule.style) {
         if (/url\(/.test(value)) {
@@ -157,7 +159,7 @@ const collectAssetPaths = (root: Node | null, sheet: VirtSheet) => {
 
   return {
     html: Object.keys(html),
-    css: Object.keys(css)
+    css: Object.keys(css),
   };
 };
 

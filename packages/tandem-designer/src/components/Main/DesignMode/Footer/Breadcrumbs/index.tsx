@@ -7,18 +7,18 @@ import {
   VirtualNodeKind,
   memoize,
   getElementLabel,
-  isInstance
+  isInstance,
 } from "@paperclip-ui/utils";
 import {
   getAppActivePCData,
   getInspectionInfo,
-  getSelectedNodePaths
+  getSelectedNodePaths,
 } from "../../../../../state";
 import * as styles from "./index.pc";
 import {
   nodeBreadcrumbClicked,
   nodeBreadcrumbMouseEntered,
-  nodeBreadcrumbMouseLeft
+  nodeBreadcrumbMouseLeft,
 } from "../../../../../actions";
 import { Dispatch } from "redux";
 
@@ -57,6 +57,11 @@ export const Breadcrumbs = React.memo(() => {
           elPath.join("."),
           pcData.preview
         ) as VirtualNode;
+
+        // will happen if node is inserted but doesn't exist yet
+        if (!node) {
+          return null;
+        }
         return (
           <Breadcrumb
             key={elPath.join(".")}
@@ -85,7 +90,7 @@ const Breadcrumb = React.memo(
         dispatch(
           nodeBreadcrumbClicked({
             nodePath: path.join("."),
-            metaKey: event.metaKey
+            metaKey: event.metaKey,
           })
         );
       },

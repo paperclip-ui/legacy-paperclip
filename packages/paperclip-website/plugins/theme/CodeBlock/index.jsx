@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useMemo } from "react";
-// import CodeBlock from "@theme-init/CodeBlock";
+import CodeBlock from "@theme/CodeBlock";
 
 export default (props) => {
-  if (props.live) {
+  if (props.live && false) {
     return (
       <LiveEditor expanded={props.expanded !== "false"} {...props}>
         {props.children}
@@ -10,8 +10,7 @@ export default (props) => {
     );
   }
 
-  return <div></div>;
-  // return <CodeBlock {...props} />;
+  return <CodeBlock {...props} />;
 };
 
 const LiveEditor = ({

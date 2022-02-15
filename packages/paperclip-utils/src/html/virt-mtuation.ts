@@ -11,7 +11,8 @@ export enum ActionKind {
   SetAnnotations = "SetAnnotations",
   SourceUriChanged = "SourceUriChanged",
   SetText = "SetText",
-  RemoveAttribute = "RemoveAttribute"
+  SetElementSourceId = "SetElementSourceId",
+  RemoveAttribute = "RemoveAttribute",
 }
 
 export type BaseAction<TKind extends ActionKind> = {
@@ -35,6 +36,9 @@ export type SetAttribute = {
 export type SetElementSourceInfo = {
   value: VirtualElementSourceInfo;
 } & BaseAction<ActionKind.SetElementSourceInfo>;
+export type SetElementSourceId = {
+  value: string;
+} & BaseAction<ActionKind.SetElementSourceId>;
 export type SetAnnotations = {
   value?: VirtScriptObject;
 } & BaseAction<ActionKind.SetAnnotations>;
@@ -52,6 +56,7 @@ export type Action =
   | SetElementSourceInfo
   | SetAttribute
   | SetAnnotations
+  | SetElementSourceId
   | SetText
   | RemoveAttribute;
 

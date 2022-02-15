@@ -17,6 +17,9 @@ import {
   isComponent,
   isRule,
   RuleKind,
+  getInstanceComponentInfo,
+  getComponentMap,
+  getDocumentComponents,
   MixinRule,
   KeyframesRule,
   getChildren,
@@ -160,30 +163,6 @@ const getDocumentDefinitions = (uri: string, graph: DependencyGraph) => {
   return definitions;
 };
 
-const getInstanceComponentInfo = (
-  instance: Element,
-  uri: string,
-  graph: DependencyGraph
-): [string, Element] => {
-  const entry = graph[uri];
-
-  const components = getComponentMap(entry.content as DependencyNodeContent);
-
-  if (components[instance.tagName]) {
-    const component = components[instance.tagName];
-
-    return [uri, component];
-  } else {
-    const parts = instance.tagName.split(".");
-    const depUri = entry.dependencies[parts.shift()];
-    const dep = graph[depUri];
-    const component = getComponentMap(dep.content as DependencyNodeContent)[
-      parts.shift() || "default"
-    ];
-    return [depUri, component];
-  }
-};
-
 const getAllDocumentVariables = (uri: string, graph: DependencyGraph) => {
   const entry = graph[uri];
   const allVariables: Record<string, KeyValueDeclaration> = {
@@ -227,7 +206,7 @@ const getSheetASTInfo = memoize((ast: Sheet) => {
   const keyframes: KeyframesRule[] = [];
   const mixins: MixinRule[] = [];
 
-  traverseSheet(ast, (expr) => {
+  traverseSheet(ast, null, (expr) => {
     if (
       isStyleDeclaration(expr) &&
       expr.declarationKind === StyleDeclarationKind.KeyValue
@@ -255,19 +234,6 @@ const getPCDocumentImports = (content: Node) => {
   return getChildren(content).filter(isImport) as Element[];
 };
 
-const getDocumentComponents = (root: Node) =>
-  (root.nodeKind === NodeKind.Fragment ? root.children : [root]).filter(
-    isComponent
-  );
-
-const getComponentMap = memoize(
-  (root: Node): Record<string, Element> =>
-    getDocumentComponents(root).reduce((map, element) => {
-      map[getAttributeStringValue("as", element)] = element;
-      return map;
-    }, {})
-);
-
 const getImportMap = memoize(
   (root: Node): Record<string, Element> =>
     getPCDocumentImports(root).reduce((map, element) => {
@@ -286,7 +252,7 @@ const getNodeASTInfo = memoize((root: Node) => {
   const components = getComponentMap(root);
   const imports = getImportMap(root);
 
-  traverseExpression(root, (node: Node) => {
+  traverseExpression(root, null, (node: Node) => {
     if (node.nodeKind === NodeKind.StyleElement) {
       const { declarations, mixins, keyframes } = getSheetASTInfo(node.sheet);
       allDecls.push(...declarations);

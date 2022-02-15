@@ -1,18 +1,22 @@
 /**
  */
 
+import { Node } from "@paperclip-ui/core";
+
 export enum VirtualObjectEditKind {
   // We use this be default to ensure that we maintain positional information
   // about an inserted element
   InsertNodeBefore = "InsertNodeBefore",
   SetTextNodeValue = "SetTextNodeValue",
   AddAttribute = "AddAttribute",
+  DeleteAttribute = "DeleteAttribute",
   UpdateAttribute = "UpdateAttribute",
   SetAnnotations = "SetAnnotations",
 
   // inserts a child into a parent element. This will happen
   // if there are no siblings to insert before
   AppendChild = "AppendChild",
+  SetStyleDeclaration = "SetStyleDeclaration",
   PrependChild = "PrependChild",
   AddFrame = "AddFrame",
   DeleteNode = "DeleteNode",
@@ -24,33 +28,18 @@ export enum VirtualObjectEditKind {
   RenameComponentName = "RenameComponentName",
 }
 
-export enum ChildInsertionKind {
-  Text = "Text",
-  Element = "Element",
-  Instance = "Instance",
-}
+/**
+ * Child insertion struct that contains all of the infomation to insert elements
+ * into a document. Elements with namespaces will be auto-imported into the doc
+ */
 
-type BaseChildInsertion<TKind extends ChildInsertionKind> = {
-  kind: TKind;
+export type ChildInsertion = {
+  // String value of the child to insert
+  value: string;
+
+  // source documents of any elements that are included
+  namespaces?: Record<string, string>;
 };
-
-export type TextInsertion = {
-  value: string;
-} & BaseChildInsertion<ChildInsertionKind.Text>;
-
-export type ElementInsertion = {
-  value: string;
-} & BaseChildInsertion<ChildInsertionKind.Element>;
-
-export type InstanceInsertion = {
-  name: string;
-  sourceUri: string;
-} & BaseChildInsertion<ChildInsertionKind.Instance>;
-
-export type ChildInsertion =
-  | TextInsertion
-  | ElementInsertion
-  | InstanceInsertion;
 
 export enum EditTargetKind {
   VirtualNode = "VirtualNode",
@@ -94,6 +83,18 @@ export type AddAttribute = {
   value: string;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.AddAttribute>;
 
+export type SetStyleDeclaration = {
+  target: EditTarget;
+  name: string;
+  oldName?: string;
+  value: string;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.SetStyleDeclaration>;
+
+export type DeleteAttribute = {
+  target: EditTarget;
+  name: string;
+} & VirtualObjectBaseEdit<VirtualObjectEditKind.DeleteAttribute>;
+
 export type UpdateAttribute = {
   nodePath: string;
   name: string;
@@ -107,7 +108,7 @@ export type SetAnnotations = {
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.SetAnnotations>;
 
 export type AppendChild = {
-  nodePath?: string;
+  nodePath: string;
   child: ChildInsertion;
 } & VirtualObjectBaseEdit<VirtualObjectEditKind.AppendChild>;
 
@@ -134,6 +135,8 @@ export type VirtualObjectEdit =
   | UpdateAttribute
   | SetTextNodeValue
   | PrependChild
+  | SetStyleDeclaration
+  | DeleteAttribute
   | AddFrame
   | DeleteNode
   | SetAnnotations

@@ -1,13 +1,16 @@
-import { Action, ActionType } from "../../..";
+import { Action, ActionType, mainActions } from "../../..";
 import { ProjectManager } from "./project";
 import { Store } from "../../base";
 import {
   ChildInsertion,
-  ChildInsertionKind,
+  EditTargetKind,
   VirtualObjectEdit,
   VirtualObjectEditKind,
 } from "@paperclip-ui/editor-engine/lib/core";
-import { computeVirtScriptObject } from "@paperclip-ui/utils";
+import {
+  computeVirtScriptObject,
+  ELEMENT_INSERT_ATTR,
+} from "@paperclip-ui/utils";
 import {
   DEFAULT_FRAME_BOX,
   DesignerState,
@@ -55,8 +58,14 @@ const getEdits = (
     case ActionType.GLOBAL_BACKSPACE_KEY_PRESSED: {
       return getDeletionEdit(state);
     }
+    case uiActions.canvasTextContentChanges.type: {
+      return getCanvasTextContentEdit(state, action);
+    }
     case uiActions.toolLayerDrop.type: {
       return getDropEdit(state, action);
+    }
+    case uiActions.computedStyleDeclarationChanged.type: {
+      return getComputedStyleDeclarationEdit(state, action);
     }
   }
   return [];
@@ -78,6 +87,19 @@ const getUpdateAnnotationEdits = (
       kind: VirtualObjectEditKind.SetAnnotations,
       nodePath,
       value: computeVirtScriptObject(frame.annotations),
+    };
+  });
+};
+
+const getCanvasTextContentEdit = (
+  state: DesignerState,
+  { payload: { value } }: ReturnType<typeof uiActions.canvasTextContentChanges>
+): VirtualObjectEdit[] => {
+  return state.selectedNodePaths.map((nodePath) => {
+    return {
+      kind: VirtualObjectEditKind.SetTextNodeValue,
+      nodePath,
+      value,
     };
   });
 };
@@ -124,14 +146,61 @@ const getDropEdit = (
 
 const mapAvailableNodeToInsertable = (node: AvailableNode): ChildInsertion => {
   if (node.kind === AvailableNodeKind.Text) {
-    return { kind: ChildInsertionKind.Text, value: "Double click to edit" };
+    return { value: "Double click to edit" };
   } else if (node.kind === AvailableNodeKind.Element) {
-    return { kind: ChildInsertionKind.Element, value: `<${node.name} />` };
+    return {
+      value: `<${node.name}${
+        isContainer(node.name) ? " " + ELEMENT_INSERT_ATTR : ""
+      } />`,
+    };
   } else if (node.kind === AvailableNodeKind.Instance) {
     return {
-      kind: ChildInsertionKind.Instance,
-      name: node.name,
-      sourceUri: node.sourceUri,
+      value: `<inst.${node.name} />`,
+      namespaces: {
+        inst: node.sourceUri,
+      },
     };
   }
+};
+
+const isContainer = (name: string) => !/^(input|select|br|hr)$/.test(name);
+
+export const getStyleDeclarationEdit = ({
+  payload: { id: declarationId, name, value },
+}: ReturnType<
+  typeof uiActions.computedStyleDeclarationChanged
+>): VirtualObjectEdit[] => {
+  return [
+    {
+      kind: VirtualObjectEditKind.SetStyleDeclaration,
+      target: { kind: EditTargetKind.Expression, sourceId: declarationId },
+      name,
+      value,
+    },
+  ];
+};
+
+export const getComputedStyleDeclarationEdit = (
+  state: DesignerState,
+  action: ReturnType<typeof uiActions.computedStyleDeclarationChanged>
+): VirtualObjectEdit[] => {
+  const {
+    payload: { id, oldName, name, value },
+  } = action;
+
+  if (id) {
+    return getStyleDeclarationEdit(action);
+  }
+  return [
+    {
+      kind: VirtualObjectEditKind.SetStyleDeclaration,
+      target: {
+        kind: EditTargetKind.VirtualNode,
+        nodePath: state.selectedNodePaths[0],
+      },
+      oldName,
+      name,
+      value,
+    },
+  ];
 };

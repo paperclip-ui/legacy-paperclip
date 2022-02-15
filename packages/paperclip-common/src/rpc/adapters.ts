@@ -143,21 +143,40 @@ export const sockjsServerRPCAdapter = (server: sockjs.Server): RPCServer => ({
   },
 });
 
-export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
-  let buffer = isOpen ? undefined : [];
-  ws.binaryType = "arraybuffer";
+export const wsAdapter = (
+  createWS: () => any,
+  isOpen = false
+): RPCClientAdapter => {
+  let buffer;
+  let ws;
 
   const em = new EventEmitter();
   em.setMaxListeners(30);
 
-  if (ws.on) {
-    ws.on("open", em.emit.bind(em, "open"));
-    ws.on("message", (message) => {
-      em.emit("message", mpack.decode(message));
-    });
-  } else {
-    ws.onopen = () => em.emit("open");
-    ws.onmessage = (event) => em.emit("message", mpack.decode(event.data));
+  const init = () => {
+    if (!isOpen) {
+      buffer = [];
+    }
+    ws = createWS();
+    ws.binaryType = "arraybuffer";
+
+    if (ws.on) {
+      ws.on("open", em.emit.bind(em, "open"));
+      ws.on("message", (message) => {
+        em.emit("message", mpack.decode(message));
+      });
+      ws.on("close", em.emit.bind(em, "close"));
+    } else {
+      ws.onopen = () => em.emit("open");
+      ws.onmessage = (event) => em.emit("message", mpack.decode(event.data));
+      ws.onclose = () => em.emit("close");
+    }
+  };
+
+  init();
+
+  if (!isOpen) {
+    em.on("close", init);
   }
 
   const send = (message) => {
@@ -187,7 +206,7 @@ export const wsAdapter = (ws: any, isOpen = false): RPCClientAdapter => {
 export const wsServerAdapter = (wss: WebSocketServer): RPCServer => ({
   onConnection(listener: (connection: RPCClientAdapter) => void) {
     wss.on("connection", (ws) => {
-      listener(wsAdapter(ws, true));
+      listener(wsAdapter(() => ws, true));
     });
   },
 });

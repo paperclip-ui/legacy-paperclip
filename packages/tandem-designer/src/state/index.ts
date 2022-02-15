@@ -209,6 +209,7 @@ export type DesignerState = {
   highlightNodePath: string;
   scopedElementPath?: string;
   selectedNodePaths: string[];
+  showTextEditor: boolean;
   expandedNodePaths: string[];
   expandedFilePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
@@ -282,6 +283,7 @@ export const INITIAL_STATE: AppState = {
     loadingInsertableNodes: false,
     useLiteEditor: false,
     showInsertModal: false,
+    showTextEditor: false,
     readonly: false,
     pcFileDataVersion: 0,
     selectedNodeSources: [],

@@ -1,15 +1,13 @@
 import {
   computeVirtScriptObject,
+  ELEMENT_INSERT_ATTR,
+  Fragment,
+  Node,
   stringifyVirtualNode,
   VirtualElement,
 } from "@paperclip-ui/core";
 import { expect } from "chai";
-import {
-  AppendChild,
-  ChildInsertionKind,
-  EditTargetKind,
-  VirtualObjectEditKind,
-} from "../core";
+import { AppendChild, EditTargetKind, VirtualObjectEditKind } from "../core";
 import { createMockHost } from "./utils";
 
 // TODO - test latency
@@ -28,36 +26,12 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.InsertNodeBefore,
           beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<span />" },
+          node: { value: "<span />" },
         },
       ]);
+
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
         `<div class="_5cd17222 _pub-5cd17222"><span class="_5cd17222 _pub-5cd17222"></span>blah</div>`
-      );
-    });
-
-    it(`Can insert multiple nodes in the same edit`, async () => {
-      const { server } = await createMockHost({
-        "/hello.pc": "<div>blah</div>",
-      });
-
-      const client = server.createHostClient();
-
-      const doc = await client.getDocuments().open("/hello.pc");
-      doc.editVirtualObjects([
-        {
-          kind: VirtualObjectEditKind.InsertNodeBefore,
-          beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<a />" },
-        },
-        {
-          kind: VirtualObjectEditKind.InsertNodeBefore,
-          beforeNodePath: "0.0",
-          node: { kind: ChildInsertionKind.Element, value: "<b />" },
-        },
-      ]);
-      expect(stringifyVirtualNode(doc.getContent().preview)).to.equals(
-        `<div class="_5cd17222 _pub-5cd17222"><b class="_5cd17222 _pub-5cd17222"></b><a class="_5cd17222 _pub-5cd17222"></a>blah</div>`
       );
     });
 
@@ -236,7 +210,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -255,7 +229,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -274,7 +248,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(stringifyVirtualNode(doc.getContent().preview)).to.eql(
@@ -297,7 +271,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Text, value: "blarg" },
+          child: { value: "blarg" },
         },
       ]);
       expect(source.getText()).to.eql(
@@ -323,7 +297,7 @@ describe(__filename + "#", () => {
         {
           kind: VirtualObjectEditKind.AppendChild,
           nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Element, value: "<span />" },
+          child: { value: "<span />" },
         },
       ]);
       expect(source.getText()).to.eql(
@@ -334,37 +308,6 @@ describe(__filename + "#", () => {
       );
     });
 
-    // just a quick smoke test
-    it(`Can insert multiple slots at the same time`, async () => {
-      const { server } = await createMockHost({
-        "/hello.pc": `<div component as="Test">{child}{child2}</div><Test />`,
-      });
-      const client = server.createHostClient();
-
-      const doc = await client.getDocuments().open("/hello.pc");
-      const source = await doc.getSource();
-      expect(stringifyVirtualNode(doc.getContent().preview, "[slot]")).to.eql(
-        `<div class="_5cd17222 _pub-5cd17222">[slot][slot]</div>`
-      );
-      doc.editVirtualObjects([
-        {
-          kind: VirtualObjectEditKind.AppendChild,
-          nodePath: "0.0",
-          child: { kind: ChildInsertionKind.Element, value: "<a />" },
-        },
-        {
-          kind: VirtualObjectEditKind.AppendChild,
-          nodePath: "0.1",
-          child: { kind: ChildInsertionKind.Element, value: "<b />" },
-        },
-      ]);
-      expect(source.getText()).to.eql(
-        `<div component as="Test">{child}{child2}</div><Test child2={<b />} child={<a />} />`
-      );
-      expect(stringifyVirtualNode(doc.getContent().preview)).to.eq(
-        `<div class="_5cd17222 _pub-5cd17222"><a class="_5cd17222 _pub-5cd17222"></a><b class="_5cd17222 _pub-5cd17222"></b></div>`
-      );
-    });
     it(`Can remove a node`, async () => {
       const { server } = await createMockHost({
         "/hello.pc": `a<span />b`,
@@ -436,7 +379,7 @@ describe(__filename + "#", () => {
             [
               {
                 kind: VirtualObjectEditKind.AppendChild,
-                child: { kind: ChildInsertionKind.Text, value: "text" },
+                child: { value: "text" },
               },
             ],
             `<div />text`,
@@ -453,7 +396,7 @@ describe(__filename + "#", () => {
             [
               {
                 kind: VirtualObjectEditKind.AddFrame,
-                child: { kind: ChildInsertionKind.Text, value: "text" },
+                child: { value: "text" },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
             ],
@@ -473,9 +416,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -496,9 +438,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -519,9 +460,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -543,13 +483,12 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0",
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello2.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello2.pc" },
+                  value: `<abba.Test />`,
                 },
               },
             ],
-            `<import src="/hello2.pc" as="hello2" />\n<div><hello2.Test /></div>`,
+            `<import src="/hello2.pc" as="hello2" />\n<div>\n  <hello2.Test />\n</div>`,
           ],
         },
       ],
@@ -566,9 +505,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AddFrame,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  sourceUri: "/hello3.pc",
-                  name: "Test",
+                  namespaces: { abba: "/hello3.pc" },
+                  value: `<abba.Test />`,
                 },
                 box: { x: 100, y: 100.1, width: 100, height: 100 },
               },
@@ -589,12 +527,11 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "1",
                 child: {
-                  kind: ChildInsertionKind.Text,
                   value: "Hello",
                 },
               },
             ],
-            `<span /><div>Hello</div>`,
+            `<span /><div>\n  Hello\n</div>`,
           ],
         },
       ],
@@ -609,9 +546,8 @@ describe(__filename + "#", () => {
               {
                 kind: VirtualObjectEditKind.AppendChild,
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  name: "Test",
-                  sourceUri: "/hello.pc",
+                  namespaces: { abba: "/hello.pc" },
+                  value: `<abba.Test />`,
                 },
               },
             ],
@@ -633,9 +569,8 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0.0",
                 child: {
-                  kind: ChildInsertionKind.Instance,
-                  name: "Test2",
-                  sourceUri: "/hello3.pc",
+                  namespaces: { abba: "/hello3.pc" },
+                  value: `<abba.Test2 />`,
                 },
               },
             ],
@@ -655,45 +590,419 @@ describe(__filename + "#", () => {
                 kind: VirtualObjectEditKind.AppendChild,
                 nodePath: "0.0",
                 child: {
-                  kind: ChildInsertionKind.Text,
                   value: "Something",
                 },
               },
             ],
-            `<div component as="Test">{children}</div><Test>Something</Test>`,
+            `<div component as="Test">{children}</div><Test>\n  Something\n</Test>`,
           ],
         },
       ],
-      // [
-      //   `Appending child to instance without children slot results in no-op`,
-      //   {
-      //     "/hello.pc": `<div component as="Test">{child}</div><Test />`,
-      //   },
-      //   {
-      //     "/hello.pc": [
-      //       [
-      //         {
-      //           kind: VirtualObjectEditKind.AppendChild,
-      //           nodePath: "0",
-      //           child: {
-      //             kind: ChildInsertionKind.Text,
-      //             value: "Something",
-      //           },
-      //         },
-      //       ],
-      //       `<div component as="Test">{children}</div><Test>Something</Test>`,
-      //     ],
-      //   },
-      // ],
+      [
+        `Appending child to instance without children slot results in no-op`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: {
+                  value: "Something",
+                },
+              },
+            ],
+            `<div component as="Test">{child}</div><Test />`,
+          ],
+        },
+      ],
+      [
+        `Can delete a nested element`,
+        {
+          "/hello.pc": `<div>abc</div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div></div>`,
+          ],
+        },
+      ],
+      [
+        `When deleting a slotted string attribute, the attribute is removed`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child="abba" />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test  />`,
+          ],
+        },
+      ],
+      [
+        `When deleting a slotted node attribute, the attribute is removed`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child={<div />} />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test  />`,
+          ],
+        },
+      ],
+      [
+        `When deleting a slotted script attribute, the attribute is removed`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child={"a"} />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test  />`,
+          ],
+        },
+      ],
+      [
+        `If deleting a child of a slotted element, that child is deleted`,
+        {
+          "/hello.pc": `<div component as="Test">{child}</div><Test child={<div>to delete</div>} />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.DeleteNode,
+                nodePath: "0.0.0",
+              },
+            ],
+            `<div component as="Test">{child}</div><Test child={<div></div>} />`,
+          ],
+        },
+      ],
+      [
+        `When appending to element with ${ELEMENT_INSERT_ATTR}, the ${ELEMENT_INSERT_ATTR} attr is removed`,
+        {
+          "/hello.pc": `<div ${ELEMENT_INSERT_ATTR}></div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { value: "<span />" },
+              },
+            ],
+            `<div>\n  <span />\n</div>`,
+          ],
+        },
+      ],
+      [
+        `If appending to an element without children, the indentation is based on parent spacing`,
+        {
+          "/hello.pc": ` <div></div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { value: "<span />" },
+              },
+            ],
+            ` <div>\n   <span />\n </div>`,
+          ],
+        },
+      ],
+      [
+        `If appending to an element with a child, the indentation is maintained based on the previous child`,
+        {
+          "/hello.pc": `<div>\n    child</div>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { value: "<span />" },
+              },
+            ],
+            `<div>\n    child\n    <span />\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When adding a child to a nested self-closing element, the parent end tag matches the start`,
+        {
+          "/hello.pc": `<a>\n  <b />\n</a>`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0.0",
+                child: { value: "<span />" },
+              },
+            ],
+            `<a>\n  <b>\n    <span />\n  </b>\n</a>`,
+          ],
+        },
+      ],
+      [
+        `Can append a child to a self-closing element with an insertion attr`,
+        {
+          "/hello.pc": `<div data-pc-show-insert />`,
+        },
+        {
+          "/hello.pc": [
+            [
+              {
+                kind: VirtualObjectEditKind.AppendChild,
+                nodePath: "0",
+                child: { value: "<span />" },
+              },
+            ],
+            `<div>\n  <span />\n</div>`,
+          ],
+        },
+      ],
+      [
+        `Can change a style declaration on a specific declaration ID`,
+        {
+          "/hello.pc": `<div><style>width: 100px;height: 100px;</style></div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              // console.log(JSON.stringify(ast, null, 2));
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: {
+                    kind: EditTargetKind.Expression,
+                    sourceId: "5cd17222-1-1",
+                  },
+                  name: "width",
+                  value: "999px",
+                },
+              ];
+            },
+            `<div><style>width: 999px;height: 100px;</style></div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element that doesn't have a style block, a new style block is added`,
+        {
+          "/hello.pc": `<div />`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "width",
+                  value: "999px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    width: 999px;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element that doesn't have a style block and has a children, the style is prepended to the beginning`,
+        {
+          "/hello.pc": `<div>\n  <span />\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "width",
+                  value: "999px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    width: 999px;\n  </style>\n  <span />\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element with a style and the declaration doesn't exist, the declaration is added`,
+        {
+          "/hello.pc": `<div>\n  <style>\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "height",
+                  value: "100px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    height: 100px;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style declaration on an element with a style that includes an existing declaration, the declaration is added at the end`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    width: 100px;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "height",
+                  value: "100px",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    width: 100px;\n    height: 100px;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `When setting a style that already exists on an element, that style is replaced`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "background",
+                  value: "blue",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    background: blue;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `Can rename a style on a style element`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "color",
+                  oldName: "background",
+                  value: "blue",
+                },
+              ];
+            },
+            `<div>\n  <style>\n    color: blue;\n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `Clearing the name of a declaration removes it`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "",
+                  oldName: "background",
+                  value: "blue",
+                },
+              ];
+            },
+
+            `<div>\n  <style>\n    \n  </style>\n</div>`,
+          ],
+        },
+      ],
+      [
+        `Clearing the value of a declaration removes it`,
+        {
+          "/hello.pc": `<div>\n  <style>\n    background: red;\n  </style>\n</div>`,
+        },
+        {
+          "/hello.pc": [
+            (ast: Fragment) => {
+              return [
+                {
+                  kind: VirtualObjectEditKind.SetStyleDeclaration,
+                  target: { kind: EditTargetKind.VirtualNode, nodePath: "0" },
+                  name: "background",
+                  value: "",
+                },
+              ];
+            },
+
+            `<div>\n  <style>\n    \n  </style>\n</div>`,
+          ],
+        },
+      ],
     ].forEach(([name, graph, change]: any) => {
       it(name, async () => {
-        const { server } = await createMockHost(graph);
+        const { server, engine } = await createMockHost(graph);
         const client = server.createHostClient();
         for (const fileName in change) {
           const [edits, expected] = change[fileName];
           const doc = await client.getDocuments().open(fileName);
           const source = await doc.getSource();
-          doc.editVirtualObjects(edits);
+          doc.editVirtualObjects(
+            typeof edits === "function"
+              ? edits(engine.getLoadedAst(fileName))
+              : edits
+          );
           expect(source.getText()).to.eql(expected);
         }
       });

@@ -28,20 +28,20 @@ global -> document -> scoped -> element
 use super::super::super::pc::ast as pc_ast;
 use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
-use crate::core::id_generator::IDGenerator;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::utils::get_document_style_public_scope;
+use crate::core::id_generator::IDGenerator;
 
 use crate::base::ast::{ExprTextSource, Range};
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
+use crate::core::eval_utils::resolve_asset;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use serde::Serialize;
 use std::collections::BTreeMap;
-use crate::core::eval_utils::resolve_asset;
 use std::fmt;
 
 pub struct Context<'a> {
@@ -295,7 +295,7 @@ pub fn evaluate<'a>(
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
-  id_seed: String
+  id_seed: String,
 ) -> Result<EvalInfo, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   match &dep.content {
@@ -311,7 +311,7 @@ pub fn evaluate<'a>(
       evaluated_graph,
       None,
       true,
-      id_seed
+      id_seed,
     ),
     _ => Err(RuntimeError::new(
       "Incorrect file type".to_string(),
@@ -333,7 +333,7 @@ pub fn evaluate_expr<'a>(
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   existing_exports: Option<&Exports>,
   public: bool,
-  id_seed: String
+  id_seed: String,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     private_scope,
@@ -349,7 +349,7 @@ pub fn evaluate_expr<'a>(
     exports: Exports::new(),
     all_rules: vec![],
     inc_declarations: vec![],
-    id_generator: IDGenerator::new(id_seed)
+    id_generator: IDGenerator::new(id_seed),
   };
 
   if let Some(existing_exports) = existing_exports {
@@ -687,10 +687,7 @@ fn get_mixin<'a>(
   ))
 }
 
-fn get_mixin_from_dep<'a>(
-  dep: &'a Dependency,
-  name: &String,
-) -> Option<&'a ast::MixinRule> {
+fn get_mixin_from_dep<'a>(dep: &'a Dependency, name: &String) -> Option<&'a ast::MixinRule> {
   match &dep.content {
     DependencyContent::Node(content) => {
       return get_mixin_from_pc_doc(content, name);
@@ -757,11 +754,15 @@ fn create_child_context<'a>(context: &Context<'a>, id_seed: String) -> Context<'
     in_public_scope: context.in_public_scope,
     exports: context.exports.clone(),
     inc_declarations: vec![],
-    id_generator: IDGenerator::new(id_seed)
+    id_generator: IDGenerator::new(id_seed),
   }
 }
 
-fn fork_context<'a>(dependency_uri: &'a String, context: &Context<'a>, id_seed: String) -> Context<'a> {
+fn fork_context<'a>(
+  dependency_uri: &'a String,
+  context: &Context<'a>,
+  id_seed: String,
+) -> Context<'a> {
   let mut child = create_child_context(context, id_seed);
   child.uri = &dependency_uri;
   child.in_public_scope = false;
@@ -1332,7 +1333,6 @@ fn write_element_selector(
         if is_global {
           emitter.push_target(":root".to_string());
         } else {
-
           // Ensure that only top-most selector is selected
           // https://jsfiddle.net/q6a74fnj/
           emitter.push_target(get_host_selector(context));
@@ -1566,7 +1566,12 @@ fn evaluate_style_key_value_declaration<'a>(
       if PROTOCOL_RE.is_match(relative_path) {
         continue;
       }
-      let full_path = resolve_asset(&context.uri, &relative_path.to_string(), &expr.value_range, &context.vfs)?;
+      let full_path = resolve_asset(
+        &context.uri,
+        &relative_path.to_string(),
+        &expr.value_range,
+        &context.vfs,
+      )?;
 
       value = URL_RE
         .replace(url_fn, format!("url({})", full_path).as_str())

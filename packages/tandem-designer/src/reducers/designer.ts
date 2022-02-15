@@ -57,9 +57,12 @@ import {
   isInstance,
   stripFileProtocol,
   VirtualNodeKind,
+  VirtualElement,
+  VirtualFragment,
 } from "@paperclip-ui/utils";
 import * as path from "path";
 import { uiActions } from "../actions/ui-actions";
+import { AvailableNodeKind } from "@paperclip-ui/language-service";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -409,7 +412,6 @@ export const reduceDesigner = (
     }
     case uiActions.quickfindItemStartDrag.type: {
       designer = produce(designer, (newDesigner) => {
-        // newDesigner.showInsertModal = false;
         newDesigner.draggingInsertableNode = action.payload;
       });
       return designer;
@@ -425,6 +427,44 @@ export const reduceDesigner = (
       designer = produce(designer, (newDesigner) => {
         newDesigner.draggingInsertableNode = null;
         newDesigner.showInsertModal = false;
+        const root = (
+          newDesigner.allLoadedPCFileData[
+            newDesigner.ui.query.canvasFile
+          ] as LoadedPCData
+        ).preview as VirtualFragment;
+        if (newDesigner.highlightNodePath) {
+          const parent = getNodeByPath(
+            newDesigner.highlightNodePath,
+            root
+          ) as any as VirtualElement;
+
+          const lastChild = parent.children.length
+            ? parent.children[parent.children.length - 1]
+            : null;
+
+          // If previous child is text, and dropped element is text, then they will be merged together, so
+          // select the last child
+          if (
+            action.payload.node.kind === AvailableNodeKind.Text &&
+            lastChild &&
+            lastChild.kind === VirtualNodeKind.Text
+          ) {
+            newDesigner.selectedNodePaths = [
+              newDesigner.highlightNodePath +
+                "." +
+                (parent.children.length - 1),
+            ];
+          } else {
+            newDesigner.selectedNodePaths = [
+              newDesigner.highlightNodePath + "." + parent.children.length,
+            ];
+          }
+        } else {
+          newDesigner.selectedNodePaths = [String(root.children.length)];
+        }
+        if (action.payload.node.kind === AvailableNodeKind.Text) {
+          newDesigner.showTextEditor = true;
+        }
       });
       return designer;
     }
@@ -563,6 +603,12 @@ export const reduceDesigner = (
       });
       return designer;
     }
+    case uiActions.canvasTextContentChanges.type: {
+      return produce(designer, (newDesigner) => {
+        newDesigner.showTextEditor = false;
+      });
+    }
+
     case ActionType.RECTS_CAPTURED: {
       designer = produce(designer, (newDesigner) => {
         newDesigner.frameBoxes[action.payload.frameIndex] =
@@ -644,7 +690,21 @@ export const reduceDesigner = (
 
       [designer, doubleClicked] = handleDoubleClick(designer, action);
 
+      console.log(doubleClicked);
+
       if (doubleClicked) {
+        if (designer.selectedNodePaths.length) {
+          const node = getNodeByPath(
+            designer.selectedNodePaths[0],
+            getCurrentPreview(designer)
+          );
+          console.log(node);
+          if (node && node.kind === VirtualNodeKind.Text) {
+            designer = produce(designer, (newDesigner) => {
+              newDesigner.showTextEditor = true;
+            });
+          }
+        }
         return designer;
       }
 

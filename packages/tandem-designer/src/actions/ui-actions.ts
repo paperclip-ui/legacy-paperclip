@@ -12,7 +12,14 @@ export const uiActions = actionCreators(
     quickfindItemClick: identity<AvailableNode>(),
     toolLayerDragOver: identity<Point>(),
     toolLayerDrop: identity<{ node: AvailableNode; point: Point }>(),
+    canvasTextContentChanges: identity<{ value: string }>(),
     documentMouseUp: null,
+    computedStyleDeclarationChanged: identity<{
+      oldName?: string;
+      id?: string;
+      name: string;
+      value: string;
+    }>(),
   },
   "uiActions"
 );

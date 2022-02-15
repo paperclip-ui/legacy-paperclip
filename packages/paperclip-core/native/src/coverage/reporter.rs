@@ -1,4 +1,5 @@
 use crate::base::ast as base_ast;
+use crate::core::ast as core_ast;
 use crate::core::ast::{Expr, ExprVisitor};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
@@ -397,6 +398,10 @@ impl<'a> ExprVisitor<'a> for ExprIdCollector {
   }
 
   fn visit_css_sheet(&mut self, _expr: &'a css_ast::Sheet) {
+    // noop
+  }
+
+  fn visit_str(&mut self, _expr: &'a core_ast::StringLiteral) {
     // noop
   }
 

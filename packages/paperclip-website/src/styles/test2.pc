@@ -22,14 +22,9 @@
   <div>
     <style>
       width: 100px;
+      height: 100px;
+      background: rgb(87, 214, 28);
     </style>
-    {children}
+    {child}
   </div>
-</div>
-
-<!--
-  @frame { height: 419, title: "Title me this", width: 707, x: -854, y: -327 }
--->
-<div>
-  <Testttt />
 </div>

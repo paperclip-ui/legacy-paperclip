@@ -20,7 +20,6 @@ pub struct Tokenizer<'a> {
 }
 
 impl<'a> Tokenizer<'a> {
-
   pub fn get_pos(&self) -> StringScannerPosition {
     self.scanner.get_pos()
   }

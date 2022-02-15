@@ -5,12 +5,15 @@ use crate::annotation::ast as annotation_ast;
 use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_id, get_document_style_public_scope, is_relative_path};
+use crate::core::ast as core_ast;
 use crate::core::ast::ExprVisitor;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
 use crate::core::ast::Expr;
+use crate::core::eval_utils::resolve_asset;
+use crate::core::id_generator::IDGenerator;
 use crate::css::ast as css_ast;
 use crate::css::runtime::evaluator::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
@@ -18,12 +21,10 @@ use crate::css::runtime::virt as css_virt;
 use crate::script::ast as script_ast;
 use crate::script::runtime::evaluator::evaluate as evaluate_js;
 use crate::script::runtime::virt as script_virt;
-use crate::core::eval_utils::resolve_asset;
 use regex::Regex;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 use std::iter::FromIterator;
-use crate::core::id_generator::IDGenerator;
 
 #[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "kind")]
@@ -108,7 +109,6 @@ pub fn evaluate<'a>(
   mode: &EngineMode,
   id_seed: String,
 ) -> Result<EvalInfo, RuntimeError> {
-
   let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new(
     "URI not loaded".to_string(),
     uri,
@@ -127,7 +127,7 @@ pub fn evaluate<'a>(
       evaluated_graph,
       include_used_exprs,
       mode,
-      id_seed
+      id_seed,
     );
 
     let preview = wrap_as_fragment(
@@ -281,6 +281,7 @@ impl<'a> ExprVisitor<'a> for CollectNodePropVisitor {
   fn visit_css_decl(&mut self, _decl: &'a css_ast::Declaration) {}
   fn visit_css_sheet(&mut self, _decl: &'a css_ast::Sheet) {}
   fn visit_attr(&mut self, _attr: &'a ast::Attribute) {}
+  fn visit_str(&mut self, _attr: &'a core_ast::StringLiteral) {}
 }
 
 fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
@@ -396,7 +397,10 @@ fn evaluate_document_sheet<'a>(
   entry_expr: &ast::Node,
   context: &'a mut Context,
 ) -> Result<(css_virt::CSSSheet, css_export::Exports), RuntimeError> {
-  let mut sheet = css_virt::CSSSheet { id: context.id_generator.new_id(), rules: vec![] };
+  let mut sheet = css_virt::CSSSheet {
+    id: context.id_generator.new_id(),
+    rules: vec![],
+  };
   let mut css_exports: css_export::Exports = css_export::Exports::new();
   evaluate_node_sheet(uri, None, entry_expr, &mut sheet, &mut css_exports, context)?;
   Ok((sheet, css_exports))
@@ -439,7 +443,7 @@ fn evaluate_node_sheet<'a>(
       &context.evaluated_graph,
       Some(&css_exports),
       false,
-      context.id_generator.new_id()
+      context.id_generator.new_id(),
     )?;
     match info {
       CSSEvalInfo {
@@ -556,7 +560,7 @@ fn create_context<'a>(
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   include_used_exprs: bool,
   mode: &'a EngineMode,
-  id_seed: String
+  id_seed: String,
 ) -> Context<'a> {
   let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
@@ -753,9 +757,6 @@ fn evaluate_slot<'a>(
   let script = &slot.script;
   let mut script_value = evaluate_js(script, depth + 1, context)?;
 
-
-  
-
   // if array of values, then treat as document fragment
   if let script_virt::Value::Array(ary) = &mut script_value {
     let mut children = vec![];
@@ -784,7 +785,7 @@ fn evaluate_slot<'a>(
   if !matches!(script_value, script_virt::Value::Undefined(_)) {
     Ok(Some(virt::Node::Text(virt::Text {
       id: context.id_generator.new_id(),
-      source_id: use_expr_id(script.get_id(), context),
+      source_id: use_expr_id(script_value.get_source_id(), context),
       annotations: None,
       value: if script_value.truthy() || script_value.is_number() {
         script_value.to_string()
@@ -795,10 +796,9 @@ fn evaluate_slot<'a>(
   } else {
     Ok(Some(virt::Node::Slot(virt::Slot {
       id: context.id_generator.new_id(),
-      source_id: use_expr_id(&script_value.get_source_id(), context)
+      source_id: use_expr_id(&script_value.get_source_id(), context),
     })))
   }
-
 }
 
 pub fn evaluate_imported_component<'a>(
@@ -992,7 +992,7 @@ fn evaluate_component_instance<'a>(
         context.evaluated_graph,
         context.include_used_exprs,
         context.mode,
-        context.id_generator.new_id()
+        context.id_generator.new_id(),
       );
       check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
       // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
@@ -1444,7 +1444,6 @@ fn evaluate_attribute_dynamic_string<'a>(
       _ => {}
     }
   }
-  
 
   for part in value.values.iter() {
     add_used_expr_id(&part.get_id(), context);
@@ -1770,7 +1769,7 @@ pub fn __test__evaluate_pc_files<'a>(
       &BTreeMap::new(),
       false,
       &EngineMode::SingleFrame,
-      "#".to_string()
+      "#".to_string(),
     ),
     graph,
   )

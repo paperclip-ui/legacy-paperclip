@@ -1,4 +1,4 @@
-import { Node, traverseExpression } from "../html/ast";
+import { Node, traverseExpression, Expression } from "../html/ast";
 import { StringRange } from "../base/ast";
 
 export enum ScriptExpressionKind {
@@ -11,10 +11,11 @@ export enum ScriptExpressionKind {
   Boolean = "Boolean",
   Conjunction = "Conjunction",
   Not = "Not",
-  Group = "Group"
+  Group = "Group",
 }
 
 type BaseScriptExpression<TKind extends ScriptExpressionKind> = {
+  id: string;
   scriptKind: TKind;
 };
 
@@ -27,7 +28,7 @@ export type ScriptObjectProperty = {
 
 export enum ScriptConjunctionOperatorKind {
   And = "And",
-  Or = "Or"
+  Or = "Or",
 }
 
 export type ScriptConjunction = {
@@ -96,21 +97,28 @@ export type ScriptExpression =
 
 export const traverseJSExpression = (
   expr: ScriptExpression,
-  each: (expr: ScriptExpression) => void | boolean
+  owner: Expression,
+  each: (expr: ScriptExpression, parent: Expression) => void | boolean
 ) => {
+  if (expr.scriptKind === ScriptExpressionKind.Node) {
+    return traverseExpression(expr, owner, each);
+  }
+
+  if (each(expr, owner) === false) {
+    return false;
+  }
+
   if (expr.scriptKind === ScriptExpressionKind.Conjunction) {
     return (
-      traverseJSExpression(expr.left, each) &&
-      traverseJSExpression(expr.right, each)
+      traverseJSExpression(expr.left, expr, each) &&
+      traverseJSExpression(expr.right, expr, each)
     );
   } else if (expr.scriptKind === ScriptExpressionKind.Array) {
     for (const value of expr.values) {
-      if (traverseJSExpression(value, each) === false) {
+      if (traverseJSExpression(value, expr, each) === false) {
         return false;
       }
     }
-  } else if (expr.scriptKind === ScriptExpressionKind.Node) {
-    return traverseExpression(expr, each);
   }
   return true;
 };

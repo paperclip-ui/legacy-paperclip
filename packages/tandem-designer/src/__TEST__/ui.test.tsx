@@ -107,7 +107,7 @@ describe("Quickfind items", () => {
     expect(mock.store.getState().designer.showInsertModal).toEqual(false);
     await 1;
     expect(source.getText().replace(/[\n\s]+/g, " ")).toEqual(
-      ' <div export component as="Test" /> <div component as="Test2" /> <!-- @frame { x: -512, y: -384, width: 1024, height: 768 } --> <div />'
+      ' <div export component as="Test" /> <div component as="Test2" /> <!-- @frame { x: -512, y: -384, width: 1024, height: 768 } --> <div data-pc-show-insert />'
     );
   });
 

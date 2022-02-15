@@ -21,7 +21,7 @@ export enum RuleKind {
   Page = "Page",
   Document = "Document",
   Keyframes = "Keyframes",
-  Keyframe = "Keyframe"
+  Keyframe = "Keyframe",
 }
 
 type BaseRule<TKind extends RuleKind> = {
@@ -48,7 +48,7 @@ export enum SelectorKind {
   Element = "Element",
   Attribute = "Attribute",
   Class = "Class",
-  AllSelector = "AllSelector"
+  AllSelector = "AllSelector",
 }
 
 export type BaseSelector<TKind extends SelectorKind> = {
@@ -162,7 +162,7 @@ export enum StyleDeclarationKind {
   KeyValue = "KeyValue",
   Include = "Include",
   Media = "Media",
-  Content = "Content"
+  Content = "Content",
 }
 
 type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
@@ -358,25 +358,36 @@ export const getRuleClassNames = (rule: Rule, allClassNames: string[] = []) => {
 
 export const traverseSheet = (
   sheet: Sheet,
-  each: (rule: StyleExpression) => void
+  owner: Expression,
+  each: (rule: StyleExpression, parent: Expression) => void
 ) => {
   return (
-    traverseStyleExpressions(sheet.declarations, each) &&
-    traverseStyleExpressions(sheet.rules, each)
+    traverseStyleExpressions(sheet.declarations, owner, each) &&
+    traverseStyleExpressions(sheet.rules, owner, each)
   );
 };
 
-const traverseChildren = traverse => (
-  rules: StyleExpression[],
-  each: (rule: StyleExpression) => void | boolean
-) => {
-  for (const rule of rules) {
-    if (!traverse(rule, each)) {
-      return false;
+type TraverseEach = (
+  rule: StyleExpression,
+  parent: Expression
+) => void | boolean;
+
+const traverseChildren =
+  (
+    traverse: (
+      rule: StyleExpression,
+      owner: Expression,
+      each: TraverseEach
+    ) => boolean
+  ) =>
+  (rules: StyleExpression[], owner: Expression, each: TraverseEach) => {
+    for (const rule of rules) {
+      if (!traverse(rule, owner, each)) {
+        return false;
+      }
     }
-  }
-  return true;
-};
+    return true;
+  };
 
 export const isRule = (expression: StyleExpression): expression is Rule => {
   return RuleKind[(expression as Rule).ruleKind] != null;
@@ -420,36 +431,42 @@ export const isIncludePart = (
 
 export const traverseStyleExpression = (
   rule: StyleExpression,
-  each: (rule: StyleExpression) => void | boolean
+  owner: Expression,
+  each: (rule: StyleExpression, parent: Expression) => void | boolean
 ) => {
-  if (each(rule) === false) {
+  if (each(rule, owner) === false) {
     return false;
   }
   if (isRule(rule)) {
     switch (rule.ruleKind) {
       case RuleKind.Media: {
-        return traverseChildren(traverseStyleRule)(rule.rules, each);
+        return traverseChildren(traverseStyleExpression)(
+          rule.rules,
+          rule,
+          each
+        );
       }
       case RuleKind.Export: {
-        return traverseStyleExpressions(rule.rules, each);
+        return traverseStyleExpressions(rule.rules, rule, each);
       }
       case RuleKind.Style: {
         return traverseStyleRule(rule, each);
       }
       case RuleKind.Mixin: {
-        return traverseStyleExpressions(rule.declarations, each);
+        return traverseStyleExpressions(rule.declarations, rule, each);
       }
       case RuleKind.Keyframes: {
         return traverseChildren((child: KeyframeRule) => {
-          return traverseStyleExpressions(child.declarations, each);
-        })(rule.rules, each);
+          return traverseStyleExpressions(child.declarations, child, each);
+        })(rule.rules, rule, each);
       }
     }
   } else if (isStyleDeclaration(rule)) {
     switch (rule.declarationKind) {
       case StyleDeclarationKind.Include: {
+        each(rule.mixinName, rule);
         for (const part of rule.mixinName.parts) {
-          if (!traverseStyleExpression(part, each)) {
+          if (!traverseStyleExpression(part, rule.mixinName, each)) {
             return false;
           }
         }
@@ -465,10 +482,10 @@ const traverseStyleExpressions = traverseChildren(traverseStyleExpression);
 
 const traverseStyleRule = (
   rule: StyleRule,
-  each: (rule: StyleExpression) => void | boolean
+  each: (rule: StyleExpression, parent: Expression) => void | boolean
 ) =>
-  traverseStyleExpressions(rule.declarations, each) &&
-  traverseChildren(traverseStyleRule)(rule.children, each);
+  traverseStyleExpressions(rule.declarations, rule, each) &&
+  traverseChildren(traverseStyleExpression)(rule.children, rule, each);
 
 export const getSelectorClassNames = (
   selector: Selector,

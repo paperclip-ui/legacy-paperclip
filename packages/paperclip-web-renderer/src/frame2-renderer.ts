@@ -1,6 +1,7 @@
 // FYI this code is super dumb and can definitely be made faster
 
 import {
+  ELEMENT_INSERT_ATTR,
   LoadedData,
   LoadedPCData,
   memoize,
@@ -17,6 +18,7 @@ import {
 } from "@paperclip-ui/utils";
 import { Box, DOMFactory } from "./base";
 import {
+  addInsert,
   createNativeNode,
   createNativeStyleFromSheet,
   renderSheetText,
@@ -195,18 +197,24 @@ export const getFrameRects = (
   traverseNativeNode(
     mount.childNodes[STAGE_INDEX].childNodes[0],
     (node, path) => {
+      const pathStr = path.length ? index + "." + path.join(".") : index;
+      let clientRect: DOMRect;
       if (node.nodeType === 1) {
-        const pathStr = path.length ? index + "." + path.join(".") : index;
-        if (pathStr) {
-          const clientRect = (node as Element).getBoundingClientRect();
+        clientRect = (node as Element).getBoundingClientRect();
+      } else if (node.nodeType === 3) {
+        const range = document.createRange();
+        range.selectNode(node);
+        clientRect = range.getBoundingClientRect();
+        range.detach();
+      }
 
-          rects[pathStr] = {
-            width: clientRect.width,
-            height: clientRect.height,
-            x: clientRect.left + bounds.x,
-            y: clientRect.top + bounds.y,
-          };
-        }
+      if (clientRect) {
+        rects[pathStr] = {
+          width: clientRect.width,
+          height: clientRect.height,
+          x: clientRect.left + bounds.x,
+          y: clientRect.top + bounds.y,
+        };
       }
     }
   );
@@ -423,10 +431,20 @@ const patchAttributes = (
       value = options.resolveUrl(value);
     }
     node.setAttribute(key, value);
+
+    if (key === ELEMENT_INSERT_ATTR) {
+      addInsert(node);
+    }
   }
   for (const key in prev.attributes) {
     if (curr.attributes[key] == null) {
       node.removeAttribute(key);
+
+      // problematic if explicit style attr is present. I can live with this
+      // bug 🤷‍♂️
+      if (key === ELEMENT_INSERT_ATTR) {
+        node.removeAttribute("style");
+      }
     }
   }
 };
