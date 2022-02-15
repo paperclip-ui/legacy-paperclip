@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/cli-minimal",
-  "version": "18.5.2",
+  "version": "18.5.3",
   "description": "Minimal command line tool for Paperclip",
   "main": "lib/cli.js",
   "publishConfig": {
@@ -18,10 +18,10 @@
   "license": "MIT",
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
-    "@paperclip-ui/builder": "^18.5.2",
-    "@paperclip-ui/cli-utils": "^18.5.2",
-    "@paperclip-ui/core": "^18.5.2",
-    "@paperclip-ui/utils": "^18.5.2",
+    "@paperclip-ui/builder": "^18.5.3",
+    "@paperclip-ui/cli-utils": "^18.5.3",
+    "@paperclip-ui/core": "^18.5.3",
+    "@paperclip-ui/utils": "^18.5.3",
     "chokidar": "^3.3.1",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
