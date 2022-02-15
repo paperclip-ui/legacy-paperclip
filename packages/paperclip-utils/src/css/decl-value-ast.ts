@@ -50,7 +50,7 @@ type BaseValue<TKind extends ValueKind> = {
   BaseRootValue<DeclRootValueKind.Value>;
 
 export type Dimension = {
-  value: Number;
+  value: Num;
   unit: string;
 } & BaseValue<ValueKind.Dimension>;
 
@@ -60,7 +60,7 @@ export type Operation = {
   right: Value;
 } & BaseValue<ValueKind.Operation>;
 
-export type Number = {
+export type Num = {
   value: string;
 } & BaseValue<ValueKind.Number>;
 
@@ -88,7 +88,7 @@ export type FunctionCall = {
 export type Value =
   | Dimension
   | Operation
-  | Number
+  | Num
   | Str
   | Raw
   | Hex
