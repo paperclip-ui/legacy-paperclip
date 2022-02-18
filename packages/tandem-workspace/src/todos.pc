@@ -1,0 +1,28 @@
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: -176, y: 173 }
+-->
+<ul component as="List">
+  <style>
+    padding: 14px;
+    margin: 0px;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style-type: none;
+  </style>
+  {children}
+</ul>
+
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: -1, y: 0 }
+-->
+<li component as="ListItem">{children}</li>
+
+<!--
+  @frame { height: 366, title: "Todos", width: 258, x: 766, y: 402 }
+-->
+<List>
+  <ListItem>buy cereal</ListItem>
+  <ListItem>buy milk</ListItem>
+</List>
