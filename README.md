@@ -47,7 +47,7 @@ Here's a demo of a UI builder prototype that works with Paperclip:
 
 ![alt something](./preview.gif)
 
-Paperclip UIs cover just **HTML, CSS, and primitive components**. Developers can import these primitive components into their codebase like so:
+Paperclip UIs cover just **HTML, CSS, and primitive components** for now, and can be imported directly into code like so:
 
 ```jsx
 import * as styles from "./styles.pc";
