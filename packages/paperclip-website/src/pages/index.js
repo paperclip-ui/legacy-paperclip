@@ -11,6 +11,7 @@ import * as buttonStyles from "../styles/button.pc";
 import * as typography from "../styles/typography.pc";
 import { TAILWIND_AND_ANIMATE_SOURCE } from "../demos/tailwind-and-animate";
 import { TAILWIND_SOURCE } from "../demos/tailwind.css";
+import { Redirect } from "react-router-dom";
 
 function Home() {
   const context = useDocusaurusContext();
@@ -227,4 +228,8 @@ function Home() {
   );
 }
 
-export default Home;
+function Home2() {
+  return <Redirect to="/docs/installation" />;
+}
+
+export default Home2;

@@ -134,7 +134,7 @@ In a perfect world, Paperclip could be the engine for a UI builder that enables:
 - Enable anyone on a team to spot-edit visual bugs that are in production (wouldn't it be great to right-click any staging / production element and edit it on the spot??). 
 
 
- My sense about the general direction of _many_ UI builders is that they're mostly adopting the same principles (primitive components, slots, variants), and could benefit from using an open-source data model that's geared more for developers. Hopefully in the future, developers of UI builders can add their own rendering engine, create supersets, and rules on top of Paperclip according to the features that their UI builder supports.
+It seems that the general direction of _many_ UI builders is that they're mostly adopting the same principles (primitive components, slots, variants), and could benefit from using an open-source data model that's geared more for developers. Hopefully in the future, developers of UI builders can add their own rendering engine, create supersets, and rules on top of Paperclip according to the features that their UI builder supports.
 
 ### Why focus on the data model?
 
