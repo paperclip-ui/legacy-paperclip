@@ -134,13 +134,13 @@ In a perfect world, Paperclip could be the engine for a UI builder that enables:
 - Enable anyone on a team to spot-edit visual bugs that are in production (wouldn't it be great to right-click any staging / production element and edit it on the spot??). 
 
 
-It seems that the general direction of _many_ UI builders is that they're mostly adopting the same principles (primitive components, slots, variants), and could benefit from using an open-source data model that's geared more for developers. Hopefully in the future, developers of UI builders can add their own rendering engine, create supersets, and rules on top of Paperclip according to the features that their UI builder supports.
+It seems that the general direction of _many_ UI builders is that they're mostly adopting the same principles (primitive components, slots, variants), and could benefit from using an open-source data model that's geared more for developers. Hopefully in the future, developers of UI builders can add their own rendering engine, create supersets, and rules on top of Paperclip according to features that their UI builder supports.
 
 ### Why focus on the data model?
 
-Mostly because the data model is easier to shape than a UI builder based on real-world feedback around how it's used in a production environment. As a developer, I care mostly about how a tool influences the direction of a codebase. If I believe that a tool is detrimental to the overall health of the codebase, then there's no point in using it.
+Mostly because the data model is easier to shape than a UI builder based on feedback. And, as a developer, I care mostly about how a tool influences the direction of a codebase. If I believe that a tool is detrimental to the overall health of the codebase, then there's no point in using it.
 
-And, for me it's a hard sell to allow _anyone_ to write code who isn't a developer. That's why the data model is such a focus in ensuring that anyone working with it (written by hand or in a UI builder) has enough guardrails (removing incidental complexity, and providing safety tooling) to create shippable UIs.
+It's also a hard sell to allow _anyone_ to write code who isn't a developer. That's why the data model is such a focus in ensuring that anyone working with it (written by hand or in a UI builder) has enough guardrails (removing incidental complexity, and providing safety tooling) to create shippable UIs.
 
 ### Why code as a data model?
 
@@ -160,11 +160,11 @@ Another reason why Paperclip was created is to ensure that _multiple_ languages 
 
 ### What's the status of this Project?
 
-Paperclip has been in active development for a few years, and most of the basic functionality is in. However, It's at an inflection point where a UI builder is necessary to help shape the DSL.
+Paperclip has been in active development for a few years. Now it's at an inflection point where a UI builder is necessary to help shape the DSL.
 
 ### Can I use Paperclip now?
 
-Yes! Paperclip is stable and  has been in active development for a few years now, and can be used to build React applications. Currently it's powering most of the HTML and CSS at [Hum Capital](https://humcapital.com/).
+Yes! Paperclip can be used to build React applications. Currently it's powering most of the HTML and CSS at [Hum Capital](https://humcapital.com/).
 
 ## Installation
 
@@ -209,7 +209,7 @@ npx @paperclip-ui/cli build
 
 ## Contributing
 
-Most of the focus right now for Paperclip is around the UI builder, so if you would like to help out, feel free to reach out! Some other areas in the future will include:
+Most of the focus right now for Paperclip is around UI builder APIs, so if you would like to help out, feel free to reach out! Some other areas in the future will include:
 
 - More compilers: Java, Ruby, Python, PHP.
 - Migration tooling to help people translate their existing HTML & CSS into Paperclip UIs
