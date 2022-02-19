@@ -89,7 +89,7 @@ Here's a basic example of the editing API (still very much WIP):
 
 ```typescript
 import { WorkspaceClient } from "@tandem-ui/workspace-client";
-import { FramesRenderer } from "@paperclip-ui/web-renderer";
+import { renderFrames, patchFrames } from "@paperclip-ui/web-renderer";
 
 const client = new WorkspaceClient();
 const project = await = client.openProject({
