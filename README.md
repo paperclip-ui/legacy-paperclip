@@ -8,7 +8,7 @@
 
 <br />
 
-Paperclip is a DSL for UI builders. Here's what a UI file looks like:
+Paperclip is a DSL for UI builders. Here's what a basic UI file looks like:
 
 ```html
 <!--
@@ -61,35 +61,50 @@ export const List = ({items}) => {
 };
 ```
 
-## Goal
+### Features
 
-The goal for Paperclip is to enable non-developers to build logic-less UIs for any kind of web application using. Some example use cases include:
+Paperclip is limited to the pieces of functionality that are _necessary_ for building just about any kind of presentational component. They are:
 
-- Give designers complete control over HTML and CSS development with Webflow-like tooling.
-- Enabling PMs and anyone else to create variant UIs / text / styles for a/b testing.
-- Enable anyone to spot-edit visual bugs that are in production.
+- Primitive components
+- Style variants
+- Slots (being able to insert children in certain areas of a component)
+- Attribute bindings
 
-## Why code as a data model?
+### Goal
 
-Mostly for readability, which is important because:
+The goal for Paperclip is to be a _scalable_ data format for UI builders that can be used to create any kind of web application, and safe enough for non-engineers to feel confident about making any visual change.
+
+In a perfect world, Paperclip could be the engine for a UI builder that enables: 
+
+- Designers to have complete control over HTML and CSS development with [Webflow](https://webflow.com)-like tooling.
+- PMs and anyone else to create variant UIs / text / styles for a/b testing. 
+- Enable anyone on a team to spot-edit visual bugs that are in production (wouldn't it be great to right-click any staging / production element and edit it on the spot??). 
+
+<!--In other words, Paperclip aims to help give development control over HTML & CSS (partially or fully) to anyone on the team (I'd imagine mostly designers). -->
+
+### Why code as a data model?
+
+Mostly for maintainability, and collaboration.
 
 - A readable UI file can be easily reviewed for any structural problems.
 - A readable UI file makes merge conflicts easy to resolve.
 - Sometimes it's easier to write functionality by hand.
+- Easier escape hatch for engineers that are worried about vendor lock-in.
+- Easier to reason about when wiring up with logic. 
 
+### Why not use an existing language?
 
-## Why not use an existing language?
+Mostly to have total control over the data model, and to only have features specifically for visual development. Most languages contain features that make it difficult to effectively map to a _practical_ UI builder (even vanilla HTML and CSS to an extent). I think for a UI builder to be flexible and simple, that simplicity (to a degree) needs to be reflected in the data model. 
 
-Mostly to have total control over the data model, and to only have features specifically for visual development. Most languages contain features that make it difficult to effectively map to a _practical_ UI builder. I think for a UI builder to be flexible and simple, that simplicity needs to be reflected in the data model. 
+Another reason why Paperclip was created was to ensure that _multiple_ languages could be targeted. Eventually the plan is for Paperclip to compile down to just about any web language.
 
-## What's the status of this Project?
+### What's the status of this Project?
 
-Paperclip has been in active development for a few years, and most of the basic functionality is in. The next phase for Paperclip is the UI builder which will continue to help shape the DSL. 
+Paperclip has been in active development for a few years, and most of the basic functionality is in. It's an inflection point how however where a UI builder is necessary for the continued evolution of the DSL. 
 
+### Can I use Paperclip now?
 
-## Can I use Paperclip now?
-
-Yes! Paperclip has been in active development for a few years now, and can be used to build React applications.
+Yes! Paperclip is stable and  has been in active development for a few years now, and can be used to build React applications. Currently it's powering most of the front-end at [Hum Capital](https://humcapital.com/).
 
 ## Installation
 
