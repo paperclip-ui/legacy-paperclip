@@ -2,53 +2,169 @@
 
 <br />
 
-
+<div style="text-align: left; margin-bottom: 32px;">
   <img src="assets/logo-outline-5-beta.png" width="420">
-
+</div>
 
 <br />
 
-<!--Paperclip is a data format for UI builders that aims to make it easier for non-developers to build web applications. 
-
-Here's what Paperclip looks like:
+Paperclip is a DSL for UI builders. Here's what a basic UI file looks like:
 
 ```html
-<div export component as="Button">
-  
-</div>  
-```-->
-
-
-
-
-Paperclip is a tiny DSL for HTML & CSS that aims to bring scoped styles & a richer UI development experience to any language. It works by exposing primitive components that you can import into your existing codebase. Here's an example Paperclip file:
-
-```html
-<!-- Styles here are only applied to the elements in this document -->
-<style>
-  div {
-    color: red;
-  }
-</style>
-
-<div export component as="Message">
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: -176, y: 173 }
+-->
+<ul component as="List">
+  <style>
+    padding: 14px;
+    margin: 0px;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style-type: none;
+  </style>
   {children}
-</div>
+</ul>
+
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: -1, y: 0 }
+-->
+<li component as="ListItem">
+  {children}
+</li>
+
+<!--
+  @frame { height: 366, title: "Todos", width: 258, x: 766, y: 402 }
+-->
+<List>
+  <ListItem>buy cereal</ListItem>
+  <ListItem>buy milk</ListItem>
+</List>
 ```
 
-Here's how you use this in your code:
+Here's a demo of a UI builder prototype that works with Paperclip:
+
+![alt something](./preview.gif)
+
+Paperclip UIs cover just **HTML, CSS, and primitive components**. Developers can import these primitive components into their codebase like so:
 
 ```jsx
-import { Message } from "./styles.pc";
-import React from "react";
-import ReactDOM from "react-dom";
+import * as styles from "./styles.pc";
 
-ReactDOM.render(<Message>
-  Hello world
-</Message>, document.getElementById("app"));
+export const List = ({items}) => {
+  return <styles.List>
+    {items.map(item) => {
+      return <styles.ListItem key={item.id}>{item.label}</styles.ListItem>;
+    }}
+  </styles.List>;
+};
 ```
 
-Currently, UIs compile to **React** and **static HTML**. More languages are planned for after Beta. 
+### Language features
+
+Paperclip is limited to bare minimum features that are necessary for building presentational components. This includes:
+
+- Primitive components
+- Styles and variants
+- Slots (being able to insert children in certain areas of a component)
+- Attribute bindings
+
+### Tooling features
+
+- Designed to compile down to just about any language. Currently targets React & static HTML.
+- Can compile to strongly-typed code.
+- Comes with visual regression & code coverage tooling (for tracking how much of the UI is covered for visual regressions).
+
+### UI Builder features
+
+Paperclip aims to provide an easy-to-use API for UI builders:
+
+- APIs for editing source code.
+- Rust-based engine for smooth editing.
+- multi-player editing capabilities (CRDT based).
+
+Here's a basic example of the editing API (still very much WIP):
+
+
+```typescript
+import { WorkspaceClient } from "@tandem-ui/workspace-client";
+import { FramesRenderer } from "@paperclip-ui/web-renderer";
+
+const client = new WorkspaceClient();
+const project = await = client.openProject({
+  uri: "file:///path/to/project/directory"
+});
+
+const doc = await project.getDocuments().open("file:///path/to/project/directory/src/components/button.pc");
+
+// render the document
+const mount = document.createElement("div");
+let frames = renderFrames(doc.getContent());
+document.body.appendChild(mount);
+
+// When the document changes, re-render
+doc.onAppliedChanges((newData) => {
+  frames = patchFrames(frames, newData);
+});
+
+// Make a change to the 
+doc.editVirtualObjects({
+  kind: VirtualObjectEditKind.AppendChild,
+
+  // path to element to append the child to
+  nodePath: "0",
+
+  // Child HTML
+  child: {
+    value: `Hello World`,
+  },
+});
+```
+
+### Goal
+
+The goal for Paperclip is to be a _scalable_ data format for UI builders, and safe enough for non-engineers to feel confident about making visual changes. 
+
+
+In a perfect world, Paperclip could be the engine for a UI builder that enables: 
+
+- Designers to have complete control over HTML and CSS development with [Webflow](https://webflow.com)-like tooling.
+- PMs and anyone else to create variant UIs / text / styles for a/b testing. 
+- Enable anyone on a team to spot-edit visual bugs that are in production (wouldn't it be great to right-click any staging / production element and edit it on the spot??). 
+
+
+It seems that the general direction of _many_ UI builders is that they're mostly adopting the same principles (primitive components, slots, variants), and could benefit from using an open-source data model that's geared more for developers. Hopefully in the future, developers of UI builders can add their own rendering engine, create supersets, and rules on top of Paperclip according to features that their UI builder supports.
+
+### Why focus on the data model?
+
+Mostly because the data model is easier to shape than a UI builder based on feedback. And, as a developer, I care mostly about how a tool influences the direction of a codebase. If I believe that a tool is detrimental to the overall health of the codebase, then there's no point in using it.
+
+It's also a hard sell to allow _anyone_ to write code who isn't a developer. That's why the data model is such a focus in ensuring that anyone working with it (written by hand or in a UI builder) has enough guardrails (removing incidental complexity, and providing safety tooling) to create shippable UIs.
+
+### Why code as a data model?
+
+Mostly for maintainability, collaboration, and safety.
+
+- A readable UI file can be easily reviewed for any structural problems.
+- A readable UI file makes merge conflicts easy to resolve.
+- Sometimes it's easier to write functionality by hand.
+- Easier escape hatch for engineers that are worried about locked into a UI builder (esp. for engineers looking to collaborate).
+- Easier to reason about when wiring up with logic. 
+
+### Why not use an existing language?
+
+Mostly to have total control over the data model, and to only have features specifically for visual development. Most languages contain features that make it difficult to effectively map to a _practical_ UI builder (even vanilla HTML and CSS to an extent). I think for a UI builder to be flexible and simple, that simplicity needs to be reflected in the data model. 
+
+Another reason why Paperclip was created is to ensure that _multiple_ languages could be targeted. Eventually the plan is for Paperclip to compile down to just about any language.
+
+### What's the status of this Project?
+
+Paperclip has been in active development for a few years. Now it's at an inflection point where a UI builder is necessary to help shape the DSL.
+
+### Can I use Paperclip now?
+
+Yes! Paperclip can be used to build React applications. Currently it's powering most of the HTML and CSS at [Hum Capital](https://humcapital.com/).
 
 ## Installation
 
@@ -63,15 +179,6 @@ This will walk you through a brief setup process. Next, just run:
 ```
 npx @paperclip-ui/cli build
 ```
-
-## Why use Paperclip?
-
-- Keeps CSS scoped, and predictable. Global CSS is explicit.
-- Paperclip can help you build UIs more quickly with its [realtime development tooling](https://paperclip.dev/docs/visual-tooling).
-- Paperclip can scope your third-party CSS and help mitigate vendor lock-in.
-- [Visual test and code coverage](https://paperclip.dev/docs/visual-regression-tooling) tools help make UIs easy to maintain, track visual changes, and catch UIs bugs.
-- Compiles to plain, readable code. No runtime.
-- (soon!) Paperclip will remove unused CSS that you don't use. 
 
 ## Resources
 
@@ -100,87 +207,22 @@ npx @paperclip-ui/cli build
   - [Using third-party CSS](https://paperclip.dev/docs/guide-third-party-libraries)
 
 
-<!--## Goals
+## Contributing
 
-- To have strict control over how elements are styled, while maintaining the flexibility of CSS. 
-- To be generic, and compatible with just about any language, strongly or dynamically typed. 
-- To compile to plain code, and not require any runtime. 
-- To make UI development feel more like drawing. Developers shouldn't have to wait around for their UI code to compile, and should have more visual tooling to help <i>visually</i> develop their UIs.
-- To eventually have enough UI tooling that would enable non-engineers to create UIs in tandem with developers.-->
+Most of the focus right now for Paperclip is around UI builder APIs, so if you would like to help out, feel free to reach out! Some other areas in the future will include:
 
-
-## Kitchen sink example
-
-Here's an example that includes many Paperclip features:
-
-
-```html
-
-<!-- Imported CSS can be contained to a namespace that you can use throughout the document to have complete control
- over what's styled -->
-<import src="css-modules/tailwind.css" as="tw" />
-
-<!-- These styles are scoped just to this document -->
-<style>
-  * {
-    box-sizing: border-box;
-  }
-</style>
-
-<!--  
-  You can define re-usable blocks of HTML that can be imported into your application code.
-  Also, notice how Tailwind is being applied just to this element.
--->
-<div export component as="Message" class="$tw py-8 bg-blue-100">
-
-  <!-- Styles that are nested are scoped to the parent element. -->
-  <style>
-
-    /* You can set declarations directly in style blocks. This
-    will be applied to the parent element. */
-    color: magenta;
-
-    /* You can define style rules for descendents of the parent element. */
-    span {
-      color: orange;
-    }
-  </style>
-
-  <!-- This is a "slot" that allows custom children to be inserted into primitive components. -->
-  {children}
-
-  <span>
-      I'm orange!
-  </span>
-</div>
-```
-
-
-<!-- ## Features
-
-- Scoped CSS by default, and expressive syntax that enables you to be more precise about what elements are styled. This can even be used to scope CSS frameworks.
-- Generic, and designed for any language. You can use Paperclip in your existing codebase.
-- Compiles to plain performant code. No runtime.
-- Visual test tooling to help you track UI changes across your app.
-- Code coverage tooling to help you figure out how much HTML & CSS is coverage under visual tests.
-- Realtime visual development, directly within VS Code.  -->
-
-<!--div style="display: flex; flex-direction: row;">
-    <img src="./assets/designer-screenshot.png" style="inline-block; margin: 8px; width: 500px;" />
-    <img src="./assets/coverage-report.png" style="inline-block; margin: 8px; width: 500px;" />
-    <img src="./assets/percy-screenshot.png" style="inline-block; margin: 8px; width: 500px;" />
-</div-->
-
-
-<!-- ### Non-goals
-
-- Logic. This is already a very well solved problem. Paperclip only covers what's necessary to integrate with an existing codebase.
-- Pre-processors. Though this may be possible in the long term, Paperclip won't have pre-processors that would enable you to  -->
-
-<!-- 
-
-## Sponsors
-
-![index](https://user-images.githubusercontent.com/757408/105444620-254d8d80-5ca9-11eb-97c8-9c0fd66408d4.png)
-
- -->
+- More compilers: Java, Ruby, Python, PHP.
+- Migration tooling to help people translate their existing HTML & CSS into Paperclip UIs
+- Get VS Code extension to work with github.dev, making it easier for people to edit UI files online.
+- Help with language featuers that are mappable to UI tooling.
+- Performance adjustments around Rust rendering engine.
+- More tooling that enables Paperclip to be edited or visualized in other mediums (not just UI builders).
+  - e.g: ability to edit any UI directly in staging
+- More _safety_ features that give non-engineers confidence about shipping UIs.
+  - visual regression coverage
+  - More robust inferencing engine
+- More functionality to the rendering engine
+  - Ability to change type of rendering (e.g: React Native)
+  - Ability to inject custom web components
+  - CSS Houdini support 
+- Help on shaping the DSL for more visual development capabilities
