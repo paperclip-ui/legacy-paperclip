@@ -28,9 +28,10 @@ function Home() {
           <styles.Header
             title={
               <>
-                Paperclip is a UI layer that brings{" "}
+                Scoped CSS for everyone
+                {/*Paperclip is a UI layer that brings{" "}
                 <strong>safe, scalable</strong> HTML & CSS to any kind of web
-                application
+                application*/}
                 {/* Paperclip is a fast, scalable UI layer that brings <strong>scoped CSS</strong> to any kind of web application. */}
               </>
             }
@@ -86,7 +87,6 @@ function Home() {
                 automation for catching visual regressions. Paperclip is a tiny
                 language that focuses purely on these problems, with features to
                 help you build maintainable UIs more quickly, and accurately.
-                Your users will love you. ❤️
               </>
             }
           />
