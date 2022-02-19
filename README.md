@@ -61,18 +61,71 @@ export const List = ({items}) => {
 };
 ```
 
-### Features
+### Language features
 
-Paperclip is limited to the pieces of functionality that are _necessary_ for building just about any kind of presentational component. They are:
+Paperclip is limited to bare minimum features that are necessary for building presentational components. This includes:
 
 - Primitive components
-- Style variants
+- Styles and variants
 - Slots (being able to insert children in certain areas of a component)
 - Attribute bindings
 
+### Tooling features
+
+- Designed to compile down to just about any language. Currently targets React & static HTML.
+- Can compile to strongly-typed code.
+- Comes with visual regression & code coverage tooling (for tracking how much of the UI is covered for visual regressions).
+
+### UI Builder features
+
+Paperclip aims to provide an easy-to-use API for UI builders:
+
+- APIs for editing source code.
+- Rust-based engine for smooth editing.
+- multi-player editing capabilities (CRDT based).
+
+Here's a basic example of the editing API (still very much WIP):
+
+
+```typescript
+import { WorkspaceClient } from "@tandem-ui/workspace-client";
+import { FramesRenderer } from "@paperclip-ui/web-renderer";
+
+const client = new WorkspaceClient();
+const project = await = client.openProject({
+  uri: "file:///path/to/project/directory"
+});
+
+const doc = await project.getDocuments().open("file:///path/to/project/directory/src/components/button.pc");
+
+// render the document
+const mount = document.createElement("div");
+let frames = renderFrames(doc.getContent());
+document.body.appendChild(mount);
+
+// When the document changes, re-render
+doc.onAppliedChanges((newData) => {
+  frames = patchFrames(frames, newData);
+});
+
+// Make a change to the 
+doc.editVirtualObjects({
+  kind: VirtualObjectEditKind.AppendChild,
+
+  // path to element to append the child to
+  nodePath: "0",
+
+  // Child HTML
+  child: {
+    value: `Hello World`,
+  },
+});
+```
+
 ### Goal
 
-The goal for Paperclip is to be a _scalable_ data format for UI builders that can be used to create any kind of web application, and safe enough for non-engineers to feel confident about making any visual change.
+The goal for Paperclip is to be a _scalable_ data format for UI builders, and safe enough for non-engineers to feel confident about making visual changes. 
+
 
 In a perfect world, Paperclip could be the engine for a UI builder that enables: 
 
@@ -94,17 +147,17 @@ Mostly for maintainability, and collaboration.
 
 ### Why not use an existing language?
 
-Mostly to have total control over the data model, and to only have features specifically for visual development. Most languages contain features that make it difficult to effectively map to a _practical_ UI builder (even vanilla HTML and CSS to an extent). I think for a UI builder to be flexible and simple, that simplicity (to a degree) needs to be reflected in the data model. 
+Mostly to have total control over the data model, and to only have features specifically for visual development. Most languages contain features that make it difficult to effectively map to a _practical_ UI builder (even vanilla HTML and CSS to an extent). I think for a UI builder to be flexible and simple, that simplicity needs to be reflected in the data model. 
 
 Another reason why Paperclip was created was to ensure that _multiple_ languages could be targeted. Eventually the plan is for Paperclip to compile down to just about any web language.
 
 ### What's the status of this Project?
 
-Paperclip has been in active development for a few years, and most of the basic functionality is in. It's an inflection point how however where a UI builder is necessary for the continued evolution of the DSL. 
+Paperclip has been in active development for a few years, and most of the basic functionality is in. However, It's at an inflection now where a UI builder is necessary to help shape the DSL.
 
 ### Can I use Paperclip now?
 
-Yes! Paperclip is stable and  has been in active development for a few years now, and can be used to build React applications. Currently it's powering most of the front-end at [Hum Capital](https://humcapital.com/).
+Yes! Paperclip is stable and  has been in active development for a few years now, and can be used to build React applications. Currently it's powering most of the HTML and CSS at [Hum Capital](https://humcapital.com/).
 
 ## Installation
 
