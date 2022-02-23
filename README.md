@@ -65,6 +65,7 @@ export const List = ({items}) => {
 
 Paperclip is limited to bare minimum features that are necessary for building presentational components. This includes:
 
+- Syntax is based on plain HTML & CSS
 - Primitive components
 - Styles and variants
 - Slots (being able to insert children in certain areas of a component)
