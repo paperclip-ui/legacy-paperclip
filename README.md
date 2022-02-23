@@ -151,6 +151,7 @@ Mostly for maintainability, collaboration, and safety.
 - A readable UI file makes merge conflicts easy to resolve.
 - Sometimes it's easier to write functionality by hand.
 - Easier escape hatch for engineers that are worried about locked into a UI builder (esp. for engineers looking to collaborate).
+- Easier to debug.
 - Easier to reason about when wiring up with logic. 
 
 ### Why not use an existing language?
