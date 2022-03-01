@@ -25,6 +25,7 @@ import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { wsAdapter } from "@paperclip-ui/common";
 import * as ws from "ws";
 import * as Automerge from "automerge";
+import * as vscode from "vscode";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -36,7 +37,6 @@ export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
   private _editorClient: EditorClient;
   private _remoteDocs: Record<string, pce.CRDTTextDocument> = {};
-  private _editing: Record<string, boolean> = {};
 
   constructor(
     private _windows: LiveWindowManager,
@@ -102,13 +102,11 @@ export class DocumentManager {
       .open(uri)
       .then((doc) => doc.getSource()));
 
-    // pce.CRDTTextDocument.load(source.toData());
-
     // need to replace design server text completely since VS Code
     // may store unsaved changes
     source.setText(e.getText().split(""), 0, source.getText().length);
 
-    source.onSync((patch) => {
+    source.onSync(() => {
       // don't bother syncing if the docs are identical
       if (source.getText() === e.getText()) {
         return;
@@ -116,14 +114,24 @@ export class DocumentManager {
 
       // If not identical, then patch text editor doc to match CRDT doc since that is
       // the source of truth
-      this._editing[e.uri.toString()] = true;
-      applyTextEditsFromPatch(e, patch, async (edit) => {
-        const wsEdit = new WorkspaceEdit();
-        wsEdit.set(Uri.parse(uri), [edit]);
-        await workspace.applyEdit(wsEdit);
-      }).then(() => {
-        this._editing[e.uri.toString()] = false;
-      });
+      const selection = window.activeTextEditor?.selection;
+
+      // !! We're replacing the entire text document whenever the CRDT changes and doesn't match _this_ text document
+      // !! Previously we'd apply patches from CRDT docs, but this quickly becomes out of sync (especially on FS). The
+      // !! Simple answer _for now_ is to replace the _entire_ text document so that we're certain about syncing.
+      const edit = new WorkspaceEdit();
+      edit.set(Uri.parse(uri), [
+        new TextEdit(
+          new Range(e.positionAt(0), e.positionAt(e.getText().length)),
+          source.getText()
+        ),
+      ]);
+
+      workspace.applyEdit(edit);
+
+      if (selection) {
+        window.activeTextEditor.selection = selection;
+      }
     });
   };
 
@@ -136,7 +144,7 @@ export class DocumentManager {
 
     // This will happen on sync, so make sure we're not executing OTs on a doc
     // where the transforms originally came from
-    if (event.document.getText() === source.getText() || this._editing[uri]) {
+    if (event.document.getText() === source.getText()) {
       return;
     }
 
