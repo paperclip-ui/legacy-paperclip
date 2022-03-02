@@ -1,6 +1,6 @@
 {
   "name": "@paperclip-ui/core",
-  "version": "18.5.3",
+  "version": "18.5.5",
   "private": false,
   "description": "A hybrid approach to design & code",
   "main": "./index.js",
@@ -38,7 +38,7 @@
   "author": "",
   "license": "GPLv3",
   "dependencies": {
-    "@paperclip-ui/utils": "^18.5.3",
+    "@paperclip-ui/utils": "^18.5.5",
     "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
     "crc32": "^0.2.2",
