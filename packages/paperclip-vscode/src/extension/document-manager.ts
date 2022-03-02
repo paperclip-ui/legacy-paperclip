@@ -24,8 +24,6 @@ import * as pce from "@paperclip-ui/editor-engine/lib/core/crdt-document";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { wsAdapter } from "@paperclip-ui/common";
 import * as ws from "ws";
-import * as Automerge from "automerge";
-import * as vscode from "vscode";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -203,39 +201,3 @@ export class DocumentManager {
     );
   };
 }
-
-const applyTextEditsFromPatch = async (
-  doc: TextDocument,
-  patch: Automerge.Patch,
-  next: (edit: TextEdit) => Promise<any>
-) => {
-  const syncEdits: TextEdit[] = [];
-
-  const op = patch.diffs.props.text[Object.keys(patch.diffs.props.text)[0]];
-
-  if (op.type === "text") {
-    for (const edit of op.edits) {
-      if (edit.action === "multi-insert") {
-        await next(
-          new TextEdit(
-            new Range(doc.positionAt(edit.index), doc.positionAt(edit.index)),
-            edit.values.join("")
-          )
-        );
-      } else if (edit.action === "remove") {
-        await next(
-          new TextEdit(
-            new Range(
-              doc.positionAt(edit.index),
-              doc.positionAt(edit.index + edit.count)
-            ),
-            ""
-          )
-        );
-      } else {
-        throw new Error(`Dunno how to handle`);
-      }
-    }
-  }
-  return syncEdits;
-};

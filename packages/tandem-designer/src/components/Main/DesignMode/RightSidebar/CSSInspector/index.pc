@@ -728,15 +728,3 @@
     </span>
   </div>
 </div>
-
-
-<!--
-  @frame { height: 376, width: 539, x: -468, y: -1030 }
--->
-<div>
-  <style>
-    color: blue;
-  </style>
-
-  this should work
-</div>

@@ -6,7 +6,7 @@ import { EventEmitter } from "events";
 import * as chokidar from "chokidar";
 import { EngineDelegate } from "@paperclip-ui/core";
 import { flatten } from "lodash";
-import { InterimCompiler, CompileOptions } from "@paperclip-ui/interim";
+import { InterimCompiler } from "@paperclip-ui/interim";
 import {
   PaperclipConfig,
   getPaperclipConfigIncludes,
@@ -16,7 +16,7 @@ import {
   getOutputFile,
   isPaperclipFile,
   getScopedCSSFilePath,
-  CompilerOptions
+  CompilerOptions,
 } from "@paperclip-ui/utils";
 import { TargetNotFoundError } from "./errors";
 import { requireTargetCompilers } from "./resolve-compilers";
@@ -61,7 +61,7 @@ class Compiler {
     try {
       const result = buildFile(filePath, this._engine, {
         ...this._builderOptions,
-        targetCompilerOptions: this._targetOptions
+        targetCompilerOptions: this._targetOptions,
       });
 
       const outFilePath = getOutputFile(
@@ -179,7 +179,7 @@ export class DirectoryBuilder {
   ) {
     this._em = new EventEmitter();
     this._compilers = buildCompilerOptions(options.config).map(
-      targetOptions => new Compiler(this._em, engine, targetOptions, options)
+      (targetOptions) => new Compiler(this._em, engine, targetOptions, options)
     );
   }
 
@@ -194,17 +194,17 @@ export class DirectoryBuilder {
 
     const filePaths = flatten(
       await Promise.all(
-        sources.map(inc =>
+        sources.map((inc) =>
           globby(inc, {
             gitignore: this.options.gitignore !== false ? true : false,
-            ignore: ["**/node_modules/**"]
+            ignore: ["**/node_modules/**"],
           })
         )
       )
     );
 
     if (this.options.watch) {
-      this._watchers = sources.map(source =>
+      this._watchers = sources.map((source) =>
         watch(this.options.cwd, source, this._buildFile)
       );
     }
@@ -275,10 +275,10 @@ export const buildDirectory = (
 
 function watch(cwd, filesGlob, compileFile) {
   const watcher = chokidar.watch(filesGlob, {
-    cwd: cwd
+    cwd: cwd,
   });
 
-  watcher.on("change", file => {
+  watcher.on("change", (file) => {
     compileFile(path.join(cwd, file));
   });
 
@@ -371,7 +371,7 @@ export const buildFile = (
           includes,
           config,
           targetOptions,
-          cwd
+          cwd,
         })
       );
     }, {});
@@ -380,7 +380,7 @@ export const buildFile = (
   return {
     translations,
     css: interimModule.css.sheetText,
-    assets: interimModule.assets
+    assets: interimModule.assets,
   };
 };
 
@@ -392,5 +392,5 @@ const createInterimCompiler = (
   new InterimCompiler(engine, {
     cwd,
     config,
-    targetOptions
+    targetOptions,
   });
