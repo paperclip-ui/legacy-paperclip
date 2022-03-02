@@ -110,6 +110,8 @@ export class DocumentManager {
         return;
       }
 
+      console.log(`Replacing text content`);
+
       // If not identical, then patch text editor doc to match CRDT doc since that is
       // the source of truth
       const selection = window.activeTextEditor?.selection;
@@ -142,7 +144,11 @@ export class DocumentManager {
 
     // This will happen on sync, so make sure we're not executing OTs on a doc
     // where the transforms originally came from
-    if (event.document.getText() === source.getText()) {
+    if (
+      event.document.getText() === source.getText() ||
+      event.contentChanges.length === 0 ||
+      !event.document.isDirty
+    ) {
       return;
     }
 
@@ -157,7 +163,7 @@ export class DocumentManager {
     const now = Date.now();
     source.applyEdits(edits);
     console.log(
-      "DocumentManager::_onDocumentChange in %d ms",
+      "DocumentManager::_onTextDocumentChange in %d ms",
       Date.now() - now
     );
   };
