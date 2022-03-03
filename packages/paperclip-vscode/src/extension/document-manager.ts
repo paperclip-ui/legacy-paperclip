@@ -24,7 +24,6 @@ import * as pce from "@paperclip-ui/editor-engine/lib/core/crdt-document";
 import { EditorClient } from "@paperclip-ui/editor-engine/lib/client/client";
 import { wsAdapter } from "@paperclip-ui/common";
 import * as ws from "ws";
-import * as Automerge from "automerge";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -36,7 +35,6 @@ export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
   private _editorClient: EditorClient;
   private _remoteDocs: Record<string, pce.CRDTTextDocument> = {};
-  private _editing: Record<string, boolean> = {};
 
   constructor(
     private _windows: LiveWindowManager,
@@ -102,28 +100,39 @@ export class DocumentManager {
       .open(uri)
       .then((doc) => doc.getSource()));
 
-    // pce.CRDTTextDocument.load(source.toData());
-
     // need to replace design server text completely since VS Code
     // may store unsaved changes
     source.setText(e.getText().split(""), 0, source.getText().length);
 
-    source.onSync((patch) => {
+    source.onSync(() => {
+      console.log("SHNC");
       // don't bother syncing if the docs are identical
       if (source.getText() === e.getText()) {
         return;
       }
 
+      console.log(`Replacing text content`);
+
       // If not identical, then patch text editor doc to match CRDT doc since that is
       // the source of truth
-      this._editing[e.uri.toString()] = true;
-      applyTextEditsFromPatch(e, patch, async (edit) => {
-        const wsEdit = new WorkspaceEdit();
-        wsEdit.set(Uri.parse(uri), [edit]);
-        await workspace.applyEdit(wsEdit);
-      }).then(() => {
-        this._editing[e.uri.toString()] = false;
-      });
+      const selection = window.activeTextEditor?.selection;
+
+      // !! We're replacing the entire text document whenever the CRDT changes and doesn't match _this_ text document
+      // !! Previously we'd apply patches from CRDT docs, but this quickly becomes out of sync (especially on FS). The
+      // !! Simple answer _for now_ is to replace the _entire_ text document so that we're certain about syncing.
+      const edit = new WorkspaceEdit();
+      edit.set(Uri.parse(uri), [
+        new TextEdit(
+          new Range(e.positionAt(0), e.positionAt(e.getText().length)),
+          source.getText()
+        ),
+      ]);
+
+      workspace.applyEdit(edit);
+
+      if (selection) {
+        window.activeTextEditor.selection = selection;
+      }
     });
   };
 
@@ -136,7 +145,13 @@ export class DocumentManager {
 
     // This will happen on sync, so make sure we're not executing OTs on a doc
     // where the transforms originally came from
-    if (event.document.getText() === source.getText() || this._editing[uri]) {
+    if (
+      event.document.getText() === source.getText() ||
+      event.contentChanges.length === 0 ||
+      // Need this since changes may be coming when FS changes. The workspace
+      // will already receive these changes, so we should ignore.
+      !event.document.isDirty
+    ) {
       return;
     }
 
@@ -151,7 +166,7 @@ export class DocumentManager {
     const now = Date.now();
     source.applyEdits(edits);
     console.log(
-      "DocumentManager::_onDocumentChange in %d ms",
+      "DocumentManager::_onTextDocumentChange in %d ms",
       Date.now() - now
     );
   };
@@ -195,39 +210,3 @@ export class DocumentManager {
     );
   };
 }
-
-const applyTextEditsFromPatch = async (
-  doc: TextDocument,
-  patch: Automerge.Patch,
-  next: (edit: TextEdit) => Promise<any>
-) => {
-  const syncEdits: TextEdit[] = [];
-
-  const op = patch.diffs.props.text[Object.keys(patch.diffs.props.text)[0]];
-
-  if (op.type === "text") {
-    for (const edit of op.edits) {
-      if (edit.action === "multi-insert") {
-        await next(
-          new TextEdit(
-            new Range(doc.positionAt(edit.index), doc.positionAt(edit.index)),
-            edit.values.join("")
-          )
-        );
-      } else if (edit.action === "remove") {
-        await next(
-          new TextEdit(
-            new Range(
-              doc.positionAt(edit.index),
-              doc.positionAt(edit.index + edit.count)
-            ),
-            ""
-          )
-        );
-      } else {
-        throw new Error(`Dunno how to handle`);
-      }
-    }
-  }
-  return syncEdits;
-};

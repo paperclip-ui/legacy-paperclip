@@ -89,6 +89,9 @@ export const getPaperclipConfigIncludes = (
   cwd: string
 ) => {
   if (config.srcDir) {
+    // This should actually be **RESOURCE** global pattern including CSS files. However,
+    // we can't do that now since there may be CSS files that clobber the PC engine. What we
+    // need to do is load CSS resources based on what each PC file loads
     return [paperclipSourceGlobPattern(path.join(cwd, config.srcDir))];
   }
 
@@ -130,7 +133,7 @@ const buildCompilerOptionsFromTemplates = (
 
     allCompilerOptions.push({
       outDir: config.srcDir,
-      ...compilerOptions
+      ...compilerOptions,
     });
 
     return allCompilerOptions;

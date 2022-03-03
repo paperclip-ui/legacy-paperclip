@@ -1,6 +1,6 @@
 {
   "name": "@tandem-ui/workspace-client",
-  "version": "18.5.3",
+  "version": "18.5.5",
   "description": "",
   "main": "lib/index.js",
   "publishConfig": {
@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@paperclip-ui/common": "^18.5.3",
-    "@paperclip-ui/editor-engine": "^18.5.3",
-    "@tandem-ui/workspace-core": "^18.5.3"
+    "@paperclip-ui/editor-engine": "^18.5.5",
+    "@tandem-ui/workspace-core": "^18.5.5"
   }
 }

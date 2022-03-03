@@ -1,6 +1,6 @@
 {
   "name": "paperclip-loader",
-  "version": "18.5.3",
+  "version": "18.5.5",
   "description": "Webpack loader for Paperclip",
   "main": "index.js",
   "publishConfig": {
@@ -17,10 +17,10 @@
   "license": "MIT",
   "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
-    "@paperclip-ui/builder": "^18.5.3",
-    "@paperclip-ui/cli-utils": "^18.5.3",
-    "@paperclip-ui/core": "^18.5.3",
-    "@paperclip-ui/interim": "^18.5.3",
+    "@paperclip-ui/builder": "^18.5.5",
+    "@paperclip-ui/cli-utils": "^18.5.5",
+    "@paperclip-ui/core": "^18.5.5",
+    "@paperclip-ui/interim": "^18.5.5",
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
     "resolve": "^1.15.1",

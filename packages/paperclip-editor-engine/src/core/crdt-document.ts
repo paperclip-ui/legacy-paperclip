@@ -65,6 +65,11 @@ export class CRDTTextDocument {
   applyEdits(edits: TextEdit[]) {
     let newDoc: SourceDocumentData;
 
+    if (edits.length === 0) {
+      console.error(`empty array passed to applyEdits`);
+      return null;
+    }
+
     // Fast
     if (edits.length === 1) {
       newDoc = Automerge.change(this._doc, (doc) => {
