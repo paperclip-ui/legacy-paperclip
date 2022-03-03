@@ -1574,7 +1574,7 @@ fn evaluate_style_key_value_declaration<'a>(
       )?;
 
       value = URL_RE
-        .replace(url_fn, format!("url({})", full_path).as_str())
+        .replace(url_fn, format!("url('{}')", full_path).as_str())
         .to_string();
       let full_path_option = context.vfs.resolve(context.uri, &relative_path.to_string());
     }

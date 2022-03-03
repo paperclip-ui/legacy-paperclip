@@ -237,6 +237,7 @@ mod tests {
       "inset 0 1px 2px rgba(0, 0, 0, 0.15)",
       "15px calc(15px / 3) 4px 2px",
       "url('https://example.com/images/myImg.jpg')",
+      "url(\"./arrowSmall-down.svg\")",
       "image(url(mask.png), skyblue, linear-gradient(rgba(0, 0, 0, 1.0), transparent))"
     ];
 

@@ -9,10 +9,10 @@ describe(__filename + "#", () => {
       `can convert a simple AST to a module`,
       {
         "/src/entry.pc": `<div export component as="Test">
-        </div>`
+        </div>`,
       },
       {},
-      { html: "<style></style> <div></div>" }
+      { html: "<style></style> <div></div>" },
     ],
     [
       `Can embed assets`,
@@ -39,15 +39,15 @@ describe(__filename + "#", () => {
         "/b.svg": "not-embedded-svg",
         "/c.svg": "embedded",
         "/d.svg": "embed",
-        "/e.svg": "embed2"
+        "/e.svg": "embed2",
       },
       {
         embedAssetMaxSize: "embedded-svg".length,
-        useAssetHashNames: false
+        useAssetHashNames: false,
       },
       {
-        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(/b.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=/b.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
-      }
+        html: `<style>@font-face { src:url('data:image/svg+xml;base64,ZW1iZWRkZWQ='); } [class]._a61d499e_a { background-image:url('data:image/svg+xml;base64,ZW1iZWQ='); } [class]._a61d499e_b { background-image:url('/b.svg'); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=/b.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`,
+      },
     ],
     [
       `Renames assets to assetOutDir`,
@@ -74,16 +74,16 @@ describe(__filename + "#", () => {
         "/src/b.svg": "not-embedded-svg",
         "/src/c.svg": "embedded",
         "/src/d.svg": "embed",
-        "/src/e.svg": "embed2"
+        "/src/e.svg": "embed2",
       },
       {
         assetOutDir: "./lib",
         srcDir: "/src",
-        useAssetHashNames: false
+        useAssetHashNames: false,
       },
       {
-        html: `<style>@font-face { src:url(../lib/c.svg); } [class]._a61d499e_a { background-image:url(../lib/d.svg); } [class]._a61d499e_b { background-image:url(../lib/b.svg); }</style> <img src=../lib/a.svg></img> <img src=../lib/b.svg></img> <div><img src=../lib/e.svg></img></div>`
-      }
+        html: `<style>@font-face { src:url('../lib/c.svg'); } [class]._a61d499e_a { background-image:url('../lib/d.svg'); } [class]._a61d499e_b { background-image:url('../lib/b.svg'); }</style> <img src=../lib/a.svg></img> <img src=../lib/b.svg></img> <div><img src=../lib/e.svg></img></div>`,
+      },
     ],
     [
       `Can embed assets and emit files that exceed max size`,
@@ -110,17 +110,17 @@ describe(__filename + "#", () => {
         "/b.svg": "not-embedded-svg",
         "/c.svg": "embedded",
         "/d.svg": "embed",
-        "/e.svg": "embed2"
+        "/e.svg": "embed2",
       },
       {
         embedAssetMaxSize: "embedded-svg".length,
         assetOutDir: "./lib",
         srcDir: "/src",
-        outDir: "/lib"
+        outDir: "/lib",
       },
       {
-        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(./86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=./86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
-      }
+        html: `<style>@font-face { src:url('data:image/svg+xml;base64,ZW1iZWRkZWQ='); } [class]._a61d499e_a { background-image:url('data:image/svg+xml;base64,ZW1iZWQ='); } [class]._a61d499e_b { background-image:url('./86098dd56eddbba6fbc9cd7f03ccd8c1.svg'); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=./86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`,
+      },
     ],
     [
       `Can define an asset prefix`,
@@ -147,18 +147,18 @@ describe(__filename + "#", () => {
         "/b.svg": "not-embedded-svg",
         "/c.svg": "embedded",
         "/d.svg": "embed",
-        "/e.svg": "embed2"
+        "/e.svg": "embed2",
       },
       {
         embedAssetMaxSize: "embedded-svg".length,
         assetOutDir: "./lib",
         srcDir: "/src",
         outDir: "/lib",
-        assetPrefix: "http://localhost:3000/"
+        assetPrefix: "http://localhost:3000/",
       },
       {
-        html: `<style>@font-face { src:url(data:image/svg+xml;base64,ZW1iZWRkZWQ=); } [class]._a61d499e_a { background-image:url(data:image/svg+xml;base64,ZW1iZWQ=); } [class]._a61d499e_b { background-image:url(http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`
-      }
+        html: `<style>@font-face { src:url('data:image/svg+xml;base64,ZW1iZWRkZWQ='); } [class]._a61d499e_a { background-image:url('data:image/svg+xml;base64,ZW1iZWQ='); } [class]._a61d499e_b { background-image:url('http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg'); }</style> <img src=data:image/svg+xml;base64,ZW1iZWRkZWQtc3Zn></img> <img src=http://localhost:3000/lib/86098dd56eddbba6fbc9cd7f03ccd8c1.svg></img> <div><img src=data:image/svg+xml;base64,ZW1iZWQy></img></div>`,
+      },
     ],
     [
       `Includes PC imports`,
@@ -166,18 +166,18 @@ describe(__filename + "#", () => {
         "/src/entry.pc": `
           <import src="/a.pc" as="test" />
         `,
-        "/a.pc": "<div></div>"
+        "/a.pc": "<div></div>",
       },
       {
         embedAssetMaxSize: "embedded-svg".length,
         assetOutDir: "./lib",
         srcDir: "/src",
         outDir: "/lib",
-        assetPrefix: "http://localhost:3000/"
+        assetPrefix: "http://localhost:3000/",
       },
       {
-        html: `<import src=/a.pc as=test  /><style></style>`
-      }
+        html: `<import src=/a.pc as=test  /><style></style>`,
+      },
     ],
     [
       `Omits css imports`,
@@ -187,18 +187,18 @@ describe(__filename + "#", () => {
           <import src="/a.css" inject-styles />
         `,
         "/a.pc": "<div></div>",
-        "/a.css": ".a { }"
+        "/a.css": ".a { }",
       },
       {
         embedAssetMaxSize: "embedded-svg".length,
         assetOutDir: "./lib",
         srcDir: "/src",
         outDir: "/lib",
-        assetPrefix: "http://localhost:3000/"
+        assetPrefix: "http://localhost:3000/",
       },
       {
-        html: `<import src=/a.pc as=test  /><style></style>`
-      }
+        html: `<import src=/a.pc as=test  /><style></style>`,
+      },
     ],
     [
       `Includes CSS imports if importAssetsAsModules is true`,
@@ -208,14 +208,14 @@ describe(__filename + "#", () => {
           <import src="/a.css" inject-styles />
         `,
         "/a.pc": "<div></div>",
-        "/a.css": ".a { }"
+        "/a.css": ".a { }",
       },
       {
-        importAssetsAsModules: true
+        importAssetsAsModules: true,
       },
       {
-        html: `<import src=/a.pc as=test  /><import src=/a.scoped.css as=undefined  /><style></style>`
-      }
+        html: `<import src=/a.pc as=test  /><import src=/a.scoped.css as=undefined  /><style></style>`,
+      },
     ],
     [
       `Namespaces can be injected`,
@@ -224,15 +224,15 @@ describe(__filename + "#", () => {
           <import src="/a.css" as="test" />
           <div export component as="A" class="$test a"></div>
         `,
-        "/a.css": ".a { }"
+        "/a.css": ".a { }",
       },
       {
-        importAssetsAsModules: true
+        importAssetsAsModules: true,
       },
       {
-        html: `<import src=/a.scoped.css as=test  /><style></style> <div class=_a61d499e_test _pub-a61d499e_test test+ _pub-b29b268d_a _a61d499e_a _pub-a61d499e_a a></div>`
-      }
-    ]
+        html: `<import src=/a.scoped.css as=test  /><style></style> <div class=_a61d499e_test _pub-a61d499e_test test+ _pub-b29b268d_a _a61d499e_a _pub-a61d499e_a a></div>`,
+      },
+    ],
   ].forEach(
     ([
       title,
@@ -244,16 +244,16 @@ describe(__filename + "#", () => {
         outDir,
         assetPrefix,
         useAssetHashNames,
-        importAssetsAsModules
+        importAssetsAsModules,
       },
-      expectedOutput
+      expectedOutput,
     ]: any) => {
       it(title, () => {
         const engine = createMockEngine(graph);
         const interim = new InterimCompiler(engine, {
           cwd: "/",
           config: {
-            srcDir
+            srcDir,
           },
           targetOptions: {
             outDir,
@@ -261,7 +261,7 @@ describe(__filename + "#", () => {
             assetPrefix,
             embedAssetMaxSize,
             assetOutDir,
-            useAssetHashNames
+            useAssetHashNames,
           },
           io: {
             readFile(filePath) {
@@ -269,8 +269,8 @@ describe(__filename + "#", () => {
             },
             getFileSize(filePath: string) {
               return graph[filePath].length;
-            }
-          }
+            },
+          },
         });
         const module = interim.parseFile("/src/entry.pc");
         expect(stringifyInterimModule(module)).to.eql(expectedOutput.html);

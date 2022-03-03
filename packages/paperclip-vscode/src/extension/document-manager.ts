@@ -105,6 +105,7 @@ export class DocumentManager {
     source.setText(e.getText().split(""), 0, source.getText().length);
 
     source.onSync(() => {
+      console.log("SHNC");
       // don't bother syncing if the docs are identical
       if (source.getText() === e.getText()) {
         return;
@@ -147,6 +148,8 @@ export class DocumentManager {
     if (
       event.document.getText() === source.getText() ||
       event.contentChanges.length === 0 ||
+      // Need this since changes may be coming when FS changes. The workspace
+      // will already receive these changes, so we should ignore.
       !event.document.isDirty
     ) {
       return;
