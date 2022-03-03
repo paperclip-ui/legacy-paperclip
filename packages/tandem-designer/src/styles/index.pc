@@ -1,0 +1,132 @@
+<!-- atoms -->
+<style>
+
+  .font-regular {
+    font-family: sans-serif;
+  }
+
+  @mixin mask {
+    mask-size: 1em;
+    width: 1em;
+    height: 1em;
+    background: currentColor;
+  }
+
+  :root {}
+</style>
+
+<!--
+  @frame { height: 768, title: "Gutter", visible: false, width: 1024, x: 1125, y: 14 }
+-->
+<div export
+  component
+  as="Gutter"
+  class:left="tall left"
+  class:right="tall right"
+  class:bottom="flat bottom">
+  <style>
+    background: rgb(221, 221, 221);
+    flex-shrink: 0;
+    --border: 2px solid grey;
+    &.left {
+      border-right: var(--border);
+    }
+    &.right {
+      border-left: var(--border);
+    }
+    &.bottom {
+      border-top: var(--border);
+    }
+
+    &.tall {
+      width: 250px;
+    }
+    &.flat {
+      height: 250px;
+    }
+
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Layers">something</div>
+
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 0, y: 0 }
+-->
+<div export component as="Icon" {class}>
+  <style>
+    @include mask {}
+  </style>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Navigation">
+  <style>
+    background: rgb(189, 189, 189);
+    height: 100%;
+  </style>
+  <Icon>
+    <style>
+      mask-image: url("./layers.svg");
+    </style>
+  </Icon>
+  <Icon>
+    <style>
+      mask-image: url("./layers.svg");
+    </style>
+  </Icon>
+  <Icon>
+    <style>
+      mask-image: url("./layers.svg");
+    </style>
+  </Icon>
+  <Icon>
+    <style>
+      mask-image: url("./layers.svg");
+    </style>
+  </Icon>
+</div>
+
+<!--
+  @frame { height: 768, title: "Desktop", width: 1024, x: 8, y: 50 }
+-->
+<div class="font-regular">
+  <style>
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+  </style>
+
+  <!-- left gutter -->
+  <Navigation />
+  <Gutter left>
+    <Layers />
+  </Gutter>
+  <div>
+    <style>
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    </style>
+
+    <!-- Canvas -->
+    <div>
+      <style>
+        flex: 1;
+      </style>
+    </div>
+  </div>
+
+  <!-- left gutter -->
+  <Gutter right>
+    <style>
+    </style>
+  </Gutter>
+</div>
