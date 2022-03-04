@@ -33,10 +33,12 @@ enum OpenLivePreviewOptions {
   No = "No",
 }
 
+// TODO: need to simplify this class a bit, it's doing too many things
 export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
   private _editorClient: EditorClient;
   private _remoteDocs: Record<string, pce.CRDTTextDocument> = {};
+  private _ignoreSync: Record<string, boolean> = {};
 
   constructor(
     private _windows: LiveWindowManager,
@@ -106,6 +108,13 @@ export class DocumentManager {
     // may store unsaved changes
     source.setText(e.getText().split(""), 0, source.getText().length);
 
+    // when files change locally, need to ignore proceeding changes
+    // since PC engine in _another_ worker will recieve local changes, and don't
+    // want to accidentally send changes to the doc
+    fs.watchFile(URL.fileURLToPath(uri), (curr, prev) => {
+      this._ignoreSync[uri] = curr.mtime.getTime() !== prev.mtime.getTime();
+    });
+
     source.onSync(() => {
       // don't bother syncing if the docs are identical
       if (source.getText() === e.getText()) {
@@ -139,10 +148,18 @@ export class DocumentManager {
 
   private _onTextDocumentChange = async (event: TextDocumentChangeEvent) => {
     const uri = event.document.uri.toString();
-    if (!isPaperclipResourceFile(uri)) {
+
+    // check if saved locally, and ignore if that happened since PC worker
+    // will already receive local file changes. We need to ensure that we don't accidentally
+    // send contentChanges which will append information to the doc that causes foo-y stuff
+    // to happen
+    if (!isPaperclipResourceFile(uri) || this._ignoreSync[uri]) {
+      this._ignoreSync[uri] = false;
       return;
     }
     const source = this._remoteDocs[uri];
+
+    // if (fs.readFileSync(URL.fileURLToPath(uri), "utf-8") === event.document.getText() && event.document.getText() === source.
 
     // This will happen on sync, so make sure we're not executing OTs on a doc
     // where the transforms originally came from
