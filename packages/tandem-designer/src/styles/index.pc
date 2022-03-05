@@ -52,7 +52,20 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Layers">Something else</div>
+<div export component as="Layers">
+  TODO: layers. Should be similiar to Figma
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Files">
+  <ul>
+    <li>Filter Input</li>
+    <li>Flat list view</li>
+    <li>Nested files view</li>
+  </ul>
+</div>
 
 <!--
   @frame { height: 768, visible: false, width: 1024, x: 0, y: 0 }
@@ -87,14 +100,14 @@
     background: rgb(189, 189, 189);
     height: 100%;
   </style>
-  <NavigationButton>
+  <NavigationButton active={showFiles?}>
     <Icon>
       <style>
         mask-image: url("./layers.svg");
       </style>
     </Icon>
   </NavigationButton>
-  <NavigationButton active>
+  <NavigationButton active={showLayers}>
     <Icon>
       <style>
         mask-image: url("./layers.svg");
@@ -118,9 +131,9 @@
 </div>
 
 <!--
-  @frame { height: 768, title: "Desktop", width: 1024, x: 8, y: 50 }
+  @frame { height: 768, title: "Desktop", visible: false, width: 1024, x: 8, y: 50 }
 -->
-<div class="font-regular">
+<div class="font-regular" component as="Preview">
   <style>
     width: 100vw;
     height: 100vh;
@@ -136,9 +149,10 @@
     </style>
 
     <!-- left gutter -->
-    <Navigation />
+    <Navigation {showLayers?} {showFiles?} />
     <Gutter left>
-      <Layers />
+      {showLayers && <Layers />}
+      {showFiles && <Files />}
     </Gutter>
     <div>
       <style>
@@ -150,18 +164,25 @@
 
       <!-- Canvas -->
       <div>
+        <style>
+          display: flex;
+          flex-direction: column;
+        </style>
         <div>
           <style>
             background: rgb(221, 221, 221);
             border-bottom: 1px solid grey;
             width: 100%;
             text-align: center;
+            padding: 8px;
+            flex: 0;
           </style>
           Some file
         </div>
         <style>
           flex: 1;
         </style>
+        <div />
       </div>
     </div>
 
@@ -172,3 +193,12 @@
     </Gutter>
   </div>
 </div>
+
+<!--
+  @frame { height: 768, title: "", width: 1024, x: 1119, y: 0 }
+-->
+<Preview showFiles />
+<!--
+  @frame { title: "Layers" }
+-->
+<Preview showLayers />
