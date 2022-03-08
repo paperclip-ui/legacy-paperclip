@@ -14,52 +14,52 @@ describe(__filename, () => {
       {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         prefix: "",
-        tagPath: ["ta", "a"]
-      }
+        tagPath: ["ta", "a"],
+      },
     ],
     [
       `<a b`,
       {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         prefix: "b",
-        tagPath: ["a"]
-      }
+        tagPath: ["a"],
+      },
     ],
     [
       `<a b `,
       {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         prefix: "",
-        tagPath: ["a"]
-      }
+        tagPath: ["a"],
+      },
     ],
     [
       `<a b c`,
       {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         prefix: "c",
-        tagPath: ["a"]
-      }
+        tagPath: ["a"],
+      },
     ],
     [
       `<a b c="" `,
       {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         prefix: "",
-        tagPath: ["a"]
-      }
+        tagPath: ["a"],
+      },
     ],
     [
       `<a b c="" d`,
       {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         prefix: "d",
-        tagPath: ["a"]
-      }
+        tagPath: ["a"],
+      },
     ],
     [
       `<a b c="" d>`,
-      { kind: SuggestContextKind.HTML_CLOSE_TAG_NAME, openTagPath: ["a"] }
+      { kind: SuggestContextKind.HTML_CLOSE_TAG_NAME, openTagPath: ["a"] },
     ],
     [`<a b c="" d><`, { kind: SuggestContextKind.HTML_TAG_NAME, path: [] }],
     [
@@ -68,8 +68,8 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE,
         tagPath: ["import"],
         attributeName: "src",
-        attributeValuePrefix: ""
-      }
+        attributeValuePrefix: "",
+      },
     ],
     [
       `<div class="a b`,
@@ -77,8 +77,8 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE,
         tagPath: ["div"],
         attributeName: "class",
-        attributeValuePrefix: "a b"
-      }
+        attributeValuePrefix: "a b",
+      },
     ],
     [
       `<import src="  `,
@@ -86,8 +86,8 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE,
         tagPath: ["import"],
         attributeName: "src",
-        attributeValuePrefix: "  "
-      }
+        attributeValuePrefix: "  ",
+      },
     ],
     [`<import src=""`, null],
     [
@@ -96,8 +96,8 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE,
         tagPath: ["import"],
         attributeName: "c",
-        attributeValuePrefix: ""
-      }
+        attributeValuePrefix: "",
+      },
     ],
     [
       `<import {ab} c="`,
@@ -105,8 +105,8 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE,
         tagPath: ["import"],
         attributeName: "c",
-        attributeValuePrefix: ""
-      }
+        attributeValuePrefix: "",
+      },
     ],
 
     /* style suggestions */
@@ -114,53 +114,53 @@ describe(__filename, () => {
     [`div { color: red; }`, null],
     [
       `<style> d { col`,
-      { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "col" }
+      { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "col" },
     ],
     // [`<style> d { `, null],
     [
       `<style> d {\n`,
-      { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" }
+      { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" },
     ],
     // [`<style> a { } a`, null],
     // [`<style> a { } b { `, null],
     [
       `<style> a { } b {\n `,
-      { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" }
+      { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" },
     ],
     [
       `<style> a { } b { color: bl`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationName: "color",
-        declarationValuePrefix: " bl"
-      }
+        declarationValuePrefix: " bl",
+      },
     ],
     [
       `<style> a { } b { white-space: `,
       {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationName: "white-space",
-        declarationValuePrefix: " "
-      }
+        declarationValuePrefix: " ",
+      },
     ],
     [
       `<style> a { } b { @in`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
-        prefix: "in"
-      }
+        prefix: "in",
+      },
     ],
     [
       `<style> a { } b { @in`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
-        prefix: "in"
-      }
+        prefix: "in",
+      },
     ],
     [
       `<style>  @media screen and (max-width: 500px) {
         .Color {`,
-      null
+      null,
     ],
     [`<style> .Color { & .value `, null],
     [
@@ -168,24 +168,24 @@ describe(__filename, () => {
       {
         kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
         atRuleName: "include",
-        params: ""
-      }
+        params: "",
+      },
     ],
     [
       `<style> a { } b { @include ab c`,
       {
         kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
         atRuleName: "include",
-        params: "ab c"
-      }
+        params: "ab c",
+      },
     ],
     // [`<style> a { } b { @include ab c;`, null],
     [
       `<style> a { } b { @include ab c;\n`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
-        prefix: ""
-      }
+        prefix: "",
+      },
     ],
 
     // at-rules
@@ -193,63 +193,63 @@ describe(__filename, () => {
       `<style> @`,
       {
         kind: SuggestContextKind.CSS_AT_RULE_NAME,
-        prefix: ""
-      }
+        prefix: "",
+      },
     ],
     [
       `<style> @med`,
       {
         kind: SuggestContextKind.CSS_AT_RULE_NAME,
-        prefix: "med"
-      }
+        prefix: "med",
+      },
     ],
     [
       `<style> @media `,
       {
         kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
         atRuleName: "media",
-        params: ""
-      }
+        params: "",
+      },
     ],
     [
       `<style> div { color: var(`,
       {
         kind: SuggestContextKind.CSS_FUNCTION,
         name: "var",
-        paramsPrefix: ""
-      }
+        paramsPrefix: "",
+      },
     ],
     [
       `<style> div { color: var(--`,
       {
         kind: SuggestContextKind.CSS_FUNCTION,
         name: "var",
-        paramsPrefix: "--"
-      }
+        paramsPrefix: "--",
+      },
     ],
     [
       `<style> div { color: var(--col`,
       {
         kind: SuggestContextKind.CSS_FUNCTION,
         name: "var",
-        paramsPrefix: "--col"
-      }
+        paramsPrefix: "--col",
+      },
     ],
     [
       `<style> .div { background: --`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationValuePrefix: " --",
-        declarationName: "background"
-      }
+        declarationName: "background",
+      },
     ],
     [
       `<style> .div { filter: drop-shadow(10 10 10 10) `,
       {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationValuePrefix: " drop-shadowdrop-shadow(10 10 10 10)  ",
-        declarationName: "filter"
-      }
+        declarationName: "filter",
+      },
     ],
 
     // smoke test getting passed var
@@ -258,18 +258,18 @@ describe(__filename, () => {
       {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationValuePrefix: "",
-        declarationName: "display"
-      }
+        declarationName: "display",
+      },
     ],
 
     // smoke test popping out of styles
     [
       `<style></style><a`,
-      { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] }
+      { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] },
     ],
     [
       `<style> a { } </style><a`,
-      { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] }
+      { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] },
     ],
 
     // smoke test getting passed var
@@ -277,79 +277,79 @@ describe(__filename, () => {
       `<div className="$`,
       {
         kind: SuggestContextKind.CSS_CLASS_REFERENCE,
-        prefix: ""
-      }
+        prefix: "",
+      },
     ],
     [
       `<div className="$ab`,
       {
         kind: SuggestContextKind.CSS_CLASS_REFERENCE,
-        prefix: "ab"
-      }
+        prefix: "ab",
+      },
     ],
     [
       `<div controls={<`,
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
-        path: []
-      }
+        path: [],
+      },
     ],
     [
       `<div controls={<div`,
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
-        path: ["div"]
-      }
+        path: ["div"],
+      },
     ],
     [
       `<div controls={<div a`,
       {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         tagPath: ["div"],
-        prefix: "a"
-      }
+        prefix: "a",
+      },
     ],
     [
       `<div>`,
       {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
-        openTagPath: ["div"]
-      }
+        openTagPath: ["div"],
+      },
     ],
     [
       `<div><span>`,
       {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
-        openTagPath: ["span"]
-      }
+        openTagPath: ["span"],
+      },
     ],
     [
       `<div><span></span>`,
       {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
-        openTagPath: ["div"]
-      }
+        openTagPath: ["div"],
+      },
     ],
     [
       `<div><span></span><b>`,
       {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
-        openTagPath: ["b"]
-      }
+        openTagPath: ["b"],
+      },
     ],
     [
       `<div>ffdfd dsd<span>{cffd }</span><b>`,
       {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
-        openTagPath: ["b"]
-      }
+        openTagPath: ["b"],
+      },
     ],
     [
       `<div><import />`,
       {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
-        openTagPath: ["div"]
-      }
+        openTagPath: ["div"],
+      },
     ],
     [
       `<style>
@@ -358,8 +358,8 @@ describe(__filename, () => {
     </style><`,
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
-        path: []
-      }
+        path: [],
+      },
     ],
     [
       `
@@ -372,8 +372,8 @@ describe(__filename, () => {
       <div style="background: var({b})"></div><`,
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
-        path: []
-      }
+        path: [],
+      },
     ],
     [
       `
@@ -393,8 +393,8 @@ describe(__filename, () => {
       </div><`,
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
-        path: []
-      }
+        path: [],
+      },
     ],
     [
       `
@@ -413,8 +413,8 @@ describe(__filename, () => {
       </style><`,
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
-        path: []
-      }
+        path: [],
+      },
     ],
     [
       `
@@ -424,8 +424,8 @@ describe(__filename, () => {
             `,
       {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
-        prefix: ""
-      }
+        prefix: "",
+      },
     ],
     [
       `<import src="./styles/global.pc" />
@@ -436,29 +436,29 @@ describe(__filename, () => {
       <style>
         /* `,
 
-      null
+      null,
     ],
     [`<style> @export { `, null],
     [
       `<style> @export { a`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
-        prefix: "a"
-      }
+        prefix: "a",
+      },
     ],
     [
       `<style> @export { a {\n`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
-        prefix: ""
-      }
+        prefix: "",
+      },
     ],
     [
       `<style>@font-face {\n`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
-        prefix: ""
-      }
+        prefix: "",
+      },
     ],
     [
       `<style>
@@ -475,8 +475,8 @@ describe(__filename, () => {
       <`,
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
-        path: []
-      }
+        path: [],
+      },
     ],
     [
       `<style>
@@ -484,8 +484,8 @@ describe(__filename, () => {
           @m`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
-        prefix: "m"
-      }
+        prefix: "m",
+      },
     ],
     [
       `<style>
@@ -493,9 +493,10 @@ describe(__filename, () => {
           @media screen {\n`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
-        prefix: ""
-      }
-    ]
+        prefix: "",
+      },
+    ],
+    [`<style>\n`, null],
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {
       const context = getSuggestionContext(source);

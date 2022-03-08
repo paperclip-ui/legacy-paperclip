@@ -1,0 +1,304 @@
+<!-- atoms -->
+<style>
+
+  .font-regular {
+    font-family: sans-serif;
+  }
+
+  @mixin mask {
+    mask-size: 1em;
+    width: 1em;
+    height: 1em;
+    background: currentColor;
+  }
+
+  :root {}
+</style>
+
+<!--
+  @frame { height: 768, title: "Gutter", visible: false, width: 1024, x: 1125, y: 14 }
+-->
+<div export
+  component
+  as="Gutter"
+  class:left="tall left"
+  class:right="tall right"
+  class:bottom="flat bottom">
+  <style>
+    background: rgb(221, 221, 221);
+    flex-shrink: 0;
+    --border: 2px solid grey;
+    &.left {
+      border-right: var(--border);
+    }
+    &.right {
+      border-left: var(--border);
+    }
+    &.bottom {
+      border-top: var(--border);
+    }
+
+    &.tall {
+      width: 250px;
+    }
+    &.flat {
+      height: 250px;
+    }
+
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Layers">
+  TODO: layers. Should be similiar to Figma
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedRules">
+  <ul>
+    <li>Show computed style rules</li>
+  </ul>
+</div>
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Paint">
+  <ul>
+    <li>show props specific to element (attributes)</li>
+    <li>Show styles</li>
+    <li>Styles panel should display "raw" view of all applied CSS</li>
+    <li>Styles not represented in pain </li>
+  </ul>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Files">
+  <ul>
+    <li>Filter Input</li>
+    <li>Flat list view</li>
+    <li>Show media</li>
+    <li>Nested files view</li>
+  </ul>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Components">
+  <ul>
+    <li>Filter Input</li>
+    <li>Show native elements</li>
+    <li>Show components</li>
+  </ul>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Styles">
+  <ul>
+    <li>Filter Input</li>
+    <li>show style rules</li>
+    <li>show nested styles</li>
+    <li>Show variables</li>
+    <li>Show show mixins</li>
+  </ul>
+</div>
+
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 0, y: 0 }
+-->
+<div export component as="Icon" {class}>
+  <style>
+    mask-repeat: no-repeat;
+    mask-position: 50%;
+    @include mask {}
+  </style>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="ProjectNavigationButton"
+  {class?}
+  class:active="active">
+  <style>
+    color: rgb(75, 75, 75);
+    padding: 8px;
+    &.active {
+      background: rgb(221, 221, 221);
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ProjectNavigation">
+  <style>
+    background: rgb(189, 189, 189);
+    height: 100%;
+  </style>
+  <ProjectNavigationButton active={showFiles?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showStyles?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showComponents?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showLayers}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ObjectNavigation">
+  <style>
+    background: rgb(189, 189, 189);
+    display: flex;
+  </style>
+  <ProjectNavigationButton active={showPaint?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showRules?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showComputed?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+</div>
+
+<!--
+  @frame { height: 768, title: "Desktop", visible: false, width: 1024, x: 8, y: 50 }
+-->
+<div class="font-regular" component as="Preview">
+  <style>
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  </style>
+
+
+  <div>
+    <style>
+      display: flex;
+      flex: 1;
+    </style>
+
+    <!-- left gutter -->
+    <ProjectNavigation {showLayers?}
+      {showFiles?}
+      {showComponents?}
+      {showStyles?} />
+    <Gutter left>
+      {showLayers && <Layers />}
+      {showFiles && <Files />}
+      {showComponents && <Components />}
+      {showStyles && <Styles />}
+    </Gutter>
+    <div>
+      <style>
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      </style>
+
+      <!-- Canvas -->
+      <div>
+        <style>
+          display: flex;
+          flex-direction: column;
+        </style>
+        <div>
+          <style>
+            background: rgb(221, 221, 221);
+            border-bottom: 1px solid grey;
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            flex: 0;
+          </style>
+          Some file
+        </div>
+        <style>
+          flex: 1;
+        </style>
+        <div />
+      </div>
+    </div>
+
+    <!-- right gutter -->
+    <Gutter right>
+      <ObjectNavigation {showComputed?} {showRules?} {showPaint?} />
+      {showComputed && <ComputedRules />}
+      {showRules && <StyleRules />}
+      {showPaint && <Paint />}
+    </Gutter>
+  </div>
+</div>
+
+<!--
+  @frame { height: 768, title: "components", width: 1024, x: 3489, y: -44 }
+-->
+<Preview showComponents />
+<!--
+  @frame { height: 768, title: "Styles", width: 1024, x: 2294, y: -30 }
+-->
+<Preview showStyles showPaint />
+
+<!--
+  @frame { height: 768, title: "Files", width: 1024, x: 1148, y: -51 }
+-->
+<Preview showFiles showComputed />
+
+<!--
+  @frame { title: "Layers" }
+-->
+<Preview showLayers showRules />

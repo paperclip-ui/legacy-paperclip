@@ -660,7 +660,7 @@
 <Preview />
 
 <!--
-  @frame { height: 768, title: "Computed CSS", width: 348, x: 478, y: -138 }
+  @frame { height: 768, title: "Computed CSS", width: 348, x: 428, y: -154 }
 -->
 <Preview showComputed />
 

@@ -11,7 +11,9 @@ export const stringifyCSSSheet = (
   sheet,
   options: StringifySheetOptions = {}
 ) => {
-  return sheet.rules.map(rule => stringifyCSSRule(rule, options)).join("\n\n");
+  return sheet.rules
+    .map((rule) => stringifyCSSRule(rule, options))
+    .join("\n\n");
 };
 
 export const stringifyCSSRule = (rule, options: StringifySheetOptions = {}) => {
@@ -36,7 +38,7 @@ const stringifyConditionRule = (
   options: StringifySheetOptions
 ) => {
   return `@${name} ${conditionText} {\n${rules
-    .map(style => stringifyCSSRule(style, options))
+    .map((style) => stringifyCSSRule(style, options))
     .join("\n")}\n}`;
 };
 
@@ -45,7 +47,7 @@ const stringifyKeyframesRule = (
   options: StringifySheetOptions
 ) => {
   return `@keyframes ${name} {\n${rules
-    .map(style => stringifyKeyframeRule(style, options))
+    .map((style) => stringifyKeyframeRule(style, options))
     .join("\n")}\n}`;
 };
 
@@ -54,13 +56,13 @@ const stringifyKeyframeRule = (
   options: StringifySheetOptions
 ) => {
   return `${key} {\n${style
-    .map(style => stringifyStyle(style, options))
+    .map((style) => stringifyStyle(style, options))
     .join("\n")}\n}`;
 };
 
 const stringifyFontFaceRule = ({ style }, options: StringifySheetOptions) => {
   return `@font-face {\n${style
-    .map(style => stringifyStyle(style, options))
+    .map((style) => stringifyStyle(style, options))
     .join("\n")}\n}`;
 };
 
@@ -69,7 +71,7 @@ const stringifyStyleRule = (
   options: StringifySheetOptions
 ) => {
   return `${selectorText} {\n${style
-    .map(style => stringifyStyle(style, options))
+    .map((style) => stringifyStyle(style, options))
     .join("\n")}\n}`;
 };
 

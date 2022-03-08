@@ -102,12 +102,12 @@ export class PaperclipManager {
       // Hard reload
       const doc = this._documentManager.getDocumentManager().open(fileUrl);
       const source = doc.openSource();
-      source.setText(
-        fs.readFileSync(url.fileURLToPath(fileUrl), "utf-8").split(""),
-        0,
-        source.getText().length
-      );
-      this._logger.info(`Local file changed: ${fileUrl}`);
+      const content = fs.readFileSync(url.fileURLToPath(fileUrl), "utf-8");
+
+      if (source.getText() !== content) {
+        source.setText(content.split(""), 0, source.getText().length);
+        this._logger.info(`Local file changed: ${fileUrl}`);
+      }
     });
   }
 
