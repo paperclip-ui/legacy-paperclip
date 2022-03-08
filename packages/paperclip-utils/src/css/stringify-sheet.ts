@@ -83,7 +83,6 @@ const stringifyStyle = (
     // required for bundling, otherwise file protocol is maintained
     if (uri) {
       const urls = value.match(/(file:\/\/.*?)(?=['")])/g) || [];
-      console.log("URI??", uri);
       const selfPathname = url.fileURLToPath(uri);
       for (const foundUrl of urls) {
         const pathname = url.fileURLToPath(foundUrl);
