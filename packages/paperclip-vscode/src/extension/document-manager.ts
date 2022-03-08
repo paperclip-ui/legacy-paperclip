@@ -11,6 +11,7 @@ import {
   TextDocument,
   WorkspaceEdit,
   Uri,
+  TextDocumentChangeReason,
 } from "vscode";
 import { fixFileUrlCasing } from "./utils";
 import * as fs from "fs";
@@ -38,7 +39,6 @@ export class DocumentManager {
   private _showedOpenLivePreviewPrompt: boolean;
   private _editorClient: EditorClient;
   private _remoteDocs: Record<string, pce.CRDTTextDocument> = {};
-  private _ignoreSync: Record<string, boolean> = {};
 
   constructor(
     private _windows: LiveWindowManager,
@@ -108,13 +108,6 @@ export class DocumentManager {
     // may store unsaved changes
     source.setText(e.getText().split(""), 0, source.getText().length);
 
-    // when files change locally, need to ignore proceeding changes
-    // since PC engine in _another_ worker will recieve local changes, and don't
-    // want to accidentally send changes to the doc
-    fs.watchFile(URL.fileURLToPath(uri), (curr, prev) => {
-      this._ignoreSync[uri] = curr.mtime.getTime() !== prev.mtime.getTime();
-    });
-
     source.onSync(() => {
       // don't bother syncing if the docs are identical
       if (source.getText() === e.getText()) {
@@ -153,8 +146,7 @@ export class DocumentManager {
     // will already receive local file changes. We need to ensure that we don't accidentally
     // send contentChanges which will append information to the doc that causes foo-y stuff
     // to happen
-    if (!isPaperclipResourceFile(uri) || this._ignoreSync[uri]) {
-      this._ignoreSync[uri] = false;
+    if (!isPaperclipResourceFile(uri)) {
       return;
     }
     const source = this._remoteDocs[uri];
@@ -165,7 +157,14 @@ export class DocumentManager {
     // where the transforms originally came from
     if (
       event.document.getText() === source.getText() ||
-      event.contentChanges.length === 0
+      event.contentChanges.length === 0 ||
+      // A bit hacky, but we want to make sure to ignore
+      // when changes are coming from VSCode's built-in file watcher, since these
+      // changes will be caught by the Paperclip workspace.
+      // !! This code _BREAKS_ when a new file is added, and changed. I think this is a bug with VS Code
+      (event.reason !== TextDocumentChangeReason.Redo &&
+        event.reason !== TextDocumentChangeReason.Undo &&
+        !event.document.isDirty)
     ) {
       console.log("ignore change");
       return;

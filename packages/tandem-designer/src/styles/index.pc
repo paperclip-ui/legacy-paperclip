@@ -56,6 +56,27 @@
   TODO: layers. Should be similiar to Figma
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedRules">
+  <ul>
+    <li>Show computed style rules</li>
+  </ul>
+</div>
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Paint">
+  <ul>
+    <li>show props specific to element (attributes)</li>
+    <li>Show styles</li>
+    <li>Styles panel should display "raw" view of all applied CSS</li>
+    <li>Styles not represented in pain </li>
+  </ul>
+</div>
+
 <!--
   @frame { visible: false }
 -->
@@ -63,7 +84,32 @@
   <ul>
     <li>Filter Input</li>
     <li>Flat list view</li>
+    <li>Show media</li>
     <li>Nested files view</li>
+  </ul>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Components">
+  <ul>
+    <li>Filter Input</li>
+    <li>Show native elements</li>
+    <li>Show components</li>
+  </ul>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Styles">
+  <ul>
+    <li>Filter Input</li>
+    <li>show style rules</li>
+    <li>show nested styles</li>
+    <li>Show variables</li>
+    <li>Show show mixins</li>
   </ul>
 </div>
 
@@ -81,7 +127,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="NavigationButton" {class?} class:active="active">
+<div export
+  component
+  as="ProjectNavigationButton"
+  {class?}
+  class:active="active">
   <style>
     color: rgb(75, 75, 75);
     padding: 8px;
@@ -95,39 +145,72 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Navigation">
+<div export component as="ProjectNavigation">
   <style>
     background: rgb(189, 189, 189);
     height: 100%;
   </style>
-  <NavigationButton active={showFiles?}>
+  <ProjectNavigationButton active={showFiles?}>
     <Icon>
       <style>
         mask-image: url("./layers.svg");
       </style>
     </Icon>
-  </NavigationButton>
-  <NavigationButton active={showLayers}>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showStyles?}>
     <Icon>
       <style>
         mask-image: url("./layers.svg");
       </style>
     </Icon>
-  </NavigationButton>
-  <NavigationButton>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showComponents?}>
     <Icon>
       <style>
         mask-image: url("./layers.svg");
       </style>
     </Icon>
-  </NavigationButton>
-  <NavigationButton>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showLayers}>
     <Icon>
       <style>
         mask-image: url("./layers.svg");
       </style>
     </Icon>
-  </NavigationButton>
+  </ProjectNavigationButton>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ObjectNavigation">
+  <style>
+    background: rgb(189, 189, 189);
+    display: flex;
+  </style>
+  <ProjectNavigationButton active={showPaint?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showRules?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showComputed?}>
+    <Icon>
+      <style>
+        mask-image: url("./layers.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
 </div>
 
 <!--
@@ -149,10 +232,15 @@
     </style>
 
     <!-- left gutter -->
-    <Navigation {showLayers?} {showFiles?} />
+    <ProjectNavigation {showLayers?}
+      {showFiles?}
+      {showComponents?}
+      {showStyles?} />
     <Gutter left>
       {showLayers && <Layers />}
       {showFiles && <Files />}
+      {showComponents && <Components />}
+      {showStyles && <Styles />}
     </Gutter>
     <div>
       <style>
@@ -186,19 +274,31 @@
       </div>
     </div>
 
-    <!-- left gutter -->
+    <!-- right gutter -->
     <Gutter right>
-      <style>
-      </style>
+      <ObjectNavigation {showComputed?} {showRules?} {showPaint?} />
+      {showComputed && <ComputedRules />}
+      {showRules && <StyleRules />}
+      {showPaint && <Paint />}
     </Gutter>
   </div>
 </div>
 
 <!--
-  @frame { height: 768, title: "", width: 1024, x: 1119, y: 0 }
+  @frame { height: 768, title: "components", width: 1024, x: 3489, y: -44 }
 -->
-<Preview showFiles />
+<Preview showComponents />
+<!--
+  @frame { height: 768, title: "Styles", width: 1024, x: 2294, y: -30 }
+-->
+<Preview showStyles showPaint />
+
+<!--
+  @frame { height: 768, title: "Files", width: 1024, x: 1148, y: -51 }
+-->
+<Preview showFiles showComputed />
+
 <!--
   @frame { title: "Layers" }
 -->
-<Preview showLayers />
+<Preview showLayers showRules />
