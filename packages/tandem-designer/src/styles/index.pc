@@ -5,10 +5,14 @@
     font-family: sans-serif;
   }
 
+  * {
+    transition: 0.1s;
+  }
+
   @mixin mask {
-    mask-size: 1em;
-    width: 1em;
-    height: 1em;
+    mask-size: var(--mask-size, 1em);
+    width: var(--mask-size, 1em);
+    height: var(--mask-size, 1em);
     background: currentColor;
   }
 
@@ -55,19 +59,92 @@
 <div component as="Tree" class:active="active">
   <style>
     border-radius: 4px;
+    font-size: 11px;
     &.active {
-      background: rgb(199, 199, 199);
+      background: rgb(204, 204, 204);
     }
   </style>
   {children}
 </div>
 
-<div component as="Leaf" style="--depth: {depth}">
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 22, y: 126 }
+-->
+<div component
+  as="Leaf"
+  style="--depth: {depth}"
+  {class?}
+  class:expanded="expanded"
+  class:hasChildren="has-children">
   <style>
-    padding: 2px 30px;
-    padding-left: calc(var(--depth, 1px) * 8px);
+    padding: 4px 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-left: calc(var(--depth, 1px) * 12px);
   </style>
+  <Icon>
+    <style>
+      font-size: 0.5em;
+      --mask-size: 7px;
+      opacity: 0.5;
+      mask-image: url("./chevron-2.svg");
+      flex-shrink: 0;
+      --size: 8px;
+      margin-right: -2px;
+      visibility: hidden;
+      &:within(.expanded) {
+        transform: rotate(90deg);
+      }
+      &:within(.has-children) {
+        visibility: visible;
+      }
+    </style>
+  </Icon>
   {children}
+</div>
+
+<Leaf export
+  component
+  as="LayerLeaf"
+  {expanded?}
+  {hasChildren?}
+  {depth?}
+  class:isElement="$is-element"
+  class:isInstance="$is-instance">
+  <style>
+    &.is-instance {
+      color: purple;
+    }
+  </style>
+  <LayerIcon {isElement?} {isInstance?} {isText?} />
+  {children}
+</Leaf>
+
+<div component
+  as="LayerIcon"
+  class:isElement="is-element"
+  class:isText="is-text"
+  class:isInstance="is-instance">
+  <style>
+    @include mask {}
+    &.is-element {
+      margin-right: -3px;
+      font-size: 0.7em;
+      mask-image: url("./square.svg");
+    }
+    &.is-text {
+      margin-right: -5px;
+      font-size: 0.9em;
+      mask-image: url("./text-2.svg");
+    }
+    &.is-instance {
+      margin-right: -2px;
+      transform: rotate(45deg);
+      font-size: 0.6em;
+      mask-image: url("./square.svg");
+    }
+  </style>
 </div>
 
 <!--
@@ -76,13 +153,28 @@
 <div export component as="Layers">
   <style>
     padding: 8px;
+    color: rgb(59, 59, 59);
   </style>
-  <Tree active>
-    <Leaf depth="1">div</Leaf>
-
+  <Tree>
+    <LayerLeaf depth="1" expanded hasChildren isElement>Container</LayerLeaf>
+    <Tree active>
+      <LayerLeaf depth="2" expanded hasChildren isElement>Header</LayerLeaf>
+      <Tree>
+        <LayerLeaf depth="3" isElement>Navigation</LayerLeaf>
+        <Tree>
+          <LayerLeaf depth="4" hasChildren isInstance>Home Lnk</LayerLeaf>
+          <LayerLeaf depth="4" hasChildren isInstance>About Link</LayerLeaf>
+          <LayerLeaf depth="4" expanded hasChildren isInstance>Link</LayerLeaf>
+          <Tree>
+            <LayerLeaf depth="5" isText>Contact</LayerLeaf>
+          </Tree>
+        </Tree>
+        <LayerLeaf depth="3" isElement>Right Controls</LayerLeaf>
+      </Tree>
+    </Tree>
+    <LayerLeaf depth="2" hasChildren expanded isElement>span</LayerLeaf>
     <Tree>
-      <Leaf depth="2">some text</Leaf>
-      <Leaf depth="2">span</Leaf>
+      <LayerLeaf depth="3" isText>Some text</LayerLeaf>
     </Tree>
   </Tree>
 </div>
@@ -184,28 +276,23 @@
   <ProjectNavigationButton active={showFiles?}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showStyles?}>
-    <Icon>
-      <style>
-        mask-image: url("./layers.svg");
+        --mask-size: 0.9em;
+        mask-image: url("./document.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
   <ProjectNavigationButton active={showComponents?}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
+        mask-image: url("./module.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
   <ProjectNavigationButton active={showLayers}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
+        --mask-size: 0.9em;
+        mask-image: url("./layers-2.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
