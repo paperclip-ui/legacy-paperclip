@@ -50,10 +50,41 @@
 </div>
 
 <!--
+  @frame { height: 768, visible: false, width: 1024, x: 86, y: -302 }
+-->
+<div component as="Tree" class:active="active">
+  <style>
+    border-radius: 4px;
+    &.active {
+      background: rgb(199, 199, 199);
+    }
+  </style>
+  {children}
+</div>
+
+<div component as="Leaf" style="--depth: {depth}">
+  <style>
+    padding: 2px 30px;
+    padding-left: calc(var(--depth, 1px) * 8px);
+  </style>
+  {children}
+</div>
+
+<!--
   @frame { visible: false }
 -->
 <div export component as="Layers">
-  TODO: layers. Should be similiar to Figma
+  <style>
+    padding: 8px;
+  </style>
+  <Tree active>
+    <Leaf depth="1">div</Leaf>
+
+    <Tree>
+      <Leaf depth="2">some text</Leaf>
+      <Leaf depth="2">span</Leaf>
+    </Tree>
+  </Tree>
 </div>
 
 
