@@ -7,6 +7,13 @@
 
   * {
     transition: 0.1s;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --sidebar-background-color: rgb(255, 255, 255);
+    --project-navigation-background-color: rgb(226, 226, 226);
+    --side-navigation-border-color: rgb(170, 170, 170);
   }
 
   @mixin mask {
@@ -14,6 +21,13 @@
     width: var(--mask-size, 1em);
     height: var(--mask-size, 1em);
     background: currentColor;
+  }
+
+  .font-regular {}
+
+  .font-small {
+    font-size: 11px;
+    letter-spacing: 0.06em;
   }
 
   :root {}
@@ -29,7 +43,7 @@
   class:right="tall right"
   class:bottom="flat bottom">
   <style>
-    background: rgb(221, 221, 221);
+    background: var(--sidebar-background-color);
     flex-shrink: 0;
     --border: 2px solid grey;
     &.left {
@@ -61,13 +75,13 @@
     border-radius: 4px;
     font-size: 11px;
     &.active {
-      background: rgb(204, 204, 204);
+      background: rgb(238, 238, 238);
     }
   </style>
   <div class:active="active">
     <style>
       &.active {
-        background: rgb(195, 195, 195);
+        background: rgb(228, 228, 228);
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
       }
@@ -83,16 +97,17 @@
 <div component
   as="Leaf"
   style="--depth: {depth}"
-  {class?}
+  class="font-small {class?}"
   class:expanded="expanded"
   class:hasChildren="has-children">
   <style>
     padding: 4px 8px;
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
-    padding-left: calc(var(--depth, 1px) * 12px);
+    padding-left: calc(var(--depth, 1px) * 13px);
   </style>
+
   <Icon>
     <style>
       font-size: 0.5em;
@@ -101,7 +116,6 @@
       mask-image: url("./chevron-2.svg");
       flex-shrink: 0;
       --size: 8px;
-      margin-right: -2px;
       visibility: hidden;
       &:within(.expanded) {
         transform: rotate(90deg);
@@ -123,15 +137,17 @@
   {expanded?}
   {hasChildren?}
   {depth?}
+  {controls?}
   class:isElement="$is-element"
+  class:isComponent="$is-component"
   class:isInstance="$is-instance"
   class:inInstance="$in-instance">
   <style>
-    &.is-instance, &.in-instance {
+    &.is-instance, &.in-instance, &.is-component {
       color: purple;
     }
   </style>
-  <LayerIcon {isElement?} {isInstance?} {isText?} />
+  <LayerIcon {isElement?} {isComponent?} {isInstance?} {isText?} />
   {children}
 </Leaf>
 
@@ -141,25 +157,27 @@
 <div component
   as="LayerIcon"
   class:isElement="is-element"
+  class:isComponent="is-component"
   class:isText="is-text"
   class:isInstance="is-instance">
   <style>
     @include mask {}
     &.is-element {
-      margin-right: -3px;
-      font-size: 0.7em;
+      --mask-size: 7px;
       mask-image: url("./square.svg");
     }
+    &.is-component {
+      --mask-size: 7px;
+      mask-image: url("./window.svg");
+    }
     &.is-text {
-      margin-right: -5px;
-      font-size: 0.9em;
+      margin-right: -2px;
+      --mask-size: 9px;
       mask-image: url("./text-2.svg");
     }
     &.is-instance {
-      margin-left: 2px;
-      margin-right: -4px;
       transform: rotate(45deg);
-      font-size: 0.5em;
+      --mask-size: 7px;
       mask-image: url("./square.svg");
     }
   </style>
@@ -168,11 +186,15 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Layers">
+<div export component as="Layers" class="font-small">
   <style>
     padding: 8px;
     color: rgb(59, 59, 59);
   </style>
+
+  <TreeBranch leaf={<LayerLeaf depth="1" hasChildren isComponent>
+      Container
+    </LayerLeaf>} />
   <TreeBranch leaf={<LayerLeaf depth="1" expanded hasChildren isElement>
       Container
     </LayerLeaf>}>
@@ -190,8 +212,13 @@
         <TreeBranch leaf={<LayerLeaf depth="4" expanded hasChildren isInstance>
             Link
           </LayerLeaf>} />
-        <TreeBranch leaf={<LayerLeaf depth="5" isElement inInstance>
-            span
+        <TreeBranch leaf={<LayerLeaf depth="5"
+            hasChildren
+            expanded
+            isElement
+            inInstance
+            controls={"a"}>
+            some slot
           </LayerLeaf>}>
           <TreeBranch leaf={<LayerLeaf depth="6" isText>Contact</LayerLeaf>} />
         </TreeBranch>
@@ -244,12 +271,68 @@
 <!--
   @frame { visible: false }
 -->
+<div export component as="PaneSectionHeader" class="font-small">
+  <style>
+    --border-color: rgb(121, 121, 121);
+    padding: 8px 16px;
+    border-bottom: 1px solid rgb(211, 211, 211);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  </style>
+  {children}
+</div>
+
+<div export component as="SectionedPane" class="font-small">
+  <style>
+    padding: 16px 0px;
+  </style>
+  <PaneSectionHeader>{header}</PaneSectionHeader>
+  {children}
+</div>
+
+<div export component as="ListItem">
+  <style>
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    gap: 6px;
+    &:nth-child(2n) {
+      background: rgb(248, 248, 248);
+    }
+  </style>
+  {children}
+</div>
+
+<div export component as="List">
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Components">
-  <ul>
-    <li>Filter Input</li>
-    <li>Show native elements</li>
-    <li>Show components</li>
-  </ul>
+  <SectionedPane header={<fragment>
+      <LayerIcon isComponent />
+      Components
+    </fragment>}>
+    <List>
+      <ListItem>SectionPane</ListItem>
+      <ListItem>ListItem</ListItem>
+      <ListItem>Something else</ListItem>
+      <ListItem>Home page</ListItem>
+    </List>
+  </SectionedPane>
+  <div />
+  <PaneSectionHeader>Style Rules</PaneSectionHeader>
+  <PaneSectionHeader>Style Mixins</PaneSectionHeader>
+  <PaneSectionHeader>Media Queries</PaneSectionHeader>
+  <PaneSectionHeader>Style Variables</PaneSectionHeader>
 </div>
 
 <!--
@@ -287,8 +370,9 @@
   <style>
     color: rgb(75, 75, 75);
     padding: 8px;
+    border-radius: 4px;
     &.active {
-      background: rgb(221, 221, 221);
+      background: rgb(189, 189, 189);
     }
   </style>
   {children}
@@ -299,8 +383,13 @@
 -->
 <div export component as="ProjectNavigation">
   <style>
-    background: rgb(189, 189, 189);
+    background: var(--project-navigation-background-color);
+    border-right: 1px solid var(--side-navigation-border-color);
     height: 100%;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   </style>
   <ProjectNavigationButton active={showFiles?}>
     <Icon>
