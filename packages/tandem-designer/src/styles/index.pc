@@ -126,6 +126,15 @@
     </style>
   </Icon>
   {children}
+  <div>
+    <style>
+
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    </style>
+    {controls?}
+  </div>
 </div>
 
 <!--
@@ -159,7 +168,8 @@
   class:isElement="is-element"
   class:isComponent="is-component"
   class:isText="is-text"
-  class:isInstance="is-instance">
+  class:isInstance="is-instance"
+  class:isStyle="is-style">
   <style>
     @include mask {}
     &.is-element {
@@ -169,6 +179,11 @@
     &.is-component {
       --mask-size: 7px;
       mask-image: url("./window.svg");
+    }
+    &.is-style {
+      --mask-size: 9px;
+      margin-right: -2px;
+      mask-image: url("./brush.svg");
     }
     &.is-text {
       margin-right: -2px;
@@ -182,6 +197,14 @@
     }
   </style>
 </div>
+
+<Icon export component as="VisibilityButton">
+  <style>
+    --mask-size: 13px;
+    mask-image: url("./eye-3.svg");
+  </style>
+  dddd
+</Icon>
 
 <!--
   @frame { visible: false }
@@ -203,8 +226,11 @@
         Header
       </LayerLeaf>}>
       <TreeBranch leaf={<LayerLeaf depth="3" isElement>Navigation</LayerLeaf>}>
-        <TreeBranch leaf={<LayerLeaf depth="4" hasChildren isInstance>
-            Home Lnk
+        <TreeBranch leaf={<LayerLeaf depth="4"
+            hasChildren
+            isInstance
+            controls={<VisibilityButton />}>
+            Home Link
           </LayerLeaf>} />
         <TreeBranch leaf={<LayerLeaf depth="4" hasChildren isInstance>
             About Link
@@ -216,8 +242,7 @@
             hasChildren
             expanded
             isElement
-            inInstance
-            controls={"a"}>
+            inInstance>
             some slot
           </LayerLeaf>}>
           <TreeBranch leaf={<LayerLeaf depth="6" isText>Contact</LayerLeaf>} />
@@ -278,11 +303,15 @@
     border-bottom: 1px solid rgb(211, 211, 211);
     display: flex;
     align-items: center;
+    font-weight: 600;
     gap: 8px;
   </style>
   {children}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="SectionedPane" class="font-small">
   <style>
     padding: 16px 0px;
@@ -291,6 +320,9 @@
   {children}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="ListItem">
   <style>
     display: flex;
@@ -304,6 +336,9 @@
   {children}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="List">
   <style>
     display: flex;
@@ -316,23 +351,73 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Components">
-  <SectionedPane header={<fragment>
-      <LayerIcon isComponent />
-      Components
-    </fragment>}>
+<div export component as="Components" class="font-small">
+  <SectionedPane header="Components">
     <List>
-      <ListItem>SectionPane</ListItem>
-      <ListItem>ListItem</ListItem>
-      <ListItem>Something else</ListItem>
-      <ListItem>Home page</ListItem>
+      <ListItem>
+        <LayerIcon isComponent />SectionPane
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />ListItem
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Something else
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Home page
+      </ListItem>
     </List>
   </SectionedPane>
-  <div />
-  <PaneSectionHeader>Style Rules</PaneSectionHeader>
-  <PaneSectionHeader>Style Mixins</PaneSectionHeader>
-  <PaneSectionHeader>Media Queries</PaneSectionHeader>
-  <PaneSectionHeader>Style Variables</PaneSectionHeader>
+  <SectionedPane header="Styles">
+    <List>
+      <ListItem>
+        <LayerIcon isStyle />.nth-child(2n)
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+    </List>
+  </SectionedPane>
+  <SectionedPane header="Style Mixins">
+    <List>
+      <ListItem>
+        <LayerIcon isStyle />.nth-child(2n)
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+      <ListItem>
+        <LayerIcon isStyle />Another style
+      </ListItem>
+    </List>
+  </SectionedPane>
 </div>
 
 <!--
