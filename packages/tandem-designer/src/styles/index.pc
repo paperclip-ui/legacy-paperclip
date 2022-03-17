@@ -23,6 +23,13 @@
     background: currentColor;
   }
 
+  @mixin center-y {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+
   .font-regular {}
 
   .font-small {
@@ -198,6 +205,9 @@
   </style>
 </div>
 
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 508, y: 947 }
+-->
 <Icon export component as="VisibilityButton">
   <style>
     --mask-size: 13px;
@@ -352,7 +362,57 @@
   @frame { visible: false }
 -->
 <div export component as="Components" class="font-small">
-  <SectionedPane header="Components">
+  <div>
+    <style>
+      padding: 16px;
+    </style>
+    <div>
+      <style>
+        position: relative;
+        &:before {
+          content: "\00a0";
+          position: absolute;
+          background: red;
+          left: 10px;
+          top: 50%;
+          @include center-y;
+          @include mask;
+          --mask-size: 1.2em;
+          mask-image: url("./search.svg");
+        }
+      </style>
+      <input placeholder="Filter...">
+        <style>
+          border-radius: 99px;
+          border: 1px solid black;
+          padding: 6px 8px;
+          padding-left: 28px;
+          width: 100%;
+          outline: none;
+          &:focus {
+            border: 1px solid red;
+          }
+        </style>
+      </input>
+    </div>
+  </div>
+  <SectionedPane header="Native HTML">
+    <List>
+      <ListItem>
+        <LayerIcon isText />Text node
+      </ListItem>
+      <ListItem>
+        <LayerIcon isElement />div
+      </ListItem>
+      <ListItem>
+        <LayerIcon isElement />form
+      </ListItem>
+      <ListItem>
+        <LayerIcon isElement />dialog
+      </ListItem>
+    </List>
+  </SectionedPane>
+  <SectionedPane header="Custom Components">
     <List>
       <ListItem>
         <LayerIcon isComponent />SectionPane
@@ -368,56 +428,9 @@
       </ListItem>
     </List>
   </SectionedPane>
-  <SectionedPane header="Styles">
-    <List>
-      <ListItem>
-        <LayerIcon isStyle />.nth-child(2n)
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-    </List>
-  </SectionedPane>
-  <SectionedPane header="Style Mixins">
-    <List>
-      <ListItem>
-        <LayerIcon isStyle />.nth-child(2n)
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-      <ListItem>
-        <LayerIcon isStyle />Another style
-      </ListItem>
-    </List>
-  </SectionedPane>
+  <ul>
+    <li>MDN reference to each native element</li>
+  </ul>
 </div>
 
 <!--
@@ -431,6 +444,21 @@
     <li>Show variables</li>
     <li>Show show mixins</li>
   </ul>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ExternalResources">
+  <SectionedPane header="Figma assets">
+    <ul>
+      <li>display exported assets</li>
+      <li>ability to filter assets</li>
+      <li>ability to explicitly link layers to Figma</li>
+      <li>Ability to import assets from other resources</li>
+    </ul>
+  </SectionedPane>
 </div>
 
 <!--
@@ -484,10 +512,10 @@
       </style>
     </Icon>
   </ProjectNavigationButton>
-  <ProjectNavigationButton active={showComponents?}>
+  <ProjectNavigationButton active={showInsert?}>
     <Icon>
       <style>
-        mask-image: url("./module.svg");
+        mask-image: url("./insert-2.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
@@ -496,6 +524,14 @@
       <style>
         --mask-size: 0.9em;
         mask-image: url("./layers-2.svg");
+      </style>
+    </Icon>
+  </ProjectNavigationButton>
+  <ProjectNavigationButton active={showFigma}>
+    <Icon>
+      <style>
+        --mask-size: 0.9em;
+        mask-image: url("./figma.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
@@ -510,25 +546,27 @@
   <style>
     background: rgb(189, 189, 189);
     display: flex;
+    align-items: center;
   </style>
   <ProjectNavigationButton active={showPaint?}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
+        mask-image: url("./drop.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
   <ProjectNavigationButton active={showRules?}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
+        --mask-size: 0.9em;
+        mask-image: url("./gear.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
   <ProjectNavigationButton active={showComputed?}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
+        mask-image: url("./drop.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
@@ -555,13 +593,15 @@
     <!-- left gutter -->
     <ProjectNavigation {showLayers?}
       {showFiles?}
-      {showComponents?}
-      {showStyles?} />
+      {showInsert?}
+      {showStyles?}
+      {showFigma?} />
     <Gutter left>
       {showLayers && <Layers />}
       {showFiles && <Files />}
-      {showComponents && <Components />}
+      {showInsert && <Components />}
       {showStyles && <Styles />}
+      {showFigma && <ExternalResources />}
     </Gutter>
     <div>
       <style>
@@ -606,9 +646,15 @@
 </div>
 
 <!--
+  @frame { height: 768, title: "Figma", width: 1024, x: 4666, y: -73 }
+-->
+<Preview showFigma />
+
+<!--
   @frame { height: 768, title: "components", width: 1024, x: 3489, y: -44 }
 -->
-<Preview showComponents />
+<Preview showInsert />
+
 <!--
   @frame { height: 768, title: "Styles", width: 1024, x: 2294, y: -30 }
 -->
@@ -620,6 +666,6 @@
 <Preview showFiles showComputed />
 
 <!--
-  @frame { height: 768, title: "Layers", width: 1024, x: 1148, y: -51 }
+  @frame { height: 768, title: "Layers", width: 1024, x: 1147, y: -51 }
 -->
 <Preview showLayers />
