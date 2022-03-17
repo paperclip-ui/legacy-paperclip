@@ -1,3 +1,5 @@
+<import src="./roboto/index.pc" />
+
 <!-- atoms -->
 <style>
 
@@ -11,9 +13,10 @@
   }
 
   :root {
-    --sidebar-background-color: rgb(255, 255, 255);
-    --project-navigation-background-color: rgb(226, 226, 226);
-    --side-navigation-border-color: rgb(170, 170, 170);
+    --text-color: rgba(255, 255, 255, 0.6);
+    --sidebar-background-color: rgb(29, 35, 46);
+    --project-navigation-background-color: rgb(14, 14, 17);
+    --side-navigation-border-color: transparent;
   }
 
   @mixin mask {
@@ -33,8 +36,10 @@
   .font-regular {}
 
   .font-small {
+    font-family: Roboto;
+    font-weight: 400;
     font-size: 11px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
   }
 
   :root {}
@@ -80,15 +85,15 @@
 <div component as="TreeBranch" class:active="active">
   <style>
     border-radius: 4px;
-    font-size: 11px;
     &.active {
-      background: rgb(238, 238, 238);
+      background: rgb(47, 58, 77);
     }
   </style>
   <div class:active="active">
     <style>
       &.active {
-        background: rgb(228, 228, 228);
+        background: rgb(71, 127, 231);
+        color: white;
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
       }
@@ -108,7 +113,7 @@
   class:expanded="expanded"
   class:hasChildren="has-children">
   <style>
-    padding: 4px 8px;
+    padding: 6px 8px;
     display: flex;
     gap: 6px;
     align-items: center;
@@ -158,11 +163,6 @@
   class:isComponent="$is-component"
   class:isInstance="$is-instance"
   class:inInstance="$in-instance">
-  <style>
-    &.is-instance, &.in-instance, &.is-component {
-      color: purple;
-    }
-  </style>
   <LayerIcon {isElement?} {isComponent?} {isInstance?} {isText?} />
   {children}
 </Leaf>
@@ -202,6 +202,11 @@
       --mask-size: 7px;
       mask-image: url("./square.svg");
     }
+
+    &.is-instance, &.in-instance, &.is-component {
+      color: rgb(245, 169, 245);
+    }
+
   </style>
 </div>
 
@@ -222,7 +227,6 @@
 <div export component as="Layers" class="font-small">
   <style>
     padding: 8px;
-    color: rgb(59, 59, 59);
   </style>
 
   <TreeBranch leaf={<LayerLeaf depth="1" hasChildren isComponent>
@@ -481,11 +485,11 @@
   {class?}
   class:active="active">
   <style>
-    color: rgb(75, 75, 75);
+
     padding: 8px;
     border-radius: 4px;
     &.active {
-      background: rgb(189, 189, 189);
+      background: rgb(47, 58, 77);
     }
   </style>
   {children}
@@ -500,6 +504,7 @@
     border-right: 1px solid var(--side-navigation-border-color);
     height: 100%;
     padding: 8px;
+    color: white;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -581,6 +586,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    color: var(--text-color);
   </style>
 
 
