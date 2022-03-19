@@ -13,7 +13,8 @@
   }
 
   :root {
-    --text-color: rgba(255, 255, 255, 0.6);
+    --text-color: rgb(186, 195, 212);
+    --text-color-faded: rgba(186, 195, 212, 0.5);
     --active-text-color: rgb(159, 175, 202);
     --sidebar-background-color: rgb(29, 35, 46);
     --project-navigation-background-color: rgb(14, 14, 17);
@@ -290,13 +291,40 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Field">
+<div export component as="FieldRow">
+  <style>
+    display: flex;
+    gap: 8px;
+  </style>
+  {children?}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Field" class:inherited="inherited">
   <style>
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    flex: 1;
+    gap: 6px;
+    width: 100%;
+    overflow: hidden;
+    justify-content: flex-start;
+    align-items: flex-start;
   </style>
-  <label>{label}</label>
+  <label>
+    <style>
+      display: inline-block;
+      border-radius: 2px;
+      padding: 2px 6px;
+      &:within(.inherited) {
+        background: rgb(184, 40, 176);
+        color: rgb(255, 160, 242);
+      }
+    </style>
+    {label}
+  </label>
   {children}
 </div>
 
@@ -314,57 +342,145 @@
       gap: 16px;
     </style>
     <Field label="Variant">
-      <div>
-        <style>
-          background: rgb(47, 58, 77);
-          padding: 8px;
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        </style>
-        <div>
-          <style>
-            display: flex;
-            gap: 8px;
-          </style>
-          <div>
-            <style>
-              padding: 4px 8px;
-              background: rgb(71, 127, 231);
-              color: white;
-              border-radius: 4px;
-            </style>
-            dark
-          </div>
-          <div>
-            <style>
-              padding: 4px 8px;
-              background: rgb(71, 127, 231);
-              color: white;
-              border-radius: 4px;
-            </style>
-            small
-          </div>
-        </div>
-        <div>
-          <style>
-            color: var(--active-text-color);
-            mask-image: url("./chevron-2.svg");
-            @include mask {}
-          </style>
-        </div>
-      </div>
+      <SelectInput multi>
+        <SelectInputValue>dark</SelectInputValue>
+        <SelectInputValue>mobile</SelectInputValue>
+      </SelectInput>
     </Field>
   </PanelSection>
 
-  TODO: styles need to be computed here based on the CSS selectors applied in
-  the styles pane
-  <PanelSection>
-    <h4>Layout</h4>
-    display: flex,
+  <PanelSection title="Layout">
+    <Field label="display">
+      <SelectInput>
+        <SelectInputValue>Flex</SelectInputValue>
+      </SelectInput>
+    </Field>
+    <FieldRow>
+      <Field label="direction" inherited>
+        <SelectInput>
+          <SelectInputValue>row</SelectInputValue>
+        </SelectInput>
+      </Field>
+      <Field label="flex-wrap">
+        <SelectInput>
+          <SelectInputValue>nowrap</SelectInputValue>
+        </SelectInput>
+      </Field>
+    </FieldRow>
+    <FieldRow>
+      <Field label="justify-content">
+        <SelectInput>
+          <SelectInputValue>space-between</SelectInputValue>
+        </SelectInput>
+      </Field>
+      <Field label="align-items">
+        <SelectInput>
+          <SelectInputValue>center</SelectInputValue>
+        </SelectInput>
+      </Field>
+    </FieldRow>
+    <FieldRow>
+      <Field label="flex-flow">
+        <SelectInput multi>
+          <SelectInputValue>row</SelectInputValue>
+        </SelectInput>
+      </Field>
+    </FieldRow>
+    <FieldRow>
+      <Field label="Gap">
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label="flex-grow">
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label="flex-shrink">
+        <TextInput placeholder="0" />
+      </Field>
+    </FieldRow>
   </PanelSection>
+  <PanelSection title="Box">padding</PanelSection>
+  <PanelSection title="Text" />
+  <PanelSection title="Background" />
+  <PanelSection title="Background" />
 </div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SelectInputValue">
+  <style>
+    padding: 4px 8px;
+    width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: white;
+    border-radius: 4px;
+    white-space: nowrap;
+    &:within(.multi) {
+      background: rgb(71, 127, 231);
+      width: auto;
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SelectInput" class:multi="multi">
+  <style>
+    background: rgb(47, 58, 77);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex: 1;
+    gap: 8px;
+    overflow: hidden;
+  </style>
+  <div>
+    <style>
+      display: flex;
+      gap: 8px;
+      overflow: hidden;
+    </style>
+    {children}
+  </div>
+  <div>
+    <style>
+      color: var(--active-text-color);
+      mask-image: url("./chevron-2.svg");
+      transform: rotate(90deg);
+      margin-right: 4px;
+      @include mask {}
+    </style>
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<input export component as="TextInput" {placeholder?} {value?}>
+  <style>
+    background: rgb(47, 58, 77);
+    padding: 7px 8px;
+    border-radius: 4px;
+    flex: 1;
+    width: 100%;
+    border: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &::placeholder {
+      color: var(--text-color-faded);
+    }
+
+  </style>
+</input>
 
 <!--
   @frame { visible: false }
@@ -383,8 +499,37 @@
 -->
 <div export component as="PanelSection">
   <style>
-    padding: 8px;
+    padding: 16px 8px;
     border-bottom: 1px solid black;
+  </style>
+  {title? && <div>
+    <style>
+      font-weight: 600;
+      font-size: 11px;
+      margin-bottom: 16px;
+    </style>
+    {title?}
+  </div>}
+  <div>
+    <style>
+
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    </style>
+    {children}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="PaneSectionTitle">
+  <style>
+    font-weight: 600;
+    font-size: 1;
+    margin-bottom: 16px;
   </style>
   {children}
 </div>
@@ -514,6 +659,22 @@
       </ListItem>
     </List>
   </SectionedPane>
+  <SectionedPane header="Figma assets">
+    <List>
+      <ListItem>
+        <LayerIcon isComponent />SectionPane
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />ListItem
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Something else
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Home page
+      </ListItem>
+    </List>
+  </SectionedPane>
   <ul>
     <li>MDN reference to each native element</li>
   </ul>
@@ -586,7 +747,6 @@
     border-right: 1px solid var(--side-navigation-border-color);
     height: 100%;
     padding: 8px;
-    color: white;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -611,14 +771,6 @@
       <style>
         --mask-size: 0.9em;
         mask-image: url("./layers-2.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showFigma}>
-    <Icon>
-      <style>
-        --mask-size: 0.9em;
-        mask-image: url("./figma.svg");
       </style>
     </Icon>
   </ProjectNavigationButton>
@@ -720,6 +872,7 @@
         <style>
           flex: 1;
           position: relative;
+          overflow: hidden;
         </style>
         <div>
           <style>
