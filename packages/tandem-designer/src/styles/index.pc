@@ -14,6 +14,7 @@
 
   :root {
     --text-color: rgba(255, 255, 255, 0.6);
+    --active-text-color: rgb(159, 175, 202);
     --sidebar-background-color: rgb(29, 35, 46);
     --project-navigation-background-color: rgb(14, 14, 17);
     --side-navigation-border-color: transparent;
@@ -57,7 +58,7 @@
   <style>
     background: var(--sidebar-background-color);
     flex-shrink: 0;
-    --border: 2px solid grey;
+    --border: 1px solid rgb(14, 14, 17);
     &.left {
       border-right: var(--border);
     }
@@ -87,6 +88,8 @@
     border-radius: 4px;
     &.active {
       background: rgb(47, 58, 77);
+      color: var(--active-text-color);
+      box-shadow: 0px 0px 0px 1px rgb(14, 14, 17);
     }
   </style>
   <div class:active="active">
@@ -283,16 +286,84 @@
     <li>Show computed style rules</li>
   </ul>
 </div>
+
 <!--
   @frame { visible: false }
 -->
-<div export component as="Paint">
-  <ul>
-    <li>show props specific to element (attributes)</li>
-    <li>Show styles</li>
-    <li>Styles panel should display "raw" view of all applied CSS</li>
-    <li>Styles not represented in pain </li>
-  </ul>
+<div export component as="Field">
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  </style>
+  <label>{label}</label>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Paint" class="font-small">
+  <PanelSection>
+    <style>
+      padding: 8px;
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    </style>
+    <Field label="Variant">
+      <div>
+        <style>
+          background: rgb(47, 58, 77);
+          padding: 8px;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        </style>
+        <div>
+          <style>
+            display: flex;
+            gap: 8px;
+          </style>
+          <div>
+            <style>
+              padding: 4px 8px;
+              background: rgb(71, 127, 231);
+              color: white;
+              border-radius: 4px;
+            </style>
+            dark
+          </div>
+          <div>
+            <style>
+              padding: 4px 8px;
+              background: rgb(71, 127, 231);
+              color: white;
+              border-radius: 4px;
+            </style>
+            small
+          </div>
+        </div>
+        <div>
+          <style>
+            color: var(--active-text-color);
+            mask-image: url("./chevron-2.svg");
+            @include mask {}
+          </style>
+        </div>
+      </div>
+    </Field>
+  </PanelSection>
+
+  TODO: styles need to be computed here based on the CSS selectors applied in
+  the styles pane
+  <PanelSection>
+    <h4>Layout</h4>
+    display: flex,
+  </PanelSection>
 </div>
 
 <!--
@@ -305,6 +376,17 @@
     <li>Show media</li>
     <li>Nested files view</li>
   </ul>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="PanelSection">
+  <style>
+    padding: 8px;
+    border-bottom: 1px solid black;
+  </style>
+  {children}
 </div>
 
 <!--
@@ -549,7 +631,7 @@
 -->
 <div export component as="ObjectNavigation">
   <style>
-    background: rgb(189, 189, 189);
+    background: rgb(29, 35, 46);
     display: flex;
     align-items: center;
   </style>
@@ -622,11 +704,12 @@
         <style>
           display: flex;
           flex-direction: column;
+          background: rgb(51, 56, 65);
         </style>
         <div>
           <style>
-            background: rgb(221, 221, 221);
-            border-bottom: 1px solid grey;
+            background: rgb(29, 35, 46);
+            border-bottom: 1px solid rgb(14, 14, 17);
             width: 100%;
             text-align: center;
             padding: 8px;
@@ -636,8 +719,31 @@
         </div>
         <style>
           flex: 1;
+          position: relative;
         </style>
-        <div />
+        <div>
+          <style>
+          </style>
+          <div>
+            <style>
+              position: absolute;
+              left: 50%;
+              top: calc(50% - 10px);
+              transform: translate(-50%, -50%);
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+            </style>
+            <div>This is a title</div>
+            <div>
+              <style>
+                background: white;
+                width: 400px;
+                height: 300px;
+              </style>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -672,6 +778,6 @@
 <Preview showFiles showComputed />
 
 <!--
-  @frame { height: 768, title: "Layers", width: 1024, x: 1147, y: -51 }
+  @frame { height: 768, title: "Layers", width: 1024, x: 1149, y: -53 }
 -->
-<Preview showLayers />
+<Preview showLayers showPaint />
