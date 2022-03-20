@@ -310,10 +310,6 @@
 <div export component as="FieldGroup" class="field-group">
   <style>
     display: flex;
-    & label {
-      color: red;
-      opacity: 0;
-    }
   </style>
   <div>
     <style>
