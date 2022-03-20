@@ -17,7 +17,7 @@
     --text-color-faded: rgba(186, 195, 212, 0.5);
     --active-text-color: rgb(159, 175, 202);
     --sidebar-background-color: rgb(29, 35, 46);
-    --project-navigation-background-color: rgb(14, 14, 17);
+    --project-navigation-background-color: rgb(25, 25, 29);
     --side-navigation-border-color: transparent;
   }
 
@@ -32,6 +32,14 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+  }
+
+  .input {
+    color: inherit;
+    border-radius: 4px;
+    border: none;
+    background: rgb(47, 58, 77);
+    padding: 7px 8px;
   }
 
 
@@ -71,7 +79,7 @@
     }
 
     &.tall {
-      width: 250px;
+      width: 280px;
     }
     &.flat {
       height: 250px;
@@ -299,10 +307,55 @@
   {children?}
 </div>
 
+<div export component as="FieldGroup" class="field-group">
+  <style>
+    display: flex;
+    & label {
+      color: red;
+      opacity: 0;
+    }
+  </style>
+  <div>
+    <style>
+      padding-left: 8px;
+      width: 90px;
+      flex-shrink: 0;
+      font-size: 11px;
+      line-height: 1.4em;
+      padding-top: 6px;
+    </style>
+    <PropertyLabel {inherited}>{label}</PropertyLabel>
+  </div>
+  <div>
+    <style>
+      width: 100%;
+      display: flex;
+      gap: 8px;
+    </style>
+    {children}
+  </div>
+</div>
+
+
+<label export component as="PropertyLabel" {class?} class:inherited="inherited">
+  <style>
+    display: inline-block;
+    border-radius: 2px;
+    padding: 1px 6px;
+    text-transform: capitalize;
+    &:within(.inherited), &.inherited {
+      background: rgb(184, 40, 176);
+      border: 1px solid rgb(129, 10, 123);
+      color: rgb(255, 209, 253);
+    }
+  </style>
+  {children}
+</label>
+
 <!--
   @frame { visible: false }
 -->
-<div export component as="Field" class:inherited="inherited">
+<div export component as="Field" class="field" class:inherited="inherited">
   <style>
     display: flex;
     flex-direction: column;
@@ -312,19 +365,12 @@
     overflow: hidden;
     justify-content: flex-start;
     align-items: flex-start;
+    &:within(.field-group) {
+      flex-direction: column-reverse;
+      font-size: 10px;
+    }
   </style>
-  <label>
-    <style>
-      display: inline-block;
-      border-radius: 2px;
-      padding: 2px 6px;
-      &:within(.inherited) {
-        background: rgb(184, 40, 176);
-        color: rgb(255, 160, 242);
-      }
-    </style>
-    {label}
-  </label>
+  <PropertyLabel>{label}</PropertyLabel>
   {children}
 </div>
 
@@ -333,7 +379,7 @@
   @frame { visible: false }
 -->
 <div export component as="Paint" class="font-small">
-  <PanelSection>
+  <PanelSection title="Variant">
     <style>
       padding: 8px;
       padding-top: 16px;
@@ -341,68 +387,110 @@
       flex-direction: column;
       gap: 16px;
     </style>
-    <Field label="Variant">
-      <SelectInput multi>
-        <SelectInputValue>dark</SelectInputValue>
-        <SelectInputValue>mobile</SelectInputValue>
-      </SelectInput>
-    </Field>
+    <SelectInput multi>
+      <SelectInputValue>dark</SelectInputValue>
+      <SelectInputValue>mobile</SelectInputValue>
+    </SelectInput>
   </PanelSection>
 
   <PanelSection title="Layout">
-    <Field label="display">
+    <FieldGroup label="Display">
       <SelectInput>
         <SelectInputValue>Flex</SelectInputValue>
       </SelectInput>
-    </Field>
-    <FieldRow>
-      <Field label="direction" inherited>
-        <SelectInput>
-          <SelectInputValue>row</SelectInputValue>
-        </SelectInput>
-      </Field>
-      <Field label="flex-wrap">
-        <SelectInput>
-          <SelectInputValue>nowrap</SelectInputValue>
-        </SelectInput>
-      </Field>
-    </FieldRow>
-    <FieldRow>
-      <Field label="justify-content">
-        <SelectInput>
-          <SelectInputValue>space-between</SelectInputValue>
-        </SelectInput>
-      </Field>
-      <Field label="align-items">
-        <SelectInput>
-          <SelectInputValue>center</SelectInputValue>
-        </SelectInput>
-      </Field>
-    </FieldRow>
-    <FieldRow>
-      <Field label="flex-flow">
-        <SelectInput multi>
-          <SelectInputValue>row</SelectInputValue>
-        </SelectInput>
-      </Field>
-    </FieldRow>
-    <FieldRow>
-      <Field label="Gap">
+    </FieldGroup>
+    <FieldGroup label="Direction" inherited>
+      <SelectInput>
+        <SelectInputValue>Row</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Justify">
+      <SelectInput>
+        <SelectInputValue>space between</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Wrap">
+      <SelectInput>
+        <SelectInputValue>no wrap</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Align">
+      <SelectInput>
+        <SelectInputValue>center</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Gap">
+      <TextInput placeholder="0" />
+    </FieldGroup>
+    <FieldGroup label="Flex">
+      <Field label="shrink">
         <TextInput placeholder="0" />
       </Field>
-      <Field label="flex-grow">
+      <Field label="grow">
         <TextInput placeholder="0" />
       </Field>
-      <Field label="flex-shrink">
-        <TextInput placeholder="0" />
-      </Field>
-    </FieldRow>
+    </FieldGroup>
   </PanelSection>
-  <PanelSection title="Box">padding</PanelSection>
-  <PanelSection title="Text" />
+  <PanelSection title="Appearance">
+    Background, mask, opacity, border radius, transform
+  </PanelSection>
+  <PanelSection title="Text">
+    <FieldGroup label="Font">
+      <SelectInput>
+        <SelectInputValue>Comic Sans Serif</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Weight">
+      <SelectInput>
+        <SelectInputValue>Regular</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Size">
+      <TextInput placeholder="10px" />
+    </FieldGroup>
+    <FieldGroup label="Color">
+      <ColorInput value="red" />
+    </FieldGroup>
+    <FieldGroup label="Spacing">
+      <Field label="Letter">
+        <TextInput placeholder="10px" />
+      </Field>
+      <Field label="Line">
+        <TextInput placeholder="10px" />
+      </Field>
+    </FieldGroup>
+    <FieldGroup label="Decoration">
+      <SelectInput>
+        <SelectInputValue>Underline</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+  </PanelSection>
   <PanelSection title="Background" />
   <PanelSection title="Background" />
 </div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div as="HomePage">
+  <style>
+    font-size: 72px;
+  </style>
+  Hello World
+</div>
+
+
+<!--
+  @frame { height: 768, title: "Mobile", width: 2115, x: -3521, y: -1092 }
+-->
+
+
+
+
+
+
 
 <!--
   @frame { visible: false }
@@ -464,11 +552,8 @@
 <!--
   @frame { visible: false }
 -->
-<input export component as="TextInput" {placeholder?} {value?}>
+<input export component as="TextInput" class="input" {placeholder?} {value?}>
   <style>
-    background: rgb(47, 58, 77);
-    padding: 7px 8px;
-    border-radius: 4px;
     flex: 1;
     width: 100%;
     border: 0px;
@@ -481,6 +566,42 @@
 
   </style>
 </input>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ColorInput" style="--value:{value}">
+  <style>
+    display: flex;
+  </style>
+  <div>
+    <style>
+      width: 29px;
+      height: 29px;
+      border-radius: 4px;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      padding: 6px;
+      flex-shrink: 0;
+      background: rgb(47, 58, 77);
+    </style>
+    <div>
+      <style>
+        background: var(--value);
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      </style>
+    </div>
+  </div>
+  <input {value?} class="input">
+    <style>
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      width: 100%;
+    </style>
+  </input>
+</div>
 
 <!--
   @frame { visible: false }
@@ -515,7 +636,7 @@
 
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 10px;
     </style>
     {children}
   </div>
@@ -878,16 +999,14 @@
           <style>
           </style>
           <div>
-            <style>
-              position: absolute;
-              left: 50%;
-              top: calc(50% - 10px);
-              transform: translate(-50%, -50%);
-              display: flex;
-              flex-direction: column;
-              gap: 8px;
-            </style>
-            <div>This is a title</div>
+            <!--
+              @frame { height: 1131, title: "Layers", width: 1024, x: 1149, y: -53 }
+            -->
+            <div>
+              <!--
+                @frame { height: 1131, title: "Layers", width: 1024, x: 1149, y: -53 }
+              -->
+            </div>
             <div>
               <style>
                 background: white;
@@ -899,12 +1018,9 @@
         </div>
       </div>
     </div>
-
-    <!-- right gutter -->
     <Gutter right>
       <ObjectNavigation {showComputed?} {showRules?} {showPaint?} />
       {showComputed && <ComputedRules />}
-      {showRules && <StyleRules />}
       {showPaint && <Paint />}
     </Gutter>
   </div>
@@ -931,6 +1047,6 @@
 <Preview showFiles showComputed />
 
 <!--
-  @frame { height: 768, title: "Layers", width: 1024, x: 1149, y: -53 }
+  @frame { height: 1131, title: "Layers", width: 1024, x: 1149, y: -53 }
 -->
 <Preview showLayers showPaint />
