@@ -80,6 +80,7 @@
 
     &.tall {
       width: 280px;
+      height: 100%;
     }
     &.flat {
       height: 250px;
@@ -307,9 +308,13 @@
   {children?}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="FieldGroup" class="field-group">
   <style>
     display: flex;
+    gap: 8px;
   </style>
   <div>
     <style>
@@ -333,6 +338,9 @@
 </div>
 
 
+<!--
+  @frame { visible: false }
+-->
 <label export component as="PropertyLabel" {class?} class:inherited="inherited">
   <style>
     display: inline-block;
@@ -368,6 +376,36 @@
   </style>
   <PropertyLabel>{label}</PropertyLabel>
   {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="BoxLabel"
+  class:top="top"
+  class:right="right"
+  class:bottom="bottom"
+  class:left="left">
+  <style>
+    height: 1em;
+    width: 1em;
+    border: 2px solid rgba(186, 195, 212, 0.2);
+    border-radius: 2px;
+    &.top {
+      border-top-color: currentColor;
+    }
+    &.bottom {
+      border-bottom-color: currentColor;
+    }
+    &.left {
+      border-left-color: currentColor;
+    }
+    &.right {
+      border-right-color: currentColor;
+    }
+  </style>
 </div>
 
 
@@ -416,7 +454,7 @@
       </SelectInput>
     </FieldGroup>
     <FieldGroup label="Gap">
-      <TextInput placeholder="0" />
+      <TextSliderInput placeholder="0" />
     </FieldGroup>
     <FieldGroup label="Flex">
       <Field label="shrink">
@@ -426,9 +464,56 @@
         <TextInput placeholder="0" />
       </Field>
     </FieldGroup>
+    <FieldGroup label="Margin">
+      <Field label={<BoxLabel left />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel right />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel top />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel bottom />}>
+        <TextInput placeholder="0" />
+      </Field>
+    </FieldGroup>
+    <FieldGroup label="Padding">
+      <Field label={<BoxLabel left />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel right />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel top />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel bottom />}>
+        <TextInput placeholder="0" />
+      </Field>
+    </FieldGroup>
   </PanelSection>
   <PanelSection title="Appearance">
-    Background, mask, opacity, border radius, transform
+    <FieldGroup label="Border">
+      <TextInput placeholder="Add..." />
+    </FieldGroup>
+    <FieldGroup label="Backgrounds">
+      <div>
+        <style>
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        </style>
+        <ColorInput value="#F0F" />
+        <ColorInput placeholder="Add..." />
+      </div>
+    </FieldGroup>
+    <FieldGroup label="Shadows">
+      <ColorInput placeholder="Add..." value="" />
+    </FieldGroup>
+    <FieldGroup label="Filters">
+      <TextInput placeholder="Add..." />
+    </FieldGroup>
   </PanelSection>
   <PanelSection title="Text">
     <FieldGroup label="Font">
@@ -441,19 +526,17 @@
         <SelectInputValue>Regular</SelectInputValue>
       </SelectInput>
     </FieldGroup>
-    <FieldGroup label="Size">
-      <TextInput placeholder="10px" />
-    </FieldGroup>
     <FieldGroup label="Color">
       <ColorInput value="red" />
     </FieldGroup>
-    <FieldGroup label="Spacing">
-      <Field label="Letter">
-        <TextInput placeholder="10px" />
-      </Field>
-      <Field label="Line">
-        <TextInput placeholder="10px" />
-      </Field>
+    <FieldGroup label="Size">
+      <TextSliderInput placeholder="10px" />
+    </FieldGroup>
+    <FieldGroup label="Letter">
+      <TextSliderInput placeholder="10px" />
+    </FieldGroup>
+    <FieldGroup label="Line">
+      <TextSliderInput placeholder="10px" />
     </FieldGroup>
     <FieldGroup label="Decoration">
       <SelectInput>
@@ -461,8 +544,6 @@
       </SelectInput>
     </FieldGroup>
   </PanelSection>
-  <PanelSection title="Background" />
-  <PanelSection title="Background" />
 </div>
 
 
@@ -539,6 +620,7 @@
       mask-image: url("./chevron-2.svg");
       transform: rotate(90deg);
       margin-right: 4px;
+      --mask-size: 6px;
       @include mask {}
     </style>
   </div>
@@ -553,7 +635,6 @@
     flex: 1;
     width: 100%;
     border: 0px;
-    display: flex;
     align-items: center;
     justify-content: space-between;
     &::placeholder {
@@ -566,7 +647,75 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ColorInput" style="--value:{value}">
+<div export component as="SliderInput">
+  <style>
+    flex: 1;
+    width: 100%;
+    position: relative;
+    height: 29px;
+  </style>
+  <div>
+    <style>
+      position: absolute;
+      top: 50%;
+      height: 2px;
+      transform: translateY(-50%);
+      background: rgb(47, 58, 77);
+      border-radius: 99px;
+      width: 100%;
+    </style>
+    <div>
+      <style>
+        position: absolute;
+        left: 0px;
+        height: 100%;
+        width: 50%;
+        background: rgb(71, 127, 231);
+      </style>
+    </div>
+    <div>
+      <style>
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateY(-50%);
+        border-radius: 100px;
+        background: white;
+      </style>
+    </div>
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="TextSliderInput">
+  <style>
+    width: 100%;
+    display: flex;
+    flex: 1;
+    gap: 8px;
+  </style>
+  <div>
+    <style>
+      flex: 1;
+    </style>
+    <TextInput {placeholder?} />
+  </div>
+  <SliderInput />
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="ColorInput"
+  style="--value:{value};"
+  class:value="has-value">
   <style>
     display: flex;
   </style>
@@ -581,16 +730,37 @@
       flex-shrink: 0;
       background: rgb(47, 58, 77);
     </style>
-    <div>
+    <div class={colorClass}>
       <style>
-        background: var(--value);
+
+        background-color: var(--value, rgb(112, 130, 161));
+        position: relative;
+        background-size: 12px;
+        background-position: top left;
+        background-repeat: none;
         width: 100%;
         height: 100%;
         border-radius: 4px;
+        &:before {
+          width: 100%;
+          height: 100%;
+          content: "\00a0";
+          background-size: 100%;
+          opacity: 0.5;
+          background-position: top left;
+          position: absolute;
+          border-radius: 4px;
+          background-image: url("./checkered.svg");
+        }
+        &:within(.has-value):before {
+          display: none;
+          opacity: 1;
+          background-image: none;
+        }
       </style>
     </div>
   </div>
-  <input {value?} class="input">
+  <input {value?} {placeholder?} class="input">
     <style>
       border-top-left-radius: 0px;
       border-bottom-left-radius: 0px;
@@ -842,14 +1012,15 @@
 <div export
   component
   as="ProjectNavigationButton"
-  {class?}
+  class="font-small {class?}"
   class:active="active">
   <style>
-
-    padding: 8px;
-    border-radius: 4px;
+    padding: 12px 8px;
+    color: rgba(255, 255, 255, 0.3);
     &.active {
-      background: rgb(47, 58, 77);
+      color: white;
+      font-weight: 600;
+      background: var(--sidebar-background-color);
     }
   </style>
   {children}
@@ -860,37 +1031,29 @@
 -->
 <div export component as="ProjectNavigation">
   <style>
-    background: var(--project-navigation-background-color);
+    background: var(--sidebar-background-color);
+    border-bottom: 1px solid black;
     border-right: 1px solid var(--side-navigation-border-color);
-    height: 100%;
-    padding: 8px;
+    padding-left: 16px;
     display: flex;
-    flex-direction: column;
+    flex-grow: 0;
+    flex-direction: row;
     gap: 8px;
   </style>
-  <ProjectNavigationButton active={showFiles?}>
-    <Icon>
-      <style>
-        --mask-size: 0.9em;
-        mask-image: url("./document.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showInsert?}>
-    <Icon>
-      <style>
-        mask-image: url("./insert-2.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showLayers}>
-    <Icon>
-      <style>
-        --mask-size: 0.9em;
-        mask-image: url("./layers-2.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ObjectNavigationItem" class:active="active">
+  <style>
+    padding: 16px;
+    &.active {
+      border-bottom: 2px solid rgb(0, 195, 255);
+    }
+  </style>
+  {children}
 </div>
 
 
@@ -900,32 +1063,26 @@
 -->
 <div export component as="ObjectNavigation">
   <style>
-    background: rgb(29, 35, 46);
+    background: rgb(33, 38, 46);
     display: flex;
     align-items: center;
   </style>
-  <ProjectNavigationButton active={showPaint?}>
+  <ObjectNavigationItem active={showPaint?}>
     <Icon>
       <style>
+        --mask-size: 0.9em;
         mask-image: url("./drop.svg");
       </style>
     </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showRules?}>
+  </ObjectNavigationItem>
+  <ObjectNavigationItem active={showRules?}>
     <Icon>
       <style>
         --mask-size: 0.9em;
         mask-image: url("./gear.svg");
       </style>
     </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showComputed?}>
-    <Icon>
-      <style>
-        mask-image: url("./drop.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
+  </ObjectNavigationItem>
 </div>
 
 <!--
@@ -946,20 +1103,31 @@
       display: flex;
       flex: 1;
     </style>
-
-    <!-- left gutter -->
-    <ProjectNavigation {showLayers?}
-      {showFiles?}
-      {showInsert?}
-      {showStyles?}
-      {showFigma?} />
-    <Gutter left>
-      {showLayers && <Layers />}
-      {showFiles && <Files />}
-      {showInsert && <Components />}
-      {showStyles && <Styles />}
-      {showFigma && <ExternalResources />}
-    </Gutter>
+    <div>
+      <style>
+        display: flex;
+        flex-direction: column;
+      </style>
+      <Gutter left>
+        <!-- left gutter -->
+        <ProjectNavigation>
+          <ProjectNavigationButton active={showLayers}>
+            Layers
+          </ProjectNavigationButton>
+          <ProjectNavigationButton active={showFiles?}>
+            Pages
+          </ProjectNavigationButton>
+          <ProjectNavigationButton active={showInsert?}>
+            Assets
+          </ProjectNavigationButton>
+        </ProjectNavigation>
+        {showLayers && <Layers />}
+        {showFiles && <Files />}
+        {showInsert && <Components />}
+        {showStyles && <Styles />}
+        {showFigma && <ExternalResources />}
+      </Gutter>
+    </div>
     <div>
       <style>
         width: 100%;
@@ -975,13 +1143,13 @@
           flex-direction: column;
           background: rgb(51, 56, 65);
         </style>
-        <div>
+        <div class="font-small">
           <style>
+            padding: 12px 8px;
             background: rgb(29, 35, 46);
             border-bottom: 1px solid rgb(14, 14, 17);
             width: 100%;
             text-align: center;
-            padding: 8px;
             flex: 0;
           </style>
           Some file
@@ -995,14 +1163,16 @@
           <style>
           </style>
           <div>
-            <!--
-              @frame { height: 1131, title: "Layers", width: 1024, x: 1149, y: -53 }
-            -->
-            <div>
-              <!--
-                @frame { height: 1131, title: "Layers", width: 1024, x: 1149, y: -53 }
-              -->
-            </div>
+            <style>
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+            </style>
+            <div>This is a title</div>
             <div>
               <style>
                 background: white;
@@ -1015,7 +1185,17 @@
       </div>
     </div>
     <Gutter right>
-      <ObjectNavigation {showComputed?} {showRules?} {showPaint?} />
+      <ProjectNavigation>
+        <ProjectNavigationButton active={showPaint?}>
+          Style
+        </ProjectNavigationButton>
+        <ProjectNavigationButton active={showProperties?}>
+          Properties
+        </ProjectNavigationButton>
+        <ProjectNavigationButton active={showProperties?}>
+          Inspect
+        </ProjectNavigationButton>
+      </ProjectNavigation>
       {showComputed && <ComputedRules />}
       {showPaint && <Paint />}
     </Gutter>
@@ -1033,7 +1213,7 @@
 <Preview showInsert />
 
 <!--
-  @frame { height: 768, title: "Styles", width: 1024, x: 2294, y: -30 }
+  @frame { height: 1131, title: "Layers", width: 1453, x: 793, y: -1735 }
 -->
 <Preview showStyles showPaint />
 
@@ -1043,6 +1223,6 @@
 <Preview showFiles showComputed />
 
 <!--
-  @frame { height: 1131, title: "Layers", width: 1024, x: 1149, y: -53 }
+  @frame { height: 1131, title: "Layers", width: 1453, x: 793, y: -1735 }
 -->
 <Preview showLayers showPaint />
