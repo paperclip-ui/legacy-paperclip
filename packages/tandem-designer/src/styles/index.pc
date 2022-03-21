@@ -36,10 +36,11 @@
 
   .input {
     color: inherit;
+    font-size: 12px;
     border-radius: 4px;
     border: none;
     background: rgb(47, 58, 77);
-    padding: 7px 8px;
+    padding: 8px 8px;
   }
 
 
@@ -323,7 +324,7 @@
       flex-shrink: 0;
       font-size: 11px;
       line-height: 1.4em;
-      padding-top: 6px;
+      padding-top: 8px;
     </style>
     <PropertyLabel {inherited}>{label}</PropertyLabel>
   </div>
@@ -409,6 +410,20 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ValueList">
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  </style>
+  {children}
+</div>
+
+
 <!--
   @frame { visible: false }
 -->
@@ -424,7 +439,16 @@
     <Field label="Variant">
       <SelectInput multi>
         <SelectInputValue>dark</SelectInputValue>
-        <SelectInputValue>mobile</SelectInputValue>
+        <SelectInputValue>
+          mobile
+          <div>
+            <style>
+              --mask-size: 0.7em;
+              mask-image: url("./bolt.svg");
+              @include mask {}
+            </style>
+          </div>
+        </SelectInputValue>
       </SelectInput>
     </Field>
   </PanelSection>
@@ -500,15 +524,10 @@
       <TextInput placeholder="Add..." />
     </FieldGroup>
     <FieldGroup label="Backgrounds">
-      <div>
-        <style>
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        </style>
+      <ValueList>
         <ColorInput value="#F0F" />
         <ColorInput placeholder="Add..." />
-      </div>
+      </ValueList>
     </FieldGroup>
     <FieldGroup label="Shadows">
       <ColorInput placeholder="Add..." value="" />
@@ -520,7 +539,7 @@
   <PanelSection title="Text">
     <FieldGroup label="Font">
       <SelectInput>
-        <SelectInputValue>Comic Sans Serif</SelectInputValue>
+        <SelectInputValue>Helvetica</SelectInputValue>
       </SelectInput>
     </FieldGroup>
     <FieldGroup label="Weight">
@@ -544,6 +563,38 @@
       <SelectInput>
         <SelectInputValue>Underline</SelectInputValue>
       </SelectInput>
+    </FieldGroup>
+  </PanelSection>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Properties" class="font-small">
+  <PanelSection title="Attributes">
+    <FieldGroup label="ID">
+      <TextInput placeholder="SectionPane" />
+    </FieldGroup>
+    <FieldGroup label="Label">
+      <TextInput placeholder="component1" value="Section Pane" />
+    </FieldGroup>
+    <FieldGroup label="Public">
+      <RadioInput />
+    </FieldGroup>
+  </PanelSection>
+  <PanelSection title="Variant Triggers">
+    <FieldGroup label="small">
+      <ValueList>
+        <TextInput value="self.small === true" />
+        <TextInput placeholder="Add..." />
+      </ValueList>
+    </FieldGroup>
+    <FieldGroup label="mobile">
+      <ValueList>
+        <TextInput value="Media Query" />
+        <TextInput placeholder="Add..." />
+      </ValueList>
     </FieldGroup>
   </PanelSection>
 </div>
@@ -576,9 +627,11 @@
 -->
 <div export component as="SelectInputValue">
   <style>
-    padding: 4px 8px;
+    padding: 4px 4px;
     width: 100%;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     color: white;
@@ -595,10 +648,14 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="SelectInput" class:multi="multi">
+<div export
+  component
+  as="SelectInput"
+  class="input font-small"
+  class:multi="multi">
   <style>
     background: rgb(47, 58, 77);
-    padding: 4px;
+    padding: 4px 4px;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -645,6 +702,34 @@
 
   </style>
 </input>
+
+<div export component as="RadioInput">
+  <style>
+    position: relative;
+    width: calc(29px*2);
+    --size: 30px;
+  </style>
+  <div>
+    <style>
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 8px;
+      width: calc(var(--size)*2);
+      height: var(--size);
+      background: rgb(47, 58, 77);
+    </style>
+
+    <div>
+      <style>
+        width: var(--size);
+        height: 100%;
+        background: rgb(103, 113, 129);
+        border-radius: 8px;
+      </style>
+    </div>
+  </div>
+</div>
 
 <!--
   @frame { visible: false }
@@ -723,8 +808,7 @@
   </style>
   <div>
     <style>
-      width: 29px;
-      height: 29px;
+      width: 28px;
       border-radius: 4px;
       border-top-right-radius: 0px;
       border-bottom-right-radius: 0px;
@@ -1116,10 +1200,10 @@
           <ProjectNavigationButton active={showLayers}>
             Layers
           </ProjectNavigationButton>
-          <ProjectNavigationButton active={showFiles?}>
+          <ProjectNavigationButton active={showPages?}>
             Pages
           </ProjectNavigationButton>
-          <ProjectNavigationButton active={showInsert?}>
+          <ProjectNavigationButton active={showAssets?}>
             Assets
           </ProjectNavigationButton>
         </ProjectNavigation>
@@ -1194,37 +1278,30 @@
         <ProjectNavigationButton active={showProperties?}>
           Properties
         </ProjectNavigationButton>
-        <ProjectNavigationButton active={showProperties?}>
+        <ProjectNavigationButton active={showInspect?}>
           Inspect
         </ProjectNavigationButton>
       </ProjectNavigation>
-      {showComputed && <ComputedRules />}
+      <!--
+        @frame { height: 1131, title: "Layers + Style", width: 1453, x: 793, y: -1735 }
+      -->
       {showPaint && <Paint />}
+      {showProperties && <Properties />}
     </Gutter>
   </div>
 </div>
 
-<!--
-  @frame { height: 768, title: "Figma", width: 1024, x: 4666, y: -73 }
--->
-<Preview showFigma />
 
 <!--
-  @frame { height: 768, title: "components", width: 1024, x: 3489, y: -44 }
+  @frame { height: 1131, title: "Pages + Properties", width: 1453, x: 2445, y: -1759 }
 -->
-<Preview showInsert />
+<Preview showPages showProperties />
 
 <!--
-  @frame { height: 1131, title: "Layers", width: 1453, x: 793, y: -1735 }
+  @frame { height: 1131, title: "Assets + Inspect", width: 1453, x: 4059, y: -1756 }
 -->
-<Preview showStyles showPaint />
-
+<Preview showAssets showInspect />
 <!--
-  @frame { height: 768, title: "Files", width: 1024, x: -111, y: -40 }
--->
-<Preview showFiles showComputed />
-
-<!--
-  @frame { height: 1131, title: "Layers", width: 1453, x: 793, y: -1735 }
+  @frame { height: 1131, title: "Layers + Style", width: 1453, x: 793, y: -1735 }
 -->
 <Preview showLayers showPaint />
