@@ -345,12 +345,10 @@
   <style>
     display: inline-block;
     border-radius: 2px;
-    padding: 1px 6px;
     text-transform: capitalize;
     &:within(.inherited), &.inherited {
-      background: rgb(184, 40, 176);
-      border: 1px solid rgb(129, 10, 123);
-      color: rgb(255, 209, 253);
+      color: rgb(238, 113, 230);
+      font-weight: 600;
     }
   </style>
   {children}
@@ -372,6 +370,8 @@
     &:within(.field-group) {
       flex-direction: column-reverse;
       font-size: 10px;
+      align-items: center;
+      gap: 4px;
     }
   </style>
   <PropertyLabel>{label}</PropertyLabel>
@@ -413,7 +413,7 @@
   @frame { visible: false }
 -->
 <div export component as="Paint" class="font-small">
-  <PanelSection title="Variant">
+  <PanelSection>
     <style>
       padding: 8px;
       padding-top: 16px;
@@ -421,10 +421,12 @@
       flex-direction: column;
       gap: 16px;
     </style>
-    <SelectInput multi>
-      <SelectInputValue>dark</SelectInputValue>
-      <SelectInputValue>mobile</SelectInputValue>
-    </SelectInput>
+    <Field label="Variant">
+      <SelectInput multi>
+        <SelectInputValue>dark</SelectInputValue>
+        <SelectInputValue>mobile</SelectInputValue>
+      </SelectInput>
+    </Field>
   </PanelSection>
 
   <PanelSection title="Layout">
@@ -453,7 +455,7 @@
         <SelectInputValue>center</SelectInputValue>
       </SelectInput>
     </FieldGroup>
-    <FieldGroup label="Gap">
+    <FieldGroup label="Gap" inherited>
       <TextSliderInput placeholder="0" />
     </FieldGroup>
     <FieldGroup label="Flex">
@@ -786,7 +788,7 @@
 -->
 <div export component as="PanelSection">
   <style>
-    padding: 16px 8px;
+    padding: 16px 16px;
     border-bottom: 1px solid black;
   </style>
   {title? && <div>
@@ -1034,7 +1036,7 @@
     background: var(--sidebar-background-color);
     border-bottom: 1px solid black;
     border-right: 1px solid var(--side-navigation-border-color);
-    padding-left: 16px;
+    padding-left: 8px;
     display: flex;
     flex-grow: 0;
     flex-direction: row;
