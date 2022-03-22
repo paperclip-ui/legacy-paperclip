@@ -7,6 +7,14 @@
     font-family: sans-serif;
   }
 
+  .reset {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    color: inherit;
+  }
+
   * {
     transition: 0.1s;
     box-sizing: border-box;
@@ -19,6 +27,8 @@
     --sidebar-background-color: rgb(29, 35, 46);
     --project-navigation-background-color: rgb(25, 25, 29);
     --side-navigation-border-color: transparent;
+    --active-color: rgb(71, 127, 231);
+    --active-color-secondary: rgb(47, 58, 77);
   }
 
   @mixin mask {
@@ -40,7 +50,7 @@
     border-radius: 4px;
     border: none;
     background: rgb(47, 58, 77);
-    padding: 8px 8px;
+    padding: 6px 8px;
   }
 
 
@@ -98,7 +108,7 @@
   <style>
     border-radius: 4px;
     &.active {
-      background: rgb(47, 58, 77);
+      background: var(--active-color-secondary);
       color: var(--active-text-color);
       box-shadow: 0px 0px 0px 1px rgb(14, 14, 17);
     }
@@ -106,7 +116,7 @@
   <div class:active="active">
     <style>
       &.active {
-        background: rgb(71, 127, 231);
+        background: var(--active-color);
         color: white;
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
@@ -324,7 +334,7 @@
       flex-shrink: 0;
       font-size: 11px;
       line-height: 1.4em;
-      padding-top: 8px;
+      padding-top: 6px;
     </style>
     <PropertyLabel {inherited}>{label}</PropertyLabel>
   </div>
@@ -419,8 +429,20 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
   </style>
   {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="BoltIcon">
+  <style>
+    --mask-size: 0.7em;
+    mask-image: url("./bolt.svg");
+    @include mask {}
+  </style>
 </div>
 
 
@@ -436,24 +458,37 @@
       flex-direction: column;
       gap: 16px;
     </style>
-    <Field label="Variant">
+    <FieldGroup label="Variant">
       <SelectInput multi>
         <SelectInputValue>dark</SelectInputValue>
         <SelectInputValue>
           mobile
-          <div>
-            <style>
-              --mask-size: 0.7em;
-              mask-image: url("./bolt.svg");
-              @include mask {}
-            </style>
-          </div>
+          <BoltIcon />
         </SelectInputValue>
       </SelectInput>
-    </Field>
+    </FieldGroup>
+    <FieldGroup label="classes">
+      <SelectInput multi>
+        <SelectInputValue>reset</SelectInputValue>
+        <SelectInputValue>button</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Target">
+      <SelectInput>
+        <SelectInputValue>Before</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+  </PanelSection>
+  <PanelSection>
+    <FieldGroup label="Mixins">
+      <ValueList>
+        <TextInput value="some mixin" />
+        <TextInput placeholder="Add..." />
+      </ValueList>
+    </FieldGroup>
   </PanelSection>
 
-  <PanelSection title="Layout">
+  <PanelSection title="Layout" hasMore>
     <FieldGroup label="Display">
       <SelectInput>
         <SelectInputValue>Flex</SelectInputValue>
@@ -519,7 +554,7 @@
       </Field>
     </FieldGroup>
   </PanelSection>
-  <PanelSection title="Appearance">
+  <PanelSection title="Appearance" hasMore>
     <FieldGroup label="Border">
       <TextInput placeholder="Add..." />
     </FieldGroup>
@@ -536,7 +571,7 @@
       <TextInput placeholder="Add..." />
     </FieldGroup>
   </PanelSection>
-  <PanelSection title="Text">
+  <PanelSection title="Text" hasMore>
     <FieldGroup label="Font">
       <SelectInput>
         <SelectInputValue>Helvetica</SelectInputValue>
@@ -580,7 +615,7 @@
       <TextInput placeholder="component1" value="Section Pane" />
     </FieldGroup>
     <FieldGroup label="Public">
-      <RadioInput />
+      <RadioInput on />
     </FieldGroup>
   </PanelSection>
   <PanelSection title="Variant Triggers">
@@ -627,7 +662,7 @@
 -->
 <div export component as="SelectInputValue">
   <style>
-    padding: 4px 4px;
+    padding: 2px 4px;
     width: 100%;
     display: inline-flex;
     align-items: center;
@@ -703,29 +738,39 @@
   </style>
 </input>
 
-<div export component as="RadioInput">
+<div export component as="RadioInput" class:on="on">
   <style>
     position: relative;
     width: calc(29px*2);
-    --size: 30px;
+    --size: 26px;
   </style>
   <div>
     <style>
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      border-radius: 8px;
+      border-radius: 4px;
       width: calc(var(--size)*2);
       height: var(--size);
       background: rgb(47, 58, 77);
+      transition: 0.5s;
+      &:within(.on) {
+        background: var(--active-color-secondary);
+      }
     </style>
 
     <div>
       <style>
         width: var(--size);
         height: 100%;
+        position: absolute;
+        transition: 0.2s;
         background: rgb(103, 113, 129);
-        border-radius: 8px;
+        border-radius: 4px;
+        &:within(.on) {
+          background: var(--active-color);
+          transform: translateX(100%);
+        }
       </style>
     </div>
   </div>
@@ -877,11 +922,24 @@
   </style>
   {title? && <div>
     <style>
-      font-weight: 600;
-      font-size: 11px;
-      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
     </style>
-    {title?}
+    <div>
+      <style>
+        font-weight: 600;
+        font-size: 11px;
+        margin-bottom: 16px;
+      </style>
+      {title?}
+    </div>
+    {hasMore && <button class="reset">
+      <style>
+        mask-image: url("./ellipsis-2.svg");
+        cursor: pointer;
+        @include mask {}
+      </style>
+    </button>}
   </div>}
   <div>
     <style>
@@ -1283,7 +1341,7 @@
         </ProjectNavigationButton>
       </ProjectNavigation>
       <!--
-        @frame { height: 1131, title: "Layers + Style", width: 1453, x: 793, y: -1735 }
+        @frame { height: 1131, title: "Pages + Properties", width: 1453, x: 2445, y: -1759 }
       -->
       {showPaint && <Paint />}
       {showProperties && <Properties />}
@@ -1298,7 +1356,7 @@
 <Preview showPages showProperties />
 
 <!--
-  @frame { height: 1131, title: "Assets + Inspect", width: 1453, x: 4059, y: -1756 }
+  @frame { height: 1131, title: "Layers + Style", width: 1453, x: 793, y: -1735 }
 -->
 <Preview showAssets showInspect />
 <!--
