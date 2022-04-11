@@ -450,14 +450,12 @@
   @frame { visible: false }
 -->
 <div export component as="Paint" class="font-small">
-  <PanelSection>
-    <style>
-      padding: 8px;
-      padding-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    </style>
+  <!--
+    More options:
+
+    classes, ID, overridable
+  -->
+  <PanelSection title="&nbsp;" hasMore>
     <FieldGroup label="Variant">
       <SelectInput multi>
         <SelectInputValue>dark</SelectInputValue>
@@ -465,12 +463,6 @@
           mobile
           <BoltIcon />
         </SelectInputValue>
-      </SelectInput>
-    </FieldGroup>
-    <FieldGroup label="classes">
-      <SelectInput multi>
-        <SelectInputValue>reset</SelectInputValue>
-        <SelectInputValue>button</SelectInputValue>
       </SelectInput>
     </FieldGroup>
     <FieldGroup label="Target">
@@ -607,12 +599,19 @@
   @frame { visible: false }
 -->
 <div export component as="Properties" class="font-small">
-  <PanelSection title="Attributes">
+  <PanelSection>
     <FieldGroup label="ID">
       <TextInput placeholder="SectionPane" />
     </FieldGroup>
     <FieldGroup label="Label">
       <TextInput placeholder="component1" value="Section Pane" />
+    </FieldGroup>
+    <FieldGroup label="Classes">
+      <SelectInput multi>
+        <SelectInputValue>reset</SelectInputValue>
+        <SelectInputValue>button</SelectInputValue>
+        <SelectInputValue>large</SelectInputValue>
+      </SelectInput>
     </FieldGroup>
     <FieldGroup label="Public">
       <RadioInput on />
@@ -705,6 +704,7 @@
       display: flex;
       gap: 8px;
       overflow: hidden;
+      flex-wrap: wrap;
     </style>
     {children}
   </div>
@@ -738,6 +738,9 @@
   </style>
 </input>
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="RadioInput" class:on="on">
   <style>
     position: relative;
@@ -746,9 +749,7 @@
   </style>
   <div>
     <style>
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+
       border-radius: 4px;
       width: calc(var(--size)*2);
       height: var(--size);
