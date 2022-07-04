@@ -1,5 +1,7 @@
 ![Checks](https://github.com/paperclipui/paperclip/workflows/Checks/badge.svg?branch=master)
 
+**This project has been moved over to [Tandem](https://github.com/crcn/tandem)**
+
 <br />
 
 <div style="text-align: left; margin-bottom: 32px;">
