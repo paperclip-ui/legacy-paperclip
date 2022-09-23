@@ -20,7 +20,7 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
-    "typescript": "^4.2.3"
+    "typescript": "^4.6.2"
   },
   "dependencies": {
     "@paperclip-ui/core": "^18.5.6",

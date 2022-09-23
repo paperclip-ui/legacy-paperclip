@@ -1,11 +1,11 @@
 import React from "react";
 import _pubEe9C6B7B from "./atoms.pc";
-const encode = value =>
-  value.replace(/['\u00A0-香<>\&]/gim, function(i) {
+const encode = (value) =>
+  value.replace(/['<>\u00A0-香<>\&]/gim, function (i) {
     return "&#" + i.charCodeAt(0) + ";";
   });
 
-const flatten = v =>
+const flatten = (v) =>
   v.reduce((ary, v) => {
     if (Array.isArray(v)) {
       ary.push(...flatten(v));
@@ -15,9 +15,9 @@ const flatten = v =>
     return ary;
   }, []);
 
-const VOID_TAGS = ["br", "img"];
+const VOID_TAGS = ["br", "img", "hr"];
 
-const isVoid = v => VOID_TAGS.includes(v);
+const isVoid = (v) => VOID_TAGS.includes(v);
 
 const createElement = (tag, attributes, ...children) => {
   if (typeof tag === "function") {
@@ -50,7 +50,7 @@ const createElement = (tag, attributes, ...children) => {
 
   buffer.push(
     flatten(children)
-      .filter(v => v !== false && v != null)
+      .filter((v) => v !== false && v != null)
       .join("")
   );
 
@@ -59,18 +59,18 @@ const createElement = (tag, attributes, ...children) => {
   return buffer.join("");
 };
 
-const stringifyStyle = value =>
+const stringifyStyle = (value) =>
   Object.entries(value)
     .map(([key, value]) => key + ":" + value)
     .join(";");
 
-const Fragment = props => flatten(props.children).join("");
+const Fragment = (props) => flatten(props.children).join("");
 
 const _vanilla = {
   createElement,
   Fragment,
-  forwardRef: v => v,
-  memo: v => v
+  forwardRef: (v) => v,
+  memo: (v) => v,
 };
 function getDefault(module) {
   return module.default || module;
@@ -82,7 +82,7 @@ function castStyle(value) {
   return value
     .trim()
     .split(";")
-    .reduce(function(obj, keyValue) {
+    .reduce(function (obj, keyValue) {
       var kvp = keyValue.split(":");
       var key = kvp[0];
       var value = kvp[1];
@@ -102,7 +102,7 @@ var Breadcrumbs = _vanilla.memo(
       "div",
       {
         className: "_96ea8b58 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-        ref: ref
+        ref: ref,
       },
       props["children"]
     );
@@ -117,16 +117,17 @@ var Breadcrumb = _vanilla.memo(
       {
         className: "_7f892e6d _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
         ref: ref,
-        href: props["href"]
       },
-      _vanilla.createElement(
-        "a",
-        {
-          className: "_3ca82f86 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-          href: props["href"]
-        },
+      (props["href"] &&
+        _vanilla.createElement(
+          "a",
+          {
+            className: "_f03c511b _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
+            href: props["href"],
+          },
+          props["children"]
+        )) ||
         props["children"]
-      )
     );
   })
 );
@@ -143,7 +144,7 @@ var Row = _vanilla.memo(
             ? " " +
               "_a69f6dc3_header _pub-a69f6dc3_header _pub-ee9c6b7b_header header"
             : ""),
-        ref: ref
+        ref: ref,
       },
       props["children"]
     );
@@ -170,7 +171,7 @@ var Cell = _vanilla.memo(
           (props["good"]
             ? " " + "_a69f6dc3_good _pub-a69f6dc3_good _pub-ee9c6b7b_good good"
             : ""),
-        ref: ref
+        ref: ref,
       },
       props["children"]
     );
@@ -184,7 +185,7 @@ var Table = _vanilla.memo(
       "div",
       {
         className: "_d4ccbe78 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-        ref: ref
+        ref: ref,
       },
       props["children"]
     );
@@ -201,7 +202,7 @@ var PercentCell = _vanilla.memo(
         ref: ref,
         okay: props["okay"],
         good: props["good"],
-        poor: props["poor"]
+        poor: props["poor"],
       },
       _vanilla.createElement(
         CoveragePercentInfo,
@@ -212,7 +213,7 @@ var PercentCell = _vanilla.memo(
           totalCount: props["totalCount"],
           transparent: true,
           stretch: true,
-          subtle: true
+          subtle: true,
         },
         null
       )
@@ -230,14 +231,21 @@ var FileCell = _vanilla.memo(
         ref: ref,
         okay: props["okay"],
         good: props["good"],
-        poor: props["poor"]
+        poor: props["poor"],
       },
-      props["children"],
+      _vanilla.createElement(
+        "a",
+        {
+          className: "_fc1b594f _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
+          href: props["href"],
+        },
+        props["children"]
+      ),
       _vanilla.createElement(
         CoverageBar,
         {
           class: "_651208f5",
-          percentage: props["percentage"]
+          percentage: props["percentage"],
         },
         null
       )
@@ -252,12 +260,12 @@ var CoverageInfo = _vanilla.memo(
       "div",
       {
         className: "_3daf1b4d _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-        ref: ref
+        ref: ref,
       },
       _vanilla.createElement(
         "span",
         {
-          className: "_ff9f8d21 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b"
+          className: "_ff9f8d21 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
         },
         props["title"]
       ),
@@ -267,7 +275,7 @@ var CoverageInfo = _vanilla.memo(
           class: "_6696dc9b",
           percentage: props["percentage"],
           coveredCount: props["coveredCount"],
-          totalCount: props["totalCount"]
+          totalCount: props["totalCount"],
         },
         null
       )
@@ -295,12 +303,12 @@ var CoveragePercentInfo = _vanilla.memo(
             ? " " +
               "_a69f6dc3_subtle _pub-a69f6dc3_subtle _pub-ee9c6b7b_subtle subtle"
             : ""),
-        ref: ref
+        ref: ref,
       },
       _vanilla.createElement(
         "span",
         {
-          className: "_f501a02b _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b"
+          className: "_f501a02b _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
         },
         props["percentage"],
         "%\n  "
@@ -308,7 +316,7 @@ var CoveragePercentInfo = _vanilla.memo(
       _vanilla.createElement(
         "span",
         {
-          className: "_6c08f191 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b"
+          className: "_6c08f191 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
         },
         "\n    (",
         props["coveredCount"],
@@ -327,13 +335,13 @@ var CoverageBar = _vanilla.memo(
       "div",
       {
         className: "_ffe1edbb _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-        ref: ref
+        ref: ref,
       },
       _vanilla.createElement(
         "div",
         {
           className: "_e9a75e7d _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-          style: castStyle("width: " + props["percentage"] + "%")
+          style: castStyle("width: " + props["percentage"] + "%"),
         },
         null
       )
@@ -348,29 +356,29 @@ var Report = _vanilla.memo(
       "div",
       {
         className: "_11ef8c97 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-        ref: ref
+        ref: ref,
       },
       _vanilla.createElement(
         "div",
         {
-          className: "_9d24ba85 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b"
+          className: "_9d24ba85 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
         },
         _vanilla.createElement(
           "div",
           {
-            className: "_5d6de392 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b"
+            className: "_5d6de392 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
           },
           _vanilla.createElement(
             "h3",
             {
-              className: "_4a594e1d _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b"
+              className: "_4a594e1d _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
             },
             props["title"]
           ),
           _vanilla.createElement(
             Breadcrumbs,
             {
-              class: "_d3501fa7"
+              class: "_d3501fa7",
             },
             props["breadcrumbs"]
           )
@@ -378,7 +386,7 @@ var Report = _vanilla.memo(
         _vanilla.createElement(
           "div",
           {
-            className: "_c464b228 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b"
+            className: "_c464b228 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
           },
           props["coverage"]
         )
@@ -401,7 +409,7 @@ var Report = _vanilla.memo(
             (props["okay"]
               ? " " +
                 "_a69f6dc3_okay _pub-a69f6dc3_okay _pub-ee9c6b7b_okay okay"
-              : "")
+              : ""),
         },
         null
       ),
@@ -416,8 +424,8 @@ var FileReportContent = _vanilla.memo(
     return _vanilla.createElement(
       "div",
       {
-        className: "_8f8b1934 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
-        ref: ref
+        className: "_f88c29a2 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b",
+        ref: ref,
       },
       props["children"]
     );
@@ -431,13 +439,13 @@ var LineNumber = _vanilla.memo(
       "div",
       {
         className:
-          "_1682488e _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b" +
+          "_f13a6589 _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b" +
           " " +
           "_a69f6dc3_coverage _pub-a69f6dc3_coverage _pub-ee9c6b7b_coverage coverage" +
           (props["good"]
             ? " " + "_a69f6dc3_good _pub-a69f6dc3_good _pub-ee9c6b7b_good good"
             : ""),
-        ref: ref
+        ref: ref,
       },
       props["children"]
     );
@@ -450,7 +458,7 @@ var Line = _vanilla.memo(
       "div",
       {
         className:
-          "_863d551f _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b" +
+          "_e6fadcfa _a69f6dc3 _pub-a69f6dc3 _pub-ee9c6b7b" +
           " " +
           "_a69f6dc3_coverage _pub-a69f6dc3_coverage _pub-ee9c6b7b_coverage coverage" +
           (props["poor"]
@@ -459,13 +467,13 @@ var Line = _vanilla.memo(
           (props["okay"]
             ? " " + "_a69f6dc3_okay _pub-a69f6dc3_okay _pub-ee9c6b7b_okay okay"
             : ""),
-        ref: ref
+        ref: ref,
       },
       _vanilla.createElement(
         LineNumber,
         {
-          class: "_e67665f2",
-          good: props["good"]
+          class: "_511b3918",
+          good: props["good"],
         },
         props["number"]
       ),

@@ -1,3 +1,5 @@
+<import src="./roboto/index.pc" />
+
 <!-- atoms -->
 <style>
 
@@ -5,11 +7,60 @@
     font-family: sans-serif;
   }
 
+  .reset {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    color: inherit;
+  }
+
+  * {
+    transition: 0.1s;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --text-color: rgb(186, 195, 212);
+    --text-color-faded: rgba(186, 195, 212, 0.5);
+    --active-text-color: rgb(159, 175, 202);
+    --sidebar-background-color: rgb(29, 35, 46);
+    --project-navigation-background-color: rgb(25, 25, 29);
+    --side-navigation-border-color: transparent;
+    --active-color: rgb(71, 127, 231);
+    --active-color-secondary: rgb(47, 58, 77);
+  }
+
   @mixin mask {
-    mask-size: 1em;
-    width: 1em;
-    height: 1em;
+    mask-size: var(--mask-size, 1em);
+    width: var(--mask-size, 1em);
+    height: var(--mask-size, 1em);
     background: currentColor;
+  }
+
+  @mixin center-y {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .input {
+    color: inherit;
+    font-size: 12px;
+    border-radius: 4px;
+    border: none;
+    background: rgb(47, 58, 77);
+    padding: 6px 8px;
+  }
+
+
+  .font-regular {}
+
+  .font-small {
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.08em;
   }
 
   :root {}
@@ -25,9 +76,9 @@
   class:right="tall right"
   class:bottom="flat bottom">
   <style>
-    background: rgb(221, 221, 221);
+    background: var(--sidebar-background-color);
     flex-shrink: 0;
-    --border: 2px solid grey;
+    --border: 1px solid rgb(14, 14, 17);
     &.left {
       border-right: var(--border);
     }
@@ -39,7 +90,8 @@
     }
 
     &.tall {
-      width: 250px;
+      width: 280px;
+      height: 100%;
     }
     &.flat {
       height: 250px;
@@ -50,10 +102,200 @@
 </div>
 
 <!--
+  @frame { height: 768, visible: false, width: 1024, x: 86, y: -302 }
+-->
+<div component as="TreeBranch" class:active="active">
+  <style>
+    border-radius: 4px;
+    &.active {
+      background: var(--active-color-secondary);
+      color: var(--active-text-color);
+      box-shadow: 0px 0px 0px 1px rgb(14, 14, 17);
+    }
+  </style>
+  <div class:active="active">
+    <style>
+      &.active {
+        background: var(--active-color);
+        color: white;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+      }
+    </style>
+    {leaf}
+  </div>
+  {children?}
+</div>
+
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 22, y: 126 }
+-->
+<div component
+  as="Leaf"
+  style="--depth: {depth}"
+  class="font-small {class?}"
+  class:expanded="expanded"
+  class:hasChildren="has-children">
+  <style>
+    padding: 6px 8px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding-left: calc(var(--depth, 1px) * 13px);
+  </style>
+
+  <Icon>
+    <style>
+      font-size: 0.5em;
+      --mask-size: 7px;
+      opacity: 0.5;
+      mask-image: url("./chevron-2.svg");
+      flex-shrink: 0;
+      --size: 8px;
+      visibility: hidden;
+      &:within(.expanded) {
+        transform: rotate(90deg);
+      }
+      &:within(.has-children) {
+        visibility: visible;
+      }
+    </style>
+  </Icon>
+  {children}
+  <div>
+    <style>
+
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    </style>
+    {controls?}
+  </div>
+</div>
+
+<!--
   @frame { visible: false }
 -->
-<div export component as="Layers">
-  TODO: layers. Should be similiar to Figma
+<Leaf export
+  component
+  as="LayerLeaf"
+  {expanded?}
+  {hasChildren?}
+  {depth?}
+  {controls?}
+  class:isElement="$is-element"
+  class:isComponent="$is-component"
+  class:isInstance="$is-instance"
+  class:inInstance="$in-instance">
+  <LayerIcon {isElement?} {isComponent?} {isInstance?} {isText?} />
+  {children}
+</Leaf>
+
+<!--
+  @frame { visible: false }
+-->
+<div component
+  as="LayerIcon"
+  class:isElement="is-element"
+  class:isComponent="is-component"
+  class:isText="is-text"
+  class:isInstance="is-instance"
+  class:isStyle="is-style">
+  <style>
+    @include mask {}
+    &.is-element {
+      --mask-size: 7px;
+      mask-image: url("./square.svg");
+    }
+    &.is-component {
+      --mask-size: 7px;
+      mask-image: url("./window.svg");
+    }
+    &.is-style {
+      --mask-size: 9px;
+      margin-right: -2px;
+      mask-image: url("./brush.svg");
+    }
+    &.is-text {
+      margin-right: -2px;
+      --mask-size: 9px;
+      mask-image: url("./text-2.svg");
+    }
+    &.is-instance {
+      transform: rotate(45deg);
+      --mask-size: 7px;
+      mask-image: url("./square.svg");
+    }
+
+    &.is-instance, &.in-instance, &.is-component {
+      color: rgb(245, 169, 245);
+    }
+
+  </style>
+</div>
+
+<!--
+  @frame { height: 768, visible: false, width: 1024, x: 508, y: 947 }
+-->
+<Icon export component as="VisibilityButton">
+  <style>
+    --mask-size: 13px;
+    mask-image: url("./eye-3.svg");
+  </style>
+  dddd
+</Icon>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Layers" class="font-small">
+  <style>
+    padding: 8px;
+  </style>
+
+  <TreeBranch leaf={<LayerLeaf depth="1" hasChildren isComponent>
+      Container
+    </LayerLeaf>} />
+  <TreeBranch leaf={<LayerLeaf depth="1" expanded hasChildren isElement>
+      Container
+    </LayerLeaf>}>
+    <TreeBranch active
+      leaf={<LayerLeaf depth="2" expanded hasChildren isElement>
+        Header
+      </LayerLeaf>}>
+      <TreeBranch leaf={<LayerLeaf depth="3" isElement>Navigation</LayerLeaf>}>
+        <TreeBranch leaf={<LayerLeaf depth="4"
+            hasChildren
+            isInstance
+            controls={<VisibilityButton />}>
+            Home Link
+          </LayerLeaf>} />
+        <TreeBranch leaf={<LayerLeaf depth="4" hasChildren isInstance>
+            About Link
+          </LayerLeaf>} />
+        <TreeBranch leaf={<LayerLeaf depth="4" expanded hasChildren isInstance>
+            Link
+          </LayerLeaf>} />
+        <TreeBranch leaf={<LayerLeaf depth="5"
+            hasChildren
+            expanded
+            isElement
+            inInstance>
+            some slot
+          </LayerLeaf>}>
+          <TreeBranch leaf={<LayerLeaf depth="6" isText>Contact</LayerLeaf>} />
+        </TreeBranch>
+        <TreeBranch leaf={<LayerLeaf depth="3" isElement>
+            Right Controls
+          </LayerLeaf>} />
+      </TreeBranch>
+    </TreeBranch>
+    <TreeBranch leaf={<LayerLeaf depth="2" hasChildren expanded isElement>
+        span
+      </LayerLeaf>}>
+      <TreeBranch leaf={<LayerLeaf depth="3" isText>Some text</LayerLeaf>} />
+    </TreeBranch>
+  </TreeBranch>
 </div>
 
 
@@ -65,16 +307,598 @@
     <li>Show computed style rules</li>
   </ul>
 </div>
+
 <!--
   @frame { visible: false }
 -->
-<div export component as="Paint">
-  <ul>
-    <li>show props specific to element (attributes)</li>
-    <li>Show styles</li>
-    <li>Styles panel should display "raw" view of all applied CSS</li>
-    <li>Styles not represented in pain </li>
-  </ul>
+<div export component as="FieldRow">
+  <style>
+    display: flex;
+    gap: 8px;
+  </style>
+  {children?}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="FieldGroup" class="field-group">
+  <style>
+    display: flex;
+    gap: 8px;
+  </style>
+  <div>
+    <style>
+      padding-left: 8px;
+      width: 90px;
+      flex-shrink: 0;
+      font-size: 11px;
+      line-height: 1.4em;
+      padding-top: 6px;
+    </style>
+    <PropertyLabel {inherited}>{label}</PropertyLabel>
+  </div>
+  <div>
+    <style>
+      width: 100%;
+      display: flex;
+      gap: 8px;
+    </style>
+    {children}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<label export component as="PropertyLabel" {class?} class:inherited="inherited">
+  <style>
+    display: inline-block;
+    border-radius: 2px;
+    text-transform: capitalize;
+    &:within(.inherited), &.inherited {
+      color: rgb(238, 113, 230);
+      font-weight: 600;
+    }
+  </style>
+  {children}
+</label>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Field" class="field" class:inherited="inherited">
+  <style>
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+    width: 100%;
+    overflow: hidden;
+    justify-content: flex-start;
+    align-items: flex-start;
+    &:within(.field-group) {
+      flex-direction: column-reverse;
+      font-size: 10px;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
+  <PropertyLabel>{label}</PropertyLabel>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="BoxLabel"
+  class:top="top"
+  class:right="right"
+  class:bottom="bottom"
+  class:left="left">
+  <style>
+    height: 1em;
+    width: 1em;
+    border: 2px solid rgba(186, 195, 212, 0.2);
+    border-radius: 2px;
+    &.top {
+      border-top-color: currentColor;
+    }
+    &.bottom {
+      border-bottom-color: currentColor;
+    }
+    &.left {
+      border-left-color: currentColor;
+    }
+    &.right {
+      border-right-color: currentColor;
+    }
+  </style>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ValueList">
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="BoltIcon">
+  <style>
+    --mask-size: 0.7em;
+    mask-image: url("./bolt.svg");
+    @include mask {}
+  </style>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Paint" class="font-small">
+  <!--
+    More options:
+
+    classes, ID, overridable
+  -->
+  <PanelSection title="&nbsp;" hasMore>
+    <FieldGroup label="Variant">
+      <SelectInput multi>
+        <SelectInputValue>dark</SelectInputValue>
+        <SelectInputValue>
+          mobile
+          <BoltIcon />
+        </SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Target">
+      <SelectInput>
+        <SelectInputValue>Before</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+  </PanelSection>
+  <PanelSection>
+    <FieldGroup label="Mixins">
+      <ValueList>
+        <TextInput value="some mixin" />
+        <TextInput placeholder="Add..." />
+      </ValueList>
+    </FieldGroup>
+  </PanelSection>
+
+  <PanelSection title="Layout" hasMore>
+    <FieldGroup label="Display">
+      <SelectInput>
+        <SelectInputValue>Flex</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Direction" inherited>
+      <SelectInput>
+        <SelectInputValue>Row</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Justify">
+      <SelectInput>
+        <SelectInputValue>space between</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Wrap">
+      <SelectInput>
+        <SelectInputValue>no wrap</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Align">
+      <SelectInput>
+        <SelectInputValue>center</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Gap" inherited>
+      <TextSliderInput placeholder="0" />
+    </FieldGroup>
+    <FieldGroup label="Flex">
+      <Field label="shrink">
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label="grow">
+        <TextInput placeholder="0" />
+      </Field>
+    </FieldGroup>
+    <FieldGroup label="Margin">
+      <Field label={<BoxLabel left />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel right />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel top />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel bottom />}>
+        <TextInput placeholder="0" />
+      </Field>
+    </FieldGroup>
+    <FieldGroup label="Padding">
+      <Field label={<BoxLabel left />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel right />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel top />}>
+        <TextInput placeholder="0" />
+      </Field>
+      <Field label={<BoxLabel bottom />}>
+        <TextInput placeholder="0" />
+      </Field>
+    </FieldGroup>
+  </PanelSection>
+  <PanelSection title="Appearance" hasMore>
+    <FieldGroup label="Border">
+      <TextInput placeholder="Add..." />
+    </FieldGroup>
+    <FieldGroup label="Backgrounds">
+      <ValueList>
+        <ColorInput value="#F0F" />
+        <ColorInput placeholder="Add..." />
+      </ValueList>
+    </FieldGroup>
+    <FieldGroup label="Shadows">
+      <ColorInput placeholder="Add..." value="" />
+    </FieldGroup>
+    <FieldGroup label="Filters">
+      <TextInput placeholder="Add..." />
+    </FieldGroup>
+  </PanelSection>
+  <PanelSection title="Text" hasMore>
+    <FieldGroup label="Font">
+      <SelectInput>
+        <SelectInputValue>Helvetica</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Weight">
+      <SelectInput>
+        <SelectInputValue>Regular</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Color">
+      <ColorInput value="red" />
+    </FieldGroup>
+    <FieldGroup label="Size">
+      <TextSliderInput placeholder="10px" />
+    </FieldGroup>
+    <FieldGroup label="Letter">
+      <TextSliderInput placeholder="10px" />
+    </FieldGroup>
+    <FieldGroup label="Line">
+      <TextSliderInput placeholder="10px" />
+    </FieldGroup>
+    <FieldGroup label="Decoration">
+      <SelectInput>
+        <SelectInputValue>Underline</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+  </PanelSection>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Properties" class="font-small">
+  <PanelSection>
+    <FieldGroup label="ID">
+      <TextInput placeholder="SectionPane" />
+    </FieldGroup>
+    <FieldGroup label="Label">
+      <TextInput placeholder="component1" value="Section Pane" />
+    </FieldGroup>
+    <FieldGroup label="Classes">
+      <SelectInput multi>
+        <SelectInputValue>reset</SelectInputValue>
+        <SelectInputValue>button</SelectInputValue>
+        <SelectInputValue>large</SelectInputValue>
+      </SelectInput>
+    </FieldGroup>
+    <FieldGroup label="Public">
+      <RadioInput on />
+    </FieldGroup>
+  </PanelSection>
+  <PanelSection title="Variant Triggers">
+    <FieldGroup label="small">
+      <ValueList>
+        <TextInput value="self.small === true" />
+        <TextInput placeholder="Add..." />
+      </ValueList>
+    </FieldGroup>
+    <FieldGroup label="mobile">
+      <ValueList>
+        <TextInput value="Media Query" />
+        <TextInput placeholder="Add..." />
+      </ValueList>
+    </FieldGroup>
+  </PanelSection>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div as="HomePage">
+  <style>
+    font-size: 72px;
+  </style>
+  Hello World
+</div>
+
+
+<!--
+  @frame { height: 768, title: "Mobile", width: 2115, x: -3521, y: -1092 }
+-->
+
+
+
+
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SelectInputValue">
+  <style>
+    padding: 2px 4px;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: white;
+    border-radius: 4px;
+    white-space: nowrap;
+    &:within(.multi) {
+      background: rgb(71, 127, 231);
+      width: auto;
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="SelectInput"
+  class="input font-small"
+  class:multi="multi">
+  <style>
+    background: rgb(47, 58, 77);
+    padding: 4px 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex: 1;
+    gap: 8px;
+    overflow: hidden;
+  </style>
+  <div>
+    <style>
+      display: flex;
+      gap: 8px;
+      overflow: hidden;
+      flex-wrap: wrap;
+    </style>
+    {children}
+  </div>
+  <div>
+    <style>
+      color: var(--active-text-color);
+      mask-image: url("./chevron-2.svg");
+      transform: rotate(90deg);
+      margin-right: 4px;
+      --mask-size: 6px;
+      @include mask {}
+    </style>
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<input export component as="TextInput" class="input" {placeholder?} {value?}>
+  <style>
+    flex: 1;
+    width: 100%;
+    border: 0px;
+    align-items: center;
+    justify-content: space-between;
+    &::placeholder {
+      color: var(--text-color-faded);
+    }
+
+  </style>
+</input>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="RadioInput" class:on="on">
+  <style>
+    position: relative;
+    width: calc(29px*2);
+    --size: 26px;
+  </style>
+  <div>
+    <style>
+
+      border-radius: 4px;
+      width: calc(var(--size)*2);
+      height: var(--size);
+      background: rgb(47, 58, 77);
+      transition: 0.5s;
+      &:within(.on) {
+        background: var(--active-color-secondary);
+      }
+    </style>
+
+    <div>
+      <style>
+        width: var(--size);
+        height: 100%;
+        position: absolute;
+        transition: 0.2s;
+        background: rgb(103, 113, 129);
+        border-radius: 4px;
+        &:within(.on) {
+          background: var(--active-color);
+          transform: translateX(100%);
+        }
+      </style>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SliderInput">
+  <style>
+    flex: 1;
+    width: 100%;
+    position: relative;
+    height: 29px;
+  </style>
+  <div>
+    <style>
+      position: absolute;
+      top: 50%;
+      height: 2px;
+      transform: translateY(-50%);
+      background: rgb(47, 58, 77);
+      border-radius: 99px;
+      width: 100%;
+    </style>
+    <div>
+      <style>
+        position: absolute;
+        left: 0px;
+        height: 100%;
+        width: 50%;
+        background: rgb(71, 127, 231);
+      </style>
+    </div>
+    <div>
+      <style>
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateY(-50%);
+        border-radius: 100px;
+        background: white;
+      </style>
+    </div>
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="TextSliderInput">
+  <style>
+    width: 100%;
+    display: flex;
+    flex: 1;
+    gap: 8px;
+  </style>
+  <div>
+    <style>
+      flex: 1;
+    </style>
+    <TextInput {placeholder?} />
+  </div>
+  <SliderInput />
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="ColorInput"
+  style="--value:{value};"
+  class:value="has-value">
+  <style>
+    display: flex;
+  </style>
+  <div>
+    <style>
+      width: 28px;
+      border-radius: 4px;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      padding: 6px;
+      flex-shrink: 0;
+      background: rgb(47, 58, 77);
+    </style>
+    <div class={colorClass}>
+      <style>
+
+        background-color: var(--value, rgb(112, 130, 161));
+        position: relative;
+        background-size: 12px;
+        background-position: top left;
+        background-repeat: none;
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+        &:before {
+          width: 100%;
+          height: 100%;
+          content: "\00a0";
+          background-size: 100%;
+          opacity: 0.5;
+          background-position: top left;
+          position: absolute;
+          border-radius: 4px;
+          background-image: url("./checkered.svg");
+        }
+        &:within(.has-value):before {
+          display: none;
+          opacity: 1;
+          background-image: none;
+        }
+      </style>
+    </div>
+  </div>
+  <input {value?} {placeholder?} class="input">
+    <style>
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      width: 100%;
+    </style>
+  </input>
 </div>
 
 <!--
@@ -92,11 +916,199 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Components">
+<div export component as="PanelSection">
+  <style>
+    padding: 16px 16px;
+    border-bottom: 1px solid black;
+  </style>
+  {title? && <div>
+    <style>
+      display: flex;
+      justify-content: space-between;
+    </style>
+    <div>
+      <style>
+        font-weight: 600;
+        font-size: 11px;
+        margin-bottom: 16px;
+      </style>
+      {title?}
+    </div>
+    {hasMore && <button class="reset">
+      <style>
+        mask-image: url("./ellipsis-2.svg");
+        cursor: pointer;
+        @include mask {}
+      </style>
+    </button>}
+  </div>}
+  <div>
+    <style>
+
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    </style>
+    {children}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="PaneSectionTitle">
+  <style>
+    font-weight: 600;
+    font-size: 1;
+    margin-bottom: 16px;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="PaneSectionHeader" class="font-small">
+  <style>
+    --border-color: rgb(121, 121, 121);
+    padding: 8px 16px;
+    border-bottom: 1px solid rgb(211, 211, 211);
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    gap: 8px;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SectionedPane" class="font-small">
+  <style>
+    padding: 16px 0px;
+  </style>
+  <PaneSectionHeader>{header}</PaneSectionHeader>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ListItem">
+  <style>
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    gap: 6px;
+    &:nth-child(2n) {
+      background: rgb(248, 248, 248);
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="List">
+  <style>
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Components" class="font-small">
+  <div>
+    <style>
+      padding: 16px;
+    </style>
+    <div>
+      <style>
+        position: relative;
+        &:before {
+          content: "\00a0";
+          position: absolute;
+          background: red;
+          left: 10px;
+          top: 50%;
+          @include center-y;
+          @include mask;
+          --mask-size: 1.2em;
+          mask-image: url("./search.svg");
+        }
+      </style>
+      <input placeholder="Filter...">
+        <style>
+          border-radius: 99px;
+          border: 1px solid black;
+          padding: 6px 8px;
+          padding-left: 28px;
+          width: 100%;
+          outline: none;
+          &:focus {
+            border: 1px solid red;
+          }
+        </style>
+      </input>
+    </div>
+  </div>
+  <SectionedPane header="Native HTML">
+    <List>
+      <ListItem>
+        <LayerIcon isText />Text node
+      </ListItem>
+      <ListItem>
+        <LayerIcon isElement />div
+      </ListItem>
+      <ListItem>
+        <LayerIcon isElement />form
+      </ListItem>
+      <ListItem>
+        <LayerIcon isElement />dialog
+      </ListItem>
+    </List>
+  </SectionedPane>
+  <SectionedPane header="Custom Components">
+    <List>
+      <ListItem>
+        <LayerIcon isComponent />SectionPane
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />ListItem
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Something else
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Home page
+      </ListItem>
+    </List>
+  </SectionedPane>
+  <SectionedPane header="Figma assets">
+    <List>
+      <ListItem>
+        <LayerIcon isComponent />SectionPane
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />ListItem
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Something else
+      </ListItem>
+      <ListItem>
+        <LayerIcon isComponent />Home page
+      </ListItem>
+    </List>
+  </SectionedPane>
   <ul>
-    <li>Filter Input</li>
-    <li>Show native elements</li>
-    <li>Show components</li>
+    <li>MDN reference to each native element</li>
   </ul>
 </div>
 
@@ -111,6 +1123,21 @@
     <li>Show variables</li>
     <li>Show show mixins</li>
   </ul>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ExternalResources">
+  <SectionedPane header="Figma assets">
+    <ul>
+      <li>display exported assets</li>
+      <li>ability to filter assets</li>
+      <li>ability to explicitly link layers to Figma</li>
+      <li>Ability to import assets from other resources</li>
+    </ul>
+  </SectionedPane>
 </div>
 
 <!--
@@ -130,13 +1157,15 @@
 <div export
   component
   as="ProjectNavigationButton"
-  {class?}
+  class="font-small {class?}"
   class:active="active">
   <style>
-    color: rgb(75, 75, 75);
-    padding: 8px;
+    padding: 12px 8px;
+    color: rgba(255, 255, 255, 0.3);
     &.active {
-      background: rgb(221, 221, 221);
+      color: white;
+      font-weight: 600;
+      background: var(--sidebar-background-color);
     }
   </style>
   {children}
@@ -147,37 +1176,29 @@
 -->
 <div export component as="ProjectNavigation">
   <style>
-    background: rgb(189, 189, 189);
-    height: 100%;
+    background: var(--sidebar-background-color);
+    border-bottom: 1px solid black;
+    border-right: 1px solid var(--side-navigation-border-color);
+    padding-left: 8px;
+    display: flex;
+    flex-grow: 0;
+    flex-direction: row;
+    gap: 8px;
   </style>
-  <ProjectNavigationButton active={showFiles?}>
-    <Icon>
-      <style>
-        mask-image: url("./layers.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showStyles?}>
-    <Icon>
-      <style>
-        mask-image: url("./layers.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showComponents?}>
-    <Icon>
-      <style>
-        mask-image: url("./layers.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showLayers}>
-    <Icon>
-      <style>
-        mask-image: url("./layers.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ObjectNavigationItem" class:active="active">
+  <style>
+    padding: 16px;
+    &.active {
+      border-bottom: 2px solid rgb(0, 195, 255);
+    }
+  </style>
+  {children}
 </div>
 
 
@@ -187,30 +1208,26 @@
 -->
 <div export component as="ObjectNavigation">
   <style>
-    background: rgb(189, 189, 189);
+    background: rgb(33, 38, 46);
     display: flex;
+    align-items: center;
   </style>
-  <ProjectNavigationButton active={showPaint?}>
+  <ObjectNavigationItem active={showPaint?}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
+        --mask-size: 0.9em;
+        mask-image: url("./drop.svg");
       </style>
     </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showRules?}>
+  </ObjectNavigationItem>
+  <ObjectNavigationItem active={showRules?}>
     <Icon>
       <style>
-        mask-image: url("./layers.svg");
+        --mask-size: 0.9em;
+        mask-image: url("./gear.svg");
       </style>
     </Icon>
-  </ProjectNavigationButton>
-  <ProjectNavigationButton active={showComputed?}>
-    <Icon>
-      <style>
-        mask-image: url("./layers.svg");
-      </style>
-    </Icon>
-  </ProjectNavigationButton>
+  </ObjectNavigationItem>
 </div>
 
 <!--
@@ -222,6 +1239,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    color: var(--text-color);
   </style>
 
 
@@ -230,18 +1248,31 @@
       display: flex;
       flex: 1;
     </style>
-
-    <!-- left gutter -->
-    <ProjectNavigation {showLayers?}
-      {showFiles?}
-      {showComponents?}
-      {showStyles?} />
-    <Gutter left>
-      {showLayers && <Layers />}
-      {showFiles && <Files />}
-      {showComponents && <Components />}
-      {showStyles && <Styles />}
-    </Gutter>
+    <div>
+      <style>
+        display: flex;
+        flex-direction: column;
+      </style>
+      <Gutter left>
+        <!-- left gutter -->
+        <ProjectNavigation>
+          <ProjectNavigationButton active={showLayers}>
+            Layers
+          </ProjectNavigationButton>
+          <ProjectNavigationButton active={showPages?}>
+            Pages
+          </ProjectNavigationButton>
+          <ProjectNavigationButton active={showAssets?}>
+            Assets
+          </ProjectNavigationButton>
+        </ProjectNavigation>
+        {showLayers && <Layers />}
+        {showFiles && <Files />}
+        {showInsert && <Components />}
+        {showStyles && <Styles />}
+        {showFigma && <ExternalResources />}
+      </Gutter>
+    </div>
     <div>
       <style>
         width: 100%;
@@ -255,50 +1286,81 @@
         <style>
           display: flex;
           flex-direction: column;
+          background: rgb(51, 56, 65);
         </style>
-        <div>
+        <div class="font-small">
           <style>
-            background: rgb(221, 221, 221);
-            border-bottom: 1px solid grey;
+            padding: 12px 8px;
+            background: rgb(29, 35, 46);
+            border-bottom: 1px solid rgb(14, 14, 17);
             width: 100%;
             text-align: center;
-            padding: 8px;
             flex: 0;
           </style>
           Some file
         </div>
         <style>
           flex: 1;
+          position: relative;
+          overflow: hidden;
         </style>
-        <div />
+        <div>
+          <style>
+          </style>
+          <div>
+            <style>
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+            </style>
+            <div>This is a title</div>
+            <div>
+              <style>
+                background: white;
+                width: 400px;
+                height: 300px;
+              </style>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- right gutter -->
     <Gutter right>
-      <ObjectNavigation {showComputed?} {showRules?} {showPaint?} />
-      {showComputed && <ComputedRules />}
-      {showRules && <StyleRules />}
+      <ProjectNavigation>
+        <ProjectNavigationButton active={showPaint?}>
+          Style
+        </ProjectNavigationButton>
+        <ProjectNavigationButton active={showProperties?}>
+          Properties
+        </ProjectNavigationButton>
+        <ProjectNavigationButton active={showInspect?}>
+          Inspect
+        </ProjectNavigationButton>
+      </ProjectNavigation>
+      <!--
+        @frame { height: 1131, title: "Pages + Properties", width: 1453, x: 2445, y: -1759 }
+      -->
       {showPaint && <Paint />}
+      {showProperties && <Properties />}
     </Gutter>
   </div>
 </div>
 
-<!--
-  @frame { height: 768, title: "components", width: 1024, x: 3489, y: -44 }
--->
-<Preview showComponents />
-<!--
-  @frame { height: 768, title: "Styles", width: 1024, x: 2294, y: -30 }
--->
-<Preview showStyles showPaint />
 
 <!--
-  @frame { height: 768, title: "Files", width: 1024, x: 1148, y: -51 }
+  @frame { height: 1131, title: "Pages + Properties", width: 1453, x: 2445, y: -1759 }
 -->
-<Preview showFiles showComputed />
+<Preview showPages showProperties />
 
 <!--
-  @frame { title: "Layers" }
+  @frame { height: 1131, title: "Layers + Style", width: 1453, x: 793, y: -1735 }
 -->
-<Preview showLayers showRules />
+<Preview showAssets showInspect />
+<!--
+  @frame { height: 1131, title: "Layers + Style", width: 1453, x: 793, y: -1735 }
+-->
+<Preview showLayers showPaint />
